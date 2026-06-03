@@ -1,0 +1,4929 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>洛克王国pvp阵容搭配好帮手</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7f9;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --ink: #17212b;
+      --muted: #637083;
+      --line: #d9e1ea;
+      --primary: #116466;
+      --primary-dark: #0b4f52;
+      --accent: #e0a322;
+      --good: #138a5b;
+      --bad: #c03945;
+      --info: #2563a6;
+      --shadow: 0 16px 40px rgba(32, 43, 54, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        linear-gradient(180deg, rgba(17, 100, 102, 0.08), rgba(17, 100, 102, 0) 280px),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    select,
+    input {
+      font: inherit;
+    }
+
+    button,
+    select,
+    input {
+      border-radius: 6px;
+    }
+
+    .app {
+      width: min(1500px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 3vw, 42px);
+      letter-spacing: 0;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 980px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .button {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid transparent;
+      padding: 0 16px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(22, 33, 43, 0.08);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(22, 33, 43, 0.14);
+    }
+
+    .button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(22, 33, 43, 0.16);
+    }
+
+    .button:focus-visible {
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba(17, 100, 102, 0.18), 0 8px 18px rgba(22, 33, 43, 0.14);
+    }
+
+    .button.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .button.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .button.ride {
+      --roller-skill-color: #607d8b;
+      border-color: rgba(77, 101, 113, 0.42);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(0, 0, 0, 0.08)),
+        var(--roller-bg, var(--roller-skill-color));
+      background-color: var(--roller-skill-color);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: #fff;
+      font-weight: 800;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .button.ride .button-icon {
+      width: 22px;
+      height: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.46);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      object-fit: contain;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+    }
+
+    .button.ride .button-icon.placeholder {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .button.ride:hover {
+      border-color: rgba(77, 101, 113, 0.68);
+      background-color: #6f8f9e;
+    }
+
+    .button.undo-ride {
+      border-color: rgba(119, 84, 142, 0.36);
+      background: #77548e;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .button.undo-ride:hover {
+      border-color: rgba(119, 84, 142, 0.62);
+      background: #68477f;
+    }
+
+    .button.ghost {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .button:disabled {
+      cursor: wait;
+      opacity: 0.7;
+      transform: none;
+    }
+
+    .statusbar {
+      margin: -8px 0 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(380px, 0.92fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .source {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .pet-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px;
+    }
+
+    .pet-card h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .pet-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .pet-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 26px;
+      border-radius: 999px;
+      background: #e8f3f3;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .pet-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      display: block;
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .readonly-line {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f8fafc;
+      padding: 5px 7px;
+      overflow: hidden;
+    }
+
+    .readonly-tags {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .readonly-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      width: 100%;
+    }
+
+    .stat-cell {
+      min-width: 0;
+      border: 1px solid rgba(23, 33, 43, 0.08);
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px 2px;
+      text-align: center;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 2px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .pvp-panel-stats .stat-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 3px;
+    }
+
+    .pvp-panel-stats .stat-cell {
+      padding: 2px 1px;
+    }
+
+    .pvp-panel-stats .stat-label {
+      font-size: 10px;
+    }
+
+    .pvp-panel-stats .stat-value {
+      margin-top: 1px;
+      font-size: 12px;
+    }
+
+    .pvp-default-note {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.2;
+    }
+
+    .pvp-recommend {
+      display: grid;
+      gap: 3px;
+      width: 100%;
+    }
+
+    .pvp-line {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .pvp-line + .pvp-line {
+      margin-top: 0;
+    }
+
+    .pvp-note {
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    select,
+    input {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(17, 100, 102, 0.14);
+    }
+
+    .type-select {
+      padding-left: 30px;
+      background-repeat: no-repeat;
+      background-size: 18px 18px;
+      background-position: 8px center;
+    }
+
+    .combo {
+      position: relative;
+    }
+
+    .combo-control {
+      position: relative;
+      display: grid;
+      grid-template-columns: 31px minmax(0, 1fr) 24px;
+      align-items: center;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .combo-control:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(17, 100, 102, 0.14);
+    }
+
+    .combo-control input {
+      min-width: 0;
+      min-height: 34px;
+      border: 0;
+      border-radius: 0;
+      padding: 5px 3px;
+      box-shadow: none;
+    }
+
+    .combo-icon {
+      width: 26px;
+      height: 26px;
+      margin-left: 5px;
+      border: 1px solid rgba(23, 33, 43, 0.12);
+      border-radius: 6px;
+      object-fit: contain;
+      background: #eef3f7;
+    }
+
+    .combo-icon.placeholder {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .combo-icon.stat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--icon-bg, #64748b);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .combo-clear {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      background: transparent;
+      color: #8491a1;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .combo-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 30;
+      display: none;
+      max-height: 270px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 18px 32px rgba(23, 33, 43, 0.14);
+    }
+
+    .combo.open .combo-menu {
+      display: block;
+    }
+
+    .combo-option {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid #edf2f7;
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 8px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .combo-option:hover,
+    .combo-option.active {
+      background: #e8f3f3;
+    }
+
+    .option-title {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .option-meta {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .skill-row {
+      display: grid;
+      grid-template-columns: 31px minmax(0, 1fr);
+      gap: 6px;
+      align-items: center;
+    }
+
+    .slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 31px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel-soft);
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .results {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .input-pet-results {
+      border-top: 1px solid var(--line);
+    }
+
+    .mobile-pet-results {
+      display: none;
+      gap: 12px;
+      padding: 0;
+    }
+
+    .result-card,
+    .analysis-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    .result-card h3,
+    .analysis-card h3 {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .title-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(23, 33, 43, 0.12);
+      border-radius: 6px;
+      background: #eef3f7;
+      object-fit: contain;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 24px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(23, 33, 43, 0.12);
+      background: #edf2f7;
+      color: #17212b;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tag img {
+      width: 15px;
+      height: 15px;
+    }
+
+    .tag.good {
+      background: #e7f6ef;
+      color: var(--good);
+      border-color: rgba(19, 138, 91, 0.2);
+    }
+
+    .tag.bad {
+      background: #fae8eb;
+      color: var(--bad);
+      border-color: rgba(192, 57, 69, 0.2);
+    }
+
+    .tag.info {
+      background: #e9f2fb;
+      color: var(--info);
+      border-color: rgba(37, 99, 166, 0.2);
+    }
+
+    .tag.empty {
+      background: #f3f6f8;
+      color: #8491a1;
+    }
+
+    .mini-title {
+      margin: 8px 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .skill-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .skill-chip {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 6px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px;
+      background: #fbfdff;
+    }
+
+    .skill-chip strong {
+      display: block;
+      overflow: hidden;
+      min-width: 0;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .line {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .result-head h3 {
+      min-width: 0;
+      margin: 0;
+    }
+
+    .result-badges,
+    .coverage-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .coverage-row {
+      margin-top: 6px;
+    }
+
+    .coverage-label {
+      flex: 0 0 54px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .analysis-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pvp-sim-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pvp-side {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfdff;
+      padding: 8px;
+    }
+
+    .pvp-side h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .pvp-side-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .pvp-side-form .field {
+      min-width: 0;
+    }
+
+    .pvp-side-form .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .talent-picks {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .talent-picks .combo-control {
+      grid-template-columns: minmax(0, 1fr) 24px;
+    }
+
+    .talent-picks .combo-control .combo-icon {
+      display: none;
+    }
+
+    [data-combo="nature"] .combo-control input,
+    .talent-picks .combo-control input {
+      font-size: 13px;
+    }
+
+    .talent-picks .combo-option {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .talent-picks .combo-option .combo-icon {
+      display: none;
+    }
+
+    .pvp-skill-picks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .pvp-skill-slot {
+      position: relative;
+      min-width: 0;
+    }
+
+    .pvp-skill-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      min-width: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      pointer-events: none;
+    }
+
+    .pvp-skill-slot .combo-control {
+      grid-template-columns: 16px 31px minmax(0, 1fr) 24px;
+      transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .pvp-skill-slot .combo-control input {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pvp-skill-slot .combo-control .combo-icon {
+      transition: box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .pvp-skill-slot.active .pvp-skill-index {
+      color: #ffffff;
+    }
+
+    .pvp-force-row {
+      margin-top: 5px;
+    }
+
+    .pvp-force-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid #b8c7ff;
+      border-radius: 6px;
+      background: #eef3ff;
+      color: #2f4295;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .pvp-force-button:disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+      box-shadow: none;
+      filter: grayscale(0.15);
+    }
+
+    .pvp-force-button.active {
+      border-color: #5357c9;
+      background: #5357c9;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(83, 87, 201, 0.22);
+    }
+
+    .pvp-force-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .pvp-force-icon.placeholder {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.65);
+      color: #2f4295;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .pvp-action-combo .combo-control {
+      cursor: pointer;
+    }
+
+    .pvp-action-combo:not(.active) .combo-control:hover {
+      border-color: #9fb7d5;
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .pvp-action-combo:not(.active) .combo-control:active {
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .pvp-action-combo.active .combo-control {
+      border-color: #5357c9;
+      background: #5357c9;
+      box-shadow: 0 2px 8px rgba(83, 87, 201, 0.22);
+    }
+
+    .pvp-action-combo.active .combo-control input {
+      background: transparent;
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    .pvp-action-combo.active .combo-control input::placeholder {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .pvp-action-combo.active .combo-control .combo-icon {
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 2px 8px rgba(0, 43, 94, 0.16);
+    }
+
+    .pvp-action-combo.active .combo-clear {
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .pvp-action-combo.active .combo-clear:hover {
+      color: #ffffff;
+    }
+
+
+    .pvp-buff-panel {
+      display: grid;
+      gap: 4px;
+      margin-top: 6px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 6px;
+    }
+
+    .pvp-buff-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pvp-buff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+      gap: 4px;
+    }
+
+    .pvp-buff-item {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .pvp-buff-label {
+      color: #41506a;
+      font-size: 11px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .pvp-buff-controls {
+      display: grid;
+      grid-template-columns: 20px minmax(30px, 1fr) 20px;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .pvp-buff-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      min-height: 22px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .pvp-buff-button:hover {
+      border-color: #9fb2c8;
+      background: #eef5fb;
+    }
+
+    .pvp-buff-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      background: #fbfdff;
+      color: #172033;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .pvp-buff-value.positive {
+      color: #047857;
+      background: #ecfdf5;
+      border-color: #b7ebcf;
+    }
+
+    .pvp-buff-value.negative {
+      color: #be123c;
+      background: #fff1f2;
+      border-color: #fecdd3;
+    }
+
+    .pvp-damage-result {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      min-height: 36px;
+      margin-top: 6px;
+      border: 1px solid #c7d2fe;
+      border-radius: 6px;
+      background: #eef3ff;
+      padding: 6px 7px;
+      color: #26326d;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .pvp-damage-result strong {
+      color: #172033;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .pvp-damage-lines {
+      display: grid;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .pvp-damage-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.3;
+    }
+
+    .pvp-damage-result.warn {
+      border-color: #f0d39a;
+      background: #fff8e8;
+      color: #684d17;
+    }
+
+    .pvp-damage-result.bad {
+      border-color: #ffc2cc;
+      background: #fff0f2;
+      color: #65313a;
+    }
+
+    .team-build-grid {
+      display: grid;
+      grid-template-columns: minmax(88px, 0.55fr) minmax(0, 2.45fr);
+      gap: 6px;
+    }
+
+    [data-combo="nature"] .combo-control,
+    [data-pvp-combo$="-nature"] .combo-control {
+      grid-template-columns: minmax(0, 1fr) 24px;
+    }
+
+    [data-combo="nature"] .combo-control .combo-icon,
+    [data-pvp-combo$="-nature"] .combo-control .combo-icon {
+      display: none;
+    }
+
+    [data-combo="nature"] .combo-option,
+    [data-pvp-combo$="-nature"] .combo-option {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    [data-combo="nature"] .combo-option .combo-icon,
+    [data-pvp-combo$="-nature"] .combo-option .combo-icon {
+      display: none;
+    }
+
+    .monster-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 128px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: linear-gradient(180deg, #f8fbff, #eef5f9);
+      overflow: hidden;
+    }
+
+    .monster-preview img {
+      width: min(68%, 170px);
+      max-height: 150px;
+      object-fit: contain;
+    }
+
+    .monster-preview.empty {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .notice {
+      border-left: 4px solid var(--info);
+      background: #eef6ff;
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: #1f425e;
+      font-size: 13px;
+    }
+
+    .notice.warn {
+      border-left-color: var(--bad);
+      background: #fff0f2;
+      color: #65313a;
+    }
+
+    .notice.good {
+      border-left-color: var(--good);
+      background: #ecf8f1;
+      color: #285943;
+    }
+
+    .roller-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items: start;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .roller-slot {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--good);
+      border-radius: 6px;
+      background: #f1fbf5;
+      padding: 8px;
+    }
+
+    .roller-slot.empty {
+      min-height: 58px;
+      border-left-color: #cbd5e1;
+      background: #f8fafc;
+    }
+
+    .roller-slot.no-rec {
+      border-left-color: var(--muted);
+      background: #f8fafc;
+    }
+
+    .roller-slot-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+    }
+
+    .roller-slot-title {
+      min-width: 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .roller-slot-title span {
+      display: block;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .roller-skill {
+      display: grid;
+      grid-template-columns: 31px minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+      margin-top: 7px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.74);
+      padding: 6px;
+    }
+
+    .roller-skill .combo-icon,
+    .roller-slot-head .combo-icon {
+      margin-left: 0;
+    }
+
+    .roller-skill strong {
+      display: block;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .roller-meta {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .roller-learners {
+      margin-top: 6px;
+      border: 1px solid rgba(23, 33, 43, 0.1);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.64);
+      overflow: hidden;
+    }
+
+    .roller-learners summary {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      padding: 5px 7px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      list-style: none;
+    }
+
+    .roller-learners summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .roller-learner-arrow {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+      transition: transform 0.16s ease;
+    }
+
+    .roller-learners[open] .roller-learner-arrow {
+      transform: rotate(180deg);
+    }
+
+    .roller-learner-preview {
+      overflow: hidden;
+      color: var(--muted);
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .roller-learner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+      gap: 5px;
+      max-height: 126px;
+      overflow: auto;
+      padding: 0 7px 7px;
+    }
+
+    .roller-learner-item {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      border: 1px solid rgba(23, 33, 43, 0.08);
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px 5px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .roller-learner-item .combo-icon {
+      width: 22px;
+      height: 22px;
+      margin-left: 0;
+    }
+
+    .roller-learner-item span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .roller-learners.empty {
+      padding: 5px 7px;
+    }
+
+    .matrix-wrap {
+      overflow: auto;
+      border-top: 1px solid var(--line);
+      max-height: 420px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 7px;
+      text-align: center;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #f5f8fb;
+      z-index: 1;
+      color: #445061;
+      font-weight: 800;
+    }
+
+    tbody th {
+      left: 0;
+      z-index: 2;
+      text-align: left;
+    }
+
+    .mult-strong {
+      color: var(--good);
+      font-weight: 900;
+    }
+
+    .mult-weak {
+      color: var(--bad);
+      font-weight: 900;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1180px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .input-pet-results {
+        display: none;
+      }
+
+      .mobile-pet-results {
+        display: grid;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 920px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        width: min(100% - 20px, 1500px);
+        padding-top: 18px;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+
+      .results {
+        padding: 10px;
+      }
+
+      .source {
+        text-align: left;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+    }
+
+    @media (max-width: 430px) {
+      .form-row,
+      .pet-info-grid,
+      .skills,
+      .pvp-skill-picks,
+      .pvp-buff-grid,
+      .pvp-sim-grid,
+      .pvp-side-form,
+      .talent-picks,
+      .team-build-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .skill-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>洛克王国pvp阵容搭配好帮手</h1>
+        <p class="subtitle">输入六只精灵和每只精灵的四个官方技能。精灵、技能、属性均带图标和搜索；技能属性与分类由数据自动带出。</p>
+      </div>
+      <div class="actions">
+        <button class="button primary" id="calculateBtn" type="button">显示结果</button>
+        <button class="button ride" id="rollerBtn" type="button">
+          <span class="button-icon placeholder">?</span>
+          <span>使用过山车</span>
+        </button>
+        <button class="button undo-ride" id="undoRollerBtn" type="button">撤回过山车</button>
+        <button class="button ghost" id="updateBtn" type="button">联网更新数据</button>
+        <button class="button ghost" id="clearBtn" type="button">清空</button>
+      </div>
+    </header>
+
+    <div class="statusbar" id="dataStatus">数据初始化中...</div>
+
+    <div class="main-grid">
+      <section class="section" aria-labelledby="inputTitle">
+        <div class="section-head">
+          <h2 id="inputTitle">选择你的精灵</h2>
+        </div>
+        <div class="team-grid" id="teamGrid"></div>
+        <div class="results input-pet-results" id="inputPetResults"></div>
+      </section>
+
+      <section class="section" aria-labelledby="resultTitle">
+        <div class="section-head">
+          <h2 id="resultTitle">计算结果</h2>
+          <div class="source">攻击技能计入克制；状态、防御不计入攻击克制</div>
+        </div>
+        <div class="results" id="results"></div>
+      </section>
+    </div>
+
+    <section class="section" style="margin-top: 18px;" aria-labelledby="matrixTitle">
+      <div class="section-head">
+        <h2 id="matrixTitle">属性关系表</h2>
+        <div class="source">行是攻击属性，列是防守属性</div>
+      </div>
+      <div class="matrix-wrap" id="matrixWrap"></div>
+    </section>
+
+    <p class="footer-note">数据源：rocomwiki.app 的公开 bundle.json。点击“联网更新数据”会刷新精灵、特性、精灵技能池和技能数值，并缓存到当前浏览器本机。</p>
+  </main>
+
+  <script>
+    const DATA_URL = "https://rocomwiki.app/data/bundle.json";
+    const DATA_BASE = "https://rocomwiki.app";
+    const STORAGE_KEY = "roco-world-type-tool-v3";
+    const DATA_STORAGE_KEY = "roco-world-dex-data-v1";
+
+    const TYPES = [
+      { key: "grass", name: "草", iconKey: "grass" },
+      { key: "water", name: "水", iconKey: "water" },
+      { key: "fire", name: "火", iconKey: "fire" },
+      { key: "electric", name: "电", iconKey: "electric" },
+      { key: "poison", name: "毒", iconKey: "poison" },
+      { key: "fantasy", name: "幻", iconKey: "illusion" },
+      { key: "ice", name: "冰", iconKey: "ice" },
+      { key: "fighting", name: "武", iconKey: "fighting" },
+      { key: "cute", name: "萌", iconKey: "fairy" },
+      { key: "light", name: "光", iconKey: "light" },
+      { key: "dragon", name: "龙", iconKey: "dragon" },
+      { key: "mechanical", name: "机械", iconKey: "steel" },
+      { key: "ghost", name: "幽", iconKey: "ghost" },
+      { key: "demon", name: "恶", iconKey: "dark" },
+      { key: "bug", name: "虫", iconKey: "bug" },
+      { key: "normal", name: "普通", iconKey: "normal" },
+      { key: "wing", name: "翼", iconKey: "flying" },
+      { key: "ground", name: "地", iconKey: "ground" }
+    ];
+
+    const ELEMENT_TO_TYPE = {
+      grass: "grass",
+      water: "water",
+      fire: "fire",
+      electric: "electric",
+      poison: "poison",
+      illusion: "fantasy",
+      ice: "ice",
+      fighting: "fighting",
+      fairy: "cute",
+      light: "light",
+      dragon: "dragon",
+      steel: "mechanical",
+      ghost: "ghost",
+      dark: "demon",
+      bug: "bug",
+      normal: "normal",
+      flying: "wing",
+      ground: "ground"
+    };
+
+    const TYPE_TO_ELEMENT = Object.fromEntries(Object.entries(ELEMENT_TO_TYPE).map(([element, type]) => [type, element]));
+    const TYPE_MAP = Object.fromEntries(TYPES.map((type) => [type.key, type]));
+    const TYPE_COLORS = {
+      grass: "#4d9b4a",
+      water: "#3c7fc4",
+      fire: "#d65f3f",
+      electric: "#d4a62f",
+      poison: "#8c5ca8",
+      fantasy: "#bd6aa6",
+      ice: "#55aeb8",
+      fighting: "#b96943",
+      cute: "#d46b91",
+      light: "#c69a38",
+      dragon: "#6d70b7",
+      mechanical: "#607d8b",
+      ghost: "#61619b",
+      demon: "#5d5363",
+      bug: "#789342",
+      normal: "#8b8f96",
+      wing: "#6b9bc3",
+      ground: "#a67847"
+    };
+    const ARK_ROLLER_SKILL_ID = "patched-roller-coaster";
+    const ARK_ROLLER_MONSTER_RE = /机幕方舟|积木方舟/;
+    const BOSS_FORM_SUFFIX = "__boss_form";
+    const REAL_BOSS_FORM_NAMES = new Set([
+      "圣光迪莫",
+      "叶冕魔力猫",
+      "烈火战神",
+      "圣水守护",
+      "鸭吉吉国王",
+      "霜翼领主",
+      "钻石蜗",
+      "风暴战犬",
+      "千棘海针",
+      "幻影荆棘",
+      "蹦蹦果",
+      "女王蜂",
+      "神谕鲨",
+      "奇丽果",
+      "迷嶂布莱克",
+      "迷障布莱克",
+      "恶魔狼王",
+      "祭礼巨像",
+      "彩虹独角兽",
+      "雪影冰灵",
+      "波普鹿",
+      "奇梦咪",
+      "伊兰龙",
+      "棋契陛下",
+      "圣剑骑士",
+      "黑猫密探"
+    ]);
+    const CATEGORY_NAMES = {
+      physical: "物攻",
+      special: "魔攻",
+      status: "状态",
+      defense: "防御",
+      attack: "攻击"
+    };
+
+    const BLOODLINE_ICON_URLS = {
+      grass: "https://patchwiki.biligame.com/images/rocom/d/d4/7pzxarnm429i6slf3xvu738i7zevaoe.png",
+      water: "https://patchwiki.biligame.com/images/rocom/5/5d/7tohfce4yybmjw77wgw6z4z5yhffjt1.png",
+      fire: "https://patchwiki.biligame.com/images/rocom/4/48/9eoi1wbah0h61gamxhhb1a5szlfi2bf.png",
+      electric: "https://patchwiki.biligame.com/images/rocom/a/ae/rql1i78xdlwgwy0h1cxun650klt8ive.png",
+      poison: "https://patchwiki.biligame.com/images/rocom/4/46/fb4sp0ex6jk3tpbv1pr7y98q5qn5wuw.png",
+      fantasy: "https://patchwiki.biligame.com/images/rocom/e/ee/cvsrrgvo79eizwwl7n8kqwm0xdtusur.png",
+      ice: "https://patchwiki.biligame.com/images/rocom/d/d5/ltdc5fu8p3liaoqrfiorgqoix41hbl0.png",
+      fighting: "https://patchwiki.biligame.com/images/rocom/8/88/4lmuplhqmegp9954qkhhjaw4cqthdk5.png",
+      cute: "https://patchwiki.biligame.com/images/rocom/8/82/d48hqybwysupiuekv0mbk77tuitbm0i.png",
+      light: "https://patchwiki.biligame.com/images/rocom/3/3b/oj0kvhgxhtjpn4r2rvhc8ahbwkpmjhx.png",
+      dragon: "https://patchwiki.biligame.com/images/rocom/3/30/g0m4krvz1i9f8ea23ss66pp50qqefaw.png",
+      mechanical: "https://patchwiki.biligame.com/images/rocom/0/01/57n7z4shmud7fqs83m5xynz1i1av3ws.png",
+      ghost: "https://patchwiki.biligame.com/images/rocom/e/e3/25e67k9c8oyxyobxlm5dvr8g70scf9a.png",
+      demon: "https://patchwiki.biligame.com/images/rocom/e/e0/q3cyuwvebt14jhd01bg452pxyx7jfd3.png",
+      bug: "https://patchwiki.biligame.com/images/rocom/2/29/qc9miivkjnzfkin72af695jjtgyncs4.png",
+      normal: "https://patchwiki.biligame.com/images/rocom/f/f6/9up4dsxvm3dm4h7zyqjeshe3fmac4x2.png",
+      wing: "https://patchwiki.biligame.com/images/rocom/8/80/rtnn9gl86ozp9m1h4fsp96sizhp5boh.png",
+      ground: "https://patchwiki.biligame.com/images/rocom/e/e2/7ljkykkgl8aa4gqxmhh0gnrbpuvcrpn.png",
+      boss: "https://patchwiki.biligame.com/images/rocom/2/27/e7qam556lcmfavke12t1iwpmg1x9ehw.png",
+      any: "https://patchwiki.biligame.com/images/rocom/e/e4/jnqw79mnfgi46zb2nkst8hcm90t5943.png"
+    };
+
+    const BLOODLINES = [
+      { id: "bloodline-boss", kind: "bloodline", name: "首领血脉", aliases: ["首领"], icon: BLOODLINE_ICON_URLS.boss, description: "首领类血脉。" },
+      ...TYPES.map((type) => ({
+        id: `bloodline-${type.key}`,
+        kind: "bloodline",
+        name: `${type.name}属性血脉`,
+        aliases: [`${type.name}血脉`, type.name],
+        icon: BLOODLINE_ICON_URLS[type.key] || typeIcon(type.key),
+        type: type.key,
+        description: `${type.name}属性血脉。`
+      }))
+    ];
+
+    function bloodlineShortLabel(bloodline) {
+      if (!bloodline) return "";
+      if (bloodline.id === "bloodline-boss") return "首领";
+      if (bloodline.type) return typeName(bloodline.type) || String(bloodline.name || "").replace(/属性?血脉$/, "");
+      return String(bloodline.name || "").replace(/属性?血脉$/, "");
+    }
+
+    function isBossBloodlineId(bloodlineId) {
+      return bloodlineId === "bloodline-boss";
+    }
+
+    function forceImpactLocked(state) {
+      return isBossBloodlineId(state?.bloodlineId);
+    }
+
+    function forceImpactButtonIcon(state, monster) {
+      const bloodline = bloodlineById.get(state?.bloodlineId);
+      if (bloodline) return iconHtml(bloodline, "pvp-force-icon");
+      if (BLOODLINE_ICON_URLS.any) {
+        return `<img class="pvp-force-icon" src="${escapeHtml(BLOODLINE_ICON_URLS.any)}" alt="">`;
+      }
+      return `<span class="pvp-force-icon placeholder">?</span>`;
+    }
+
+    const PVP_NATURES = [
+      { id: "nature-adamant", kind: "nature", name: "固执（物攻↑/魔攻↓）", aliases: ["固执", "物攻", "魔攻"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-jolly", kind: "nature", name: "开朗（速度↑/魔攻↓）", aliases: ["开朗", "速度", "魔攻"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-timid", kind: "nature", name: "胆小（速度↑/物攻↓）", aliases: ["胆小", "速度", "物攻"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-modest", kind: "nature", name: "保守（魔攻↑/物攻↓）", aliases: ["保守", "魔攻", "物攻"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-bold", kind: "nature", name: "大胆（物防↑/物攻↓）", aliases: ["大胆", "物防", "物攻"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-calm", kind: "nature", name: "沉着（魔防↑/物攻↓）", aliases: ["沉着", "魔防", "物攻"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-brave", kind: "nature", name: "勇敢（物攻↑/速度↓）", aliases: ["勇敢", "物攻", "低速", "速度"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-quiet", kind: "nature", name: "冷静（魔攻↑/速度↓）", aliases: ["冷静", "魔攻", "低速", "速度"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-lonely", kind: "nature", name: "孤僻（物攻↑/物防↓）", aliases: ["孤僻", "孤独", "怕寂寞", "物攻", "物防"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-naughty", kind: "nature", name: "调皮（物攻↑/魔防↓）", aliases: ["调皮", "物攻", "魔防"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-impish", kind: "nature", name: "淘气（物防↑/魔攻↓）", aliases: ["淘气", "物防", "魔攻"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-lax", kind: "nature", name: "乐天（物防↑/魔防↓）", aliases: ["乐天", "物防", "魔防"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-relaxed", kind: "nature", name: "悠闲（物防↑/速度↓）", aliases: ["悠闲", "物防", "速度", "低速"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-mild", kind: "nature", name: "稳重（魔攻↑/物防↓）", aliases: ["稳重", "魔攻", "物防"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-rash", kind: "nature", name: "马虎（魔攻↑/魔防↓）", aliases: ["马虎", "魔攻", "魔防"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-gentle", kind: "nature", name: "温顺（魔防↑/物防↓）", aliases: ["温顺", "魔防", "物防"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-careful", kind: "nature", name: "慎重（魔防↑/魔攻↓）", aliases: ["慎重", "魔防", "魔攻"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-sassy", kind: "nature", name: "狂妄（魔防↑/速度↓）", aliases: ["狂妄", "魔防", "速度", "低速"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-hasty", kind: "nature", name: "急躁（速度↑/物防↓）", aliases: ["急躁", "速度", "物防"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-naive", kind: "nature", name: "天真（速度↑/魔防↓）", aliases: ["天真", "速度", "魔防"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-silent", kind: "nature", name: "沉默（生命↑/物攻↓）", aliases: ["沉默", "生命", "低物攻", "物攻"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-neutral", kind: "nature", name: "平和（无修正）", aliases: ["平和", "平衡", "无修正"], iconText: "均", iconColor: "#64748b" },
+      { id: "nature-hardy", kind: "nature", name: "勤奋（无修正）", aliases: ["勤奋", "无修正"], iconText: "均", iconColor: "#64748b" },
+      { id: "nature-docile", kind: "nature", name: "坦率（无修正）", aliases: ["坦率", "无修正"], iconText: "均", iconColor: "#64748b" },
+      { id: "nature-serious", kind: "nature", name: "认真（无修正）", aliases: ["认真", "无修正"], iconText: "均", iconColor: "#64748b" },
+      { id: "nature-bashful", kind: "nature", name: "害羞（无修正）", aliases: ["害羞", "无修正"], iconText: "均", iconColor: "#64748b" },
+      { id: "nature-quirky", kind: "nature", name: "浮躁（无修正）", aliases: ["浮躁", "无修正"], iconText: "均", iconColor: "#64748b" }
+    ];
+
+    const PVP_TALENTS = [
+      { id: "talent-hp", kind: "talent", name: "生命", aliases: ["血量", "生命"], iconText: "生", iconColor: "#059669" },
+      { id: "talent-atk", kind: "talent", name: "物攻", aliases: ["物攻", "攻击", "物攻+60"], iconText: "物", iconColor: "#dc2626" },
+      { id: "talent-def", kind: "talent", name: "物防", aliases: ["物防", "防御", "物防+60"], iconText: "防", iconColor: "#16a34a" },
+      { id: "talent-spa", kind: "talent", name: "魔攻", aliases: ["魔攻", "特攻", "魔攻+60"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "talent-spd", kind: "talent", name: "魔防", aliases: ["魔防", "特防", "魔防+60"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "talent-spe", kind: "talent", name: "速度", aliases: ["速度", "先手", "速度+60"], iconText: "速", iconColor: "#0ea5e9" }
+    ];
+    const STAT_LABELS = {
+      hp: "生命",
+      atk: "物攻",
+      defense: "物防",
+      spa: "魔攻",
+      spd: "魔防",
+      spe: "速度"
+    };
+    const TALENT_STAT_BY_ID = {
+      "talent-hp": "hp",
+      "talent-atk": "atk",
+      "talent-def": "defense",
+      "talent-spa": "spa",
+      "talent-spd": "spd",
+      "talent-spe": "spe"
+    };
+    const DEFAULT_DAMAGE_TALENTS = ["talent-hp", "talent-def", "talent-spd"];
+    const DEFAULT_DAMAGE_NATURE_UP = "";
+    const DEFAULT_DAMAGE_NATURE_DOWN = "";
+    const DEFAULT_DAMAGE_NATURE_TEXT = "平和性格";
+    const DEFAULT_DAMAGE_TALENT_TEXT = "生命、物防、魔防";
+    const PVP_MAX_IV = 10;
+    const PVP_IV_STAT_RATE = 3;
+    const PVP_HP_STAT_RATE = 1.7;
+    const PVP_NON_HP_STAT_RATE = 1.1;
+    const PVP_HP_INNER_BONUS = 70;
+    const PVP_NON_HP_INNER_BONUS = 10;
+    const PVP_HP_FINAL_BONUS = 100;
+    const PVP_NON_HP_FINAL_BONUS = 50;
+    const PVP_NATURE_UP_MOD = 1.2;
+    const PVP_NATURE_DOWN_MOD = 0.9;
+    const PVP_DAMAGE_CORE_FACTOR = 0.9;
+    const SAME_TYPE_ATTACK_BONUS = 1.25;
+    const DEFAULT_PVP_ENERGY = 10;
+    const FORCE_IMPACT_POWER = 80;
+    const FORCE_IMPACT_RESPONSE_MULTIPLIER = 2.5;
+    const PASSIVE_STAT_ALIASES = [
+      { key: "atk", label: "物攻", aliases: ["物攻", "物理攻击", "物理攻击力"] },
+      { key: "spa", label: "魔攻", aliases: ["魔攻", "魔法攻击", "魔法攻击力"] },
+      { key: "defense", label: "物防", aliases: ["物防", "物理防御", "物理防御力"] },
+      { key: "spd", label: "魔防", aliases: ["魔防", "魔法防御", "魔法防御力"] },
+      { key: "spe", label: "速度", aliases: ["速度"] },
+      { key: "hp", label: "生命", aliases: ["生命", "生命值", "HP"] }
+    ];
+    const PVP_MANUAL_BUFF_STATS = [
+      { key: "atk", label: "物攻" },
+      { key: "spa", label: "魔攻" },
+      { key: "defense", label: "物防" },
+      { key: "spd", label: "魔防" },
+      { key: "spe", label: "速度" },
+      { key: "skillDamage", label: "技能伤害", flat: true }
+    ];
+    const PVP_MANUAL_BUFF_STEP = 0.1;
+    const PVP_MANUAL_DAMAGE_STEP = 10;
+
+    const RELATION = {
+      grass: { strong: ["water", "ground"], weak: ["fire", "dragon", "poison", "bug", "wing", "mechanical"] },
+      water: { strong: ["fire", "ground", "mechanical"], weak: ["grass", "ice", "dragon"] },
+      fire: { strong: ["grass", "ice", "bug", "mechanical"], weak: ["water", "ground", "dragon"] },
+      electric: { strong: ["water", "wing"], weak: ["grass", "ground", "dragon", "electric"] },
+      poison: { strong: ["grass", "cute"], weak: ["ground", "poison", "ghost", "mechanical"] },
+      fantasy: { strong: ["poison", "fighting"], weak: ["light", "fantasy", "mechanical"] },
+      ice: { strong: ["grass", "ground", "dragon", "wing"], weak: ["fire", "ice", "mechanical"] },
+      fighting: { strong: ["normal", "ground", "ice", "demon", "mechanical"], weak: ["poison", "bug", "wing", "cute", "ghost", "fantasy"] },
+      cute: { strong: ["dragon", "fighting", "demon"], weak: ["fire", "poison", "mechanical"] },
+      light: { strong: ["ghost", "demon"], weak: ["grass", "ice"] },
+      dragon: { strong: ["dragon"], weak: ["mechanical"] },
+      mechanical: { strong: ["ground", "ice", "cute"], weak: ["fire", "water", "electric", "mechanical"] },
+      ghost: { strong: ["light", "ghost", "fantasy"], weak: ["normal", "demon"] },
+      demon: { strong: ["poison", "ghost", "cute"], weak: ["light", "fighting", "demon"] },
+      bug: { strong: ["grass", "fantasy", "demon"], weak: ["fire", "poison", "fighting", "wing", "cute", "ghost", "mechanical"] },
+      normal: { strong: [], weak: ["ground", "ghost", "mechanical"] },
+      wing: { strong: ["grass", "bug", "fighting"], weak: ["ground", "dragon", "electric", "mechanical"] },
+      ground: { strong: ["fire", "ice", "electric", "poison"], weak: ["grass", "fighting"] }
+    };
+
+    const FALLBACK_DATA = {
+      generatedAt: "内置示例",
+      monsters: [
+        { id: "fallback-dimo", name: "迪莫", icon: "", types: ["light"], aliases: [], skillIds: ["fallback-flash", "fallback-sun"], passiveIds: ["fallback-partner"] },
+        { id: "fallback-wangxi", name: "王蜥", icon: "", types: ["ground"], aliases: [], skillIds: ["fallback-stone", "fallback-guard"], passiveIds: ["fallback-stoneblood"] }
+      ],
+      passives: [
+        { id: "fallback-partner", name: "最好的伙伴", icon: "", description: "造成克制伤害后，获得攻防速提升并回复能量。", aliases: [] },
+        { id: "fallback-stoneblood", name: "防守反击", icon: "", description: "受到攻击后获得反击收益。", aliases: [] }
+      ],
+      skills: [
+        { id: "fallback-flash", name: "闪光", icon: "", type: "light", category: "special", power: 60, description: "造成魔伤。", aliases: [] },
+        { id: "fallback-sun", name: "放晴", icon: "", type: "light", category: "status", power: null, description: "强化光系技能。", aliases: [] },
+        { id: "fallback-stone", name: "石锁", icon: "", type: "ground", category: "physical", power: 50, description: "造成物伤，限制换宠。", aliases: [] },
+        { id: "fallback-guard", name: "硬化", icon: "", type: "ground", category: "defense", power: null, description: "防御技能。", aliases: [] }
+      ]
+    };
+
+    const teamGrid = document.getElementById("teamGrid");
+    const inputPetResultsEl = document.getElementById("inputPetResults");
+    const resultsEl = document.getElementById("results");
+    const matrixWrap = document.getElementById("matrixWrap");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const rollerBtn = document.getElementById("rollerBtn");
+    const undoRollerBtn = document.getElementById("undoRollerBtn");
+    const updateBtn = document.getElementById("updateBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const dataStatus = document.getElementById("dataStatus");
+    const pvpSimState = {
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" }
+    };
+
+    let dexData = FALLBACK_DATA;
+    let monsterById = new Map();
+    let skillById = new Map();
+    let passiveById = new Map();
+    let bloodlineById = new Map(BLOODLINES.map((bloodline) => [bloodline.id, bloodline]));
+    const rollerHistory = [];
+
+    function typeName(key) {
+      return TYPE_MAP[key]?.name || "";
+    }
+
+    function typeIcon(key) {
+      const type = TYPE_MAP[key];
+      return type ? `${DATA_BASE}/icons/elements/${type.iconKey}.svg` : "";
+    }
+
+    function absoluteUrl(url) {
+      if (!url) return "";
+      if (/^https?:\/\//i.test(url)) return url;
+      return `${DATA_BASE}${url.startsWith("/") ? "" : "/"}${url}`;
+    }
+
+    function cloneData(value) {
+      return JSON.parse(JSON.stringify(value || {}));
+    }
+
+    function unique(items) {
+      return [...new Set(items.filter(Boolean))];
+    }
+
+    function byTypeOrder(items) {
+      const order = new Map(TYPES.map((type, index) => [type.key, index]));
+      return unique(items).sort((a, b) => order.get(a) - order.get(b));
+    }
+
+    function relationMultiplier(attacker, defender) {
+      const relation = RELATION[attacker] || { strong: [], weak: [] };
+      if (relation.strong.includes(defender)) return 2;
+      if (relation.weak.includes(defender)) return 0.5;
+      return 1;
+    }
+
+    function combinedDefenseMultiplier(attacker, defenderTypes) {
+      return defenderTypes.reduce((value, defender) => value * relationMultiplier(attacker, defender), 1);
+    }
+
+    function combinedOffenseMultiplier(attackerTypes, defender) {
+      if (!attackerTypes.length) return 1;
+      return Math.max(...attackerTypes.map((attacker) => relationMultiplier(attacker, defender)));
+    }
+
+    function strongTargetsForAttackTypes(attackerTypes) {
+      return byTypeOrder(TYPES
+        .filter((defender) => combinedOffenseMultiplier(attackerTypes, defender.key) > 1)
+        .map((defender) => defender.key));
+    }
+
+    function resistedTargetsForAttackTypes(attackerTypes) {
+      return byTypeOrder(TYPES
+        .filter((defender) => attackerTypes.length && attackerTypes.every((attacker) => relationMultiplier(attacker, defender.key) < 1))
+        .map((defender) => defender.key));
+    }
+
+    function weakAttackersAgainst(defenderTypes) {
+      return byTypeOrder(TYPES
+        .filter((attacker) => combinedDefenseMultiplier(attacker.key, defenderTypes) > 1)
+        .map((attacker) => attacker.key));
+    }
+
+    function resistingAttackersAgainst(defenderTypes) {
+      return byTypeOrder(TYPES
+        .filter((attacker) => defenderTypes.length && combinedDefenseMultiplier(attacker.key, defenderTypes) < 1)
+        .map((attacker) => attacker.key));
+    }
+
+    function isAttackSkill(skill) {
+      return skill && ["physical", "special", "attack"].includes(skill.category);
+    }
+
+    function makeTypeOptions(allowBlank = true) {
+      const blank = allowBlank ? '<option value="">无</option>' : "";
+      return blank + TYPES.map((type) => `<option value="${type.key}" data-icon="${typeIcon(type.key)}">${type.name}</option>`).join("");
+    }
+
+    function defaultTeam() {
+      return Array.from({ length: 6 }, (_, index) => ({
+        name: `精灵${index + 1}`,
+        monsterId: "",
+        bloodlineId: "",
+        natureId: "",
+        talentIds: ["", "", ""],
+        rollerSkillId: "",
+        skills: Array.from({ length: 4 }, () => ({ skillId: "" }))
+      }));
+    }
+
+    function normalizeTeam(team) {
+      return Array.from({ length: 6 }, (_, index) => {
+        const pet = team?.[index] || {};
+        return {
+          name: pet.name || `精灵${index + 1}`,
+          monsterId: pet.monsterId || "",
+          bloodlineId: pet.bloodlineId || "",
+          natureId: pet.natureId || "",
+          talentIds: Array.from({ length: 3 }, (_, talentIndex) => pet.talentIds?.[talentIndex] || ""),
+          rollerSkillId: pet.rollerSkillId || "",
+          skills: Array.from({ length: 4 }, (_, skillIndex) => {
+            const skill = pet.skills?.[skillIndex] || {};
+            return { skillId: skill.skillId || skill.id || "" };
+          })
+        };
+      });
+    }
+
+    function renderTeam(team) {
+      teamGrid.innerHTML = "";
+      updateRollerButton(team);
+      team.forEach((pet, petIndex) => {
+        const card = document.createElement("article");
+        card.className = "pet-card";
+        card.dataset.pet = String(petIndex);
+        card.innerHTML = `
+          <div class="pet-card-head">
+            <h3><span class="pet-index">${petIndex + 1}</span> 队伍位置</h3>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>精灵</label>
+              <div data-combo="monster" data-field="monsterId"></div>
+            </div>
+            <div class="field">
+              <label>血脉</label>
+              <div data-combo="bloodline" data-field="bloodlineId"></div>
+            </div>
+          </div>
+          <div class="pet-info-grid">
+          <div class="field field-wide">
+            <label>种族值</label>
+            <div class="readonly-line" data-field="statsText">未选择精灵</div>
+          </div>
+          <div class="field field-wide">
+            <label>PVP推荐加点</label>
+            <div class="readonly-line" data-field="pvpText">未选择精灵</div>
+          </div>
+          <div class="field field-wide">
+            <label>特性</label>
+            <div class="readonly-line" data-field="passiveText">未选择精灵</div>
+          </div>
+          <div class="field field-wide">
+            <label>输入性格天分</label>
+            <div class="team-build-grid">
+              <div data-combo="nature" data-field="natureId"></div>
+              <div class="talent-picks">
+                ${[0, 1, 2].map((talentIndex) => `<div data-talent="${talentIndex}" data-combo="talent"></div>`).join("")}
+              </div>
+            </div>
+          </div>
+          <div class="field field-wide">
+            <label>通过过山车获得技能</label>
+            <div data-combo="rollerSkill" data-field="rollerSkillId"></div>
+          </div>
+          </div>
+          <div class="skills">
+            ${pet.skills.map((skill, skillIndex) => `
+              <div class="skill-row" data-skill="${skillIndex}">
+                <span class="slot">${skillIndex + 1}</span>
+                <div data-combo="skill" data-field="skillId"></div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+        teamGrid.appendChild(card);
+
+        const monsterCombo = card.querySelector('[data-combo="monster"]');
+        const selectedMonster = monsterById.get(pet.monsterId);
+        const passiveItems = getMonsterPassives(selectedMonster);
+        const skillItems = getMonsterSkills(selectedMonster);
+        const statsText = card.querySelector('[data-field="statsText"]');
+        statsText.innerHTML = renderMonsterStats(selectedMonster);
+        const pvpText = card.querySelector('[data-field="pvpText"]');
+        pvpText.innerHTML = renderPvpRecommendation(selectedMonster);
+        const passiveText = card.querySelector('[data-field="passiveText"]');
+        passiveText.innerHTML = passiveItems.length
+          ? `
+            <div class="readonly-tags">${passiveItems.map((passive) => `<span class="tag">${escapeHtml(passive.name)}</span>`).join("")}</div>
+            <div class="readonly-desc">${passiveItems.map((passive) => `${escapeHtml(passive.name)}：${escapeHtml(passiveDescription(passive))}`).join("；")}</div>
+          `
+          : '<span class="tag empty">未选择精灵</span>';
+        createCombo(monsterCombo, {
+          items: dexData.monsters,
+          value: pet.monsterId || "",
+          placeholder: "搜索精灵名称",
+          emptyText: "未选择精灵",
+          onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].monsterId = item?.id || "";
+            current[petIndex].name = item?.name || `精灵${petIndex + 1}`;
+            if (!item) {
+              current[petIndex].natureId = "";
+              current[petIndex].talentIds = ["", "", ""];
+              current[petIndex].rollerSkillId = "";
+            }
+            current[petIndex].skills = current[petIndex].skills.map((skillRef) => (
+              item?.skillIds?.includes(skillRef.skillId) ? skillRef : { skillId: "" }
+            ));
+            renderTeam(current);
+            saveTeam();
+            renderResults();
+          }
+        });
+
+        const bloodlineCombo = card.querySelector('[data-combo="bloodline"]');
+        createCombo(bloodlineCombo, {
+          items: BLOODLINES,
+          value: BLOODLINES.some((bloodline) => bloodline.id === pet.bloodlineId) ? pet.bloodlineId : "",
+          placeholder: "搜索血脉名称",
+          emptyText: "未选择血脉",
+          onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].bloodlineId = item?.id || "";
+            saveSpecificTeam(current);
+            updateRollerButton(current);
+            renderResults();
+          }
+        });
+
+        const natureCombo = card.querySelector('[data-combo="nature"]');
+        createCombo(natureCombo, {
+          items: PVP_NATURES,
+          value: PVP_NATURES.some((nature) => nature.id === pet.natureId) ? pet.natureId : "",
+          placeholder: selectedMonster ? "选择性格" : "请先选择精灵",
+          emptyText: "未选择性格",
+          disabled: !selectedMonster,
+          clearPlaceholderOnFocus: true,
+          onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].natureId = item?.id || "";
+            saveSpecificTeam(current);
+            renderResults();
+          }
+        });
+
+        Array.from({ length: 3 }, (_, talentIndex) => {
+          const comboHost = card.querySelector(`[data-talent="${talentIndex}"]`);
+          const talentItems = () => {
+            const current = readTeam();
+            const selectedIds = new Set((current[petIndex]?.talentIds || []).filter(Boolean));
+            return PVP_TALENTS.filter((talent) => talent.id === current[petIndex]?.talentIds?.[talentIndex] || !selectedIds.has(talent.id));
+          };
+          createCombo(comboHost, {
+            items: talentItems(),
+            value: pet.talentIds?.[talentIndex] || "",
+            placeholder: selectedMonster ? "选择天分" : "请先选择精灵",
+            emptyText: "未选择天分",
+            disabled: !selectedMonster,
+            clearPlaceholderOnFocus: true,
+            itemsForQuery: talentItems,
+            onSelect: (item) => {
+              const current = readTeam();
+              current[petIndex].talentIds[talentIndex] = item?.id || "";
+              saveSpecificTeam(current);
+              renderResults();
+            }
+          });
+        });
+
+        const rollerSkillCombo = card.querySelector('[data-combo="rollerSkill"]');
+        const selectedRollerSkill = skillById.get(pet.rollerSkillId);
+        createCombo(rollerSkillCombo, {
+          items: dexData.skills,
+          value: pet.rollerSkillId || "",
+          selectedItem: selectedRollerSkill || null,
+          placeholder: selectedMonster ? "搜索任意技能" : "请先选择精灵",
+          emptyText: "未选择过山车技能",
+          disabled: !selectedMonster,
+          onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].rollerSkillId = item?.id || "";
+            saveSpecificTeam(current);
+            updateRollerButton(current);
+            renderResults();
+          }
+        });
+
+        pet.skills.forEach((skill, skillIndex) => {
+          const comboHost = card.querySelector(`[data-skill="${skillIndex}"] [data-combo="skill"]`);
+          const selectedSkill = skillById.get(skill.skillId);
+          createCombo(comboHost, {
+            items: skillItems,
+            value: skill.skillId || "",
+            selectedItem: selectedSkill || null,
+            placeholder: selectedMonster ? "搜索技能名称" : "请先选择精灵",
+            emptyText: "未选择技能",
+            disabled: !selectedMonster,
+            onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].skills[skillIndex].skillId = item?.id || "";
+            saveSpecificTeam(current);
+            updateRollerButton(current);
+            renderResults();
+          }
+        });
+        });
+      });
+    }
+
+    function createCombo(host, config) {
+      const selected = config.selectedItem || config.items.find((item) => item.id === config.value);
+      const selectedText = selected ? (config.displayName ? config.displayName(selected) : selected.name) : "";
+      const placeholder = selected && config.selectedPlaceholder != null ? config.selectedPlaceholder : config.placeholder;
+      host.className = "combo";
+      host.dataset.value = config.value || "";
+      host.innerHTML = `
+        <div class="combo-control">
+          ${config.prefixHtml || ""}
+          ${iconHtml(selected, "combo-icon")}
+          <input type="text" value="${escapeHtml(selectedText)}" placeholder="${escapeHtml(placeholder)}" autocomplete="off" ${config.disabled ? "disabled" : ""} ${config.readonlyWhenSelected && selected ? "readonly" : ""}>
+          <button class="combo-clear" type="button" title="清空">x</button>
+        </div>
+        <div class="combo-menu"></div>
+      `;
+      const input = host.querySelector("input");
+      const clear = host.querySelector(".combo-clear");
+      const menu = host.querySelector(".combo-menu");
+
+      function open() {
+        if (config.disabled) return;
+        if (config.readonlyWhenSelected && host.dataset.value) return;
+        if (!host.dataset.value && config.clearPlaceholderOnFocus && input.value === config.placeholder) {
+          input.value = "";
+        }
+        host.classList.add("open");
+        const items = config.itemsForQuery ? config.itemsForQuery(input.value) : config.items;
+        renderComboOptions(menu, items, input.value, (item) => {
+          host.dataset.value = item?.id || "";
+          input.value = item ? (config.displayName ? config.displayName(item) : item.name) : "";
+          if (config.readonlyWhenSelected) input.readOnly = Boolean(item);
+          input.placeholder = item && config.selectedPlaceholder != null ? config.selectedPlaceholder : config.placeholder;
+          setComboIcon(host, item || null);
+          host.classList.remove("open");
+          config.onSelect(item || null);
+        }, { skipFilter: config.skipDefaultFilter });
+      }
+
+      input.addEventListener("focus", open);
+      input.addEventListener("input", open);
+      clear.addEventListener("click", () => {
+        if (config.disabled) return;
+        host.dataset.value = "";
+        input.value = "";
+        if (config.readonlyWhenSelected) input.readOnly = false;
+        input.placeholder = config.placeholder;
+        setComboIcon(host, null);
+        host.classList.remove("open");
+        config.onSelect(null);
+      });
+    }
+
+    function setComboIcon(host, item) {
+      const currentIcon = host.querySelector(".combo-control .combo-icon");
+      if (!currentIcon) return;
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = iconHtml(item, "combo-icon").trim();
+      currentIcon.replaceWith(wrapper.firstElementChild);
+    }
+
+    function renderComboOptions(menu, items, query, onSelect, options = {}) {
+      const q = query.trim().toLowerCase();
+      const filtered = (options.skipFilter ? items : items.filter((item) => {
+        if (!q) return true;
+        return item.name.toLowerCase().includes(q) || (item.aliases || []).some((alias) => alias.toLowerCase().includes(q));
+      })).slice(0, 80);
+      menu.innerHTML = filtered.length ? filtered.map((item) => `
+        <button class="combo-option" type="button" data-id="${escapeHtml(item.id)}">
+          ${iconHtml(item, "combo-icon")}
+          <span>
+            <span class="option-title">${escapeHtml(item.name)}</span>
+            <span class="option-meta">${escapeHtml(itemMeta(item))}</span>
+          </span>
+        </button>
+      `).join("") : '<button class="combo-option" type="button" data-id=""><span class="combo-icon placeholder">?</span><span><span class="option-title">没有匹配结果</span><span class="option-meta">请换关键词</span></span></button>';
+      menu.querySelectorAll(".combo-option").forEach((button) => {
+        button.addEventListener("mousedown", (event) => {
+          event.preventDefault();
+          const item = items.find((entry) => entry.id === button.dataset.id);
+          if (item) onSelect(item);
+        });
+      });
+    }
+
+    function itemMeta(item) {
+      if (!item) return "";
+      if (item.kind === "monster") {
+        return item.types.map(typeName).join(" / ") || "无属性";
+      }
+      if (item.kind === "passive") {
+        return passiveDescription(item, "特性");
+      }
+      if (item.kind === "bloodline") {
+        return item.description || "血脉";
+      }
+      if (item.kind === "nature") {
+        return "";
+      }
+      if (item.kind === "talent") {
+        return "";
+      }
+      return `${typeName(item.type)} / ${CATEGORY_NAMES[item.category] || item.category}${item.power != null ? ` / 威力${item.power}` : ""}`;
+    }
+
+    function iconHtml(item, className) {
+      if (item?.icon) {
+        return `<img class="${className}" src="${escapeHtml(item.icon)}" alt="">`;
+      }
+      if (item?.type) {
+        return `<img class="${className}" src="${escapeHtml(typeIcon(item.type))}" alt="">`;
+      }
+      if (item?.iconText) {
+        const color = item.iconColor || "#64748b";
+        return `<span class="${className} stat-icon" style="--icon-bg:${escapeHtml(color)}">${escapeHtml(item.iconText)}</span>`;
+      }
+      return `<span class="${className} placeholder">?</span>`;
+    }
+
+    function getMonsterSkills(monster) {
+      if (!monster?.skillIds?.length) return [];
+      return monster.skillIds.map((id) => skillById.get(id)).filter(Boolean);
+    }
+
+    const PINYIN_MAP = {
+      高: "gao", 搞: "gao", 温: "wen", 翁: "weng", 回: "hui", 会: "hui", 火: "huo", 活: "huo",
+      水: "shui", 刃: "ren", 仍: "reng", 暴: "bao", 风: "feng", 眼: "yan", 复: "fu", 写: "xie",
+      倾: "qing", 泻: "xie", 灵: "ling", 媒: "mei", 泡: "pao", 沫: "mo", 电: "dian", 弧: "hu",
+      轴: "zhou", 承: "cheng", 支: "zhi", 撑: "cheng", 齿: "chi", 轮: "lun", 扭: "niu", 矩: "ju",
+      超: "chao", 级: "ji", 糖: "tang", 果: "guo", 闪: "shan", 击: "ji", 冰: "bing", 爪: "zhua",
+      过: "guo", 山: "shan", 车: "che", 疾: "ji", 涡: "wo", 旋: "xuan", 斩: "zhan", 穿: "chuan",
+      膛: "tang", 加: "jia", 大: "da", 功: "gong", 率: "lv", 易: "yi", 燃: "ran", 物: "wu",
+      质: "zhi", 无: "wu", 畏: "wei", 之: "zhi", 心: "xin", 隐: "yin", 环: "huan", 放: "fang",
+      晴: "qing", 石: "shi", 锁: "suo", 硬: "ying", 化: "hua", 影: "ying", 光: "guang", 龙: "long",
+      毒: "du", 草: "cao", 萌: "meng", 幻: "huan", 翼: "yi", 武: "wu", 恶: "e", 虫: "chong",
+      普: "pu", 通: "tong", 地: "di", 机: "ji", 械: "xie", 幽: "you", 魔: "mo", 攻: "gong",
+      防: "fang", 速: "su", 度: "du", 生: "sheng", 命: "ming", 破: "po", 碎: "sui", 裂: "lie",
+      爆: "bao", 炎: "yan", 烈: "lie", 焰: "yan", 雷: "lei", 霆: "ting", 霜: "shuang", 雪: "xue",
+      雨: "yu", 雾: "wu", 月: "yue", 星: "xing", 日: "ri", 夜: "ye", 暗: "an", 黑: "hei",
+      白: "bai", 圣: "sheng", 王: "wang", 神: "shen", 盾: "dun", 剑: "jian", 刀: "dao", 枪: "qiang",
+      拳: "quan", 踢: "ti", 咬: "yao", 吼: "hou", 叫: "jiao", 旋: "xuan", 转: "zhuan", 冲: "chong",
+      刺: "ci", 吸: "xi", 收: "shou", 反: "fan", 弹: "tan", 守: "shou", 护: "hu", 治: "zhi",
+      愈: "yu", 恢: "hui", 净: "jing", 连: "lian", 续: "xu", 瞬: "shun", 间: "jian", 随: "sui",
+      机: "ji", 随: "sui", 倍: "bei", 增: "zeng", 减: "jian", 低: "di", 提: "ti", 升: "sheng",
+      立: "li", 利: "li"
+    };
+
+    const HOMOPHONE_GROUPS = [
+      ["ai", "爱艾哀埃矮碍"],
+      ["an", "安暗岸胺鞍俺"],
+      ["ao", "奥傲鳌熬敖翱"],
+      ["ba", "巴霸八芭拔叭疤"],
+      ["bai", "白百败拜柏佰"],
+      ["ban", "斑班半伴板版般"],
+      ["bao", "宝暴爆豹包鲍堡饱"],
+      ["bei", "贝北倍背杯悲碑蓓"],
+      ["ben", "奔本笨苯"],
+      ["bi", "比彼碧毕必避币闭壁璧鼻笔"],
+      ["bian", "扁变边遍辫蝙辨"],
+      ["biao", "标镖表彪飙"],
+      ["bing", "冰兵饼柄炳丙病"],
+      ["bo", "波伯泊博薄玻柏啵"],
+      ["bu", "布不步补卜怖"],
+      ["cai", "彩采菜才财裁"],
+      ["can", "灿残参蚕餐"],
+      ["cao", "草曹槽操"],
+      ["ce", "策测侧册"],
+      ["cha", "茶查察叉差"],
+      ["chan", "蝉禅缠产颤铲"],
+      ["chang", "长常唱场畅昌肠"],
+      ["chao", "超潮巢朝吵"],
+      ["chen", "晨尘辰沉陈臣"],
+      ["cheng", "城橙成承程诚撑乘"],
+      ["chi", "赤炽翅驰池齿吃迟"],
+      ["chong", "虫冲充宠崇"],
+      ["chou", "丑仇臭绸愁"],
+      ["chu", "楚初出触厨雏储"],
+      ["chuan", "川传船穿串"],
+      ["chui", "锤吹垂"],
+      ["chun", "春纯唇淳"],
+      ["ci", "刺次磁慈瓷词"],
+      ["cong", "聪葱从丛"],
+      ["cu", "粗促醋"],
+      ["cui", "翠脆崔催摧"],
+      ["cun", "存村寸"],
+      ["da", "大达答哒打"],
+      ["dai", "代戴带呆袋黛"],
+      ["dan", "丹胆弹蛋淡单旦"],
+      ["dang", "当挡党荡档"],
+      ["dao", "刀岛导倒道盗稻"],
+      ["de", "德得的"],
+      ["deng", "灯登邓凳等"],
+      ["di", "迪地帝滴笛蒂敌第低底"],
+      ["dian", "电点典殿颠垫"],
+      ["diao", "雕吊调钓"],
+      ["die", "蝶叠跌碟迭"],
+      ["ding", "丁顶鼎定钉"],
+      ["dong", "东冻冬洞动栋"],
+      ["dou", "豆斗兜抖"],
+      ["du", "毒独杜度渡都堵"],
+      ["duan", "端断短段"],
+      ["duo", "多朵铎夺躲"],
+      ["e", "恶厄饿额鹅娥"],
+      ["en", "恩摁"],
+      ["er", "尔儿二耳迩"],
+      ["fa", "法发伐罚"],
+      ["fan", "凡帆烦繁反返饭番"],
+      ["fang", "方芳防放房仿坊"],
+      ["fei", "飞菲肥费非妃翡"],
+      ["fen", "粉芬分焚奋纷"],
+      ["feng", "风凤锋封蜂丰峰枫疯"],
+      ["fu", "夫伏芙福浮符斧弗付复富辅腹"],
+      ["gai", "盖改钙概"],
+      ["gan", "甘敢干感杆赶"],
+      ["gang", "钢刚港岗"],
+      ["gao", "高搞膏糕告"],
+      ["ge", "哥格戈革葛歌鸽阁"],
+      ["gen", "根亘跟"],
+      ["gong", "工公弓功攻宫共龚"],
+      ["gou", "狗钩沟购"],
+      ["gu", "古谷骨咕孤固菇鼓"],
+      ["gua", "瓜挂刮"],
+      ["guan", "关冠管馆官观罐"],
+      ["guang", "光广逛"],
+      ["gui", "鬼龟贵桂规归"],
+      ["guo", "过果国锅郭"],
+      ["ha", "哈蛤"],
+      ["hai", "海孩害亥"],
+      ["han", "寒汉憨汗旱含韩"],
+      ["hao", "豪浩皓昊号好毫"],
+      ["he", "赫河合荷鹤贺核"],
+      ["hei", "黑嘿"],
+      ["hen", "痕狠很"],
+      ["heng", "恒横衡"],
+      ["hong", "红虹洪轰宏鸿"],
+      ["hou", "猴吼厚后"],
+      ["hu", "虎狐护胡湖壶呼弧琥"],
+      ["hua", "花化华滑画桦"],
+      ["huan", "幻环欢焕缓换"],
+      ["huang", "黄皇煌荒凰"],
+      ["hui", "辉灰回会慧绘毁徽"],
+      ["hun", "魂混浑昏"],
+      ["huo", "火活霍货获"],
+      ["ji", "机积鸡姬基吉极疾纪技击迹季祭奇骑琪七柒漆"],
+      ["jia", "加甲佳嘉家架夹贾"],
+      ["jian", "剑尖坚箭健简鉴舰间"],
+      ["jiang", "酱将江姜匠疆"],
+      ["jiao", "角脚娇焦椒教绞狡"],
+      ["jie", "杰洁捷节结界戒劫"],
+      ["jin", "金锦进晋津筋"],
+      ["jing", "晶鲸精静镜荆井警"],
+      ["jiu", "九久酒救旧"],
+      ["ju", "巨菊橘锯狙举居聚"],
+      ["juan", "卷娟绢倦"],
+      ["jue", "爵觉绝决掘"],
+      ["jun", "君军菌骏峻"],
+      ["kai", "凯开铠楷"],
+      ["kan", "坎看砍刊"],
+      ["kang", "康抗亢慷"],
+      ["kao", "考烤靠"],
+      ["ke", "可克科壳刻柯客珂"],
+      ["kong", "空孔恐控"],
+      ["ku", "酷库哭枯苦"],
+      ["kuang", "狂矿框旷"],
+      ["kui", "葵魁盔奎亏"],
+      ["la", "拉辣蜡啦"],
+      ["lai", "莱赖来濑"],
+      ["lan", "蓝岚兰懒澜篮"],
+      ["lang", "狼朗浪郎"],
+      ["lao", "老牢劳烙"],
+      ["lei", "雷蕾泪累垒"],
+      ["leng", "冷棱楞"],
+      ["li", "利立力丽莉璃狸黎礼里理哩栗离鲤厉荔"],
+      ["lian", "莲连炼恋廉链"],
+      ["liang", "亮凉梁良量"],
+      ["liao", "了辽疗燎廖"],
+      ["lie", "烈裂猎列"],
+      ["lin", "林琳麟临磷凛"],
+      ["ling", "灵零铃玲凌领岭"],
+      ["liu", "流柳六琉溜"],
+      ["long", "龙隆陇珑泷拢垄"],
+      ["lou", "楼露漏娄"],
+      ["lu", "鲁露鹿卢陆路璐芦"],
+      ["lv", "绿律旅吕铝率"],
+      ["luo", "洛罗萝落络骆螺"],
+      ["ma", "马玛麻码"],
+      ["mai", "麦迈脉"],
+      ["man", "曼满蛮漫慢"],
+      ["mao", "猫毛帽茂矛"],
+      ["mei", "美梅魅妹玫莓"],
+      ["men", "门闷们"],
+      ["meng", "萌梦猛蒙盟"],
+      ["mi", "米蜜迷秘咪弥"],
+      ["mian", "眠棉面免"],
+      ["miao", "喵苗妙秒庙"],
+      ["min", "敏民闵"],
+      ["ming", "鸣明命铭冥"],
+      ["mo", "魔莫墨默摩末沫漠"],
+      ["mou", "牟谋"],
+      ["mu", "木幕姆沐牧穆目母"],
+      ["na", "娜纳拿那"],
+      ["nai", "奶奈乃耐"],
+      ["nan", "南男难楠"],
+      ["nao", "闹脑瑙"],
+      ["ni", "尼妮泥逆拟"],
+      ["nian", "年念粘"],
+      ["niao", "鸟尿"],
+      ["nie", "涅聂捏"],
+      ["ning", "宁凝柠"],
+      ["niu", "牛扭纽钮"],
+      ["nu", "怒奴努"],
+      ["nuo", "诺糯娜挪"],
+      ["ou", "欧偶鸥呕"],
+      ["pa", "帕怕爬趴"],
+      ["pai", "派牌排拍"],
+      ["pan", "潘盘盼判"],
+      ["pang", "胖庞旁"],
+      ["pao", "泡炮跑袍"],
+      ["pei", "佩培陪配"],
+      ["peng", "朋鹏彭蓬砰"],
+      ["pi", "皮匹披劈霹"],
+      ["pian", "片偏翩骗"],
+      ["piao", "飘漂票朴"],
+      ["pin", "品拼贫"],
+      ["ping", "平瓶萍屏苹"],
+      ["po", "破坡珀魄婆"],
+      ["pu", "普葡蒲朴扑"],
+      ["qi", "七柒漆奇琪骑祈齐旗气岐启契"],
+      ["qian", "千潜浅前钱倩签"],
+      ["qiang", "强枪蔷墙羌"],
+      ["qiao", "乔巧桥翘俏"],
+      ["qie", "切茄且怯"],
+      ["qin", "琴秦亲勤擒"],
+      ["qing", "青清晴倾轻庆情"],
+      ["qiu", "球丘秋求"],
+      ["qu", "曲趣渠驱屈"],
+      ["quan", "犬拳泉权全圈"],
+      ["que", "雀确阙"],
+      ["ran", "燃然冉染"],
+      ["ren", "刃忍人仁任认"],
+      ["reng", "仍扔"],
+      ["rong", "荣绒融容熔蓉"],
+      ["rou", "柔肉揉"],
+      ["ru", "如茹乳入"],
+      ["rui", "瑞锐蕊睿"],
+      ["sa", "萨撒洒"],
+      ["sai", "赛塞腮"],
+      ["san", "三伞散"],
+      ["sang", "桑丧"],
+      ["se", "瑟色塞"],
+      ["sha", "沙莎杀纱鲨"],
+      ["shan", "闪山杉珊扇善衫"],
+      ["shang", "伤上尚商"],
+      ["shao", "少烧绍哨"],
+      ["she", "蛇射舍摄"],
+      ["shen", "神深申身森慎"],
+      ["sheng", "圣生升胜盛声"],
+      ["shi", "式石狮师诗十世使时士食史试拾"],
+      ["shou", "兽守手首寿收"],
+      ["shu", "树鼠书术舒曙蜀暑"],
+      ["shuang", "霜双爽"],
+      ["shui", "水睡税"],
+      ["shun", "顺瞬舜"],
+      ["si", "斯丝四死司思"],
+      ["song", "松颂宋送"],
+      ["sou", "搜嗖艘"],
+      ["su", "苏速素酥肃"],
+      ["sui", "碎随穗岁隋"],
+      ["sun", "孙损笋"],
+      ["suo", "锁索梭所"],
+      ["ta", "塔踏它他"],
+      ["tai", "泰太台胎"],
+      ["tan", "坦弹炭探檀"],
+      ["tang", "糖唐膛堂汤棠"],
+      ["tao", "桃涛陶淘套"],
+      ["ti", "踢体提蹄梯"],
+      ["tian", "天甜田添"],
+      ["tiao", "条跳调眺"],
+      ["tie", "铁帖贴"],
+      ["ting", "庭霆亭婷停"],
+      ["tong", "通童铜桶同统"],
+      ["tu", "兔土图突涂"],
+      ["tuan", "团湍"],
+      ["tun", "屯吞豚"],
+      ["tuo", "托陀脱拓驼"],
+      ["wa", "瓦娃蛙"],
+      ["wan", "丸晚弯湾万腕"],
+      ["wang", "王亡望旺网"],
+      ["wei", "威维薇伟尾微卫畏"],
+      ["wen", "温文纹稳闻"],
+      ["weng", "翁嗡"],
+      ["wo", "沃窝涡握"],
+      ["wu", "武舞乌巫无物雾伍吾"],
+      ["xi", "西息溪希曦熙锡蜥析夕袭喜系"],
+      ["xia", "夏霞侠虾吓"],
+      ["xian", "仙贤弦鲜闲显线"],
+      ["xiang", "翔香象响祥箱"],
+      ["xiao", "小晓啸萧笑效"],
+      ["xie", "蟹械邪协斜谢写泻蝎"],
+      ["xin", "心新欣辛信"],
+      ["xing", "星醒兴行型幸"],
+      ["xiong", "熊雄兄"],
+      ["xiu", "修秀休袖"],
+      ["xu", "虚旭须续序徐"],
+      ["xuan", "玄旋炫轩萱漩"],
+      ["xue", "雪血学穴"],
+      ["xun", "迅巡寻熏勋"],
+      ["ya", "牙雅亚鸦娅"],
+      ["yan", "炎焰眼岩燕言烟颜研"],
+      ["yang", "羊阳洋氧漾样"],
+      ["yao", "妖耀药遥瑶咬"],
+      ["ye", "夜叶野业爷"],
+      ["yi", "翼一伊依易乙艺忆仪异衣"],
+      ["yin", "音银隐阴吟印"],
+      ["ying", "鹰英樱影莹硬迎营"],
+      ["yong", "勇永涌咏泳"],
+      ["you", "又有尤幽优悠佑游幼友柚"],
+      ["yu", "鱼雨羽玉御宇语狱瑜愈域郁"],
+      ["yuan", "圆原源元愿远怨"],
+      ["yue", "月悦跃乐岳"],
+      ["yun", "云韵运允晕"],
+      ["zai", "灾仔载再"],
+      ["zan", "赞暂攒"],
+      ["zao", "噪枣早造燥"],
+      ["ze", "泽则责"],
+      ["zeng", "增曾赠"],
+      ["zha", "炸扎爪渣眨"],
+      ["zhai", "宅摘债寨"],
+      ["zhan", "战斩展占站湛"],
+      ["zhang", "掌张章长杖涨"],
+      ["zhao", "照昭招赵爪兆"],
+      ["zhe", "哲者折浙"],
+      ["zhen", "真阵震珍针镇"],
+      ["zheng", "正征蒸争整"],
+      ["zhi", "之只治智炙枝织止质支值纸"],
+      ["zhong", "中钟终忠重种"],
+      ["zhou", "舟轴宙周咒洲皱"],
+      ["zhu", "猪珠竹主祝朱蛛诸"],
+      ["zhuan", "转砖专传"],
+      ["zhuang", "装庄壮桩"],
+      ["zhui", "追锥坠缀"],
+      ["zhuo", "卓灼捉浊"],
+      ["zi", "子紫自兹姿字"],
+      ["zong", "宗棕踪总"],
+      ["zou", "走奏邹"],
+      ["zu", "祖组足族阻"],
+      ["zui", "嘴最罪醉"],
+      ["zuo", "左佐作座昨"]
+    ];
+
+    HOMOPHONE_GROUPS.forEach(([pinyin, chars]) => {
+      [...chars].forEach((char) => {
+        PINYIN_MAP[char] = pinyin;
+      });
+    });
+
+    function normalizeSearchText(value) {
+      return String(value || "").toLowerCase().replace(/[\s'’`·\-_/\\（）()：:，,。.！!？?+]/g, "");
+    }
+
+    function pinyinParts(value) {
+      return [...String(value || "")].map((char) => PINYIN_MAP[char] || normalizeSearchText(char)).filter(Boolean);
+    }
+
+    function pinyinText(value) {
+      return pinyinParts(value).join("");
+    }
+
+    function pinyinInitials(value) {
+      return pinyinParts(value).map((part) => part[0] || "").join("");
+    }
+
+    function levenshteinDistance(a, b, limit = Infinity) {
+      if (Math.abs(a.length - b.length) > limit) return limit + 1;
+      let prev = Array.from({ length: b.length + 1 }, (_, index) => index);
+      for (let i = 1; i <= a.length; i += 1) {
+        const curr = [i];
+        let rowMin = curr[0];
+        for (let j = 1; j <= b.length; j += 1) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          const value = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+          curr[j] = value;
+          rowMin = Math.min(rowMin, value);
+        }
+        if (rowMin > limit) return limit + 1;
+        prev = curr;
+      }
+      return prev[b.length];
+    }
+
+    function fuzzySkillScore(skill, query) {
+      const q = normalizeSearchText(query);
+      if (!q) return 1;
+      const qPy = pinyinText(q);
+      const qInitials = pinyinInitials(q);
+      const names = [skill.name, ...(skill.aliases || [])];
+      let best = 0;
+      for (const name of names) {
+        const key = normalizeSearchText(name);
+        const keyPy = pinyinText(name);
+        const keyInitials = pinyinInitials(name);
+        if (key.includes(q)) best = Math.max(best, 1000 - key.indexOf(q));
+        const pinyinIndex = [keyPy.indexOf(q), keyPy.indexOf(qPy)].filter((index) => index >= 0).sort((a, b) => a - b)[0];
+        if (pinyinIndex != null) best = Math.max(best, 920 - pinyinIndex);
+        if (keyInitials.includes(q) || keyInitials.includes(qInitials)) best = Math.max(best, 820);
+        const target = qPy || q;
+        const distanceLimit = Math.max(1, Math.floor(target.length * 0.28));
+        const distance = levenshteinDistance(target, keyPy, distanceLimit);
+        if (distance <= distanceLimit) best = Math.max(best, 760 - distance * 40);
+      }
+      return best;
+    }
+
+    function fuzzySkillItems(query) {
+      const q = normalizeSearchText(query);
+      if (!q) return dexData.skills;
+      const ranked = dexData.skills
+        .map((skill, index) => ({ skill, index, score: fuzzySkillScore(skill, q) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .map((item) => item.skill);
+      return ranked.length ? ranked : dexData.skills.slice(0, 20);
+    }
+
+    function fuzzyMonsterScore(monster, query) {
+      const q = normalizeSearchText(query);
+      if (!q) return 1;
+      const qPy = pinyinText(q);
+      const qInitials = pinyinInitials(q);
+      const names = [monster.name, ...(monster.aliases || [])];
+      let best = 0;
+      for (const name of names) {
+        const key = normalizeSearchText(name);
+        const keyPy = pinyinText(name);
+        const keyInitials = pinyinInitials(name);
+        if (key.includes(q)) best = Math.max(best, 1000 - key.indexOf(q));
+        const pinyinIndex = [keyPy.indexOf(q), keyPy.indexOf(qPy)].filter((index) => index >= 0).sort((a, b) => a - b)[0];
+        if (pinyinIndex != null) best = Math.max(best, 920 - pinyinIndex);
+        if (keyInitials.includes(q) || keyInitials.includes(qInitials)) best = Math.max(best, 820);
+        const target = qPy || q;
+        const distanceLimit = Math.max(1, Math.floor(target.length * 0.28));
+        const distance = levenshteinDistance(target, keyPy, distanceLimit);
+        if (distance <= distanceLimit) best = Math.max(best, 760 - distance * 40);
+      }
+      return best;
+    }
+
+    function fuzzyMonsterItems(query, monsters = dexData.monsters) {
+      const q = normalizeSearchText(query);
+      if (!q) return monsters;
+      const ranked = monsters
+        .map((monster, index) => ({ monster, index, score: fuzzyMonsterScore(monster, q) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .map((item) => item.monster);
+      return ranked.length ? ranked : monsters.slice(0, 20);
+    }
+
+    function getMonsterPassives(monster) {
+      if (!monster?.passiveIds?.length) return [];
+      return monster.passiveIds.map((id) => passiveById.get(id)).filter(Boolean);
+    }
+
+    function updateSelectTypeIcon(select) {
+      const icon = typeIcon(select.value);
+      select.style.backgroundImage = icon ? `url("${icon}")` : "";
+    }
+
+    function closeCombos(event) {
+      document.querySelectorAll(".combo.open").forEach((combo) => {
+        if (!combo.contains(event.target)) combo.classList.remove("open");
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function passiveDescription(passive, fallback = "暂无说明") {
+      const description = passive?.description || fallback;
+      const name = passive?.name || "";
+      if (!name) return description;
+      const text = description.trimStart();
+      const prefixes = [`${name}：`, `${name}:`];
+      const matchedPrefix = prefixes.find((prefix) => text.startsWith(prefix));
+      return matchedPrefix ? text.slice(matchedPrefix.length).trim() || fallback : description;
+    }
+
+    function readTeam() {
+      return [...teamGrid.querySelectorAll(".pet-card")].map((card, petIndex) => {
+        const monsterId = card.querySelector('[data-combo="monster"]').dataset.value || "";
+        const monster = monsterById.get(monsterId);
+        const bloodlineId = card.querySelector('[data-combo="bloodline"]').dataset.value || "";
+        const natureId = card.querySelector('[data-combo="nature"]')?.dataset.value || "";
+        const talentIds = [...card.querySelectorAll('[data-combo="talent"]')].map((combo) => combo.dataset.value || "");
+        const rollerSkillId = card.querySelector('[data-combo="rollerSkill"]')?.dataset.value || "";
+        const skills = [...card.querySelectorAll(".skill-row")].map((row) => ({
+          skillId: row.querySelector('[data-combo="skill"]').dataset.value || ""
+        }));
+        return {
+          name: monster?.name || `精灵${petIndex + 1}`,
+          monsterId,
+          bloodlineId,
+          natureId,
+          talentIds: Array.from({ length: 3 }, (_, index) => talentIds[index] || ""),
+          rollerSkillId,
+          skills
+        };
+      });
+    }
+
+    function saveTeam() {
+      saveSpecificTeam(readTeam());
+    }
+
+    function saveSpecificTeam(team) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(team));
+    }
+
+    function updateRollerButtonIcon() {
+      const iconEl = rollerBtn.querySelector(".button-icon");
+      if (!iconEl) return;
+      const rollerSkill = skillByName("过山车");
+      const icon = rollerSkill?.icon || typeIcon("mechanical");
+      if (!icon) return;
+      const image = document.createElement("img");
+      image.className = "button-icon";
+      image.src = icon;
+      image.alt = "";
+      iconEl.replaceWith(image);
+    }
+
+    function updateRollerButton(team = readTeam()) {
+      const rollerSkill = team
+        .map((pet) => skillById.get(pet.rollerSkillId))
+        .find((skill) => skill);
+      if (rollerSkill) {
+        rollerBtn.style.setProperty("--roller-bg", TYPE_COLORS[rollerSkill.type] || TYPE_COLORS.mechanical);
+        rollerBtn.title = `使用过山车：${rollerSkill.name}`;
+        return;
+      }
+      rollerBtn.style.removeProperty("--roller-bg");
+      rollerBtn.title = "使用过山车";
+    }
+
+    function loadTeam() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        return normalizeTeam(saved);
+      } catch (error) {
+        localStorage.removeItem(STORAGE_KEY);
+        return defaultTeam();
+      }
+    }
+
+    function chips(keys, className = "") {
+      if (!keys.length) return '<span class="tag empty">无</span>';
+      return keys.map((key) => `<span class="tag ${className}"><img src="${typeIcon(key)}" alt="">${typeName(key)}</span>`).join("");
+    }
+
+    function skillDisplay(skillRef, index) {
+      const skill = skillById.get(skillRef.skillId);
+      if (!skill) return `技能${index + 1}：未选择`;
+      return `技能${index + 1}：${skill.name} / ${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}`;
+    }
+
+    function skillSummary(skill) {
+      if (!skill) return "未选择";
+      const power = skill.power != null ? ` / 威力${skill.power}` : "";
+      return `${skill.name} / ${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}${power}`;
+    }
+
+    function attackSkillSlots(team) {
+      const slots = [];
+      team.forEach((pet, petIndex) => {
+        pet.skills.forEach((skillRef, skillIndex) => {
+          const skill = skillById.get(skillRef.skillId);
+          if (isAttackSkill(skill) && skill.type) {
+            slots.push({ petIndex, skillIndex, type: skill.type, skill, petName: pet.name });
+          }
+        });
+      });
+      return slots;
+    }
+
+    function coverageOfTypes(attackTypes) {
+      return byTypeOrder(TYPES
+        .filter((defender) => attackTypes.some((attacker) => relationMultiplier(attacker, defender.key) > 1))
+        .map((defender) => defender.key));
+    }
+
+    function missingTargets(attackTypes) {
+      const covered = new Set(coverageOfTypes(attackTypes));
+      return TYPES.filter((type) => !covered.has(type.key)).map((type) => type.key);
+    }
+
+    function bestReplacement(currentAttackTypes, removedType) {
+      const baseTypes = currentAttackTypes.slice();
+      const removedIndex = baseTypes.indexOf(removedType);
+      if (removedIndex >= 0) baseTypes.splice(removedIndex, 1);
+      const baseCoverage = new Set(coverageOfTypes(baseTypes));
+      const used = new Set(baseTypes);
+
+      let best = null;
+      for (const candidate of TYPES.map((type) => type.key)) {
+        if (candidate === removedType) continue;
+        const candidateCoverage = RELATION[candidate].strong;
+        const newTargets = candidateCoverage.filter((target) => !baseCoverage.has(target));
+        const score = newTargets.length * 100
+          + candidateCoverage.length * 5
+          + (used.has(candidate) ? 0 : 8);
+        if (!best || score > best.score) {
+          best = { type: candidate, newTargets, score };
+        }
+      }
+      return best;
+    }
+
+    function greedySuggestions(attackTypes, targets) {
+      const suggestions = [];
+      const remaining = new Set(targets);
+      const used = new Set(attackTypes);
+      while (remaining.size) {
+        let best = null;
+        for (const candidate of TYPES.map((type) => type.key)) {
+          if (used.has(candidate)) continue;
+          const covered = RELATION[candidate].strong.filter((target) => remaining.has(target));
+          const score = covered.length * 100 + RELATION[candidate].strong.length;
+          if (covered.length && (!best || score > best.score)) {
+            best = { type: candidate, covered, score };
+          }
+        }
+        if (!best) break;
+        suggestions.push(best);
+        used.add(best.type);
+        best.covered.forEach((target) => remaining.delete(target));
+      }
+      return suggestions;
+    }
+
+    function scoreSuperSkill(monster, passive, skill) {
+      if (!monster || !passive || !skill) return null;
+      const passiveText = `${passive.name} ${passive.description}`;
+      const skillText = `${skill.name} ${skill.description}`;
+      let score = 0;
+      const reasons = [];
+
+      const sameTypeTriggers = [
+        ["grass", "草系"],
+        ["water", "水系"],
+        ["fire", "火系"],
+        ["electric", "电系"],
+        ["poison", "毒系"],
+        ["fantasy", "幻系"],
+        ["ice", "冰系"],
+        ["fighting", "武系"],
+        ["cute", "萌系"],
+        ["light", "光系"],
+        ["dragon", "龙系"],
+        ["mechanical", "机械"],
+        ["ghost", "幽系"],
+        ["demon", "恶系"],
+        ["bug", "虫系"],
+        ["normal", "普通"],
+        ["wing", "翼系"],
+        ["ground", "地系"]
+      ];
+      for (const [type, text] of sameTypeTriggers) {
+        if (passiveText.includes(text) && skill.type === type) {
+          score += 55;
+          reasons.push(`触发特性的${text}条件`);
+        }
+      }
+
+      const pairs = [
+        { passive: /回复生命|回复|治疗|回血/, skill: /回复|吸血|减免的伤害变为回复|保留1生命/, score: 80, reason: "回复类技能会放大特性收益" },
+        { passive: /连击/, skill: /连击|行动时连击数|多次|每段/, score: 85, reason: "连击特性搭配连击技能收益极高" },
+        { passive: /能耗|-1|能量/, skill: /回复.*能量|能耗永久|能耗-1|脱离|换宠/, score: 60, reason: "能量/能耗联动更容易滚雪球" },
+        { passive: /双攻|物攻|魔攻|强化|威力/, skill: /造成.*伤|威力|双攻|物攻|魔攻|脱离/, score: 48, reason: "强化特性适合高频或高威力输出" },
+        { passive: /受到攻击|减伤|防御|格挡/, skill: /减伤|应对攻击|防御|格挡|反弹/, score: 70, reason: "防御触发型特性适合高质量防御技能" },
+        { passive: /换宠|脱离|入场|下个入场/, skill: /脱离|更换精灵|换宠|下个入场/, score: 75, reason: "换宠节奏特性搭配脱离技能可反复启动" },
+        { passive: /印记|冻结|灼烧|中毒|萌化/, skill: /印记|冻结|灼烧|中毒|萌化|层/, score: 58, reason: "印记/异常特性搭配对应技能更容易达成条件" },
+        { passive: /克制/, skill: /克制|造成.*伤|威力/, score: 38, reason: "克制收益型特性适合补强打点技能" }
+      ];
+
+      for (const pair of pairs) {
+        if (pair.passive.test(passiveText) && pair.skill.test(skillText)) {
+          score += pair.score;
+          reasons.push(pair.reason);
+        }
+      }
+
+      if (isAttackSkill(skill)) {
+        score += Math.min(skill.power || 0, 160) * 0.18;
+        if (RELATION[skill.type]?.strong?.length) score += RELATION[skill.type].strong.length * 4;
+      }
+      if (skill.category === "defense" && /回复|防御|减伤|受到攻击/.test(passiveText)) score += 25;
+      if (/脱离/.test(skillText)) score += 18;
+      if (/永久/.test(skillText)) score += 18;
+      if (/100%/.test(skillText)) score += 10;
+
+      if (score < 55) return null;
+      return {
+        score: Math.round(score),
+        reasons: unique(reasons).slice(0, 3)
+      };
+    }
+
+    const FEATURED_ROLLER_RULES = [
+      {
+        target: /小丑公爵/,
+        skill: "无畏之心",
+        score: 260,
+        reason: "戏耍会把自己的回复转成敌方扣血；无畏之心把减免伤害变成回复，等于把对手的进攻转成反打血量压力。"
+      },
+      {
+        target: /皇家狮鹫/,
+        skill: "暴风眼",
+        score: 250,
+        reason: "乘风连击需要翼系技能启动，暴风眼行动时连击数+100%，给狮鹫提供远高于普通翼系技能的爆发启动。"
+      },
+      {
+        target: /火神|烈火战神/,
+        skill: "高温回火",
+        score: 240,
+        reason: "助燃使用火系技能后获得双攻，高温回火是火系攻击且自己脱离，能打出强化后把节奏交给后排。"
+      },
+      {
+        target: /小丑公爵/,
+        skill: "风隐",
+        score: 210,
+        reason: "风隐能让双方脱离，适合把小丑公爵从不利对位里带走，同时保留恶系干扰压力。"
+      },
+      {
+        target: /皇家狮鹫/,
+        skill: "疾风涡轮",
+        score: 205,
+        reason: "高威力翼系先手攻击能触发乘风连击，适合补强皇家狮鹫收割和压血线能力。"
+      },
+      {
+        target: /火神|烈火战神/,
+        skill: "易燃物质",
+        score: 198,
+        reason: "火系二连击能稳定触发助燃，并用灼烧叠加持续压力，适合闪耀大赛里抢节奏。"
+      },
+      {
+        target: /星光狮/,
+        skill: "疾风涡轮",
+        score: 190,
+        reason: "电流刺激让攻击技能获得迸发威力，疾风涡轮本身高威力且先手，适合做高速收割点。"
+      },
+      {
+        target: /独角兽/,
+        skill: "疾风涡轮",
+        score: 185,
+        reason: "目空会强化非光系技能，疾风涡轮的高威力先手能让独角兽获得技能池外的强压制打点。"
+      },
+      {
+        target: /翠顶夫人/,
+        skill: "加大功率",
+        score: 180,
+        reason: "洁癖会把离场时自身增减益交给入场精灵，加大功率脱离并给后手回复能量，适合做队伍节奏发动机。"
+      },
+      {
+        target: /帅帅魔偶/,
+        skill: "水环",
+        score: 176,
+        reason: "盲从降低非幻系技能能耗，水环应对成功后继续降低全技能能耗，容易形成低能耗循环。"
+      },
+      {
+        target: /帕尔萨斯/,
+        skill: "穿膛",
+        score: 172,
+        reason: "穿膛在敌方低能量时可打出高倍率斩杀，适合帕尔萨斯追求击败后扩大魔力优势。"
+      }
+    ];
+
+    function skillByName(name) {
+      return dexData.skills.find((skill) => skill.name === name)
+        || dexData.skills.find((skill) => skill.name.includes(name));
+    }
+
+    function monsterStatTotal(monster) {
+      const stats = monster?.raw?.stats || {};
+      return ["hp", "atk", "defense", "spa", "spd", "spe"].reduce((total, key) => total + (Number(stats[key]) || 0), 0);
+    }
+
+    function renderMonsterStats(monster) {
+      const stats = monster?.raw?.stats;
+      if (!stats) return '<span class="tag empty">未选择精灵</span>';
+      const rows = [
+        ["HP", stats.hp],
+        ["物攻", stats.atk],
+        ["物防", stats.defense],
+        ["魔攻", stats.spa],
+        ["魔防", stats.spd],
+        ["速度", stats.spe],
+        ["总和", monsterStatTotal(monster)]
+      ];
+      return `
+        <div class="stat-grid">
+          ${rows.map(([label, value]) => `
+            <div class="stat-cell">
+              <span class="stat-label">${escapeHtml(label)}</span>
+              <span class="stat-value">${Number(value) || 0}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    const PVP_SPEED_TALENT_IV = PVP_MAX_IV;
+
+    function calcPvpSpeed(baseSpeed, natureMod, speedTalentIv = PVP_SPEED_TALENT_IV, traitMod = 0) {
+      const trainedBase = PVP_NON_HP_STAT_RATE * (Number(baseSpeed) + PVP_IV_STAT_RATE * speedTalentIv) + PVP_NON_HP_INNER_BONUS;
+      return Math.round(trainedBase * natureMod + PVP_NON_HP_FINAL_BONUS + traitMod);
+    }
+
+    function calcSpeedRange(monster) {
+      const baseSpe = Number(monster?.raw?.stats?.spe) || 0;
+      if (!baseSpe) return null;
+      const minSpeed = calcPvpSpeed(baseSpe, PVP_NATURE_DOWN_MOD);
+      const maxSpeed = calcPvpSpeed(baseSpe, PVP_NATURE_UP_MOD);
+      return { min: minSpeed, max: maxSpeed };
+    }
+
+    function monsterRoles(monster) {
+      return (monster?.raw?.roles || [])
+        .map((item) => item.role)
+        .filter(Boolean);
+    }
+
+    function natureSpe(baseSpe, mod) {
+      return calcPvpSpeed(baseSpe, mod);
+    }
+
+    function formatTalentText(text) {
+      return String(text || "").replaceAll("HP", "生命").replaceAll("+60", "");
+    }
+
+    function choosePvpBuild(monster) {
+      const stats = monster?.raw?.stats;
+      if (!stats) return null;
+      const roles = monsterRoles(monster);
+      const hp = Number(stats.hp) || 0;
+      const atk = Number(stats.atk) || 0;
+      const def = Number(stats.defense) || 0;
+      const spa = Number(stats.spa) || 0;
+      const spd = Number(stats.spd) || 0;
+      const spe = Number(stats.spe) || 0;
+      const physicalBias = atk - spa;
+      const isWall = roles.includes("wall") || (hp + def + spd >= atk + spa + spe + 60);
+      const isAttacker = roles.includes("attacker") || Math.max(atk, spa) >= Math.max(def, spd) || spe > 80;
+      const mainAttack = physicalBias >= 8 ? "物攻" : physicalBias <= -8 ? "魔攻" : "双攻";
+      const lowAttack = physicalBias >= 8 ? "魔攻" : physicalBias <= -8 ? "物攻" : "较低攻击";
+
+      if (isWall && !isAttacker) {
+        const defChinese = def >= spd ? "物防" : "魔防";
+        const defPenChinese = def >= spd ? "物攻" : "魔攻";
+        const nature1Spe = natureSpe(spe, 1.2);
+        const nature2Spe = natureSpe(spe, 1.0);
+        return {
+          natures: [
+            { name: `开朗（速度+ / 魔攻-）`, speed: nature1Spe },
+            { name: `大胆（物防+ / 物攻-）`, speed: nature2Spe }
+          ],
+          talent: `HP+60 / ${defChinese}+60 / 速度+60`,
+          note: "偏联防或续航定位，优先把耐久拉满。"
+        };
+      }
+
+      if (spe >= 95 || (roles.includes("attacker") && spe >= 85)) {
+        if (mainAttack === "双攻") {
+          const nature1Spe = natureSpe(spe, 1.2);
+          const nature2Spe = natureSpe(spe, 1.1);
+          return {
+            natures: [
+              { name: "胆小（速度+ / 物攻-）", speed: nature1Spe },
+              { name: "开朗（速度+ / 魔攻-）", speed: nature2Spe }
+            ],
+            talent: "速度+60 / 物攻+60 / 魔攻+60",
+            note: "双攻差距不大，优先速度，双攻对点覆盖。"
+          };
+        }
+        const nature1Spe = natureSpe(spe, 1.2);
+        const nature2Spe = natureSpe(spe, 1.0);
+        return {
+          natures: [
+            { name: `开朗（速度+ / ${lowAttack}-）`, speed: nature1Spe },
+            { name: `固执（物攻+ / 魔攻-）`, speed: nature2Spe }
+          ],
+          talent: `速度+60 / ${mainAttack}+60 / HP+60`,
+          note: `PVP优先抢先手。`
+        };
+      }
+
+      if (mainAttack !== "双攻") {
+        if (physicalBias >= 8) {
+          const nature1Spe = natureSpe(spe, 1.0);
+          const nature2Spe = natureSpe(spe, 0.9);
+          return {
+            natures: [
+              { name: "固执（物攻+ / 魔攻-）", speed: nature1Spe },
+              { name: "勇敢（物攻+ / 速度-）", speed: nature2Spe }
+            ],
+            talent: "物攻+60 / 速度+60 / HP+60",
+            note: "主物攻输出，速度兜底便于站场换血。"
+          };
+        }
+        const nature1Spe = natureSpe(spe, 1.0);
+        const nature2Spe = natureSpe(spe, 0.9);
+        return {
+          natures: [
+            { name: "保守（魔攻+ / 物攻-）", speed: nature1Spe },
+            { name: "冷静（魔攻+ / 速度-）", speed: nature2Spe }
+          ],
+          talent: "魔攻+60 / 速度+60 / HP+60",
+          note: "主魔攻输出，速度兜底便于站场换血。"
+        };
+      }
+
+      const nature1Spe = natureSpe(spe, 1.2);
+      const nature2Spe = natureSpe(spe, 1.1);
+      return {
+        natures: [
+          { name: "胆小（速度+ / 物攻-）", speed: nature1Spe },
+          { name: "开朗（速度+ / 魔攻-）", speed: nature2Spe }
+        ],
+        talent: "速度+60 / 物攻+60 / 魔攻+60",
+        note: "双攻均衡，保留速度和基础生存。"
+      };
+    }
+
+    function renderPvpRecommendation(monster) {
+      const build = choosePvpBuild(monster);
+      if (!build) return '<span class="tag empty">未选择精灵</span>';
+      const speedRange = calcSpeedRange(monster);
+      const speedLine = speedRange
+        ? `<div class="pvp-line">速度区间：<span style="color:var(--bad);">${speedRange.min}</span> ~ <span style="color:var(--good);">${speedRange.max}</span></div>`
+        : "";
+      const natureLines = build.natures.map((n) =>
+        `<div class="pvp-line">${escapeHtml(n.name)} → 极速 ${n.speed}</div>`
+      ).join("");
+      return `
+        <div class="pvp-recommend">
+          ${speedLine}
+          ${natureLines}
+          <div class="pvp-line">推荐天分加点：${escapeHtml(formatTalentText(build.talent))}</div>
+        </div>
+      `;
+    }
+
+    function natureStatMods(natureId) {
+      const mods = { hp: 1, atk: 1, defense: 1, spa: 1, spd: 1, spe: 1 };
+      const map = {
+        "nature-jolly": ["spe", "spa"],
+        "nature-timid": ["spe", "atk"],
+        "nature-adamant": ["atk", "spa"],
+        "nature-modest": ["spa", "atk"],
+        "nature-bold": ["defense", "atk"],
+        "nature-calm": ["spd", "atk"],
+        "nature-brave": ["atk", "spe"],
+        "nature-quiet": ["spa", "spe"],
+        "nature-lonely": ["atk", "defense"],
+        "nature-naughty": ["atk", "spd"],
+        "nature-impish": ["defense", "spa"],
+        "nature-lax": ["defense", "spd"],
+        "nature-relaxed": ["defense", "spe"],
+        "nature-mild": ["spa", "defense"],
+        "nature-rash": ["spa", "spd"],
+        "nature-gentle": ["spd", "defense"],
+        "nature-careful": ["spd", "spa"],
+        "nature-sassy": ["spd", "spe"],
+        "nature-hasty": ["spe", "defense"],
+        "nature-naive": ["spe", "spd"],
+        "nature-silent": ["hp", "atk"]
+      };
+      const pair = natureId ? map[natureId] : [DEFAULT_DAMAGE_NATURE_UP, DEFAULT_DAMAGE_NATURE_DOWN];
+      if (pair?.[0] && pair?.[1]) {
+        mods[pair[0]] = PVP_NATURE_UP_MOD;
+        mods[pair[1]] = PVP_NATURE_DOWN_MOD;
+      }
+      return mods;
+    }
+
+    function effectiveTalentIds(state) {
+      const ids = unique(state?.talentIds || []);
+      DEFAULT_DAMAGE_TALENTS.forEach((id) => {
+        if (ids.length < 3 && !ids.includes(id)) ids.push(id);
+      });
+      return ids.slice(0, 3);
+    }
+
+    function hasDamageTalent(state, statKey) {
+      return effectiveTalentIds(state).some((id) => TALENT_STAT_BY_ID[id] === statKey);
+    }
+
+    function pvpTalentIv(state, statKey) {
+      return hasDamageTalent(state, statKey) ? PVP_MAX_IV : 0;
+    }
+
+    function blankStatMods() {
+      return { hp: 0, atk: 0, defense: 0, spa: 0, spd: 0, spe: 0 };
+    }
+
+    function normalizeStatMods(mods = {}) {
+      const next = blankStatMods();
+      Object.keys(next).forEach((key) => {
+        next[key] = Number(mods[key]) || 0;
+      });
+      return next;
+    }
+
+    function mergeStatMods(...modsList) {
+      const next = blankStatMods();
+      modsList.forEach((mods) => {
+        const normalized = normalizeStatMods(mods);
+        Object.keys(next).forEach((key) => {
+          next[key] += normalized[key];
+        });
+      });
+      return next;
+    }
+
+    function compactBattleText(value) {
+      return String(value || "").replace(/\s+/g, "");
+    }
+
+    function passiveList(monster) {
+      return getMonsterPassives(monster).map((passive) => ({
+        passive,
+        text: `${passive.name || ""} ${passiveDescription(passive, "")}`,
+        compact: compactBattleText(`${passive.name || ""} ${passiveDescription(passive, "")}`)
+      }));
+    }
+
+    function passiveBattleText(monster) {
+      return passiveList(monster).map((item) => item.text).join(" ");
+    }
+
+    function addStatMod(mods, statKey, value) {
+      if (!mods || !statKey || !Number.isFinite(value)) return;
+      mods[statKey] = Math.max(mods[statKey] || 0, value);
+    }
+
+    function statModsFromText(text) {
+      const mods = blankStatMods();
+      const compact = compactBattleText(text);
+      const applyAliases = (stat, aliases) => {
+        for (const alias of stat.aliases) {
+          const patterns = [
+            new RegExp(`(?:获得|得到|取得)?${alias}\\+(\\d+)%`, "g"),
+            new RegExp(`${alias}(?:属性|能力|力)?(?:提升|提高|增加|上升|加成)(\\d+)%`, "g"),
+            new RegExp(`(?:提升|提高|增加|获得)(\\d+)%${alias}`, "g"),
+            new RegExp(`(\\d+)%${alias}(?:加成|提升|提高|增加)?`, "g")
+          ];
+          for (const pattern of patterns) {
+            for (const match of compact.matchAll(pattern)) {
+              const value = Number(match[1]) || 0;
+              if (value > 0) addStatMod(mods, stat.key, value / 100);
+            }
+          }
+        }
+      };
+      for (const stat of PASSIVE_STAT_ALIASES) {
+        applyAliases(stat, stat.aliases);
+      }
+      for (const match of compact.matchAll(/双攻\+(\d+)%/g)) {
+        const value = (Number(match[1]) || 0) / 100;
+        addStatMod(mods, "atk", value);
+        addStatMod(mods, "spa", value);
+      }
+      for (const match of compact.matchAll(/双防\+(\d+)%/g)) {
+        const value = (Number(match[1]) || 0) / 100;
+        addStatMod(mods, "defense", value);
+        addStatMod(mods, "spd", value);
+      }
+      return mods;
+    }
+
+    function passiveStatBoostIsCurrent(compact) {
+      if (!compact) return false;
+      if (/专注力/.test(compact)) return true;
+      if (/囤积/.test(compact)) return false;
+      if (/每入场1次.*获得/.test(compact)) return true;
+      if (/入场首回合.*获得/.test(compact)) return true;
+      if (/在场时.*获得/.test(compact)) return true;
+      if (/入场时获得/.test(compact) && !/若|根据|每有|队伍|敌方/.test(compact)) return true;
+      return false;
+    }
+
+    function pvpTeamMonsters(state) {
+      if (state?.side !== "ally") return [];
+      try {
+        return readTeam().map((pet) => monsterById.get(pet.monsterId)).filter(Boolean);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function addAllAttackDefenseSpeed(mods, value) {
+      ["atk", "spa", "defense", "spd", "spe"].forEach((key) => addStatMod(mods, key, value));
+    }
+
+    function passiveStatMods(monster, state = null) {
+      const mods = blankStatMods();
+      for (const item of passiveList(monster)) {
+        if (passiveStatBoostIsCurrent(item.compact)) {
+          Object.assign(mods, mergeStatMods(mods, statModsFromText(item.text)));
+        }
+        if (/专注力/.test(item.compact) && /音速犬|护主犬/.test(monster?.name || "")) {
+          mods.atk = Math.max(mods.atk, 1);
+        }
+        if (/囤积/.test(item.compact) && /能量/.test(item.compact)) {
+          const energy = Math.max(0, Math.min(10, Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
+          const defenseBoost = energy * 0.1;
+          mods.defense = Math.max(mods.defense, defenseBoost);
+          mods.spd = Math.max(mods.spd, defenseBoost);
+        }
+        if (/壮胆/.test(item.compact)) {
+          const hasBugTeammate = pvpTeamMonsters(state).some((teamMonster) => teamMonster.types?.includes("bug"));
+          if (hasBugTeammate) {
+            mods.atk = Math.max(mods.atk, 0.5);
+            mods.spa = Math.max(mods.spa, 0.5);
+          }
+        }
+        if (/虫群鼓舞|虫群突袭/.test(item.compact)) {
+          const bugCount = pvpTeamMonsters(state)
+            .filter((teamMonster) => teamMonster.id !== monster?.id && teamMonster.types?.includes("bug"))
+            .length;
+          if (bugCount > 0) {
+            const perBug = /虫群突袭/.test(item.compact) ? 0.15 : 0.1;
+            addAllAttackDefenseSpeed(mods, bugCount * perBug);
+          }
+        }
+      }
+      return mods;
+    }
+
+    function skillStatMods(skill) {
+      if (!skill) return blankStatMods();
+      return statModsFromText(`${skill.name || ""} ${skill.description || ""}`);
+    }
+
+    function passiveModLabels(mods) {
+      return PASSIVE_STAT_ALIASES
+        .filter((stat) => Math.abs(Number(mods?.[stat.key]) || 0) > 0.0001)
+        .map((stat) => {
+          const value = Math.round((Number(mods[stat.key]) || 0) * 100);
+          return `${stat.label}${value > 0 ? "+" : ""}${value}%`;
+        });
+    }
+
+    function finalBattleStat(monster, state, statKey) {
+      const base = Number(monster?.raw?.stats?.[statKey]) || 0;
+      const iv = pvpTalentIv(state, statKey);
+      const mod = natureStatMods(state?.natureId)[statKey] || 1;
+      const trained = statKey === "hp"
+        ? PVP_HP_STAT_RATE * (base + PVP_IV_STAT_RATE * iv) + PVP_HP_INNER_BONUS
+        : PVP_NON_HP_STAT_RATE * (base + PVP_IV_STAT_RATE * iv) + PVP_NON_HP_INNER_BONUS;
+      const finalBonus = statKey === "hp" ? PVP_HP_FINAL_BONUS : PVP_NON_HP_FINAL_BONUS;
+      return Math.max(1, Math.round(trained * mod + finalBonus));
+    }
+
+    function finalBattleStats(monster, state, passiveMods = passiveStatMods(monster, state)) {
+      const stats = {
+        hp: finalBattleStat(monster, state, "hp"),
+        atk: finalBattleStat(monster, state, "atk"),
+        defense: finalBattleStat(monster, state, "defense"),
+        spa: finalBattleStat(monster, state, "spa"),
+        spd: finalBattleStat(monster, state, "spd"),
+        spe: finalBattleStat(monster, state, "spe")
+      };
+      Object.keys(stats).forEach((key) => {
+        const mod = Number(passiveMods?.[key]) || 0;
+        if (Math.abs(mod) > 0.0001) {
+          stats[key] = Math.max(1, Math.floor(stats[key] * (1 + mod)));
+        }
+      });
+      return stats;
+    }
+
+    function forceImpactSkill(state, monster) {
+      const bloodline = bloodlineById.get(state?.bloodlineId);
+      if (bloodline?.id === "bloodline-boss") return null;
+      const type = bloodline?.type || monster?.types?.[0] || "normal";
+      return {
+        id: "pvp-force-impact",
+        kind: "skill",
+        name: "原力冲击",
+        aliases: ["愿力冲击"],
+        type,
+        category: "attack",
+        power: FORCE_IMPACT_POWER,
+        description: "按血脉属性优先估算，没有属性血脉时按精灵第一属性估算；敌方使用状态技能时伤害×2.5。"
+      };
+    }
+
+    function pvpActionFromState(state, monster) {
+      if (state?.action === "force" || state?.forceImpact) return forceImpactSkill(state, monster);
+      const match = String(state?.action || "").match(/^skill:(\d)$/);
+      if (!match) return null;
+      const skillIndex = Number(match[1]);
+      const skill = skillById.get(state.skillIds?.[skillIndex]);
+      return skill ? { ...skill, pvpSkillIndex: skillIndex } : null;
+    }
+
+    function sameTypeAttackBonus(action, attacker) {
+      return attacker?.types?.includes(action?.type) ? SAME_TYPE_ATTACK_BONUS : 1;
+    }
+
+    function selectedPvpSkills(state) {
+      return (state?.skillIds || []).map((id) => skillById.get(id)).filter(Boolean);
+    }
+
+    function selectedPvpSkillTypes(state) {
+      return unique(selectedPvpSkills(state).map((skill) => skill.type));
+    }
+
+    function bloodlineMatchesName(state, pattern) {
+      const bloodline = bloodlineById.get(state?.bloodlineId);
+      return Boolean(bloodline && pattern.test(`${bloodline.name || ""} ${bloodline.id || ""}`));
+    }
+
+    function bloodlineType(state) {
+      return bloodlineById.get(state?.bloodlineId)?.type || "";
+    }
+
+    function skillHasExtraEffect(skill) {
+      const text = compactBattleText(`${skill?.description || ""} ${(skill?.effects || []).join(" ")}`);
+      if (!text) return false;
+      const plainPatterns = [/^(对敌方精灵)?造成(物理|魔法|物|魔)?伤害。?$/, /^造成(物伤|魔伤|伤害)。?$/];
+      if (plainPatterns.some((pattern) => pattern.test(text))) return false;
+      return /回复|获得|使敌方|若|后|回合|永久|能量|层|减免|提升|降低|偷取|冷却|打断|脱离|换|中毒|灼烧|冻结|萌化/.test(text);
+    }
+
+    function effectiveActionForPassives(action, attacker) {
+      if (!action) return { action, labels: [] };
+      const labels = [];
+      let next = action;
+      if (action.type === "normal" && passiveList(attacker).some((item) => /展翅/.test(item.compact))) {
+        next = { ...action, type: "wing", passiveOriginalType: action.type };
+        labels.push("展翅：普通变翼");
+      }
+      return { action: next, labels };
+    }
+
+    function addDamageLabel(labels, label) {
+      if (label && !labels.includes(label)) labels.push(label);
+    }
+
+    function passiveDamageEffects(context) {
+      const {
+        attacker,
+        defender,
+        attackerState,
+        defenderState,
+        action,
+        attackerStats,
+        defenderStats,
+        typeMultiplier
+      } = context;
+      const result = {
+        powerAdd: 0,
+        powerMultiplier: 1,
+        damageMultiplier: 1,
+        attackerLabels: [],
+        defenderLabels: []
+      };
+      const attackerTypes = attacker?.types || [];
+      const defenderTypes = defender?.types || [];
+      const attackerPassiveItems = passiveList(attacker);
+      const defenderPassiveItems = passiveList(defender);
+      const defenderBloodlineType = bloodlineType(defenderState);
+      const defenderSkillTypes = selectedPvpSkillTypes(defenderState);
+
+      for (const item of attackerPassiveItems) {
+        const text = item.compact;
+        if (/顺风/.test(text) && attackerStats.spe > defenderStats.spe) {
+          result.powerMultiplier *= 1.5;
+          addDamageLabel(result.attackerLabels, "顺风威力+50%");
+        }
+        if (/电流刺激/.test(text) && isAttackSkill(action)) {
+          result.powerAdd += 40;
+          addDamageLabel(result.attackerLabels, "电流刺激威力+40");
+        }
+        if (/不移/.test(text) && isAttackSkill(action) && !skillHasExtraEffect(action)) {
+          result.powerMultiplier *= 1.3;
+          addDamageLabel(result.attackerLabels, "不移威力+30%");
+        }
+        if (/目空/.test(text) && action.type !== "light") {
+          result.powerMultiplier *= 1.25;
+          addDamageLabel(result.attackerLabels, "目空威力+25%");
+        }
+        if (/涂鸦/.test(text) && !attackerTypes.includes(action.type)) {
+          result.powerMultiplier *= 1.5;
+          addDamageLabel(result.attackerLabels, "涂鸦威力+50%");
+        }
+        if (/共鸣/.test(text) && /虫鸣/.test(action.name || "")) {
+          result.powerAdd += 20;
+          addDamageLabel(result.attackerLabels, "共鸣威力+20");
+        }
+        if (/冻土/.test(text) && action.type === "ground") {
+          const iceCount = selectedPvpSkills(attackerState).filter((skill) => skill.type === "ice").length;
+          if (iceCount > 0) {
+            result.powerMultiplier *= (1 + iceCount * 0.1);
+            addDamageLabel(result.attackerLabels, `冻土威力+${iceCount * 10}%`);
+          }
+        }
+        if (/向心力/.test(text) && [0, 1].includes(action.pvpSkillIndex)) {
+          result.powerMultiplier *= 1.3;
+          addDamageLabel(result.attackerLabels, "向心力威力+30%");
+        }
+        if (/绒粉星光/.test(text) && defenderBloodlineType && !defenderTypes.includes(defenderBloodlineType)) {
+          result.powerMultiplier *= 2;
+          addDamageLabel(result.attackerLabels, "绒粉星光威力+100%");
+        }
+        if (/月光审判/.test(text) && isBossBloodlineId(defenderState?.bloodlineId)) {
+          result.powerMultiplier *= 2;
+          addDamageLabel(result.attackerLabels, "月光审判威力+100%");
+        }
+        if (/天通地明/.test(text) && bloodlineMatchesName(defenderState, /污染/)) {
+          result.powerMultiplier *= 2;
+          addDamageLabel(result.attackerLabels, "天通地明威力+100%");
+        }
+        if (/血型吸引/.test(text)) {
+          const typeCount = defenderSkillTypes.length;
+          if (typeCount > 0) {
+            result.powerMultiplier *= (1 + typeCount * 0.1);
+            addDamageLabel(result.attackerLabels, `血型吸引威力+${typeCount * 10}%`);
+          }
+        }
+      }
+
+      for (const item of defenderPassiveItems) {
+        const text = item.compact;
+        if (/偏振/.test(text) && defenderSkillTypes.includes(action.type)) {
+          result.damageMultiplier *= 0.6;
+          addDamageLabel(result.defenderLabels, "偏振受伤-40%");
+        }
+        if (/绝对秩序/.test(text) && !attackerTypes.includes(action.type)) {
+          result.damageMultiplier *= 0.5;
+          addDamageLabel(result.defenderLabels, "绝对秩序受伤-50%");
+        }
+        if (/狂欢开始/.test(text) && typeMultiplier > 1) {
+          result.damageMultiplier *= 1.25;
+          addDamageLabel(result.defenderLabels, "狂欢开始克制受伤+25%");
+        }
+        if (/展翅/.test(text) && defenderStats.spe < attackerStats.spe) {
+          result.damageMultiplier *= 1.25;
+          addDamageLabel(result.defenderLabels, "展翅后手受伤+25%");
+        }
+      }
+
+      return result;
+    }
+
+    function damageMode(skill, attackerStats, defenderStats) {
+      if (skill.category === "physical") {
+        return { attackKey: "atk", defenseKey: "defense", label: "物攻" };
+      }
+      if (skill.category === "special") {
+        return { attackKey: "spa", defenseKey: "spd", label: "魔攻" };
+      }
+      const physicalRatio = attackerStats.atk / Math.max(1, defenderStats.defense);
+      const specialRatio = attackerStats.spa / Math.max(1, defenderStats.spd);
+      return physicalRatio >= specialRatio
+        ? { attackKey: "atk", defenseKey: "defense", label: "物攻" }
+        : { attackKey: "spa", defenseKey: "spd", label: "魔攻" };
+    }
+
+    function calcPvpDamage(attackerState, defenderState, action) {
+      const attacker = monsterById.get(attackerState?.monsterId);
+      const defender = monsterById.get(defenderState?.monsterId);
+      if (!attacker || !defender || !action) return null;
+      const effectiveAction = effectiveActionForPassives(action, attacker);
+      const battleAction = effectiveAction.action;
+      const basePower = Number(battleAction.power) || 0;
+      if (!basePower || !isAttackSkill(battleAction)) {
+        return { error: `${action.name} 暂无可计算威力` };
+      }
+
+      const attackerPassiveMods = passiveStatMods(attacker, attackerState);
+      const attackerSkillMods = normalizeStatMods(attackerState?.skillStatMods);
+      const attackerManualMods = normalizeStatMods(attackerState?.manualStatMods);
+      const defenderPassiveMods = passiveStatMods(defender, defenderState);
+      const defenderManualMods = normalizeStatMods(defenderState?.manualStatMods);
+      const attackerStats = finalBattleStats(attacker, attackerState, mergeStatMods(attackerPassiveMods, attackerSkillMods, attackerManualMods));
+      const defenderStats = finalBattleStats(defender, defenderState, mergeStatMods(defenderPassiveMods, defenderManualMods));
+      const mode = damageMode(battleAction, attackerStats, defenderStats);
+      const attackValue = attackerStats[mode.attackKey];
+      const defenseValue = defenderStats[mode.defenseKey];
+      const typeMultiplier = combinedDefenseMultiplier(battleAction.type, defender.types || []);
+      const stabMultiplier = sameTypeAttackBonus(battleAction, attacker);
+      const passiveDamage = passiveDamageEffects({
+        attacker,
+        defender,
+        attackerState,
+        defenderState,
+        action: battleAction,
+        attackerStats,
+        defenderStats,
+        typeMultiplier
+      });
+      const power = Math.max(1, Math.floor((basePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
+      const rawBase = (attackValue / Math.max(1, defenseValue)) * power * PVP_DAMAGE_CORE_FACTOR;
+      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier;
+      const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
+      const estimate = Math.max(1, Math.floor(adjusted) + manualDamageBonus);
+      const responseEstimate = battleAction.id === "pvp-force-impact" ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER)) : null;
+      return {
+        attacker,
+        defender,
+        action: battleAction,
+        mode,
+        basePower,
+        power,
+        typeMultiplier,
+        stabMultiplier,
+        passiveDamageMultiplier: passiveDamage.damageMultiplier,
+        damageFactor: PVP_DAMAGE_CORE_FACTOR,
+        estimate,
+        responseEstimate,
+        defenderHp: defenderStats.hp,
+        percent: Math.round((estimate / Math.max(1, defenderStats.hp)) * 100),
+        responsePercent: responseEstimate == null ? null : Math.round((responseEstimate / Math.max(1, defenderStats.hp)) * 100),
+        manualDamageBonus,
+        attackerPassiveLabels: passiveModLabels(attackerPassiveMods),
+        attackerSkillLabels: passiveModLabels(attackerSkillMods),
+        attackerManualLabels: passiveModLabels(attackerManualMods),
+        defenderPassiveLabels: passiveModLabels(defenderPassiveMods),
+        defenderManualLabels: passiveModLabels(defenderManualMods),
+        attackerDamageLabels: [...effectiveAction.labels, ...passiveDamage.attackerLabels],
+        defenderDamageLabels: passiveDamage.defenderLabels
+      };
+    }
+
+    function multiplierText(value) {
+      if (value === 1) return "1x";
+      if (value === 0.25) return "0.25x";
+      if (value === 0.5) return "0.5x";
+      if (value === 2) return "2x";
+      if (value === 4) return "4x";
+      return `${Number(value).toFixed(2)}x`;
+    }
+
+    function renderPvpDamageResult(side) {
+      const state = pvpSideState(side);
+      const opponentState = pvpSideState(side === "ally" ? "enemy" : "ally");
+      const monster = monsterById.get(state.monsterId);
+      const opponent = monsterById.get(opponentState.monsterId);
+      if (!monster) {
+        return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">请选择${side === "ally" ? "己方" : "敌方"}精灵</div>`;
+      }
+      if (!opponent) {
+        return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">请先选择${side === "ally" ? "敌方" : "己方"}精灵</div>`;
+      }
+      const action = pvpActionFromState(state, monster);
+      if (!action) {
+        if (state.supportText) {
+          const labels = passiveModLabels(state.skillStatMods);
+          return `<div class="pvp-damage-result" data-pvp-damage-result="${side}">已记录${escapeHtml(state.supportText)}，点击攻击技能后计算伤害${labels.length ? `（当前技能增益：${escapeHtml(labels.join(" / "))}）` : ""}</div>`;
+        }
+        return `<div class="pvp-damage-result" data-pvp-damage-result="${side}">点击技能后显示伤害</div>`;
+      }
+      const damage = calcPvpDamage(state, opponentState, action);
+      if (damage?.error) {
+        return `<div class="pvp-damage-result bad" data-pvp-damage-result="${side}">${escapeHtml(damage.error)}</div>`;
+      }
+      if (!damage) {
+        return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">伤害数据不足</div>`;
+      }
+      const passiveText = [
+        ...damage.attackerPassiveLabels.map((label) => `己方${label}`),
+        ...damage.attackerSkillLabels.map((label) => `技能${label}`),
+        ...damage.attackerManualLabels.map((label) => `己方手动${label}`),
+        ...(damage.manualDamageBonus ? [`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`] : []),
+        ...damage.defenderPassiveLabels.map((label) => `敌方${label}`),
+        ...damage.defenderManualLabels.map((label) => `敌方手动${label}`),
+        ...damage.attackerDamageLabels.map((label) => `己方${label}`),
+        ...damage.defenderDamageLabels.map((label) => `敌方${label}`)
+      ].join("，");
+      const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
+      const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
+      if (damage.action.id === "pvp-force-impact" && damage.responseEstimate != null) {
+        return `
+          <div class="pvp-damage-result" data-pvp-damage-result="${side}">
+            <div class="pvp-damage-lines">
+              <div class="pvp-damage-line">
+                <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
+                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${passiveText ? ` / 增益：${escapeHtml(passiveText)}` : ""}</span>
+              </div>
+              <div class="pvp-damage-line">
+                <strong>${escapeHtml(damage.action.name)}：${damage.responseEstimate}（扣除${damage.responsePercent}%生命，应对状态）</strong>
+                <span>敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="pvp-damage-result" data-pvp-damage-result="${side}">
+          <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
+          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${passiveText ? ` / 增益：${escapeHtml(passiveText)}` : ""}</span>
+        </div>
+      `;
+    }
+
+    function monsterNoValue(monster) {
+      const value = Number.parseInt(monster?.raw?.no, 10);
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function isBossVariant(monster) {
+      if (monster?.isGeneratedBossForm || monster?.raw?.isGeneratedBossForm) return true;
+      if (REAL_BOSS_FORM_NAMES.has(monster?.name || "")) return true;
+      const image = monster?.raw?.image_url || monster?.icon || "";
+      const tags = [
+        monster?.raw?.form,
+        monster?.raw?.variant,
+        monster?.raw?.type,
+        monster?.raw?.rarity,
+        ...(monster?.raw?.tags || [])
+      ].join(" ");
+      return /boss|leader/i.test(`${image} ${tags}`) || /首领|Boss|BOSS/.test(monster?.name || "");
+    }
+
+    function isGeneratedBossForm(monster) {
+      return Boolean(monster?.isGeneratedBossForm || monster?.raw?.isGeneratedBossForm || String(monster?.id || "").endsWith(BOSS_FORM_SUFFIX));
+    }
+
+    function evolutionGroupKey(monster) {
+      return monster?.raw?.chainId
+        || monster?.raw?.evolutionChainId
+        || monster?.raw?.evolution_chain_id
+        || monster?.raw?.familyId
+        || monster?.raw?.family_id
+        || monster?.raw?.baseId
+        || monster?.raw?.base_id
+        || monster?.raw?.no
+        || monster?.id
+        || "";
+    }
+
+    function evolutionStageValue(monster) {
+      const raw = monster?.raw || {};
+      const candidates = [
+        raw.stage,
+        raw.evolutionStage,
+        raw.evolution_stage,
+        raw.evoStage,
+        raw.rank
+      ];
+      for (const value of candidates) {
+        const parsed = Number.parseInt(value, 10);
+        if (Number.isFinite(parsed)) return parsed;
+      }
+      return 0;
+    }
+
+    function bestEvolutionRepresentative(monsters) {
+      const normalForms = monsters.filter((monster) => !isBossVariant(monster));
+      const pool = normalForms.length ? normalForms : monsters;
+      return pool.slice().sort((a, b) => (
+        evolutionStageValue(b) - evolutionStageValue(a)
+        || monsterStatTotal(b) - monsterStatTotal(a)
+        || monsterNoValue(b) - monsterNoValue(a)
+        || b.name.localeCompare(a.name, "zh-CN")
+      ))[0];
+    }
+
+    function compactFinalLearners(learners) {
+      const grouped = new Map();
+      for (const monster of learners) {
+        const key = evolutionGroupKey(monster);
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(monster);
+      }
+      return [...grouped.values()]
+        .map(bestEvolutionRepresentative)
+        .filter(Boolean)
+        .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+    }
+
+    function getSkillLearners(skillId, excludeMonsterId = "") {
+      if (!skillId) return [];
+      return dexData.monsters.filter((monster) => (
+        monster.id !== excludeMonsterId && (monster.skillIds || []).includes(skillId)
+      ));
+    }
+
+    function learnerTeamMatches(team, learners) {
+      const ids = new Set(learners.map((monster) => monster.id));
+      const groups = new Set(learners.map(evolutionGroupKey));
+      return team
+        .map((pet, petIndex) => ({ pet, petIndex, monster: monsterById.get(pet.monsterId) }))
+        .filter((item) => item.monster && (ids.has(item.monster.id) || groups.has(evolutionGroupKey(item.monster))));
+    }
+
+    function learnerChoice(team, learners) {
+      const teamMatches = learnerTeamMatches(team, learners);
+      if (teamMatches.length) {
+        return {
+          monster: teamMatches[0].monster,
+          petIndex: teamMatches[0].petIndex,
+          fromTeam: true,
+          teamMatches
+        };
+      }
+      return {
+        monster: learners[0] || null,
+        petIndex: null,
+        fromTeam: false,
+        teamMatches: []
+      };
+    }
+
+    function buildRollerCandidate(team, petIndex, monster, passive, skill, scored, sourceNote = "", options = {}) {
+      if (!skill) return null;
+      const nativeSkillIds = new Set(monster.skillIds || []);
+      const isNative = nativeSkillIds.has(skill.id);
+      if (isNative && !options.allowNative) return null;
+      const rawLearners = getSkillLearners(skill.id, monster.id);
+      const learners = compactFinalLearners(rawLearners);
+      if (!rawLearners.length && !options.allowNoLearners) return null;
+      const choice = learnerChoice(team, rawLearners);
+      return {
+        petIndex,
+        petName: monster.name,
+        monster,
+        passive,
+        skill,
+        score: scored.score,
+        reasons: scored.reasons || [],
+        sourceNote,
+        isNative,
+        rawLearners,
+        learners,
+        learner: choice.monster,
+        learnerPetIndex: choice.petIndex,
+        learnerFromTeam: choice.fromTeam,
+        teamLearners: choice.teamMatches
+      };
+    }
+
+    function buildManualRollerCandidate(team, pet, petIndex, monster, passives) {
+      const skill = skillById.get(pet.rollerSkillId);
+      if (!skill) return null;
+      const nativeSkillIds = new Set(monster.skillIds || []);
+      const passive = passives[0] || { name: "特性", description: "" };
+      const scored = scoreSuperSkill(monster, passive, skill) || { score: 300, reasons: [] };
+      const reason = scored.reasons.length
+        ? scored.reasons
+        : [`你在阵容输入里指定了 ${skill.name}，这里按过山车目标技能优先展示。`];
+      return buildRollerCandidate(team, petIndex, monster, passive, skill, {
+        score: nativeSkillIds.has(skill.id) ? 120 : Math.max(scored.score, 300),
+        reasons: reason
+      }, "手动指定", { allowNative: true, allowNoLearners: true });
+    }
+
+    function buildRollerSuperRecommendations(team) {
+      return team.map((pet, petIndex) => {
+        const monster = monsterById.get(pet.monsterId);
+        if (!monster) return null;
+        const nativeSkillIds = new Set(monster.skillIds || []);
+        const passives = getMonsterPassives(monster);
+
+        const candidates = [];
+        const manualCandidate = buildManualRollerCandidate(team, pet, petIndex, monster, passives);
+        if (manualCandidate) candidates.push(manualCandidate);
+
+        for (const rule of FEATURED_ROLLER_RULES) {
+          if (!rule.target.test(monster.name)) continue;
+          const skill = skillByName(rule.skill);
+          if (!skill || nativeSkillIds.has(skill.id)) continue;
+          const passive = passives[0] || { name: "特性", description: "" };
+          const candidate = buildRollerCandidate(team, petIndex, monster, passive, skill, {
+            score: rule.score,
+            reasons: [rule.reason]
+          }, "热门套路优先");
+          if (candidate) candidates.push(candidate);
+        }
+
+        for (const passive of passives) {
+          for (const skill of dexData.skills) {
+            if (nativeSkillIds.has(skill.id)) continue;
+            const scored = scoreSuperSkill(monster, passive, skill);
+            if (!scored) continue;
+            const candidate = buildRollerCandidate(team, petIndex, monster, passive, skill, scored, "");
+            if (candidate) candidates.push(candidate);
+          }
+        }
+
+        candidates.sort((a, b) => b.score - a.score);
+        return candidates[0] || null;
+      });
+    }
+
+    function sourceSlotForTarget(petIndex, skillIndex) {
+      let flat = petIndex * 4 + skillIndex - 1;
+      if (flat < 0) flat = 23;
+      return {
+        petIndex: Math.floor(flat / 4),
+        skillIndex: flat % 4
+      };
+    }
+
+    function renderRollerLearners(rec) {
+      const learners = rec.learners || [];
+      if (!learners.length) {
+        return `
+          <div class="roller-learners empty">
+            <div class="roller-meta">可学习：暂无合法来源</div>
+          </div>
+        `;
+      }
+      const preview = learners.slice(0, 4).map((monster) => monster.name).join("、")
+        + (learners.length > 4 ? ` 等${learners.length}只` : "");
+      const list = learners.map((monster) => `
+        <div class="roller-learner-item">
+          ${iconHtml(monster, "combo-icon")}
+          <span class="roller-learner-name">${escapeHtml(monster.name)}</span>
+        </div>
+      `).join("");
+      return `
+        <details class="roller-learners">
+          <summary>
+            <span>可学习该技能的精灵 ${learners.length}只</span>
+            <span class="roller-learner-preview">${escapeHtml(preview)}</span>
+            <span class="roller-learner-arrow">▼</span>
+          </summary>
+          <div class="roller-learner-grid">${list}</div>
+        </details>
+      `;
+    }
+
+    function renderRollerSlot(team, rec, pet, petIndex) {
+      const monster = monsterById.get(pet.monsterId);
+      if (!monster) {
+        return `
+          <div class="roller-slot empty">
+            <div class="roller-slot-head">
+              <span class="pet-index">${petIndex + 1}</span>
+              <div class="roller-slot-title">${petIndex + 1}号位<span>未选择精灵</span></div>
+            </div>
+          </div>
+        `;
+      }
+      if (!rec) {
+        return `
+          <div class="roller-slot no-rec">
+            <div class="roller-slot-head">
+              ${iconHtml(monster, "combo-icon")}
+              <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(monster.name)}<span>暂无推荐技能</span></div>
+            </div>
+          </div>
+        `;
+      }
+      return `
+        <div class="roller-slot">
+          <div class="roller-slot-head">
+            ${iconHtml(rec.monster, "combo-icon")}
+            <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(rec.petName)}<span>${escapeHtml(rec.passive.name)}：${escapeHtml(passiveDescription(rec.passive))}</span></div>
+          </div>
+          <div class="roller-skill">
+            ${iconHtml(rec.skill, "combo-icon")}
+            <div>
+              <strong>${escapeHtml(rec.skill.name)}</strong>
+              <div class="line">${escapeHtml(skillSummary(rec.skill))}</div>
+            </div>
+          </div>
+          ${renderRollerLearners(rec)}
+        </div>
+      `;
+    }
+
+    function renderRollerSuperModule(team) {
+      const recs = buildRollerSuperRecommendations(team);
+      const cards = team.map((pet, petIndex) => renderRollerSlot(team, recs[petIndex], pet, petIndex)).join("");
+      return `
+        <article class="analysis-card">
+          <h3>过山车超模推荐</h3>
+          <div class="roller-list">${cards}</div>
+        </article>
+      `;
+    }
+
+    function renderAnalysis(team) {
+      const slots = attackSkillSlots(team);
+      const attackTypes = slots.map((slot) => slot.type);
+      const covered = coverageOfTypes(attackTypes);
+      const missing = missingTargets(attackTypes);
+      const byType = new Map();
+      for (const slot of slots) {
+        if (!byType.has(slot.type)) byType.set(slot.type, []);
+        byType.get(slot.type).push(slot);
+      }
+      const duplicateGroups = [...byType.entries()].filter(([, group]) => group.length > 1);
+      const suggestions = greedySuggestions(attackTypes, missing);
+
+      const repeatHtml = duplicateGroups.length
+        ? duplicateGroups.map(([type, group]) => {
+          const groupText = group
+            .map((slot) => `${slot.petName} 技能${slot.skillIndex + 1}(${slot.skill.name})`)
+            .join("、");
+          const replacementLines = group.slice(1).map((slot) => {
+            const replacement = bestReplacement(attackTypes, slot.type);
+            const targets = replacement.newTargets.length
+              ? `新增克制 ${replacement.newTargets.map(typeName).join("、")}`
+              : "当前克制面已无明显空缺";
+            return `${slot.petName} 技能${slot.skillIndex + 1} 可考虑改为 ${typeName(replacement.type)}属性技能，${targets}`;
+          });
+          return `
+            <div class="notice warn">
+              <strong>${typeName(type)}重复：</strong>${groupText}
+              <div class="line">${replacementLines.join("；")}</div>
+            </div>
+          `;
+        }).join("")
+        : '<div class="notice good">攻击技能属性没有重复。</div>';
+
+      const missingHtml = missing.length
+        ? `
+          <div class="notice warn">
+            <strong>总体缺少克制目标：</strong>${missing.map(typeName).join("、")}
+            <div class="line">建议补充：${suggestions.length
+              ? suggestions.map((item) => `${typeName(item.type)}（补 ${item.covered.map(typeName).join("、")}）`).join("；")
+              : "暂无可补充项"}</div>
+          </div>
+        `
+        : '<div class="notice good">总体攻击技能已经覆盖全部可克制属性。</div>';
+
+      return `
+        <article class="analysis-card">
+          <h3>阵容缺陷</h3>
+          <div class="analysis-list">
+            ${repeatHtml}
+            ${missingHtml}
+            <div class="notice">
+              <strong>当前克制面：</strong>${covered.length ? covered.map(typeName).join("、") : "无"}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function pvpSideState(side) {
+      const state = pvpSimState[side] || pvpSimState.ally;
+      state.side = side;
+      if (!Array.isArray(state.talentIds)) {
+        state.talentIds = [state.talentId || "", "", ""];
+      }
+      state.talentIds = Array.from({ length: 3 }, (_, index) => state.talentIds[index] || "");
+      if (!Array.isArray(state.skillIds)) {
+        state.skillIds = ["", "", "", ""];
+      }
+      state.skillIds = Array.from({ length: 4 }, (_, index) => state.skillIds[index] || "");
+      state.action = typeof state.action === "string" ? state.action : "";
+      if (state.forceImpact && !state.action) state.action = "force";
+      if (forceImpactLocked(state) && state.action === "force") state.action = "";
+      state.forceImpact = state.action === "force";
+      state.skillStatMods = normalizeStatMods(state.skillStatMods);
+      state.manualStatMods = normalizeStatMods(state.manualStatMods);
+      state.manualDamageBonus = Number.isFinite(Number(state.manualDamageBonus)) ? Number(state.manualDamageBonus) : 0;
+      state.usedSupportSkillIds = unique(Array.isArray(state.usedSupportSkillIds) ? state.usedSupportSkillIds : []);
+      state.supportText = state.supportText || "";
+      state.energy = Number.isFinite(Number(state.energy)) ? Number(state.energy) : DEFAULT_PVP_ENERGY;
+      return state;
+    }
+
+    function selectedTeamMonsters(team) {
+      const seen = new Set();
+      return team
+        .map((pet) => monsterById.get(pet.monsterId))
+        .filter((monster) => {
+          if (!monster || seen.has(monster.id)) return false;
+          seen.add(monster.id);
+          return true;
+        });
+    }
+
+    function prioritizedAllyMonsters(team) {
+      const selected = selectedTeamMonsters(team);
+      if (!selected.length) return dexData.monsters;
+      const selectedIds = new Set(selected.map((monster) => monster.id));
+      return [...selected, ...dexData.monsters.filter((monster) => !selectedIds.has(monster.id))];
+    }
+
+    function allyMonsterItemsForQuery(team, query) {
+      const selected = selectedTeamMonsters(team);
+      if (!selected.length) return query.trim() ? fuzzyMonsterItems(query, dexData.monsters) : dexData.monsters;
+      return query.trim()
+        ? fuzzyMonsterItems(query, prioritizedAllyMonsters(team))
+        : selected;
+    }
+
+    function enemyMonsterItemsForQuery(query) {
+      return query.trim() ? fuzzyMonsterItems(query, dexData.monsters) : dexData.monsters;
+    }
+
+    function teamPetForMonster(team, monsterId) {
+      return normalizeTeam(team).find((pet) => pet.monsterId === monsterId) || null;
+    }
+
+    function natureIdFromRecommendation(monster) {
+      const natureName = choosePvpBuild(monster)?.natures?.[0]?.name || "";
+      return PVP_NATURES.find((nature) => natureName.startsWith(nature.name.split("（")[0]))?.id || "";
+    }
+
+    function talentIdFromText(text) {
+      if (/HP/i.test(text)) return "talent-hp";
+      if (/物攻/.test(text)) return "talent-atk";
+      if (/物防/.test(text)) return "talent-def";
+      if (/魔攻/.test(text)) return "talent-spa";
+      if (/魔防/.test(text)) return "talent-spd";
+      if (/速度/.test(text)) return "talent-spe";
+      return "";
+    }
+
+    function talentIdsFromRecommendation(monster) {
+      const talentText = choosePvpBuild(monster)?.talent || "";
+      const ids = unique(talentText.split(/[\/、，,]/).map(talentIdFromText).filter(Boolean));
+      return Array.from({ length: 3 }, (_, index) => ids[index] || "");
+    }
+
+    function clearPvpSideState(state) {
+      state.monsterId = "";
+      state.bloodlineId = "";
+      state.natureId = "";
+      state.talentIds = ["", "", ""];
+      state.skillIds = ["", "", "", ""];
+      state.action = "";
+      state.forceImpact = false;
+      state.skillStatMods = blankStatMods();
+      state.manualStatMods = blankStatMods();
+      state.manualDamageBonus = 0;
+      state.usedSupportSkillIds = [];
+      state.supportText = "";
+      state.energy = DEFAULT_PVP_ENERGY;
+    }
+
+    function applyTeamPetToPvpSide(state, pet, monster) {
+      state.bloodlineId = bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "";
+      state.natureId = PVP_NATURES.some((nature) => nature.id === pet.natureId) ? pet.natureId : "";
+      state.talentIds = Array.from({ length: 3 }, (_, index) => (
+        PVP_TALENTS.some((talent) => talent.id === pet.talentIds?.[index]) ? pet.talentIds[index] : ""
+      ));
+      state.skillIds = Array.from({ length: 4 }, (_, index) => (
+        skillById.has(pet.skills?.[index]?.skillId) ? pet.skills[index].skillId : ""
+      ));
+    }
+
+    function renderMonsterPreview(monster) {
+      if (!monster?.icon) {
+        return '<div class="monster-preview empty">未选择精灵</div>';
+      }
+      return `
+        <div class="monster-preview">
+          <img src="${escapeHtml(monster.icon)}" alt="${escapeHtml(monster.name)}">
+        </div>
+      `;
+    }
+
+    function renderPvpPanelStats(monster, state, side = "") {
+      if (!monster) {
+        return `<div class="readonly-line pvp-panel-stats" data-pvp-panel-stats="${side}"><span class="tag empty">未选择精灵</span></div>`;
+      }
+      const stats = finalBattleStats(monster, state, blankStatMods());
+      const rows = [
+        ["生命", stats.hp],
+        ["物攻", stats.atk],
+        ["物防", stats.defense],
+        ["魔攻", stats.spa],
+        ["魔防", stats.spd],
+        ["速度", stats.spe]
+      ];
+      return `
+        <div class="pvp-panel-stats" data-pvp-panel-stats="${side}">
+          <div class="stat-grid">
+            ${rows.map(([label, value]) => `
+              <div class="stat-cell">
+                <span class="stat-label">${escapeHtml(label)}</span>
+                <span class="stat-value">${Number(value) || 0}</span>
+              </div>
+            `).join("")}
+          </div>
+          <div class="pvp-default-note">未选择性格、天分时，默认${escapeHtml(DEFAULT_DAMAGE_NATURE_TEXT)}、${escapeHtml(DEFAULT_DAMAGE_TALENT_TEXT)}。</div>
+        </div>
+      `;
+    }
+
+    function manualBuffPercent(value) {
+      return Math.round((Number(value) || 0) * 100);
+    }
+
+    function manualBuffText(value) {
+      const percent = manualBuffPercent(value);
+      return percent > 0 ? `+${percent}%` : `${percent}%`;
+    }
+
+    function manualFlatBuffText(value) {
+      const amount = Math.round(Number(value) || 0);
+      return amount > 0 ? `+${amount}` : `${amount}`;
+    }
+
+    function manualBuffClass(value) {
+      const amount = Number(value) || 0;
+      if (amount > 0) return "positive";
+      if (amount < 0) return "negative";
+      return "";
+    }
+
+    function renderPvpManualBuffPanel(side, state) {
+      const mods = mergeStatMods(state?.skillStatMods, state?.manualStatMods);
+      const damageBonus = Number(state?.manualDamageBonus) || 0;
+      return `
+        <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
+          <div class="pvp-buff-title">增益状态</div>
+          <div class="pvp-buff-grid">
+            ${PVP_MANUAL_BUFF_STATS.map((stat) => `
+              <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
+                <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
+                <div class="pvp-buff-controls">
+                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="-1" title="${escapeHtml(stat.label)}${stat.flat ? "-10" : "-10%"}">-</button>
+                  <span class="pvp-buff-value ${manualBuffClass(stat.flat ? damageBonus : mods[stat.key])}" data-pvp-buff-value="${side}-${stat.key}">${stat.flat ? manualFlatBuffText(damageBonus) : manualBuffText(mods[stat.key])}</span>
+                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="1" title="${escapeHtml(stat.label)}${stat.flat ? "+10" : "+10%"}">+</button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshPvpManualBuffPanel(root, side) {
+      const state = pvpSideState(side);
+      const mods = mergeStatMods(state.skillStatMods, state.manualStatMods);
+      PVP_MANUAL_BUFF_STATS.forEach((stat) => {
+        const valueEl = root.querySelector(`[data-pvp-buff-value="${side}-${stat.key}"]`);
+        if (!valueEl) return;
+        const value = stat.flat ? Number(state.manualDamageBonus) || 0 : mods[stat.key];
+        valueEl.textContent = stat.flat ? manualFlatBuffText(value) : manualBuffText(value);
+        valueEl.classList.toggle("positive", Number(value) > 0);
+        valueEl.classList.toggle("negative", Number(value) < 0);
+      });
+    }
+
+    function renderPvpSide(side, title) {
+      const state = pvpSideState(side);
+      const monster = monsterById.get(state.monsterId);
+      return `
+        <div class="pvp-side" data-pvp-side="${side}">
+          <h4>${escapeHtml(title)}</h4>
+          <div class="pvp-side-form">
+            <div class="field field-wide">
+              <label>精灵</label>
+              <div data-pvp-combo="${side}-monster"></div>
+            </div>
+            <div class="field">
+              <label>血脉</label>
+              <div data-pvp-combo="${side}-bloodline"></div>
+            </div>
+            <div class="field">
+              <label>性格</label>
+              <div data-pvp-combo="${side}-nature"></div>
+            </div>
+            <div class="field field-wide">
+              <label>天分</label>
+              <div class="talent-picks">
+                ${[0, 1, 2].map((talentIndex) => `<div data-pvp-combo="${side}-talent-${talentIndex}"></div>`).join("")}
+              </div>
+            </div>
+            <div class="field field-wide">
+              <label>种族值</label>
+              ${renderPvpPanelStats(monster, state, side)}
+            </div>
+            <div class="field field-wide">
+              <label>技能</label>
+              <div class="pvp-skill-picks">
+                ${[0, 1, 2, 3].map((skillIndex) => `
+                  <div class="pvp-skill-slot${state.action === `skill:${skillIndex}` ? " active" : ""}" data-pvp-skill-slot="${side}-${skillIndex}">
+                    <div data-pvp-combo="${side}-skill-${skillIndex}"></div>
+                  </div>
+                `).join("")}
+              </div>
+              <div class="pvp-force-row">
+                <button class="pvp-force-button${state.forceImpact && !forceImpactLocked(state) ? " active" : ""}" type="button" data-pvp-force="${side}" aria-pressed="${state.forceImpact && !forceImpactLocked(state) ? "true" : "false"}" ${forceImpactLocked(state) ? "disabled" : ""}>
+                  <span class="pvp-force-icon-wrap">${forceImpactButtonIcon(state, monster)}</span>
+                  <span>原力冲击</span>
+                </button>
+              </div>
+              ${renderPvpManualBuffPanel(side, state)}
+            </div>
+            <div class="field field-wide">
+              ${renderMonsterPreview(monster)}
+              ${renderPvpDamageResult(side)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPvpDamageSimulation(team) {
+      return `
+        <article class="analysis-card pvp-damage-sim" id="pvpDamageSim">
+          <h3>PVP对战伤害模拟</h3>
+          <div class="pvp-sim-grid">
+            ${renderPvpSide("ally", "己方精灵")}
+            ${renderPvpSide("enemy", "敌方精灵")}
+          </div>
+        </article>
+      `;
+    }
+
+    function updatePvpActionClasses(root, side) {
+      const state = pvpSideState(side);
+      const monster = monsterById.get(state.monsterId);
+      const locked = forceImpactLocked(state);
+      state.skillIds.forEach((skillId, skillIndex) => {
+        const host = root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`);
+        if (!host) return;
+        host.classList.toggle("pvp-action-combo", Boolean(skillId));
+        host.classList.toggle("active", state.action === `skill:${skillIndex}`);
+        const slot = root.querySelector(`[data-pvp-skill-slot="${side}-${skillIndex}"]`);
+        if (slot) {
+          slot.classList.toggle("active", state.action === `skill:${skillIndex}`);
+        }
+      });
+      const forceButton = root.querySelector(`[data-pvp-force="${side}"]`);
+      if (forceButton) {
+        forceButton.disabled = locked;
+        forceButton.classList.toggle("active", state.action === "force" && !locked);
+        forceButton.setAttribute("aria-pressed", state.action === "force" && !locked ? "true" : "false");
+        const iconWrap = forceButton.querySelector(".pvp-force-icon-wrap");
+        if (iconWrap) {
+          iconWrap.innerHTML = forceImpactButtonIcon(state, monster);
+        }
+      }
+    }
+
+    function refreshPvpDamageOutputs(root) {
+      ["ally", "enemy"].forEach((side) => {
+        const state = pvpSideState(side);
+        const monster = monsterById.get(state.monsterId);
+        const statsEl = root.querySelector(`[data-pvp-panel-stats="${side}"]`);
+        if (statsEl) statsEl.outerHTML = renderPvpPanelStats(monster, state, side);
+        const damageEl = root.querySelector(`[data-pvp-damage-result="${side}"]`);
+        if (damageEl) damageEl.outerHTML = renderPvpDamageResult(side);
+        refreshPvpManualBuffPanel(root, side);
+        updatePvpActionClasses(root, side);
+      });
+    }
+
+    function setPvpAction(state, action) {
+      state.action = state.action === action ? "" : action;
+      state.forceImpact = state.action === "force";
+    }
+
+    function applyPvpSupportSkillOnce(state, skill) {
+      if (!skill || isAttackSkill(skill)) return false;
+      const mods = skillStatMods(skill);
+      const labels = passiveModLabels(mods);
+      if (!labels.length) return false;
+      state.usedSupportSkillIds = unique(Array.isArray(state.usedSupportSkillIds) ? state.usedSupportSkillIds : []);
+      if (state.usedSupportSkillIds.includes(skill.id)) {
+        state.supportText = `${skill.name}：已释放过，不重复叠加`;
+        state.action = "";
+        state.forceImpact = false;
+        return true;
+      }
+      state.skillStatMods = mergeStatMods(state.skillStatMods, mods);
+      state.usedSupportSkillIds.push(skill.id);
+      state.supportText = `${skill.name}：${labels.join(" / ")}`;
+      state.action = "";
+      state.forceImpact = false;
+      return true;
+    }
+
+    function hydratePvpDamageSimulation(team) {
+      const root = document.getElementById("pvpDamageSim");
+      if (!root) return;
+
+      ["ally", "enemy"].forEach((side) => {
+        const state = pvpSideState(side);
+        const isAlly = side === "ally";
+        const selectedMonster = monsterById.get(state.monsterId);
+        const monsterItems = isAlly ? prioritizedAllyMonsters(team) : dexData.monsters;
+        const selectedTeam = selectedTeamMonsters(team);
+
+        createCombo(root.querySelector(`[data-pvp-combo="${side}-monster"]`), {
+          items: monsterItems,
+          value: state.monsterId,
+          selectedItem: selectedMonster || null,
+          placeholder: isAlly && selectedTeam.length ? "优先选择阵容精灵，也可搜索精灵池" : "搜索精灵名称",
+          emptyText: "未选择精灵",
+          itemsForQuery: isAlly ? (query) => allyMonsterItemsForQuery(team, query) : enemyMonsterItemsForQuery,
+          skipDefaultFilter: true,
+          onSelect: (item) => {
+            if (!item) {
+              clearPvpSideState(state);
+              renderResults();
+              return;
+            }
+            state.monsterId = item.id;
+            state.action = "";
+            state.forceImpact = false;
+            state.skillStatMods = blankStatMods();
+            state.manualStatMods = blankStatMods();
+            state.manualDamageBonus = 0;
+            state.usedSupportSkillIds = [];
+            state.supportText = "";
+            state.energy = DEFAULT_PVP_ENERGY;
+            if (isAlly) {
+              const teamPet = teamPetForMonster(team, item.id);
+              if (teamPet) {
+                applyTeamPetToPvpSide(state, teamPet, item);
+              } else {
+                state.bloodlineId = "";
+                state.natureId = "";
+                state.talentIds = ["", "", ""];
+                state.skillIds = ["", "", "", ""];
+                state.skillStatMods = blankStatMods();
+                state.manualStatMods = blankStatMods();
+                state.manualDamageBonus = 0;
+                state.usedSupportSkillIds = [];
+                state.supportText = "";
+                state.energy = DEFAULT_PVP_ENERGY;
+              }
+            }
+            renderResults();
+          }
+        });
+
+        createCombo(root.querySelector(`[data-pvp-combo="${side}-bloodline"]`), {
+          items: BLOODLINES,
+          value: state.bloodlineId,
+          placeholder: "搜索血脉名称",
+          selectedPlaceholder: "",
+          displayName: bloodlineShortLabel,
+          emptyText: "未选择血脉",
+          onSelect: (item) => {
+            state.bloodlineId = item?.id || "";
+            if (item?.id === "bloodline-boss") {
+              state.action = "";
+              state.forceImpact = false;
+            }
+            refreshPvpDamageOutputs(root);
+          }
+        });
+
+        createCombo(root.querySelector(`[data-pvp-combo="${side}-nature"]`), {
+          items: PVP_NATURES,
+          value: state.natureId,
+          placeholder: "选择性格",
+          emptyText: "未选择性格",
+          clearPlaceholderOnFocus: true,
+          onSelect: (item) => {
+            state.natureId = item?.id || "";
+            refreshPvpDamageOutputs(root);
+          }
+        });
+
+        state.talentIds.forEach((talentId, talentIndex) => {
+          const talentItems = () => {
+            const selectedIds = new Set(state.talentIds.filter(Boolean));
+            return PVP_TALENTS.filter((talent) => talent.id === state.talentIds[talentIndex] || !selectedIds.has(talent.id));
+          };
+          createCombo(root.querySelector(`[data-pvp-combo="${side}-talent-${talentIndex}"]`), {
+            items: talentItems(),
+            value: talentId,
+            placeholder: "选择天分",
+            emptyText: "未选择天分",
+            clearPlaceholderOnFocus: true,
+            itemsForQuery: talentItems,
+            onSelect: (item) => {
+              state.talentIds[talentIndex] = item?.id || "";
+              renderResults();
+            }
+          });
+        });
+
+        state.skillIds.forEach((skillId, skillIndex) => {
+          const selectedSkill = skillById.get(skillId);
+          createCombo(root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`), {
+            items: dexData.skills,
+            value: skillId,
+            selectedItem: selectedSkill || null,
+            placeholder: `选择技能${skillIndex + 1}`,
+            emptyText: "未选择技能",
+            clearPlaceholderOnFocus: true,
+            itemsForQuery: fuzzySkillItems,
+            skipDefaultFilter: true,
+            readonlyWhenSelected: true,
+            prefixHtml: `<span class="pvp-skill-index">${skillIndex + 1}</span>`,
+            onSelect: (item) => {
+              state.skillIds[skillIndex] = item?.id || "";
+              if (item) {
+                if (isAttackSkill(item)) {
+                  setPvpAction(state, `skill:${skillIndex}`);
+                } else if (applyPvpSupportSkillOnce(state, item)) {
+                  // Support skill release is recorded once per side.
+                } else {
+                  setPvpAction(state, `skill:${skillIndex}`);
+                }
+              } else if (state.action === `skill:${skillIndex}`) {
+                state.action = "";
+                state.forceImpact = false;
+              }
+              refreshPvpDamageOutputs(root);
+            }
+          });
+          const skillHost = root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`);
+          skillHost?.addEventListener("click", (event) => {
+            if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || !state.skillIds[skillIndex]) return;
+            const skill = skillById.get(state.skillIds[skillIndex]);
+            if (applyPvpSupportSkillOnce(state, skill)) {
+              refreshPvpDamageOutputs(root);
+              return;
+            }
+            setPvpAction(state, `skill:${skillIndex}`);
+            refreshPvpDamageOutputs(root);
+          });
+        });
+
+        const forceButton = root.querySelector(`[data-pvp-force="${side}"]`);
+        forceButton?.addEventListener("click", () => {
+          if (forceImpactLocked(state)) return;
+          setPvpAction(state, "force");
+          refreshPvpDamageOutputs(root);
+        });
+
+        root.querySelectorAll(`[data-pvp-buff="${side}"]`).forEach((button) => {
+          button.addEventListener("click", () => {
+            const statKey = button.dataset.stat;
+            const statConfig = PVP_MANUAL_BUFF_STATS.find((stat) => stat.key === statKey);
+            if (!statConfig) return;
+            const delta = Number(button.dataset.delta) || 0;
+            if (statConfig.flat) {
+              state.manualDamageBonus = (Number(state.manualDamageBonus) || 0) + delta * PVP_MANUAL_DAMAGE_STEP;
+              refreshPvpDamageOutputs(root);
+              return;
+            }
+            state.manualStatMods = normalizeStatMods(state.manualStatMods);
+            const nextValue = (Number(state.manualStatMods[statKey]) || 0) + delta * PVP_MANUAL_BUFF_STEP;
+            state.manualStatMods[statKey] = Math.round(nextValue * 10) / 10;
+            refreshPvpDamageOutputs(root);
+          });
+        });
+        updatePvpActionClasses(root, side);
+      });
+    }
+
+    function renderResults() {
+      const team = readTeam();
+      saveTeam();
+      updateRollerButton(team);
+
+      const petHtml = team.map((pet, petIndex) => {
+        const monster = monsterById.get(pet.monsterId);
+        const bloodline = bloodlineById.get(pet.bloodlineId);
+        const passives = getMonsterPassives(monster);
+        const petTypes = unique(monster?.types || []);
+        const passiveNames = passives.length ? passives.map((passive) => passive.name).join("、") : "无特性";
+        const innateStrong = strongTargetsForAttackTypes(petTypes);
+        const innateResisted = resistedTargetsForAttackTypes(petTypes);
+        const weakBy = weakAttackersAgainst(petTypes);
+        const resistFrom = resistingAttackersAgainst(petTypes);
+        const skillRows = pet.skills.map((skillRef, skillIndex) => {
+          const skill = skillById.get(skillRef.skillId);
+          if (!skill) {
+            return `
+              <div class="skill-chip">
+                <span class="combo-icon placeholder">?</span>
+                <div><strong>技能${skillIndex + 1} 未选择</strong><div class="line">未计入克制面</div></div>
+              </div>
+            `;
+          }
+          if (!isAttackSkill(skill)) {
+            return `
+              <div class="skill-chip">
+                ${iconHtml(skill, "combo-icon")}
+                <div>
+                  <strong>技能${skillIndex + 1} ${escapeHtml(skill.name)}</strong>
+                  <div class="line">${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}，不计入克制</div>
+                </div>
+              </div>
+            `;
+          }
+          const strong = RELATION[skill.type]?.strong || [];
+          return `
+            <div class="skill-chip">
+              ${iconHtml(skill, "combo-icon")}
+              <div>
+                <strong>技能${skillIndex + 1} ${escapeHtml(skill.name)}</strong>
+                <div class="line">${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}；克制 ${strong.length ? strong.map(typeName).join("、") : "无"}</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <article class="result-card">
+            <div class="result-head">
+              <h3>${iconHtml(monster, "title-icon")}<span>${petIndex + 1}. ${escapeHtml(pet.name || `精灵${petIndex + 1}`)}</span></h3>
+              <div class="result-badges">${chips(petTypes)}<span class="tag info">${escapeHtml(bloodline?.name || "未选血脉")}</span></div>
+            </div>
+            <div class="line">特性：${escapeHtml(passiveNames)}</div>
+            <div class="coverage-row">
+              <span class="coverage-label">克制</span>
+              <div class="meta-line">${chips(innateStrong, "good")}</div>
+            </div>
+            <div class="coverage-row">
+              <span class="coverage-label">被抵抗</span>
+              <div class="meta-line">${chips(innateResisted, "info")}</div>
+            </div>
+            <div class="coverage-row">
+              <span class="coverage-label">被克制</span>
+              <div class="meta-line">${chips(weakBy, "bad")}</div>
+            </div>
+            <div class="coverage-row">
+              <span class="coverage-label">抵抗</span>
+              <div class="meta-line">${chips(resistFrom, "good")}</div>
+            </div>
+            <div class="skill-list">${skillRows}</div>
+          </article>
+        `;
+      }).join("");
+
+      inputPetResultsEl.innerHTML = petHtml;
+      resultsEl.innerHTML = renderRollerSuperModule(team)
+        + renderAnalysis(team)
+        + renderPvpDamageSimulation(team)
+        + `<div class="mobile-pet-results">${petHtml}</div>`;
+      hydratePvpDamageSimulation(team);
+    }
+
+    function rotateSkillsDown() {
+      const team = readTeam();
+      rollerHistory.push(JSON.parse(JSON.stringify(team)));
+      const slots = team.flatMap((pet, petIndex) => pet.skills.map((skill, skillIndex) => ({
+        petIndex,
+        skillIndex,
+        skill: { ...skill }
+      })));
+      const lastSkill = slots[slots.length - 1].skill;
+      for (let index = slots.length - 1; index > 0; index -= 1) {
+        const target = slots[index];
+        team[target.petIndex].skills[target.skillIndex] = slots[index - 1].skill;
+      }
+      team[0].skills[0] = lastSkill;
+      renderTeam(team);
+      saveSpecificTeam(team);
+      renderResults();
+    }
+
+    function undoRoller() {
+      const previousTeam = rollerHistory.pop();
+      if (!previousTeam) return;
+      renderTeam(previousTeam);
+      saveSpecificTeam(previousTeam);
+      renderResults();
+    }
+
+    function renderMatrix() {
+      const header = `<tr><th>攻击 \\ 防守</th>${TYPES.map((type) => `<th><span class="tag"><img src="${typeIcon(type.key)}" alt="">${type.name}</span></th>`).join("")}</tr>`;
+      const rows = TYPES.map((attacker) => {
+        const cells = TYPES.map((defender) => {
+          const multiplier = relationMultiplier(attacker.key, defender.key);
+          const className = multiplier > 1 ? "mult-strong" : multiplier < 1 ? "mult-weak" : "";
+          const text = multiplier > 1 ? "2x" : multiplier < 1 ? "0.5x" : "1x";
+          return `<td class="${className}">${text}</td>`;
+        }).join("");
+        return `<tr><th><span class="tag"><img src="${typeIcon(attacker.key)}" alt="">${attacker.name}</span></th>${cells}</tr>`;
+      }).join("");
+      matrixWrap.innerHTML = `<table aria-label="属性关系表"><thead>${header}</thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function withBossForms(monsters) {
+      return (monsters || [])
+        .filter((monster) => !isGeneratedBossForm(monster))
+        .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+    }
+
+    function normalizeBundle(bundle) {
+      const passives = (bundle.passives || []).map((passive) => ({
+        kind: "passive",
+        id: passive.id,
+        name: passive.name,
+        aliases: passive.name_aliases || [],
+        icon: "",
+        description: passive.description || passive.trigger || "",
+        raw: passive
+      })).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+
+      const monsters = (bundle.monsters || []).map((monster) => ({
+        kind: "monster",
+        id: monster.id,
+        name: monster.name,
+        aliases: monster.name_aliases || [],
+        icon: absoluteUrl(monster.image_url),
+        types: (monster.elements || []).map((element) => ELEMENT_TO_TYPE[element]).filter(Boolean),
+        skillIds: monster.skills || [],
+        passiveIds: monster.passives || [],
+        raw: monster
+      })).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+
+      const skills = (bundle.skills || []).map((skill) => ({
+        kind: "skill",
+        id: skill.id,
+        name: skill.name,
+        aliases: skill.name_aliases || [],
+        icon: absoluteUrl(skill.image_url),
+        type: ELEMENT_TO_TYPE[skill.element] || "",
+        category: skill.category || "",
+        power: skill.power,
+        accuracy: skill.accuracy,
+        pp: skill.pp,
+        priority: skill.priority,
+        description: skill.description || "",
+        raw: skill
+      })).filter((skill) => skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+
+      return {
+        generatedAt: bundle.generated_at || new Date().toISOString(),
+        currentSeason: bundle.currentSeason || "",
+        seasons: bundle.seasons || [],
+        sourceCommit: bundle.source_commit || "",
+        monsters,
+        passives,
+        bloodlines: BLOODLINES,
+        skills
+      };
+    }
+
+    function ensureArkRollerSkill(data) {
+      data.skills = data.skills || [];
+      data.monsters = data.monsters || [];
+
+      let rollerSkill = data.skills.find((skill) => skill.name === "过山车");
+      if (!rollerSkill) {
+        rollerSkill = {
+          kind: "skill",
+          id: ARK_ROLLER_SKILL_ID,
+          name: "过山车",
+          aliases: ["机幕方舟专属"],
+          icon: "",
+          type: "mechanical",
+          category: "status",
+          power: null,
+          accuracy: null,
+          pp: 1,
+          priority: 0,
+          description: "机幕方舟专属技能，可通过过山车传递队友技能。",
+          raw: {
+            id: ARK_ROLLER_SKILL_ID,
+            name: "过山车",
+            element: TYPE_TO_ELEMENT.mechanical,
+            category: "status",
+            power: null,
+            accuracy: null,
+            pp: 1,
+            priority: 0,
+            description: "机幕方舟专属技能，可通过过山车传递队友技能。"
+          }
+        };
+        data.skills.push(rollerSkill);
+        data.skills.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+      }
+
+      data.monsters
+        .filter((monster) => ARK_ROLLER_MONSTER_RE.test(monster.name))
+        .forEach((monster) => {
+          monster.skillIds = unique([...(monster.skillIds || []), rollerSkill.id]);
+          if (monster.raw) {
+            monster.raw.skills = unique([...(monster.raw.skills || []), rollerSkill.id]);
+          }
+        });
+
+      return data;
+    }
+
+    function applyDexData(data) {
+      const nextData = {
+        ...data,
+        monsters: withBossForms(data.monsters || [])
+      };
+      dexData = ensureArkRollerSkill(nextData);
+      monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
+      skillById = new Map(dexData.skills.map((skill) => [skill.id, skill]));
+      passiveById = new Map((dexData.passives || []).map((passive) => [passive.id, passive]));
+      bloodlineById = new Map(BLOODLINES.map((bloodline) => [bloodline.id, bloodline]));
+      updateRollerButtonIcon();
+      const bossCount = dexData.monsters.filter(isBossVariant).length;
+      dataStatus.textContent = `当前数据：${dexData.currentSeason || "未知赛季"}，${dexData.monsters.length} 只精灵（含 ${bossCount} 个首领形态），${dexData.skills.length} 个技能，${BLOODLINES.length} 个血脉，${(dexData.passives || []).length} 个特性；更新时间 ${dexData.generatedAt || "未知"}`;
+    }
+
+    async function updateDexData() {
+      updateBtn.disabled = true;
+      dataStatus.textContent = "正在联网更新精灵、特性、精灵技能池和技能数值...";
+      try {
+        const response = await fetch(DATA_URL, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const bundle = await response.json();
+        const normalized = normalizeBundle(bundle);
+        localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(normalized));
+        applyDexData(normalized);
+        renderTeam(sanitizeTeamForDex(loadTeam()));
+        renderResults();
+      } catch (error) {
+        dataStatus.textContent = `更新失败：${error.message}。已使用本地缓存或内置示例。`;
+      } finally {
+        updateBtn.disabled = false;
+      }
+    }
+
+    function loadDexData() {
+      try {
+        const cached = JSON.parse(localStorage.getItem(DATA_STORAGE_KEY) || "null");
+        if (cached?.monsters?.length && cached?.skills?.length) {
+          cached.passives = cached.passives || [];
+          cached.bloodlines = BLOODLINES;
+          applyDexData(cached);
+          return;
+        }
+      } catch (error) {
+        localStorage.removeItem(DATA_STORAGE_KEY);
+      }
+      applyDexData(FALLBACK_DATA);
+      updateDexData();
+    }
+
+    function sanitizeTeamForDex(team) {
+      return normalizeTeam(team).map((pet) => {
+        const monster = monsterById.get(pet.monsterId);
+        if (!monster) return { ...pet, natureId: "", talentIds: ["", "", ""], rollerSkillId: "", skills: pet.skills.map(() => ({ skillId: "" })) };
+        const allowedSkills = new Set(monster.skillIds || []);
+        return {
+          ...pet,
+          bloodlineId: bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "",
+          natureId: PVP_NATURES.some((nature) => nature.id === pet.natureId) ? pet.natureId : "",
+          talentIds: Array.from({ length: 3 }, (_, index) => (
+            PVP_TALENTS.some((talent) => talent.id === pet.talentIds?.[index]) ? pet.talentIds[index] : ""
+          )),
+          rollerSkillId: skillById.has(pet.rollerSkillId) ? pet.rollerSkillId : "",
+          skills: pet.skills.map((skill) => ({ skillId: skillById.has(skill.skillId) ? skill.skillId : "" }))
+        };
+      });
+    }
+
+    teamGrid.addEventListener("change", (event) => {
+      saveTeam();
+      renderResults();
+    });
+
+    document.addEventListener("mousedown", closeCombos);
+    calculateBtn.addEventListener("click", renderResults);
+    rollerBtn.addEventListener("click", rotateSkillsDown);
+    undoRollerBtn.addEventListener("click", undoRoller);
+    updateBtn.addEventListener("click", updateDexData);
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      rollerHistory.length = 0;
+      renderTeam(defaultTeam());
+      renderResults();
+    });
+
+    loadDexData();
+    renderTeam(sanitizeTeamForDex(loadTeam()));
+    renderMatrix();
+    renderResults();
+  </script>
+</body>
+</html>
