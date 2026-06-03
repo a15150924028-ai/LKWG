@@ -1529,6 +1529,7 @@
     <p class="footer-note">数据源：rocomwiki.app 的公开 bundle.json。点击“联网更新数据”会刷新精灵、特性、精灵技能池和技能数值，并缓存到当前浏览器本机。</p>
   </main>
 
+  <script src="./lcx_skill_pools.js"></script>
   <script>
     const DATA_URL = "https://rocomwiki.app/data/bundle.json";
     const DATA_BASE = "https://rocomwiki.app";
@@ -4843,6 +4844,43 @@
       return next;
     }
 
+    function localSkillPoolOverrides() {
+      return typeof window !== "undefined" && window.LCX_SKILL_POOL_OVERRIDES
+        ? window.LCX_SKILL_POOL_OVERRIDES
+        : null;
+    }
+
+    function skillPoolNames(pool) {
+      return unique(["m", "j", "x"].flatMap((key) => Array.isArray(pool?.[key]) ? pool[key] : []));
+    }
+
+    function applyLocalSkillPoolOverrides(data) {
+      const overrides = localSkillPoolOverrides();
+      if (!overrides || !data?.monsters?.length || !data?.skills?.length) return data;
+      const skillIdByName = new Map();
+      (data.skills || []).forEach((skill) => {
+        if (!skill?.name) return;
+        if (!skillIdByName.has(skill.name)) skillIdByName.set(skill.name, skill.id);
+        (skill.aliases || []).forEach((alias) => {
+          if (alias && !skillIdByName.has(alias)) skillIdByName.set(alias, skill.id);
+        });
+      });
+      return {
+        ...data,
+        monsters: data.monsters.map((monster) => {
+          const pool = overrides[monster.name] || (monster.aliases || []).map((alias) => overrides[alias]).find(Boolean);
+          if (!pool) return monster;
+          const skillIds = skillPoolNames(pool).map((name) => skillIdByName.get(name)).filter(Boolean);
+          if (!skillIds.length) return monster;
+          return {
+            ...monster,
+            skillIds,
+            raw: monster.raw ? { ...monster.raw, skills: skillIds, local_skill_pool_override: pool } : monster.raw
+          };
+        })
+      };
+    }
+
     function ensureArkRollerSkill(data) {
       data.skills = data.skills || [];
       data.monsters = data.monsters || [];
@@ -4896,7 +4934,7 @@
         monsters: withBossForms(data.monsters || []),
         skills: (data.skills || []).map(applyS2SkillOverride)
       };
-      dexData = ensureArkRollerSkill(nextData);
+      dexData = ensureArkRollerSkill(applyLocalSkillPoolOverrides(nextData));
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
       skillById = new Map(dexData.skills.map((skill) => [skill.id, skill]));
       passiveById = new Map((dexData.passives || []).map((passive) => [passive.id, passive]));
