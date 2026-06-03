@@ -1264,13 +1264,6 @@
       white-space: nowrap;
     }
 
-    .roller-skill-label {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
     .roller-meta {
       margin-top: 5px;
       color: var(--muted);
@@ -4084,14 +4077,6 @@
           <div class="roller-slot-head">
             ${iconHtml(rec.monster, "combo-icon")}
             <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(rec.petName)}<span>${escapeHtml(rec.passive.name)}：${escapeHtml(passiveDescription(rec.passive))}</span></div>
-          </div>
-          <div class="roller-skill-label">通过过山车获得技能</div>
-          <div class="roller-skill">
-            ${iconHtml(rec.skill, "combo-icon")}
-            <div>
-              <strong>${escapeHtml(rec.skill.name)}</strong>
-              <div class="line">${escapeHtml(skillSummary(rec.skill))}</div>
-            </div>
           </div>
           ${renderRollerLearners(rec)}
         </div>
