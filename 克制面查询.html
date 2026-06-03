@@ -1793,6 +1793,37 @@
     ];
     const PVP_MANUAL_BUFF_STEP = 0.1;
     const PVP_MANUAL_DAMAGE_STEP = 10;
+    const S2_SKILL_OVERRIDES = {
+      "水刃": { category: "physical", description: "造成物伤。应对状态：本技能能耗永久-3。" },
+      "聒噪": { description: "敌方获得全攻击技能能耗+2，持续3回合。" },
+      "阻断": { category: "special", power: 75, description: "造成魔伤。应对状态：额外打断被应对技能。" },
+      "斩断": { category: "physical", power: 70, description: "造成物伤。应对状态：额外打断被应对技能。" },
+      "截拳": { category: "physical", power: 85, description: "造成物伤。应对状态：额外造成打断，回复该技能能耗的能量。" },
+      "地刺": { category: "physical", power: 90, description: "造成物伤。应对状态：额外打断被应对技能。" },
+      "咆哮": { description: "敌方获得物攻-60%，速度-60。" },
+      "甜心续航": { pp: 3, description: "自己和敌方获得萌化：回复40%生命和0能量。" },
+      "啮合传递": { description: "自己获得速度+30。本技能位于1号或3号位时，额外获得物攻+80%，传动1。" },
+      "冰蛋壳": { description: "减伤70%。应对攻击：敌方获得2层减速印记。" },
+      "涌泉": { category: "special", power: 90, description: "造成魔伤。本技能能耗每-1，威力+10。" },
+      "淬火": { pp: 2, description: "减伤80%。应对攻击：下次攻击技能威力翻倍。" },
+      "不动如山": { pp: 2, description: "减伤90%。应对攻击：自身物攻+50%。" },
+      "灾厄": { category: "physical", power: 60, description: "对自己造成60威力物伤。应对状态：改为对敌方造成180威力物伤。" },
+      "感染病": { category: "special", power: 110, description: "造成魔伤。若击败敌方，则将中毒转化为中毒印记。" },
+      "龙吟": { description: "蓄力，自身获得双攻+150%和速度+80。" },
+      "防反": { description: "减伤70%。应对攻击：自己获得物攻和魔攻+70%。" },
+      "落雨": { description: "将天气改为雨天，持续8回合。天气「雨天」：双方水系技能威力+75%。" },
+      "闪击": { description: "造成物伤。速度低于对手或和对手相同时，威力仍为60；速度高于对手271及以上时，威力提升至200。" },
+      "鸣沙陷阱": { description: "造成物伤。物防低于对手或和对手相同时，威力仍为60；物防高于对手271及以上时，威力提升至200。" },
+      "聚盐": { description: "2连击，每次连击自己回复8%生命。使用后本技能连击数永久+1，不再恢复能量。" },
+      "落雷": { pp: 3, category: "special", power: 35, description: "造成魔伤。每次入场，本技能威力永久+40。" },
+      "破防": { pp: 2, description: "敌方获得双防-70%。应对防御：额外使被应对技能冷却2回合。" },
+      "触底强击": { pp: 4, category: "special", power: 95, description: "造成魔伤。使用后若能量耗尽，本次技能威力+120。" },
+      "羽翼庇护": { pp: 2, description: "减伤70%。应对攻击：自己获得连击数+2。" },
+      "虫群过境": { pp: 3, category: "physical", power: 30, description: "造成物伤，2连击。己方队伍获得1次奉献：获得连击数+1。" },
+      "焚毁": { category: "special", power: 40, description: "造成魔伤。驱散敌方所有印记，每驱散1层，获得物攻+20%。" },
+      "绵里藏针": { pp: 2, power: 60, description: "若自己上回合未攻击敌方并造成伤害，本技能威力每回合永久+20。" },
+      "芳香诱引": { pp: 2, description: "自己获得连击数+2。应对防御：额外造成打断，且敌方下回合获得眩晕。" }
+    };
 
     const RELATION = {
       grass: { strong: ["water", "ground"], weak: ["fire", "dragon", "poison", "bug", "wing", "mechanical"] },
@@ -4786,7 +4817,7 @@
         priority: skill.priority,
         description: skill.description || "",
         raw: skill
-      })).filter((skill) => skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+      })).map(applyS2SkillOverride).filter((skill) => skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
 
       return {
         generatedAt: bundle.generated_at || new Date().toISOString(),
@@ -4798,6 +4829,16 @@
         bloodlines: BLOODLINES,
         skills
       };
+    }
+
+    function applyS2SkillOverride(skill) {
+      const override = S2_SKILL_OVERRIDES[skill?.name];
+      if (!override) return skill;
+      const next = { ...skill, ...override };
+      if (skill.raw) {
+        next.raw = { ...skill.raw, ...override };
+      }
+      return next;
     }
 
     function ensureArkRollerSkill(data) {
@@ -4850,7 +4891,8 @@
     function applyDexData(data) {
       const nextData = {
         ...data,
-        monsters: withBossForms(data.monsters || [])
+        monsters: withBossForms(data.monsters || []),
+        skills: (data.skills || []).map(applyS2SkillOverride)
       };
       dexData = ensureArkRollerSkill(nextData);
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
