@@ -1699,33 +1699,36 @@
     }
 
     const PVP_NATURES = [
-      { id: "nature-adamant", kind: "nature", name: "固执（物攻↑/魔攻↓）", aliases: ["固执", "物攻", "魔攻"], iconText: "物", iconColor: "#dc2626" },
-      { id: "nature-jolly", kind: "nature", name: "开朗（速度↑/魔攻↓）", aliases: ["开朗", "速度", "魔攻"], iconText: "速", iconColor: "#0ea5e9" },
-      { id: "nature-timid", kind: "nature", name: "胆小（速度↑/物攻↓）", aliases: ["胆小", "速度", "物攻"], iconText: "速", iconColor: "#0ea5e9" },
-      { id: "nature-modest", kind: "nature", name: "保守（魔攻↑/物攻↓）", aliases: ["保守", "魔攻", "物攻"], iconText: "魔", iconColor: "#7c3aed" },
-      { id: "nature-bold", kind: "nature", name: "大胆（物防↑/物攻↓）", aliases: ["大胆", "物防", "物攻"], iconText: "防", iconColor: "#16a34a" },
-      { id: "nature-calm", kind: "nature", name: "沉着（魔防↑/物攻↓）", aliases: ["沉着", "魔防", "物攻"], iconText: "抗", iconColor: "#0891b2" },
-      { id: "nature-brave", kind: "nature", name: "勇敢（物攻↑/速度↓）", aliases: ["勇敢", "物攻", "低速", "速度"], iconText: "物", iconColor: "#dc2626" },
-      { id: "nature-quiet", kind: "nature", name: "冷静（魔攻↑/速度↓）", aliases: ["冷静", "魔攻", "低速", "速度"], iconText: "魔", iconColor: "#7c3aed" },
-      { id: "nature-lonely", kind: "nature", name: "孤僻（物攻↑/物防↓）", aliases: ["孤僻", "孤独", "怕寂寞", "物攻", "物防"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-silent", kind: "nature", name: "沉默（生命↑/物攻↓）", aliases: ["沉默", "生命", "物攻"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-peaceful", kind: "nature", name: "平和（生命↑/魔攻↓）", aliases: ["平和", "生命", "魔攻"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-gloomy", kind: "nature", name: "忧郁（生命↑/物防↓）", aliases: ["忧郁", "生命", "物防"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-careless-hp", kind: "nature", name: "粗心（生命↑/魔防↓）", aliases: ["粗心", "生命", "魔防"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-practical", kind: "nature", name: "踏实（生命↑/速度↓）", aliases: ["踏实", "生命", "速度"], iconText: "生", iconColor: "#059669" },
+      { id: "nature-bold-atk", kind: "nature", name: "大胆（物攻↑/物防↓）", aliases: ["大胆", "物攻", "物防"], iconText: "物", iconColor: "#dc2626" },
       { id: "nature-naughty", kind: "nature", name: "调皮（物攻↑/魔防↓）", aliases: ["调皮", "物攻", "魔防"], iconText: "物", iconColor: "#dc2626" },
-      { id: "nature-impish", kind: "nature", name: "淘气（物防↑/魔攻↓）", aliases: ["淘气", "物防", "魔攻"], iconText: "防", iconColor: "#16a34a" },
-      { id: "nature-lax", kind: "nature", name: "乐天（物防↑/魔防↓）", aliases: ["乐天", "物防", "魔防"], iconText: "防", iconColor: "#16a34a" },
-      { id: "nature-relaxed", kind: "nature", name: "悠闲（物防↑/速度↓）", aliases: ["悠闲", "物防", "速度", "低速"], iconText: "防", iconColor: "#16a34a" },
-      { id: "nature-mild", kind: "nature", name: "稳重（魔攻↑/物防↓）", aliases: ["稳重", "魔攻", "物防"], iconText: "魔", iconColor: "#7c3aed" },
-      { id: "nature-rash", kind: "nature", name: "马虎（魔攻↑/魔防↓）", aliases: ["马虎", "魔攻", "魔防"], iconText: "魔", iconColor: "#7c3aed" },
-      { id: "nature-gentle", kind: "nature", name: "温顺（魔防↑/物防↓）", aliases: ["温顺", "魔防", "物防"], iconText: "抗", iconColor: "#0891b2" },
-      { id: "nature-careful", kind: "nature", name: "慎重（魔防↑/魔攻↓）", aliases: ["慎重", "魔防", "魔攻"], iconText: "抗", iconColor: "#0891b2" },
-      { id: "nature-sassy", kind: "nature", name: "狂妄（魔防↑/速度↓）", aliases: ["狂妄", "魔防", "速度", "低速"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-brave", kind: "nature", name: "勇敢（物攻↑/速度↓）", aliases: ["勇敢", "物攻", "速度"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-strong", kind: "nature", name: "逞强（物攻↑/生命↓）", aliases: ["逞强", "物攻", "生命"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-adamant", kind: "nature", name: "固执（物攻↑/魔攻↓）", aliases: ["固执", "物攻", "魔攻"], iconText: "物", iconColor: "#dc2626" },
+      { id: "nature-clever", kind: "nature", name: "聪明（魔攻↑/物攻↓）", aliases: ["聪明", "魔攻", "物攻"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-focused", kind: "nature", name: "专注（魔攻↑/物防↓）", aliases: ["专注", "魔攻", "物防"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-paranoid", kind: "nature", name: "偏执（魔攻↑/魔防↓）", aliases: ["偏执", "魔攻", "魔防"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-quiet", kind: "nature", name: "冷静（魔攻↑/速度↓）", aliases: ["冷静", "魔攻", "速度"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-rational", kind: "nature", name: "理性（魔攻↑/生命↓）", aliases: ["理性", "魔攻", "生命"], iconText: "魔", iconColor: "#7c3aed" },
+      { id: "nature-timid", kind: "nature", name: "胆小（速度↑/物攻↓）", aliases: ["胆小", "速度", "物攻"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-jolly", kind: "nature", name: "开朗（速度↑/魔攻↓）", aliases: ["开朗", "速度", "魔攻"], iconText: "速", iconColor: "#0ea5e9" },
       { id: "nature-hasty", kind: "nature", name: "急躁（速度↑/物防↓）", aliases: ["急躁", "速度", "物防"], iconText: "速", iconColor: "#0ea5e9" },
-      { id: "nature-naive", kind: "nature", name: "天真（速度↑/魔防↓）", aliases: ["天真", "速度", "魔防"], iconText: "速", iconColor: "#0ea5e9" },
-      { id: "nature-silent", kind: "nature", name: "沉默（生命↑/物攻↓）", aliases: ["沉默", "生命", "低物攻", "物攻"], iconText: "生", iconColor: "#059669" },
-      { id: "nature-neutral", kind: "nature", name: "平和（无修正）", aliases: ["平和", "平衡", "无修正"], iconText: "均", iconColor: "#64748b" },
-      { id: "nature-hardy", kind: "nature", name: "勤奋（无修正）", aliases: ["勤奋", "无修正"], iconText: "均", iconColor: "#64748b" },
-      { id: "nature-docile", kind: "nature", name: "坦率（无修正）", aliases: ["坦率", "无修正"], iconText: "均", iconColor: "#64748b" },
-      { id: "nature-serious", kind: "nature", name: "认真（无修正）", aliases: ["认真", "无修正"], iconText: "均", iconColor: "#64748b" },
-      { id: "nature-bashful", kind: "nature", name: "害羞（无修正）", aliases: ["害羞", "无修正"], iconText: "均", iconColor: "#64748b" },
-      { id: "nature-quirky", kind: "nature", name: "浮躁（无修正）", aliases: ["浮躁", "无修正"], iconText: "均", iconColor: "#64748b" }
+      { id: "nature-reckless", kind: "nature", name: "莽撞（速度↑/魔防↓）", aliases: ["莽撞", "速度", "魔防"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-passionate", kind: "nature", name: "热情（速度↑/生命↓）", aliases: ["热情", "速度", "生命"], iconText: "速", iconColor: "#0ea5e9" },
+      { id: "nature-steady", kind: "nature", name: "稳重（物防↑/物攻↓）", aliases: ["稳重", "物防", "物攻"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-naive-defense", kind: "nature", name: "天真（物防↑/魔攻↓）", aliases: ["天真", "物防", "魔攻"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-relaxed", kind: "nature", name: "悠闲（物防↑/速度↓）", aliases: ["悠闲", "物防", "速度"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-lazy", kind: "nature", name: "懒散（物防↑/魔防↓）", aliases: ["懒散", "物防", "魔防"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-frank", kind: "nature", name: "坦率（物防↑/生命↓）", aliases: ["坦率", "物防", "生命"], iconText: "防", iconColor: "#16a34a" },
+      { id: "nature-alert", kind: "nature", name: "警惕（魔防↑/物攻↓）", aliases: ["警惕", "魔防", "物攻"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-shy", kind: "nature", name: "害羞（魔防↑/魔攻↓）", aliases: ["害羞", "魔防", "魔攻"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-gentle", kind: "nature", name: "温顺（魔防↑/物防↓）", aliases: ["温顺", "魔防", "物防"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-careful", kind: "nature", name: "慎重（魔防↑/速度↓）", aliases: ["慎重", "魔防", "速度"], iconText: "抗", iconColor: "#0891b2" },
+      { id: "nature-anxious", kind: "nature", name: "焦虑（魔防↑/生命↓）", aliases: ["焦虑", "魔防", "生命"], iconText: "抗", iconColor: "#0891b2" }
     ];
 
     const PVP_TALENTS = [
@@ -1753,9 +1756,9 @@
       "talent-spe": "spe"
     };
     const DEFAULT_DAMAGE_TALENTS = ["talent-hp", "talent-def", "talent-spd"];
-    const DEFAULT_DAMAGE_NATURE_UP = "";
-    const DEFAULT_DAMAGE_NATURE_DOWN = "";
-    const DEFAULT_DAMAGE_NATURE_TEXT = "平和性格";
+    const DEFAULT_DAMAGE_NATURE_UP = "hp";
+    const DEFAULT_DAMAGE_NATURE_DOWN = "spe";
+    const DEFAULT_DAMAGE_NATURE_TEXT = "踏实性格";
     const DEFAULT_DAMAGE_TALENT_TEXT = "生命、物防、魔防";
     const PVP_MAX_IV = 10;
     const PVP_IV_STAT_RATE = 3;
@@ -3118,7 +3121,7 @@
         return {
           natures: [
             { name: `开朗（速度+ / 魔攻-）`, speed: nature1Spe },
-            { name: `大胆（物防+ / 物攻-）`, speed: nature2Spe }
+            { name: `稳重（物防+ / 物攻-）`, speed: nature2Spe }
           ],
           talent: `HP+60 / ${defChinese}+60 / 速度+60`,
           note: "偏联防或续航定位，优先把耐久拉满。"
@@ -3167,7 +3170,7 @@
         const nature2Spe = natureSpe(spe, 0.9);
         return {
           natures: [
-            { name: "保守（魔攻+ / 物攻-）", speed: nature1Spe },
+            { name: "聪明（魔攻+ / 物攻-）", speed: nature1Spe },
             { name: "冷静（魔攻+ / 速度-）", speed: nature2Spe }
           ],
           talent: "魔攻+60 / 速度+60 / HP+60",
@@ -3209,27 +3212,36 @@
     function natureStatMods(natureId) {
       const mods = { hp: 1, atk: 1, defense: 1, spa: 1, spd: 1, spe: 1 };
       const map = {
-        "nature-jolly": ["spe", "spa"],
-        "nature-timid": ["spe", "atk"],
-        "nature-adamant": ["atk", "spa"],
-        "nature-modest": ["spa", "atk"],
-        "nature-bold": ["defense", "atk"],
-        "nature-calm": ["spd", "atk"],
-        "nature-brave": ["atk", "spe"],
-        "nature-quiet": ["spa", "spe"],
-        "nature-lonely": ["atk", "defense"],
+        "nature-silent": ["hp", "atk"],
+        "nature-peaceful": ["hp", "spa"],
+        "nature-gloomy": ["hp", "defense"],
+        "nature-careless-hp": ["hp", "spd"],
+        "nature-practical": ["hp", "spe"],
+        "nature-bold-atk": ["atk", "defense"],
         "nature-naughty": ["atk", "spd"],
-        "nature-impish": ["defense", "spa"],
-        "nature-lax": ["defense", "spd"],
-        "nature-relaxed": ["defense", "spe"],
-        "nature-mild": ["spa", "defense"],
-        "nature-rash": ["spa", "spd"],
-        "nature-gentle": ["spd", "defense"],
-        "nature-careful": ["spd", "spa"],
-        "nature-sassy": ["spd", "spe"],
+        "nature-brave": ["atk", "spe"],
+        "nature-strong": ["atk", "hp"],
+        "nature-adamant": ["atk", "spa"],
+        "nature-clever": ["spa", "atk"],
+        "nature-focused": ["spa", "defense"],
+        "nature-paranoid": ["spa", "spd"],
+        "nature-quiet": ["spa", "spe"],
+        "nature-rational": ["spa", "hp"],
+        "nature-timid": ["spe", "atk"],
+        "nature-jolly": ["spe", "spa"],
         "nature-hasty": ["spe", "defense"],
-        "nature-naive": ["spe", "spd"],
-        "nature-silent": ["hp", "atk"]
+        "nature-reckless": ["spe", "spd"],
+        "nature-passionate": ["spe", "hp"],
+        "nature-steady": ["defense", "atk"],
+        "nature-naive-defense": ["defense", "spa"],
+        "nature-relaxed": ["defense", "spe"],
+        "nature-lazy": ["defense", "spd"],
+        "nature-frank": ["defense", "hp"],
+        "nature-alert": ["spd", "atk"],
+        "nature-shy": ["spd", "spa"],
+        "nature-gentle": ["spd", "defense"],
+        "nature-careful": ["spd", "spe"],
+        "nature-anxious": ["spd", "hp"]
       };
       const pair = natureId ? map[natureId] : [DEFAULT_DAMAGE_NATURE_UP, DEFAULT_DAMAGE_NATURE_DOWN];
       if (pair?.[0] && pair?.[1]) {
