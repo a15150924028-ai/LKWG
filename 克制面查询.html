@@ -1264,6 +1264,13 @@
       white-space: nowrap;
     }
 
+    .roller-skill-label {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .roller-meta {
       margin-top: 5px;
       color: var(--muted);
@@ -2045,7 +2052,6 @@
             </div>
           </div>
           <div class="field field-wide">
-            <label>通过过山车获得技能</label>
             <div data-combo="rollerSkill" data-field="rollerSkillId"></div>
           </div>
           </div>
@@ -4068,7 +4074,7 @@
           <div class="roller-slot no-rec">
             <div class="roller-slot-head">
               ${iconHtml(monster, "combo-icon")}
-              <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(monster.name)}<span>暂无推荐技能</span></div>
+              <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(monster.name)}<span>暂无通过过山车获得技能</span></div>
             </div>
           </div>
         `;
@@ -4079,6 +4085,7 @@
             ${iconHtml(rec.monster, "combo-icon")}
             <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(rec.petName)}<span>${escapeHtml(rec.passive.name)}：${escapeHtml(passiveDescription(rec.passive))}</span></div>
           </div>
+          <div class="roller-skill-label">通过过山车获得技能</div>
           <div class="roller-skill">
             ${iconHtml(rec.skill, "combo-icon")}
             <div>
