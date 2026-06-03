@@ -1078,6 +1078,16 @@
       font-weight: 900;
     }
 
+    .pvp-trait-bonus {
+      display: inline;
+      padding: 0 3px;
+      border: 1px solid #fecdd3;
+      border-radius: 4px;
+      background: #fff1f2;
+      color: #b91c1c;
+      font-weight: 900;
+    }
+
     .pvp-damage-lines {
       display: grid;
       gap: 4px;
@@ -3746,6 +3756,23 @@
       return `${Number(value).toFixed(2)}x`;
     }
 
+    function renderPvpTraitBonus(label) {
+      return `<span class="pvp-trait-bonus">${escapeHtml(label)}</span>`;
+    }
+
+    function renderPvpBonusDetails(damage) {
+      return [
+        ...damage.attackerPassiveLabels.map((label) => renderPvpTraitBonus(`己方${label}`)),
+        ...damage.attackerSkillLabels.map((label) => escapeHtml(`技能${label}`)),
+        ...damage.attackerManualLabels.map((label) => escapeHtml(`己方手动${label}`)),
+        ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
+        ...damage.defenderPassiveLabels.map((label) => renderPvpTraitBonus(`敌方${label}`)),
+        ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`)),
+        ...damage.attackerDamageLabels.map((label) => renderPvpTraitBonus(`己方${label}`)),
+        ...damage.defenderDamageLabels.map((label) => renderPvpTraitBonus(`敌方${label}`))
+      ].join("，");
+    }
+
     function renderPvpDamageResult(side) {
       const state = pvpSideState(side);
       const opponentState = pvpSideState(side === "ally" ? "enemy" : "ally");
@@ -3772,16 +3799,7 @@
       if (!damage) {
         return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">伤害数据不足</div>`;
       }
-      const passiveText = [
-        ...damage.attackerPassiveLabels.map((label) => `己方${label}`),
-        ...damage.attackerSkillLabels.map((label) => `技能${label}`),
-        ...damage.attackerManualLabels.map((label) => `己方手动${label}`),
-        ...(damage.manualDamageBonus ? [`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`] : []),
-        ...damage.defenderPassiveLabels.map((label) => `敌方${label}`),
-        ...damage.defenderManualLabels.map((label) => `敌方手动${label}`),
-        ...damage.attackerDamageLabels.map((label) => `己方${label}`),
-        ...damage.defenderDamageLabels.map((label) => `敌方${label}`)
-      ].join("，");
+      const bonusText = renderPvpBonusDetails(damage);
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
       if (damage.action.id === "pvp-force-impact" && damage.responseEstimate != null) {
@@ -3790,7 +3808,7 @@
             <div class="pvp-damage-lines">
               <div class="pvp-damage-line">
                 <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
-                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${passiveText ? ` / 增益：${escapeHtml(passiveText)}` : ""}</span>
+                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
               </div>
               <div class="pvp-damage-line">
                 <strong>${escapeHtml(damage.action.name)}：${damage.responseEstimate}（扣除${damage.responsePercent}%生命，应对状态）</strong>
@@ -3803,7 +3821,7 @@
       return `
         <div class="pvp-damage-result" data-pvp-damage-result="${side}">
           <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
-          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${passiveText ? ` / 增益：${escapeHtml(passiveText)}` : ""}</span>
+          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
         </div>
       `;
     }
