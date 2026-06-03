@@ -2072,6 +2072,8 @@
           value: pet.monsterId || "",
           placeholder: "搜索精灵名称",
           emptyText: "未选择精灵",
+          itemsForQuery: (query) => fuzzyMonsterItems(query, dexData.monsters),
+          skipDefaultFilter: true,
           onSelect: (item) => {
             const current = readTeam();
             current[petIndex].monsterId = item?.id || "";
