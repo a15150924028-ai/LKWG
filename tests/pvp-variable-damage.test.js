@@ -1,0 +1,65 @@
+const assert = require("node:assert/strict");
+const rules = require("../pvp_damage_rules.js");
+
+function action(name, power, description, extra = {}) {
+  return {
+    id: name,
+    name,
+    power,
+    pp: extra.pp ?? 3,
+    description,
+    ...extra
+  };
+}
+
+function resolve(inputAction, context = {}) {
+  return rules.resolvePvpVariableDamage(inputAction, {
+    attackerStats: { hp: 500, atk: 200, defense: 200, spa: 200, spd: 200, spe: 300, ...(context.attackerStats || {}) },
+    defenderStats: { hp: 500, atk: 200, defense: 200, spa: 200, spd: 200, spe: 100, ...(context.defenderStats || {}) },
+    attackerEnergy: context.attackerEnergy,
+    defenderEnergy: context.defenderEnergy,
+    attackerHpPercent: context.attackerHpPercent,
+    defenderSelectedSkills: context.defenderSelectedSkills,
+    skillIndex: context.skillIndex,
+    currentSkillCost: context.currentSkillCost,
+    skillUseCount: context.skillUseCount,
+    defaultEnergy: 10
+  });
+}
+
+assert.equal(resolve(action("乱打", 25, "造成物伤，5连击。")).hitCount, 5);
+assert.equal(resolve(action("传感器", 40, "造成物伤，2连击，本技能位于1号或3号位时连击+1。"), { skillIndex: 0 }).hitCount, 3);
+assert.equal(resolve(action("传感器", 40, "造成物伤，2连击，本技能位于1号或3号位时连击+1。"), { skillIndex: 1 }).hitCount, 2);
+
+assert.equal(resolve(action("械斗", 45, "本技能位于1号位时，威力+60。"), { skillIndex: 0 }).power, 105);
+assert.equal(resolve(action("械斗", 45, "本技能位于1号位时，威力+60。"), { skillIndex: 1 }).power, 45);
+assert.equal(resolve(action("磁暴", 70, "本技能位于1号或3号位时，威力+30。"), { skillIndex: 2 }).power, 100);
+
+assert.equal(resolve(action("闪击", 60, "速度低于对手或和对手相同时，威力仍为60。速度高于对手271及以上时，威力提升至200。"), {
+  attackerStats: { spe: 371 },
+  defenderStats: { spe: 100 }
+}).power, 200);
+assert.equal(resolve(action("闪击", 60, "速度低于对手或和对手相同时，威力仍为60。速度高于对手271及以上时，威力提升至200。"), {
+  attackerStats: { spe: 370 },
+  defenderStats: { spe: 100 }
+}).power, 60);
+assert.equal(resolve(action("鸣沙陷阱", 60, "物防高于对手271及以上时，威力提升至200。"), {
+  attackerStats: { defense: 371 },
+  defenderStats: { defense: 100 }
+}).power, 200);
+
+assert.equal(resolve(action("穿膛", 80, "若敌方能量不高于2，本技能造成5倍伤害。"), { defenderEnergy: 2 }).damageMultiplier, 5);
+assert.equal(resolve(action("穿膛", 80, "若敌方能量不高于2，本技能造成5倍伤害。"), { defenderEnergy: 3 }).damageMultiplier, 1);
+assert.equal(resolve(action("背袭", 40, "若敌方能量等于0，造成20倍伤害。"), { defenderEnergy: 0 }).damageMultiplier, 20);
+assert.equal(resolve(action("触底强击", 95, "使用后若能量耗尽，本次技能威力+120。", { pp: 4 }), { attackerEnergy: 4 }).power, 215);
+assert.equal(resolve(action("坟场搏击", 180, "敌方每有1能量，本次技能威力-10%。"), { defenderEnergy: 5 }).power, 90);
+
+assert.equal(resolve(action("冰锋横扫", 10, "威力等于敌方已选择技能能耗总和×10。"), {
+  defenderSelectedSkills: [{ pp: 3 }, { pp: 2 }, { pp: 5 }]
+}).power, 100);
+assert.equal(resolve(action("筛管奔流", 80, "若自己生命高于80%，本技能威力+75。"), { attackerHpPercent: 100 }).power, 155);
+assert.equal(resolve(action("涌泉", 90, "本技能能耗每-1，威力+10。", { pp: 4 }), { currentSkillCost: 2 }).power, 110);
+assert.equal(resolve(action("吹火", 60, "本技能每次使用后，威力永久+20。"), { skillUseCount: 2 }).power, 100);
+assert.equal(resolve(action("聚盐", 30, "2连击，使用后本技能连击数永久+1。"), { skillUseCount: 3 }).hitCount, 5);
+
+console.log("pvp variable damage rules ok");

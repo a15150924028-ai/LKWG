@@ -1563,6 +1563,7 @@
   </main>
 
   <script src="./lcx_skill_pools.js"></script>
+  <script src="./pvp_damage_rules.js"></script>
   <script>
     const DATA_URL = "https://rocomwiki.app/data/bundle.json";
     const DATA_BASE = "https://rocomwiki.app";
@@ -3726,6 +3727,22 @@
       const defenseValue = defenderStats[mode.defenseKey];
       const typeMultiplier = combinedDefenseMultiplier(battleAction.type, defender.types || []);
       const stabMultiplier = sameTypeAttackBonus(battleAction, attacker);
+      const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
+        ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
+            attackerStats,
+            defenderStats,
+            attackerEnergy: attackerState?.energy,
+            defenderEnergy: defenderState?.energy,
+            attackerHpPercent: attackerState?.hpPercent ?? 100,
+            defenderSelectedSkills: selectedPvpSkills(defenderState),
+            skillIndex: attackerState?.pvpSkillIndex,
+            currentSkillCost: attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp,
+            skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
+            defaultEnergy: DEFAULT_PVP_ENERGY
+          })
+        : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };
+      const variablePower = Math.max(1, Number(variableDamage.power) || basePower);
+      const hitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
       const passiveDamage = passiveDamageEffects({
         attacker,
         defender,
@@ -3736,11 +3753,12 @@
         defenderStats,
         typeMultiplier
       });
-      const power = Math.max(1, Math.floor((basePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
+      const power = Math.max(1, Math.floor((variablePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
       const rawBase = (attackValue / Math.max(1, defenseValue)) * power * PVP_DAMAGE_CORE_FACTOR;
-      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier;
+      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1);
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
-      const estimate = Math.max(1, Math.floor(adjusted) + manualDamageBonus);
+      const singleEstimate = Math.max(1, Math.floor(adjusted));
+      const estimate = Math.max(1, singleEstimate * hitCount + manualDamageBonus);
       const responseEstimate = battleAction.id === "pvp-force-impact" ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER)) : null;
       return {
         attacker,
@@ -3753,6 +3771,8 @@
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
+        singleEstimate,
+        hitCount,
         estimate,
         responseEstimate,
         defenderHp: defenderStats.hp,
@@ -3765,7 +3785,8 @@
         defenderPassiveLabels: passiveModLabels(defenderPassiveMods),
         defenderManualLabels: passiveModLabels(defenderManualMods),
         attackerDamageLabels: [...effectiveAction.labels, ...passiveDamage.attackerLabels],
-        defenderDamageLabels: passiveDamage.defenderLabels
+        defenderDamageLabels: passiveDamage.defenderLabels,
+        variableDamageLabels: variableDamage.labels || []
       };
     }
 
@@ -3789,13 +3810,21 @@
         ...damage.attackerDamageLabels.map((label) => renderPvpTraitBonus(`己方${label}`)),
         ...damage.defenderDamageLabels.map((label) => renderPvpTraitBonus(`敌方${label}`))
       ].join("，");
+      const ruleText = damage.variableDamageLabels.map((label) => escapeHtml(label)).join("，");
       const bonusText = [
         ...damage.attackerSkillLabels.map((label) => escapeHtml(`技能${label}`)),
         ...damage.attackerManualLabels.map((label) => escapeHtml(`己方手动${label}`)),
         ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
         ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`))
       ].join("，");
-      return { bonusText, traitText };
+      return { bonusText, ruleText, traitText };
+    }
+
+    function pvpDamageAmountText(damage, value = damage.estimate) {
+      if (damage.hitCount > 1 && value === damage.estimate) {
+        return `${damage.singleEstimate}×${damage.hitCount} = ${damage.estimate}`;
+      }
+      return String(value);
     }
 
     function renderPvpDamageResult(side) {
@@ -3824,16 +3853,17 @@
       if (!damage) {
         return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">伤害数据不足</div>`;
       }
-      const { bonusText, traitText } = renderPvpBonusGroups(damage);
+      const { bonusText, ruleText, traitText } = renderPvpBonusGroups(damage);
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
+      const ruleTextPart = ruleText ? ` / 规则：${ruleText}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
       if (damage.action.id === "pvp-force-impact" && damage.responseEstimate != null) {
         return `
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">
               <div class="pvp-damage-line">
-                <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
-                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
+                <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage)}（扣除${damage.percent}%生命）</strong>
+                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
               </div>
               ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
               <div class="pvp-damage-line">
@@ -3846,8 +3876,8 @@
       }
       return `
         <div class="pvp-damage-result" data-pvp-damage-result="${side}">
-          <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
-          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
+          <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage)}（扣除${damage.percent}%生命）</strong>
+          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
           ${traitText ? `<span class="pvp-damage-trait-line">特性：${traitText}</span>` : ""}
         </div>
       `;
