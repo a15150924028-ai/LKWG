@@ -44,12 +44,18 @@
     return usable.reduce((sum, skill) => sum + Math.max(0, numberValue(skill.pp, 0)), 0);
   }
 
+  function layerValue(context, key) {
+    return Math.max(0, Math.round(numberValue(context?.statusLayers?.[key], 0)));
+  }
+
   function resolvePvpVariableDamage(action, context = {}) {
     const text = cleanText(actionText(action));
     const labels = [];
     let power = Math.max(0, numberValue(action?.power, 0));
     let hitCount = parseFixedHitCount(text);
     let damageMultiplier = 1;
+    let responsePower = null;
+    const basePower = power;
 
     if (/位于1号或3号位时连击\+1/.test(text) && skillInSlot(context.skillIndex, [0, 2])) {
       hitCount += 1;
@@ -81,6 +87,16 @@
     if (/物防高于对手271及以上时.*威力提升至200/.test(text)) {
       power = defenseDiff >= 271 ? 200 : 60;
       addLabel(labels, defenseDiff >= 271 ? "物防差>=271，威力200" : "物防差<271，威力60");
+    }
+
+    const actsBeforeDefender = numberValue(attackerStats.spe) > numberValue(defenderStats.spe);
+    if (/先于敌方攻击.*威力\+50%/.test(text) && actsBeforeDefender) {
+      power = Math.round(power * 1.5);
+      addLabel(labels, "先于敌方攻击，威力+50%");
+    }
+    if (/先于敌方攻击.*改为3连击/.test(text) && actsBeforeDefender) {
+      hitCount = 3;
+      addLabel(labels, "先于敌方攻击，改为3连击");
     }
 
     const attackerEnergy = clampEnergy(context.attackerEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
@@ -142,9 +158,54 @@
       addLabel(labels, "生命>80%，威力+75");
     }
 
+    const attackerLostSteps = Math.floor(Math.max(0, 100 - attackerHpPercent) / 5);
+    if (/自己每失去5%生命.*威力\+5/.test(text) && attackerLostSteps > 0) {
+      const powerAdd = attackerLostSteps * 5;
+      power += powerAdd;
+      addLabel(labels, `己方损失${attackerLostSteps * 5}%生命，威力+${powerAdd}`);
+    }
+    const defenderHpPercent = numberValue(context.defenderHpPercent, 100);
+    const defenderLostSteps = Math.floor(Math.max(0, 100 - defenderHpPercent) / 5);
+    if (/敌方每失去5%生命.*威力-5/.test(text) && defenderLostSteps > 0) {
+      const powerDrop = defenderLostSteps * 5;
+      power = Math.max(1, power - powerDrop);
+      addLabel(labels, `敌方损失${defenderLostSteps * 5}%生命，威力-${powerDrop}`);
+    }
+
+    const freezeLayers = layerValue(context, "freeze");
+    if (/敌方每有1层冻结.*威力\+20/.test(text) && freezeLayers > 0) {
+      const powerAdd = freezeLayers * 20;
+      power += powerAdd;
+      addLabel(labels, `冻结${freezeLayers}层，威力+${powerAdd}`);
+    }
+    const poisonLayers = layerValue(context, "poison");
+    if (/敌方每有1层中毒.*威力\+10/.test(text) && poisonLayers > 0) {
+      const powerAdd = poisonLayers * 10;
+      power += powerAdd;
+      addLabel(labels, `中毒${poisonLayers}层，威力+${powerAdd}`);
+    }
+    const starfallLayers = layerValue(context, "starfall");
+    if (/敌方每有1层星陨印记.*连击数\+1/.test(text) && starfallLayers > 0) {
+      hitCount += starfallLayers;
+      addLabel(labels, `星陨印记${starfallLayers}层，连击+${starfallLayers}`);
+    }
+
+    const responseMultiplierMatch = text.match(/应对状态.*本次技能威力变为(\d+(?:\.\d+)?)倍/);
+    if (responseMultiplierMatch) {
+      responsePower = Math.max(1, Math.round(basePower * Number(responseMultiplierMatch[1])));
+    }
+    if (/应对状态.*威力翻倍/.test(text) || /应对状态.*本次技能威力翻倍/.test(text)) {
+      responsePower = Math.max(1, Math.round(basePower * 2));
+    }
+    const responseFixedPowerMatch = text.match(/应对状态.*对敌方造成(\d+)威力/);
+    if (responseFixedPowerMatch) {
+      responsePower = Math.max(1, Number(responseFixedPowerMatch[1]));
+    }
+
     return {
       power: Math.max(1, Math.round(power)),
       hitCount: Math.max(1, Math.round(hitCount)),
+      responsePower,
       damageMultiplier,
       labels
     };

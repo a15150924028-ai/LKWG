@@ -3734,10 +3734,12 @@
             attackerEnergy: attackerState?.energy,
             defenderEnergy: defenderState?.energy,
             attackerHpPercent: attackerState?.hpPercent ?? 100,
+            defenderHpPercent: defenderState?.hpPercent ?? 100,
             defenderSelectedSkills: selectedPvpSkills(defenderState),
             skillIndex: attackerState?.pvpSkillIndex,
             currentSkillCost: attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp,
             skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
+            statusLayers: defenderState?.statusLayers || {},
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };
@@ -3759,7 +3761,15 @@
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
       const singleEstimate = Math.max(1, Math.floor(adjusted));
       const estimate = Math.max(1, singleEstimate * hitCount + manualDamageBonus);
-      const responseEstimate = battleAction.id === "pvp-force-impact" ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER)) : null;
+      const responsePower = variableDamage.responsePower
+        ? Math.max(1, Math.floor((Number(variableDamage.responsePower) + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
+        : null;
+      const responseSingleEstimate = responsePower
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1)))
+        : null;
+      const responseEstimate = battleAction.id === "pvp-force-impact"
+        ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
+        : (responseSingleEstimate == null ? null : Math.max(1, responseSingleEstimate * hitCount + manualDamageBonus));
       return {
         attacker,
         defender,
@@ -3767,11 +3777,13 @@
         mode,
         basePower,
         power,
+        responsePower,
         typeMultiplier,
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
         singleEstimate,
+        responseSingleEstimate,
         hitCount,
         estimate,
         responseEstimate,
@@ -3820,9 +3832,9 @@
       return { bonusText, ruleText, traitText };
     }
 
-    function pvpDamageAmountText(damage, value = damage.estimate) {
-      if (damage.hitCount > 1 && value === damage.estimate) {
-        return `${damage.singleEstimate}×${damage.hitCount} = ${damage.estimate}`;
+    function pvpDamageAmountText(damage, value = damage.estimate, singleValue = damage.singleEstimate) {
+      if (damage.hitCount > 1) {
+        return `${singleValue}×${damage.hitCount} = ${value}`;
       }
       return String(value);
     }
@@ -3857,7 +3869,10 @@
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
       const ruleTextPart = ruleText ? ` / 规则：${ruleText}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
-      if (damage.action.id === "pvp-force-impact" && damage.responseEstimate != null) {
+      if (damage.responseEstimate != null) {
+        const responseReason = damage.action.id === "pvp-force-impact"
+          ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
+          : `应对状态威力${damage.responsePower}`;
         return `
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">
@@ -3867,8 +3882,8 @@
               </div>
               ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
               <div class="pvp-damage-line">
-                <strong>${escapeHtml(damage.action.name)}：${damage.responseEstimate}（扣除${damage.responsePercent}%生命，应对状态）</strong>
-                <span>敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}</span>
+                <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate)}（扣除${damage.responsePercent}%生命，应对状态）</strong>
+                <span>${responseReason}</span>
               </div>
             </div>
           </div>
