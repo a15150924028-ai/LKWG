@@ -1089,6 +1089,11 @@
       font-weight: 900;
     }
 
+    .pvp-damage-trait-line {
+      flex-basis: 100%;
+      width: 100%;
+    }
+
     .pvp-damage-lines {
       display: grid;
       gap: 4px;
@@ -3775,17 +3780,20 @@
       return `<span class="pvp-trait-bonus">${escapeHtml(label)}</span>`;
     }
 
-    function renderPvpBonusDetails(damage) {
-      return [
+    function renderPvpBonusGroups(damage) {
+      const traitText = [
         ...damage.attackerPassiveLabels.map((label) => renderPvpTraitBonus(`己方${label}`)),
-        ...damage.attackerSkillLabels.map((label) => escapeHtml(`技能${label}`)),
-        ...damage.attackerManualLabels.map((label) => escapeHtml(`己方手动${label}`)),
-        ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
         ...damage.defenderPassiveLabels.map((label) => renderPvpTraitBonus(`敌方${label}`)),
-        ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`)),
         ...damage.attackerDamageLabels.map((label) => renderPvpTraitBonus(`己方${label}`)),
         ...damage.defenderDamageLabels.map((label) => renderPvpTraitBonus(`敌方${label}`))
       ].join("，");
+      const bonusText = [
+        ...damage.attackerSkillLabels.map((label) => escapeHtml(`技能${label}`)),
+        ...damage.attackerManualLabels.map((label) => escapeHtml(`己方手动${label}`)),
+        ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
+        ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`))
+      ].join("，");
+      return { bonusText, traitText };
     }
 
     function renderPvpDamageResult(side) {
@@ -3814,7 +3822,7 @@
       if (!damage) {
         return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">伤害数据不足</div>`;
       }
-      const bonusText = renderPvpBonusDetails(damage);
+      const { bonusText, traitText } = renderPvpBonusGroups(damage);
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
       if (damage.action.id === "pvp-force-impact" && damage.responseEstimate != null) {
@@ -3825,6 +3833,7 @@
                 <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
                 <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
               </div>
+              ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
               <div class="pvp-damage-line">
                 <strong>${escapeHtml(damage.action.name)}：${damage.responseEstimate}（扣除${damage.responsePercent}%生命，应对状态）</strong>
                 <span>敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}</span>
@@ -3837,6 +3846,7 @@
         <div class="pvp-damage-result" data-pvp-damage-result="${side}">
           <strong>${escapeHtml(damage.action.name)}：${damage.estimate}（扣除${damage.percent}%生命）</strong>
           <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
+          ${traitText ? `<span class="pvp-damage-trait-line">特性：${traitText}</span>` : ""}
         </div>
       `;
     }
