@@ -1312,7 +1312,7 @@
       transition: transform 0.16s ease;
     }
 
-    .roller-learners[open] .roller-learner-arrow {
+    .roller-learners details[open] .roller-learner-arrow {
       transform: rotate(180deg);
     }
 
@@ -1330,6 +1330,13 @@
       gap: 5px;
       max-height: 126px;
       overflow: auto;
+      padding: 0 7px 7px;
+    }
+
+    .roller-learner-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px;
       padding: 0 7px 7px;
     }
 
@@ -4017,15 +4024,24 @@
           <span class="roller-learner-name">${escapeHtml(monster.name)}</span>
         </div>
       `).join("");
+      const stripList = learners.slice(0, 2).map((monster) => `
+        <div class="roller-learner-item">
+          ${iconHtml(monster, "combo-icon")}
+          <span class="roller-learner-name">${escapeHtml(monster.name)}</span>
+        </div>
+      `).join("");
       return `
-        <details class="roller-learners">
-          <summary>
-            <span>可学习该技能的精灵 ${learners.length}只</span>
-            <span class="roller-learner-preview">${escapeHtml(preview)}</span>
-            <span class="roller-learner-arrow">▼</span>
-          </summary>
-          <div class="roller-learner-grid">${list}</div>
-        </details>
+        <div class="roller-learners">
+          <details>
+            <summary>
+              <span>可学习该技能的精灵 ${learners.length}只</span>
+              <span class="roller-learner-preview">${escapeHtml(preview)}</span>
+              <span class="roller-learner-arrow">▼</span>
+            </summary>
+            <div class="roller-learner-grid">${list}</div>
+          </details>
+          <div class="roller-learner-strip">${stripList}</div>
+        </div>
       `;
     }
 
