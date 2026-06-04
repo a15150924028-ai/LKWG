@@ -3738,6 +3738,19 @@
             currentSkillCost: attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp,
             skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
             statusLayers: defenderState?.statusLayers || {},
+            relatedTypeSkillUseCount: attackerState?.relatedTypeSkillUseCounts?.[battleAction.type] ?? 0,
+            entryCount: attackerState?.entryCounts?.[battleAction.id] ?? attackerState?.entryCount ?? 0,
+            defenderSwitched: !!defenderState?.switchedThisTurn,
+            attackerHasDebuff: !!attackerState?.hasDebuff,
+            weatherType: (typeof state === "object" && state ? state.pvpWeatherType : null),
+            burstActive: !!attackerState?.burstActive,
+            burstEffectCount: attackerState?.burstEffectCount ?? 0,
+            previousUsedStatusSkill: !!attackerState?.previousUsedStatusSkill,
+            previousResponseSuccess: !!attackerState?.previousResponseSuccess,
+            turnsWithoutDamage: attackerState?.turnsWithoutDamage ?? 0,
+            defeatCount: attackerState?.defeatCounts?.[battleAction.id] ?? attackerState?.defeatCount ?? 0,
+            defenderFaintedCount: defenderState?.faintedCount ?? 0,
+            teamSkillCopies: attackerState?.teamSkillCopies || {},
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };

@@ -30,6 +30,14 @@ function resolve(inputAction, context = {}) {
     defenderSwitched: context.defenderSwitched,
     attackerHasDebuff: context.attackerHasDebuff,
     weatherType: context.weatherType,
+    burstActive: context.burstActive,
+    burstEffectCount: context.burstEffectCount,
+    previousUsedStatusSkill: context.previousUsedStatusSkill,
+    previousResponseSuccess: context.previousResponseSuccess,
+    turnsWithoutDamage: context.turnsWithoutDamage,
+    defeatCount: context.defeatCount,
+    defenderFaintedCount: context.defenderFaintedCount,
+    teamSkillCopies: context.teamSkillCopies,
     defaultEnergy: 10
   });
 }
@@ -91,5 +99,17 @@ assert.equal(resolve(action("落雷", 35, "每次入场，本技能威力永久+
 assert.equal(resolve(action("当头棒喝", 80, "若敌方本回合更换精灵，本次技能威力+100。"), { defenderSwitched: true }).power, 180);
 assert.equal(resolve(action("破罐破摔", 80, "自己有减益时，本次技能威力+60。"), { attackerHasDebuff: true }).power, 140);
 assert.equal(resolve(action("天光", 95, "本技能系别和天气系别相同。", { type: "light" }), { weatherType: "water" }).type, "water");
+assert.equal(resolve(action("电弧", 80, "迸发：本次技能威力+40。"), { burstActive: true }).power, 120);
+assert.equal(resolve(action("雷暴", 55, "迸发：本技能获得所有生效过的迸发，每获得1种，本技能能耗+1，威力+10。"), { burstActive: true, burstEffectCount: 3 }).power, 85);
+assert.equal(resolve(action("见招拆招", 65, "若上回合使用状态技能，本次技能威力+55。"), { previousUsedStatusSkill: true }).power, 120);
+assert.equal(resolve(action("气势一击", 80, "若上回合应对成功，本次技能威力+180。"), { previousResponseSuccess: true }).power, 260);
+assert.equal(resolve(action("绵里藏针", 60, "若自己上回合未攻击敌方并造成伤害，本技能威力每回合永久+20。"), { turnsWithoutDamage: 2 }).power, 100);
+assert.equal(resolve(action("流星火雨", 75, "每次击败敌方，本技能威力永久+75。"), { defeatCount: 2 }).power, 225);
+assert.equal(resolve(action("阳火增辉", 75, "每次击败敌方，本技能威力永久翻倍。"), { defeatCount: 2 }).power, 300);
+assert.equal(resolve(action("牵连", 85, "敌方每有1只力竭精灵，本次技能威力+30。"), { defenderFaintedCount: 2 }).power, 145);
+assert.equal(resolve(action("虫鸣", 15, "队伍中的精灵每携带1个虫鸣，本次技能连击数+1。"), { teamSkillCopies: { "虫鸣": 4 } }).hitCount, 5);
+assert.equal(resolve(action("月光合奏", 30, "1连击，双方携带的所有精灵每有1层萌化，本次技能连击数+1。"), { statusLayers: { cuteTotal: 3 } }).hitCount, 4);
+assert.equal(resolve(action("极寒领域", 105, "若敌方有冻结，本次技能威力+60。"), { statusLayers: { freeze: 1 } }).power, 165);
+assert.equal(resolve(action("超级糖果", 100, "自己获得萌化：本次技能威力+60。")).power, 160);
 
 console.log("pvp variable damage rules ok");

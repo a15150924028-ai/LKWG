@@ -225,6 +225,77 @@
       addLabel(labels, "技能系别改为天气系别");
     }
 
+    if (context.burstActive) {
+      const burstPowerMatch = text.match(/迸发：.*本次技能威力\+(\d+)/);
+      if (burstPowerMatch) {
+        const powerAdd = Number(burstPowerMatch[1]);
+        power += powerAdd;
+        addLabel(labels, `迸发威力+${powerAdd}`);
+      }
+      if (/迸发：.*每获得1种.*威力\+10/.test(text)) {
+        const burstEffectCount = Math.max(0, Math.round(numberValue(context.burstEffectCount, 0)));
+        if (burstEffectCount > 0) {
+          const powerAdd = burstEffectCount * 10;
+          power += powerAdd;
+          addLabel(labels, `迸发${burstEffectCount}种，威力+${powerAdd}`);
+        }
+      }
+    }
+
+    if (/上回合使用状态技能.*威力\+55/.test(text) && context.previousUsedStatusSkill) {
+      power += 55;
+      addLabel(labels, "上回合状态技能，威力+55");
+    }
+    if (/上回合应对成功.*威力\+180/.test(text) && context.previousResponseSuccess) {
+      power += 180;
+      addLabel(labels, "上回合应对成功，威力+180");
+    }
+    const turnsWithoutDamage = Math.max(0, Math.round(numberValue(context.turnsWithoutDamage, 0)));
+    const noDamagePowerMatch = text.match(/未攻击敌方并造成伤害.*威力每回合永久\+(\d+)/);
+    if (noDamagePowerMatch && turnsWithoutDamage > 0) {
+      const powerAdd = Number(noDamagePowerMatch[1]) * turnsWithoutDamage;
+      power += powerAdd;
+      addLabel(labels, `未造成伤害${turnsWithoutDamage}回合，威力+${powerAdd}`);
+    }
+
+    const defeatCount = Math.max(0, Math.round(numberValue(context.defeatCount, 0)));
+    const defeatPowerMatch = text.match(/每次击败敌方.*威力永久\+(\d+)/);
+    if (defeatPowerMatch && defeatCount > 0) {
+      const powerAdd = Number(defeatPowerMatch[1]) * defeatCount;
+      power += powerAdd;
+      addLabel(labels, `击败${defeatCount}次，威力+${powerAdd}`);
+    }
+    if (/每次击败敌方.*威力永久翻倍/.test(text) && defeatCount > 0) {
+      power *= 2 ** defeatCount;
+      addLabel(labels, `击败${defeatCount}次，威力翻${2 ** defeatCount}倍`);
+    }
+
+    const defenderFaintedCount = Math.max(0, Math.round(numberValue(context.defenderFaintedCount, 0)));
+    if (/敌方每有1只力竭精灵.*威力\+30/.test(text) && defenderFaintedCount > 0) {
+      const powerAdd = defenderFaintedCount * 30;
+      power += powerAdd;
+      addLabel(labels, `敌方力竭${defenderFaintedCount}只，威力+${powerAdd}`);
+    }
+
+    const skillCopyCount = Math.max(0, Math.round(numberValue(context.teamSkillCopies?.[action?.name], 0)));
+    if (/队伍中的精灵每携带1个.*本次技能连击数\+1/.test(text) && skillCopyCount > 0) {
+      hitCount += skillCopyCount;
+      addLabel(labels, `${action.name}携带${skillCopyCount}个，连击+${skillCopyCount}`);
+    }
+    const cuteLayers = layerValue(context, "cuteTotal");
+    if (/所有精灵每有1层萌化.*连击数\+1/.test(text) && cuteLayers > 0) {
+      hitCount += cuteLayers;
+      addLabel(labels, `萌化${cuteLayers}层，连击+${cuteLayers}`);
+    }
+    if (/敌方有冻结.*威力\+60/.test(text) && freezeLayers > 0) {
+      power += 60;
+      addLabel(labels, "敌方有冻结，威力+60");
+    }
+    if (/自己获得萌化.*本次技能威力\+60/.test(text)) {
+      power += 60;
+      addLabel(labels, "本次技能威力+60");
+    }
+
     const responseMultiplierMatch = text.match(/应对状态.*本次技能威力变为(\d+(?:\.\d+)?)倍/);
     if (responseMultiplierMatch) {
       responsePower = Math.max(1, Math.round(basePower * Number(responseMultiplierMatch[1])));
