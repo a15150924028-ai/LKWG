@@ -1264,6 +1264,10 @@
       white-space: nowrap;
     }
 
+    .roller-skill-picker {
+      margin-top: 7px;
+    }
+
     .roller-meta {
       margin-top: 5px;
       color: var(--muted);
@@ -2044,9 +2048,6 @@
               </div>
             </div>
           </div>
-          <div class="field field-wide">
-            <div data-combo="rollerSkill" data-field="rollerSkillId"></div>
-          </div>
           </div>
           <div class="skills">
             ${pet.skills.map((skill, skillIndex) => `
@@ -2152,24 +2153,6 @@
               renderResults();
             }
           });
-        });
-
-        const rollerSkillCombo = card.querySelector('[data-combo="rollerSkill"]');
-        const selectedRollerSkill = skillById.get(pet.rollerSkillId);
-        createCombo(rollerSkillCombo, {
-          items: dexData.skills,
-          value: pet.rollerSkillId || "",
-          selectedItem: selectedRollerSkill || null,
-          placeholder: selectedMonster ? "搜索任意技能" : "请先选择精灵",
-          emptyText: "未选择过山车技能",
-          disabled: !selectedMonster,
-          onSelect: (item) => {
-            const current = readTeam();
-            current[petIndex].rollerSkillId = item?.id || "";
-            saveSpecificTeam(current);
-            updateRollerButton(current);
-            renderResults();
-          }
         });
 
         pet.skills.forEach((skill, skillIndex) => {
@@ -2786,13 +2769,14 @@
     }
 
     function readTeam() {
+      const savedTeam = normalizeTeam(loadStoredTeam());
       return [...teamGrid.querySelectorAll(".pet-card")].map((card, petIndex) => {
         const monsterId = card.querySelector('[data-combo="monster"]').dataset.value || "";
         const monster = monsterById.get(monsterId);
         const bloodlineId = card.querySelector('[data-combo="bloodline"]').dataset.value || "";
         const natureId = card.querySelector('[data-combo="nature"]')?.dataset.value || "";
         const talentIds = [...card.querySelectorAll('[data-combo="talent"]')].map((combo) => combo.dataset.value || "");
-        const rollerSkillId = card.querySelector('[data-combo="rollerSkill"]')?.dataset.value || "";
+        const rollerSkillId = savedTeam[petIndex]?.rollerSkillId || "";
         const skills = [...card.querySelectorAll(".skill-row")].map((row) => ({
           skillId: row.querySelector('[data-combo="skill"]').dataset.value || ""
         }));
@@ -3978,37 +3962,8 @@
       return team.map((pet, petIndex) => {
         const monster = monsterById.get(pet.monsterId);
         if (!monster) return null;
-        const nativeSkillIds = new Set(monster.skillIds || []);
         const passives = getMonsterPassives(monster);
-
-        const candidates = [];
-        const manualCandidate = buildManualRollerCandidate(team, pet, petIndex, monster, passives);
-        if (manualCandidate) candidates.push(manualCandidate);
-
-        for (const rule of FEATURED_ROLLER_RULES) {
-          if (!rule.target.test(monster.name)) continue;
-          const skill = skillByName(rule.skill);
-          if (!skill || nativeSkillIds.has(skill.id)) continue;
-          const passive = passives[0] || { name: "特性", description: "" };
-          const candidate = buildRollerCandidate(team, petIndex, monster, passive, skill, {
-            score: rule.score,
-            reasons: [rule.reason]
-          }, "热门套路优先");
-          if (candidate) candidates.push(candidate);
-        }
-
-        for (const passive of passives) {
-          for (const skill of dexData.skills) {
-            if (nativeSkillIds.has(skill.id)) continue;
-            const scored = scoreSuperSkill(monster, passive, skill);
-            if (!scored) continue;
-            const candidate = buildRollerCandidate(team, petIndex, monster, passive, skill, scored, "");
-            if (candidate) candidates.push(candidate);
-          }
-        }
-
-        candidates.sort((a, b) => b.score - a.score);
-        return candidates[0] || null;
+        return buildManualRollerCandidate(team, pet, petIndex, monster, passives);
       });
     }
 
@@ -4050,6 +4005,12 @@
       `;
     }
 
+    function renderRollerSkillPicker(pet, petIndex) {
+      const monster = monsterById.get(pet.monsterId);
+      if (!monster) return "";
+      return `<div class="roller-skill-picker" data-roller-skill-picker="${petIndex}"></div>`;
+    }
+
     function renderRollerSlot(team, rec, pet, petIndex) {
       const monster = monsterById.get(pet.monsterId);
       if (!monster) {
@@ -4067,8 +4028,9 @@
           <div class="roller-slot no-rec">
             <div class="roller-slot-head">
               ${iconHtml(monster, "combo-icon")}
-              <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(monster.name)}<span>暂无通过过山车获得技能</span></div>
+              <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(monster.name)}<span>未选择过山车技能</span></div>
             </div>
+            ${renderRollerSkillPicker(pet, petIndex)}
           </div>
         `;
       }
@@ -4078,9 +4040,34 @@
             ${iconHtml(rec.monster, "combo-icon")}
             <div class="roller-slot-title">${petIndex + 1}号位 ${escapeHtml(rec.petName)}<span>${escapeHtml(rec.passive.name)}：${escapeHtml(passiveDescription(rec.passive))}</span></div>
           </div>
+          ${renderRollerSkillPicker(pet, petIndex)}
           ${renderRollerLearners(rec)}
         </div>
       `;
+    }
+
+    function hydrateRollerSkillPickers(team) {
+      document.querySelectorAll("[data-roller-skill-picker]").forEach((host) => {
+        const petIndex = Number.parseInt(host.dataset.rollerSkillPicker, 10);
+        const pet = team[petIndex];
+        const monster = monsterById.get(pet?.monsterId);
+        const selectedRollerSkill = skillById.get(pet?.rollerSkillId);
+        createCombo(host, {
+          items: dexData.skills,
+          value: pet?.rollerSkillId || "",
+          selectedItem: selectedRollerSkill || null,
+          placeholder: monster ? "搜索任意技能" : "请先选择精灵",
+          emptyText: "未选择过山车技能",
+          disabled: !monster,
+          onSelect: (item) => {
+            const current = readTeam();
+            current[petIndex].rollerSkillId = item?.id || "";
+            saveSpecificTeam(current);
+            updateRollerButton(current);
+            renderResults();
+          }
+        });
+      });
     }
 
     function renderRollerSuperModule(team) {
@@ -4740,6 +4727,7 @@
         + renderAnalysis(team)
         + renderPvpDamageSimulation(team)
         + `<div class="mobile-pet-results">${petHtml}</div>`;
+      hydrateRollerSkillPickers(team);
       hydratePvpDamageSimulation(team);
     }
 
