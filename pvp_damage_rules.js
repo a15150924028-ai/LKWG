@@ -52,6 +52,7 @@
     const text = cleanText(actionText(action));
     const labels = [];
     let power = Math.max(0, numberValue(action?.power, 0));
+    let type = action?.type || null;
     let hitCount = parseFixedHitCount(text);
     let damageMultiplier = 1;
     let responsePower = null;
@@ -184,10 +185,44 @@
       power += powerAdd;
       addLabel(labels, `中毒${poisonLayers}层，威力+${powerAdd}`);
     }
+    if (/敌方每有1层中毒.*应对状态.*威力\+20/.test(text) && poisonLayers > 0) {
+      responsePower = basePower + poisonLayers * 20;
+    }
     const starfallLayers = layerValue(context, "starfall");
     if (/敌方每有1层星陨印记.*连击数\+1/.test(text) && starfallLayers > 0) {
       hitCount += starfallLayers;
       addLabel(labels, `星陨印记${starfallLayers}层，连击+${starfallLayers}`);
+    }
+
+    const relatedTypeSkillUseCount = Math.max(0, Math.round(numberValue(context.relatedTypeSkillUseCount, 0)));
+    const relatedPowerMatch = text.match(/每(?:次)?使用(?:过)?(?:1(?:个|次))?其他[^，。]*技能.*威力永久\+(\d+)/);
+    if (relatedPowerMatch && relatedTypeSkillUseCount > 0) {
+      const powerAdd = Number(relatedPowerMatch[1]) * relatedTypeSkillUseCount;
+      power += powerAdd;
+      addLabel(labels, `其他同系技能${relatedTypeSkillUseCount}次，威力+${powerAdd}`);
+    }
+    if (/每使用1次其他[^，。]*技能.*威力永久翻倍/.test(text) && relatedTypeSkillUseCount > 0) {
+      power *= 2 ** relatedTypeSkillUseCount;
+      addLabel(labels, `其他同系技能${relatedTypeSkillUseCount}次，威力翻${2 ** relatedTypeSkillUseCount}倍`);
+    }
+    const entryCount = Math.max(0, Math.round(numberValue(context.entryCount, 0)));
+    const entryPowerMatch = text.match(/每次入场.*威力永久\+(\d+)/);
+    if (entryPowerMatch && entryCount > 0) {
+      const powerAdd = Number(entryPowerMatch[1]) * entryCount;
+      power += powerAdd;
+      addLabel(labels, `入场${entryCount}次，威力+${powerAdd}`);
+    }
+    if (/敌方本回合更换精灵.*威力\+100/.test(text) && context.defenderSwitched) {
+      power += 100;
+      addLabel(labels, "敌方换宠，威力+100");
+    }
+    if (/自己有减益.*威力\+60/.test(text) && context.attackerHasDebuff) {
+      power += 60;
+      addLabel(labels, "己方有减益，威力+60");
+    }
+    if (/技能系别和天气系别相同/.test(text) && context.weatherType) {
+      type = context.weatherType;
+      addLabel(labels, "技能系别改为天气系别");
     }
 
     const responseMultiplierMatch = text.match(/应对状态.*本次技能威力变为(\d+(?:\.\d+)?)倍/);
@@ -204,6 +239,7 @@
 
     return {
       power: Math.max(1, Math.round(power)),
+      type,
       hitCount: Math.max(1, Math.round(hitCount)),
       responsePower,
       damageMultiplier,

@@ -3725,8 +3725,6 @@
       const mode = damageMode(battleAction, attackerStats, defenderStats);
       const attackValue = attackerStats[mode.attackKey];
       const defenseValue = defenderStats[mode.defenseKey];
-      const typeMultiplier = combinedDefenseMultiplier(battleAction.type, defender.types || []);
-      const stabMultiplier = sameTypeAttackBonus(battleAction, attacker);
       const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
         ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
             attackerStats,
@@ -3743,6 +3741,11 @@
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };
+      const damageAction = variableDamage.type && variableDamage.type !== battleAction.type
+        ? { ...battleAction, type: variableDamage.type }
+        : battleAction;
+      const typeMultiplier = combinedDefenseMultiplier(damageAction.type, defender.types || []);
+      const stabMultiplier = sameTypeAttackBonus(damageAction, attacker);
       const variablePower = Math.max(1, Number(variableDamage.power) || basePower);
       const hitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
       const passiveDamage = passiveDamageEffects({
@@ -3750,7 +3753,7 @@
         defender,
         attackerState,
         defenderState,
-        action: battleAction,
+        action: damageAction,
         attackerStats,
         defenderStats,
         typeMultiplier
@@ -3773,7 +3776,7 @@
       return {
         attacker,
         defender,
-        action: battleAction,
+        action: damageAction,
         mode,
         basePower,
         power,
