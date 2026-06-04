@@ -48,6 +48,47 @@
     return Math.max(0, Math.round(numberValue(context?.statusLayers?.[key], 0)));
   }
 
+  const STAT_NAME_TO_KEY = {
+    "生命": "hp",
+    "物攻": "atk",
+    "物防": "defense",
+    "魔攻": "spa",
+    "魔防": "spd",
+    "速度": "spe"
+  };
+
+  const TYPE_NAME_TO_KEY = {
+    "草": "grass",
+    "水": "water",
+    "火": "fire",
+    "电": "electric",
+    "毒": "poison",
+    "幻": "fantasy",
+    "冰": "ice",
+    "武": "fighting",
+    "萌": "cute",
+    "光": "light",
+    "龙": "dragon",
+    "机械": "mechanical",
+    "幽": "ghost",
+    "恶": "demon",
+    "虫": "bug",
+    "普通": "normal",
+    "翼": "wing",
+    "地": "ground"
+  };
+
+  function statValue(stats, statName) {
+    const key = STAT_NAME_TO_KEY[statName];
+    return key ? numberValue(stats?.[key], 0) : 0;
+  }
+
+  function countSelectedSkillsByType(skills, typeName) {
+    const typeKey = TYPE_NAME_TO_KEY[typeName] || typeName;
+    if (!typeKey || !Array.isArray(skills)) return 0;
+    return skills.filter((skill) => skill?.type === typeKey).length;
+  }
+
   function resolvePvpVariableDamage(action, context = {}) {
     const text = cleanText(actionText(action));
     const labels = [];
@@ -122,6 +163,12 @@
       power = Math.max(1, Math.round(power * multiplier));
       addLabel(labels, `敌方${defenderEnergy}能量，威力${Math.round(multiplier * 100)}%`);
     }
+    const selfEnergyPowerMatch = text.match(/(?:自己|自身|己方)每有1(?:点)?能量.*威力\+(\d+)/);
+    if (selfEnergyPowerMatch && attackerEnergy > 0) {
+      const powerAdd = Number(selfEnergyPowerMatch[1]) * attackerEnergy;
+      power += powerAdd;
+      addLabel(labels, `己方${attackerEnergy}能量，威力+${powerAdd}`);
+    }
 
     if (/能耗每-1.*威力\+10/.test(text)) {
       const baseCost = Math.max(0, numberValue(action?.pp, 0));
@@ -171,6 +218,39 @@
       const powerDrop = defenderLostSteps * 5;
       power = Math.max(1, power - powerDrop);
       addLabel(labels, `敌方损失${defenderLostSteps * 5}%生命，威力-${powerDrop}`);
+    }
+    const defenderLowHpPowerMatch = text.match(/敌方生命低于(\d+)%.*威力\+(\d+)/);
+    if (defenderLowHpPowerMatch && defenderHpPercent < Number(defenderLowHpPowerMatch[1])) {
+      const powerAdd = Number(defenderLowHpPowerMatch[2]);
+      power += powerAdd;
+      addLabel(labels, `敌方生命<${defenderLowHpPowerMatch[1]}%，威力+${powerAdd}`);
+    }
+
+    const statPowerMatch = text.match(/本技能威力等于(?:自己|自身|己方)?(生命|物攻|魔攻|物防|魔防|速度)的(\d+)%/);
+    if (statPowerMatch) {
+      const source = statValue(attackerStats, statPowerMatch[1]);
+      const percent = Number(statPowerMatch[2]);
+      power = Math.max(1, Math.round(source * percent / 100));
+      addLabel(labels, `${statPowerMatch[1]}${percent}%，威力${power}`);
+    }
+
+    const statDiffRules = [
+      { name: "速度", diff: speedDiff },
+      { name: "物防", diff: defenseDiff },
+      { name: "物攻", diff: numberValue(attackerStats.atk) - numberValue(defenderStats.atk) },
+      { name: "魔攻", diff: numberValue(attackerStats.spa) - numberValue(defenderStats.spa) },
+      { name: "魔防", diff: numberValue(attackerStats.spd) - numberValue(defenderStats.spd) }
+    ];
+    for (const rule of statDiffRules) {
+      const diffMatch = text.match(new RegExp(`${rule.name}每高于对手(\\d+).*威力\\+(\\d+)`));
+      if (diffMatch && rule.diff > 0) {
+        const steps = Math.floor(rule.diff / Number(diffMatch[1]));
+        if (steps > 0) {
+          const powerAdd = steps * Number(diffMatch[2]);
+          power += powerAdd;
+          addLabel(labels, `${rule.name}差${rule.diff}，威力+${powerAdd}`);
+        }
+      }
     }
 
     const freezeLayers = layerValue(context, "freeze");
@@ -296,9 +376,27 @@
       addLabel(labels, "本次技能威力+60");
     }
 
+    const selectedTypePowerMatch = text.match(/(?:己方|自己|队伍).*每携带1个(草|水|火|电|毒|幻|冰|武|萌|光|龙|机械|幽|恶|虫|普通|翼|地)系技能.*威力\+(\d+)/);
+    if (selectedTypePowerMatch) {
+      const count = countSelectedSkillsByType(context.attackerSelectedSkills, selectedTypePowerMatch[1]);
+      if (count > 0) {
+        const powerAdd = count * Number(selectedTypePowerMatch[2]);
+        power += powerAdd;
+        addLabel(labels, `${selectedTypePowerMatch[1]}系技能${count}个，威力+${powerAdd}`);
+      }
+    }
+
     const responseMultiplierMatch = text.match(/应对状态.*本次技能威力变为(\d+(?:\.\d+)?)倍/);
     if (responseMultiplierMatch) {
       responsePower = Math.max(1, Math.round(basePower * Number(responseMultiplierMatch[1])));
+    }
+    if (/应对状态.*威力等于被应对技能威力/.test(text)) {
+      const respondedSkillPower = Math.max(0, numberValue(context.respondedSkillPower, 0));
+      if (respondedSkillPower > 0) {
+        const responseScaleMatch = text.match(/被应对技能威力的(\d+(?:\.\d+)?)倍/);
+        const scale = responseScaleMatch ? Number(responseScaleMatch[1]) : 1;
+        responsePower = Math.max(1, Math.round(respondedSkillPower * scale));
+      }
     }
     if (/应对状态.*威力翻倍/.test(text) || /应对状态.*本次技能威力翻倍/.test(text)) {
       responsePower = Math.max(1, Math.round(basePower * 2));

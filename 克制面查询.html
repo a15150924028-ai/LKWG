@@ -3733,6 +3733,7 @@
             defenderEnergy: defenderState?.energy,
             attackerHpPercent: attackerState?.hpPercent ?? 100,
             defenderHpPercent: defenderState?.hpPercent ?? 100,
+            attackerSelectedSkills: selectedPvpSkills(attackerState),
             defenderSelectedSkills: selectedPvpSkills(defenderState),
             skillIndex: attackerState?.pvpSkillIndex,
             currentSkillCost: attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp,
@@ -3751,6 +3752,7 @@
             defeatCount: attackerState?.defeatCounts?.[battleAction.id] ?? attackerState?.defeatCount ?? 0,
             defenderFaintedCount: defenderState?.faintedCount ?? 0,
             teamSkillCopies: attackerState?.teamSkillCopies || {},
+            respondedSkillPower: defenderState?.respondedSkillPower ?? 0,
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };

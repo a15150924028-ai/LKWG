@@ -20,6 +20,7 @@ function resolve(inputAction, context = {}) {
     defenderEnergy: context.defenderEnergy,
     attackerHpPercent: context.attackerHpPercent,
     defenderHpPercent: context.defenderHpPercent,
+    attackerSelectedSkills: context.attackerSelectedSkills,
     defenderSelectedSkills: context.defenderSelectedSkills,
     skillIndex: context.skillIndex,
     currentSkillCost: context.currentSkillCost,
@@ -38,6 +39,7 @@ function resolve(inputAction, context = {}) {
     defeatCount: context.defeatCount,
     defenderFaintedCount: context.defenderFaintedCount,
     teamSkillCopies: context.teamSkillCopies,
+    respondedSkillPower: context.respondedSkillPower,
     defaultEnergy: 10
   });
 }
@@ -111,5 +113,20 @@ assert.equal(resolve(action("虫鸣", 15, "队伍中的精灵每携带1个虫鸣
 assert.equal(resolve(action("月光合奏", 30, "1连击，双方携带的所有精灵每有1层萌化，本次技能连击数+1。"), { statusLayers: { cuteTotal: 3 } }).hitCount, 4);
 assert.equal(resolve(action("极寒领域", 105, "若敌方有冻结，本次技能威力+60。"), { statusLayers: { freeze: 1 } }).power, 165);
 assert.equal(resolve(action("超级糖果", 100, "自己获得萌化：本次技能威力+60。")).power, 160);
+assert.equal(resolve(action("满能炮", 40, "自己每有1能量，本次技能威力+10。"), { attackerEnergy: 7 }).power, 110);
+assert.equal(resolve(action("收割", 80, "若敌方生命低于50%，本次技能威力+60。"), { defenderHpPercent: 40 }).power, 140);
+assert.equal(resolve(action("高压冲撞", 60, "速度每高于对手50，本次技能威力+20。"), {
+  attackerStats: { spe: 230 },
+  defenderStats: { spe: 100 }
+}).power, 100);
+assert.equal(resolve(action("铁壁撞击", 60, "物防每高于对手50，本次技能威力+20。"), {
+  attackerStats: { defense: 260 },
+  defenderStats: { defense: 100 }
+}).power, 120);
+assert.equal(resolve(action("疾速切割", 10, "本技能威力等于自己速度的50%。"), { attackerStats: { spe: 260 } }).power, 130);
+assert.equal(resolve(action("折射", 40, "应对状态：本技能威力等于被应对技能威力。"), { respondedSkillPower: 145 }).responsePower, 145);
+assert.equal(resolve(action("同调射线", 70, "己方每携带1个光系技能，本次技能威力+10。"), {
+  attackerSelectedSkills: [{ type: "light" }, { type: "light" }, { type: "water" }]
+}).power, 90);
 
 console.log("pvp variable damage rules ok");
