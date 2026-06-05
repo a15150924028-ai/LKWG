@@ -3765,7 +3765,13 @@
       const damageAction = variableDamage.type && variableDamage.type !== battleAction.type
         ? { ...battleAction, type: variableDamage.type }
         : battleAction;
-      const typeMultiplier = combinedDefenseMultiplier(damageAction.type, defender.types || []);
+      const rawTypeMultiplier = combinedDefenseMultiplier(damageAction.type, defender.types || []);
+      const typeMultiplier = variableDamage.ignoreResistance && rawTypeMultiplier < 1
+        ? 1
+        : rawTypeMultiplier;
+      const responseTypeMultiplier = (variableDamage.responseIgnoreResistance || variableDamage.ignoreResistance) && rawTypeMultiplier < 1
+        ? 1
+        : typeMultiplier;
       const stabMultiplier = sameTypeAttackBonus(damageAction, attacker);
       const variablePower = Math.max(1, Number(variableDamage.power) || basePower);
       const hitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
@@ -3793,7 +3799,7 @@
         ? Math.max(1, Math.floor((responsePowerSource + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
         : null;
       const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier))
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier))
         : null;
       const responseEstimate = battleAction.id === "pvp-force-impact"
         ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))

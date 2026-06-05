@@ -97,6 +97,8 @@
     let hitCount = parseFixedHitCount(text);
     let damageMultiplier = 1;
     let responseDamageMultiplier = 1;
+    let ignoreResistance = false;
+    let responseIgnoreResistance = false;
     let responsePower = null;
     const basePower = power;
 
@@ -476,6 +478,13 @@
     if (responseFixedPowerMatch) {
       responsePower = Math.max(1, Number(responseFixedPowerMatch[1]));
     }
+    if (/无视敌方系别抵抗/.test(text)) {
+      if (/应对状态.*无视敌方系别抵抗/.test(text)) {
+        responseIgnoreResistance = true;
+      } else {
+        ignoreResistance = true;
+      }
+    }
 
     return {
       power: Math.max(1, Math.round(power)),
@@ -484,6 +493,8 @@
       responsePower,
       damageMultiplier,
       responseDamageMultiplier,
+      ignoreResistance,
+      responseIgnoreResistance,
       labels
     };
   }
