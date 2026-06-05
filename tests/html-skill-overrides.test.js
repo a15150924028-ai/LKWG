@@ -52,11 +52,10 @@ const overrides = vm.runInNewContext(
   `(${extractConstObject(html, "S2_SKILL_OVERRIDES")})`
 );
 
-const lightGather = overrides["光能聚集"];
-assert.ok(lightGather, "光能聚集 should have a local S2 skill override");
-assert.equal(lightGather.type, "grass");
-assert.equal(lightGather.category, "special");
-assert.equal(lightGather.power, 100);
-assert.match(lightGather.description, /其他草系技能/);
+assert.equal(
+  Object.hasOwn(overrides, "光能聚集"),
+  false,
+  "光能聚集 already comes from the source data as grass/special/power 100; do not add a redundant local override"
+);
 
 console.log("html skill overrides ok");
