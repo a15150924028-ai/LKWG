@@ -1861,24 +1861,24 @@
     };
 
     const RELATION = {
-      grass: { strong: ["water", "ground"], weak: ["fire", "dragon", "poison", "bug", "wing", "mechanical"] },
-      water: { strong: ["fire", "ground", "mechanical"], weak: ["grass", "ice", "dragon"] },
-      fire: { strong: ["grass", "ice", "bug", "mechanical"], weak: ["water", "ground", "dragon"] },
-      electric: { strong: ["water", "wing"], weak: ["grass", "ground", "dragon", "electric"] },
-      poison: { strong: ["grass", "cute"], weak: ["ground", "poison", "ghost", "mechanical"] },
-      fantasy: { strong: ["poison", "fighting"], weak: ["light", "fantasy", "mechanical"] },
-      ice: { strong: ["grass", "ground", "dragon", "wing"], weak: ["fire", "ice", "mechanical"] },
-      fighting: { strong: ["normal", "ground", "ice", "demon", "mechanical"], weak: ["poison", "bug", "wing", "cute", "ghost", "fantasy"] },
-      cute: { strong: ["dragon", "fighting", "demon"], weak: ["fire", "poison", "mechanical"] },
-      light: { strong: ["ghost", "demon"], weak: ["grass", "ice"] },
-      dragon: { strong: ["dragon"], weak: ["mechanical"] },
-      mechanical: { strong: ["ground", "ice", "cute"], weak: ["fire", "water", "electric", "mechanical"] },
-      ghost: { strong: ["light", "ghost", "fantasy"], weak: ["normal", "demon"] },
-      demon: { strong: ["poison", "ghost", "cute"], weak: ["light", "fighting", "demon"] },
-      bug: { strong: ["grass", "fantasy", "demon"], weak: ["fire", "poison", "fighting", "wing", "cute", "ghost", "mechanical"] },
-      normal: { strong: [], weak: ["ground", "ghost", "mechanical"] },
-      wing: { strong: ["grass", "bug", "fighting"], weak: ["ground", "dragon", "electric", "mechanical"] },
-      ground: { strong: ["fire", "ice", "electric", "poison"], weak: ["grass", "fighting"] }
+      normal: { strong: [], weak: ["fighting"] },
+      grass: { strong: ["water", "light", "ground"], weak: ["fire", "ice", "poison", "bug", "wing"] },
+      fire: { strong: ["grass", "ice", "bug", "mechanical"], weak: ["water", "ground"] },
+      water: { strong: ["fire", "ground", "mechanical"], weak: ["grass", "electric"] },
+      light: { strong: ["ghost", "demon"], weak: ["grass"] },
+      ground: { strong: ["fire", "ice", "electric", "poison"], weak: ["grass", "water", "fighting", "mechanical"] },
+      ice: { strong: ["grass", "ground", "dragon", "wing"], weak: ["fire", "fighting", "mechanical"] },
+      dragon: { strong: ["dragon"], weak: ["ice", "cute"] },
+      electric: { strong: ["water", "wing"], weak: ["ground"] },
+      poison: { strong: ["grass", "cute"], weak: ["ground", "demon", "fantasy"] },
+      bug: { strong: ["grass", "demon", "fantasy"], weak: ["fire", "wing"] },
+      fighting: { strong: ["normal", "ground", "ice", "demon", "mechanical"], weak: ["wing", "cute", "fantasy"] },
+      wing: { strong: ["grass", "bug", "fighting"], weak: ["ice", "electric"] },
+      cute: { strong: ["dragon", "fighting", "demon"], weak: ["poison", "mechanical"] },
+      ghost: { strong: ["light", "ghost", "fantasy"], weak: ["demon"] },
+      demon: { strong: ["poison", "cute", "ghost"], weak: ["light", "bug", "fighting"] },
+      mechanical: { strong: ["ground", "ice", "cute"], weak: ["fire", "water", "fighting"] },
+      fantasy: { strong: ["poison", "fighting"], weak: ["bug", "ghost"] }
     };
 
     const FALLBACK_DATA = {
