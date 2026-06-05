@@ -3753,6 +3753,11 @@
             defenderFaintedCount: defenderState?.faintedCount ?? 0,
             teamSkillCopies: attackerState?.teamSkillCopies || {},
             respondedSkillPower: defenderState?.respondedSkillPower ?? 0,
+            responseSuccessCount: attackerState?.responseSuccessCount ?? 0,
+            positionChangeCount: attackerState?.positionChangeCounts?.[battleAction.id] ?? attackerState?.positionChangeCount ?? 0,
+            otherTypeSkillUseCount: attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0,
+            adjacentSkillPowers: attackerState?.adjacentSkillPowers?.[battleAction.id] || [],
+            defenderTurnsWithoutSkillDamage: defenderState?.turnsWithoutSkillDamage ?? 0,
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };

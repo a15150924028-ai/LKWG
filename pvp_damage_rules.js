@@ -143,7 +143,7 @@
 
     const attackerEnergy = clampEnergy(context.attackerEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
     const defenderEnergy = clampEnergy(context.defenderEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
-    if (/敌方能量不高于2.*造成5倍伤害/.test(text) && defenderEnergy <= 2) {
+    if (/敌方能量(?:不高于|小于等于)2.*造成5倍伤害/.test(text) && defenderEnergy <= 2) {
       damageMultiplier *= 5;
       addLabel(labels, "敌方能量<=2，伤害×5");
     }
@@ -151,11 +151,13 @@
       damageMultiplier *= 20;
       addLabel(labels, "敌方能量=0，伤害×20");
     }
-    if (/使用后若能量耗尽.*威力\+120/.test(text)) {
+    const energyEmptyPowerMatch = text.match(/(?:使用后|释放后)若能量耗尽.*(?:威力|攻击威力)\+(\d+)/);
+    if (energyEmptyPowerMatch) {
       const cost = Math.max(0, numberValue(action?.pp, 0));
       if (attackerEnergy - cost <= 0) {
-        power += 120;
-        addLabel(labels, "使用后能量耗尽，威力+120");
+        const powerAdd = Number(energyEmptyPowerMatch[1]);
+        power += powerAdd;
+        addLabel(labels, `使用后能量耗尽，威力+${powerAdd}`);
       }
     }
     if (/敌方每有1能量.*威力-10%/.test(text)) {
@@ -179,6 +181,17 @@
         addLabel(labels, `能耗-${costReduction}，威力+${costReduction * 10}`);
       }
     }
+    const costIncreasePowerMatch = text.match(/能耗每\+1.*威力\+(\d+)/);
+    if (costIncreasePowerMatch) {
+      const baseCost = Math.max(0, numberValue(action?.pp, 0));
+      const currentCost = Math.max(0, numberValue(context.currentSkillCost, baseCost));
+      const costIncrease = Math.max(0, currentCost - baseCost);
+      if (costIncrease > 0) {
+        const powerAdd = costIncrease * Number(costIncreasePowerMatch[1]);
+        power += powerAdd;
+        addLabel(labels, `能耗+${costIncrease}，威力+${powerAdd}`);
+      }
+    }
 
     const skillUseCount = Math.max(0, Math.round(numberValue(context.skillUseCount, 0)));
     const permanentPowerMatch = text.match(/每次使用后.*威力永久\+(\d+)/);
@@ -191,12 +204,40 @@
       hitCount += skillUseCount;
       addLabel(labels, `已使用${skillUseCount}次，连击+${skillUseCount}`);
     }
+    const responseSuccessCount = Math.max(0, Math.round(numberValue(context.responseSuccessCount, 0)));
+    const responseSuccessPowerMatch = text.match(/每应对成功1次.*威力永久\+(\d+)/);
+    if (responseSuccessPowerMatch && responseSuccessCount > 0) {
+      const powerAdd = responseSuccessCount * Number(responseSuccessPowerMatch[1]);
+      power += powerAdd;
+      addLabel(labels, `应对成功${responseSuccessCount}次，威力+${powerAdd}`);
+    }
+    const positionChangeCount = Math.max(0, Math.round(numberValue(context.positionChangeCount, 0)));
+    const positionChangePowerMatch = text.match(/每回合位置变化时.*威力永久\+(\d+)/);
+    if (positionChangePowerMatch && positionChangeCount > 0) {
+      const powerAdd = positionChangeCount * Number(positionChangePowerMatch[1]);
+      power += powerAdd;
+      addLabel(labels, `位置变化${positionChangeCount}次，威力+${powerAdd}`);
+    }
+    const otherTypeSkillUseCount = Math.max(0, Math.round(numberValue(context.otherTypeSkillUseCount, 0)));
+    const otherTypePowerMatch = text.match(/每使用过?1个其他系别技能.*威力永久\+(\d+)/);
+    if (otherTypePowerMatch && otherTypeSkillUseCount > 0) {
+      const powerAdd = otherTypeSkillUseCount * Number(otherTypePowerMatch[1]);
+      power += powerAdd;
+      addLabel(labels, `其他系别技能${otherTypeSkillUseCount}个，威力+${powerAdd}`);
+    }
 
     if (/冰锋横扫/.test(text) || /威力等于敌方.*能耗总和.*10/.test(text)) {
       const energyTotal = selectedSkillEnergyTotal(context.defenderSelectedSkills);
       if (energyTotal != null) {
         power = Math.max(1, energyTotal * 10);
         addLabel(labels, `敌方技能能耗总和${energyTotal}，威力${power}`);
+      }
+    }
+    if (/两侧技能威力和的三分之一/.test(text) && Array.isArray(context.adjacentSkillPowers)) {
+      const adjacentSum = context.adjacentSkillPowers.reduce((sum, item) => sum + Math.max(0, numberValue(item, 0)), 0);
+      if (adjacentSum > 0) {
+        power = Math.max(1, Math.round(adjacentSum / 3));
+        addLabel(labels, `两侧威力和${adjacentSum}，威力${power}`);
       }
     }
 
@@ -292,9 +333,15 @@
       power += powerAdd;
       addLabel(labels, `入场${entryCount}次，威力+${powerAdd}`);
     }
-    if (/敌方本回合更换精灵.*威力\+100/.test(text) && context.defenderSwitched) {
-      power += 100;
-      addLabel(labels, "敌方换宠，威力+100");
+    const defenderSwitchPowerMatch = text.match(/敌方本回合(?:更换|替换)精灵.*(?:本次)?威力\+(\d+)/);
+    if (defenderSwitchPowerMatch && context.defenderSwitched) {
+      const powerAdd = Number(defenderSwitchPowerMatch[1]);
+      power += powerAdd;
+      addLabel(labels, `敌方换宠，威力+${powerAdd}`);
+    }
+    if (/敌方本回合(?:更换|替换)精灵.*连击数翻倍/.test(text) && context.defenderSwitched) {
+      hitCount *= 2;
+      addLabel(labels, "敌方换宠，连击翻倍");
     }
     if (/自己有减益.*威力\+60/.test(text) && context.attackerHasDebuff) {
       power += 60;
@@ -306,13 +353,13 @@
     }
 
     if (context.burstActive) {
-      const burstPowerMatch = text.match(/迸发：.*本次技能威力\+(\d+)/);
+      const burstPowerMatch = text.match(/[迸进]发：.*本次技能威力\+(\d+)/);
       if (burstPowerMatch) {
         const powerAdd = Number(burstPowerMatch[1]);
         power += powerAdd;
         addLabel(labels, `迸发威力+${powerAdd}`);
       }
-      if (/迸发：.*每获得1种.*威力\+10/.test(text)) {
+      if (/[迸进]发：.*每获得(?:1|一)种.*威力\+10/.test(text)) {
         const burstEffectCount = Math.max(0, Math.round(numberValue(context.burstEffectCount, 0)));
         if (burstEffectCount > 0) {
           const powerAdd = burstEffectCount * 10;
@@ -336,6 +383,13 @@
       const powerAdd = Number(noDamagePowerMatch[1]) * turnsWithoutDamage;
       power += powerAdd;
       addLabel(labels, `未造成伤害${turnsWithoutDamage}回合，威力+${powerAdd}`);
+    }
+    const defenderNoSkillDamageTurns = Math.max(0, Math.round(numberValue(context.defenderTurnsWithoutSkillDamage, 0)));
+    const defenderNoSkillDamageMatch = text.match(/敌方上回合没受到技能伤害.*威力永久\+(\d+)/);
+    if (defenderNoSkillDamageMatch && defenderNoSkillDamageTurns > 0) {
+      const powerAdd = Number(defenderNoSkillDamageMatch[1]) * defenderNoSkillDamageTurns;
+      power += powerAdd;
+      addLabel(labels, `敌方未受技能伤害${defenderNoSkillDamageTurns}回合，威力+${powerAdd}`);
     }
 
     const defeatCount = Math.max(0, Math.round(numberValue(context.defeatCount, 0)));
