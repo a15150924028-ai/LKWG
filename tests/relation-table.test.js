@@ -56,27 +56,29 @@ const relation = JSON.parse(JSON.stringify(
 ));
 
 const expectedRelation = {
-  normal: { strong: [], weak: ["fighting"] },
-  grass: { strong: ["water", "light", "ground"], weak: ["fire", "ice", "poison", "bug", "wing"] },
-  fire: { strong: ["grass", "ice", "bug", "mechanical"], weak: ["water", "ground"] },
-  water: { strong: ["fire", "ground", "mechanical"], weak: ["grass", "electric"] },
-  light: { strong: ["ghost", "demon"], weak: ["grass"] },
-  ground: { strong: ["fire", "ice", "electric", "poison"], weak: ["grass", "water", "fighting", "mechanical"] },
-  ice: { strong: ["grass", "ground", "dragon", "wing"], weak: ["fire", "fighting", "mechanical"] },
-  dragon: { strong: ["dragon"], weak: ["ice", "cute"] },
-  electric: { strong: ["water", "wing"], weak: ["ground"] },
-  poison: { strong: ["grass", "cute"], weak: ["ground", "demon", "fantasy"] },
-  bug: { strong: ["grass", "demon", "fantasy"], weak: ["fire", "wing"] },
-  fighting: { strong: ["normal", "ground", "ice", "demon", "mechanical"], weak: ["wing", "cute", "fantasy"] },
-  wing: { strong: ["grass", "bug", "fighting"], weak: ["ice", "electric"] },
-  cute: { strong: ["dragon", "fighting", "demon"], weak: ["poison", "mechanical"] },
-  ghost: { strong: ["light", "ghost", "fantasy"], weak: ["demon"] },
-  demon: { strong: ["poison", "cute", "ghost"], weak: ["light", "bug", "fighting"] },
-  mechanical: { strong: ["ground", "ice", "cute"], weak: ["fire", "water", "fighting"] },
-  fantasy: { strong: ["poison", "fighting"], weak: ["bug", "ghost"] }
+  normal: { strong: [], weak: ["ground", "ghost", "mechanical"] },
+  grass: { strong: ["water", "light", "ground"], weak: ["fire", "dragon", "poison", "bug", "wing", "mechanical"] },
+  fire: { strong: ["grass", "ice", "bug", "mechanical"], weak: ["water", "ground", "dragon"] },
+  water: { strong: ["fire", "ground", "mechanical"], weak: ["grass", "ice", "dragon"] },
+  light: { strong: ["ghost", "demon"], weak: ["grass", "ice"] },
+  ground: { strong: ["fire", "ice", "electric", "poison"], weak: ["grass", "fighting"] },
+  ice: { strong: ["grass", "ground", "dragon", "wing"], weak: ["fire", "ice", "mechanical"] },
+  dragon: { strong: ["dragon"], weak: ["mechanical"] },
+  electric: { strong: ["water", "wing"], weak: ["grass", "ground", "dragon", "electric"] },
+  poison: { strong: ["grass", "cute"], weak: ["ground", "poison", "ghost", "mechanical"] },
+  bug: { strong: ["grass", "demon", "fantasy"], weak: ["fire", "poison", "fighting", "wing", "cute", "ghost", "mechanical"] },
+  fighting: { strong: ["normal", "ground", "ice", "demon", "mechanical"], weak: ["poison", "bug", "wing", "cute", "ghost", "fantasy"] },
+  wing: { strong: ["grass", "bug", "fighting"], weak: ["ground", "dragon", "electric", "mechanical"] },
+  cute: { strong: ["dragon", "fighting", "demon"], weak: ["fire", "poison", "mechanical"] },
+  ghost: { strong: ["light", "ghost", "fantasy"], weak: ["normal", "demon"] },
+  demon: { strong: ["poison", "cute", "ghost"], weak: ["light", "fighting", "demon"] },
+  mechanical: { strong: ["ground", "ice", "cute"], weak: ["fire", "water", "electric", "mechanical"] },
+  fantasy: { strong: ["poison", "fighting"], weak: ["light", "mechanical", "fantasy"] }
 };
 
 assert.deepEqual(relation, expectedRelation);
 assert.equal(relation.grass.strong.includes("light"), true, "grass attacks should be 2x into light defense");
+assert.equal(relation.electric.weak.includes("grass"), true, "electric attacks should be 0.5x into grass defense");
+assert.equal(relation.mechanical.weak.includes("electric"), true, "mechanical attacks should be 0.5x into electric defense");
 
 console.log("relation table ok");
