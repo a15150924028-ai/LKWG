@@ -249,9 +249,17 @@
     }
 
     const attackerHpPercent = numberValue(context.attackerHpPercent, 100);
-    if (/生命高于80%.*威力\+75/.test(text) && attackerHpPercent > 80) {
-      power += 75;
-      addLabel(labels, "生命>80%，威力+75");
+    const highHpPowerMatch = text.match(/(?:自己|自身|己方)?生命(?:值)?(?:高于|大于|超过)(\d+)%.*(?:本次)?(?:技能)?威力\+(\d+)/);
+    if (highHpPowerMatch && attackerHpPercent > Number(highHpPowerMatch[1])) {
+      const powerAdd = Number(highHpPowerMatch[2]);
+      power += powerAdd;
+      addLabel(labels, `生命>${highHpPowerMatch[1]}%，威力+${powerAdd}`);
+    }
+    const fullHpPowerMatch = text.match(/(?:满血|满生命值?|生命(?:值)?(?:为|处于)?100%|生命(?:值)?已满).*(?:本次)?(?:技能)?威力\+(\d+)/);
+    if (!highHpPowerMatch && fullHpPowerMatch && attackerHpPercent >= 100) {
+      const powerAdd = Number(fullHpPowerMatch[1]);
+      power += powerAdd;
+      addLabel(labels, `满生命，威力+${powerAdd}`);
     }
 
     const attackerLostSteps = Math.floor(Math.max(0, 100 - attackerHpPercent) / 5);
