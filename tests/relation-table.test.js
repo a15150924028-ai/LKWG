@@ -81,4 +81,16 @@ assert.equal(relation.grass.strong.includes("light"), true, "grass attacks shoul
 assert.equal(relation.electric.weak.includes("grass"), true, "electric attacks should be 0.5x into grass defense");
 assert.equal(relation.mechanical.weak.includes("electric"), true, "mechanical attacks should be 0.5x into electric defense");
 
+function multiplier(attacker, defender) {
+  const attackRelation = relation[attacker] || { strong: [], weak: [] };
+  if (attackRelation.strong.includes(defender)) return 2;
+  if (attackRelation.weak.includes(defender)) return 0.5;
+  return 1;
+}
+
+assert.equal(multiplier("electric", "grass"), 0.5, "electric into grass follows electric's resisted targets");
+assert.equal(multiplier("grass", "electric"), 1, "grass into electric must not be inferred from electric into grass");
+assert.equal(multiplier("electric", "water"), 2, "electric into water follows electric's strong targets");
+assert.equal(multiplier("water", "electric"), 1, "water into electric must not be inferred from electric into water");
+
 console.log("relation table ok");
