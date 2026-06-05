@@ -96,6 +96,7 @@
     let type = action?.type || null;
     let hitCount = parseFixedHitCount(text);
     let damageMultiplier = 1;
+    let responseDamageMultiplier = 1;
     let responsePower = null;
     const basePower = power;
 
@@ -143,6 +144,10 @@
 
     const attackerEnergy = clampEnergy(context.attackerEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
     const defenderEnergy = clampEnergy(context.defenderEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
+    if (/混合血脉.*(?:伤害|造成伤害)\+50%/.test(text) && context.defenderMixedBlood) {
+      damageMultiplier *= 1.5;
+      addLabel(labels, "敌方混合血脉，伤害+50%");
+    }
     if (/敌方能量(?:不高于|小于等于)2.*造成5倍伤害/.test(text) && defenderEnergy <= 2) {
       damageMultiplier *= 5;
       addLabel(labels, "敌方能量<=2，伤害×5");
@@ -403,6 +408,12 @@
       power *= 2 ** defeatCount;
       addLabel(labels, `击败${defeatCount}次，威力翻${2 ** defeatCount}倍`);
     }
+    const defeatHitCountMatch = text.match(/(?:若)?击败敌方.*连击数永久\+(\d+)/);
+    if (defeatHitCountMatch && defeatCount > 0) {
+      const hitAdd = Number(defeatHitCountMatch[1]) * defeatCount;
+      hitCount += hitAdd;
+      addLabel(labels, `击败${defeatCount}次，连击+${hitAdd}`);
+    }
 
     const defenderFaintedCount = Math.max(0, Math.round(numberValue(context.defenderFaintedCount, 0)));
     if (/敌方每有1只力竭精灵.*威力\+30/.test(text) && defenderFaintedCount > 0) {
@@ -455,6 +466,12 @@
     if (/应对状态.*威力翻倍/.test(text) || /应对状态.*本次技能威力翻倍/.test(text)) {
       responsePower = Math.max(1, Math.round(basePower * 2));
     }
+    const responseDamageMultiplierMatch = text.match(/应对状态.*(?:本次)?伤害(?:变为|造成)?(\d+(?:\.\d+)?)倍/);
+    if (responseDamageMultiplierMatch) {
+      responseDamageMultiplier = Number(responseDamageMultiplierMatch[1]);
+    } else if (/应对状态.*(?:本次)?伤害翻倍/.test(text)) {
+      responseDamageMultiplier = 2;
+    }
     const responseFixedPowerMatch = text.match(/应对状态.*对敌方造成(\d+)威力/);
     if (responseFixedPowerMatch) {
       responsePower = Math.max(1, Number(responseFixedPowerMatch[1]));
@@ -466,6 +483,7 @@
       hitCount: Math.max(1, Math.round(hitCount)),
       responsePower,
       damageMultiplier,
+      responseDamageMultiplier,
       labels
     };
   }

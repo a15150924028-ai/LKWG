@@ -3758,6 +3758,7 @@
             otherTypeSkillUseCount: attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0,
             adjacentSkillPowers: attackerState?.adjacentSkillPowers?.[battleAction.id] || [],
             defenderTurnsWithoutSkillDamage: defenderState?.turnsWithoutSkillDamage ?? 0,
+            defenderMixedBlood: !!defenderState?.mixedBlood || bloodlineMatchesName(defenderState, /混合/),
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };
@@ -3784,11 +3785,15 @@
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
       const singleEstimate = Math.max(1, Math.floor(adjusted));
       const estimate = Math.max(1, singleEstimate * hitCount + manualDamageBonus);
-      const responsePower = variableDamage.responsePower
-        ? Math.max(1, Math.floor((Number(variableDamage.responsePower) + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
+      const responsePowerSource = variableDamage.responsePower
+        ? Number(variableDamage.responsePower)
+        : (Number(variableDamage.responseDamageMultiplier) && Number(variableDamage.responseDamageMultiplier) !== 1 ? variablePower : null);
+      const responseDamageMultiplier = Number(variableDamage.responseDamageMultiplier) || 1;
+      const responsePower = responsePowerSource
+        ? Math.max(1, Math.floor((responsePowerSource + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
         : null;
       const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1)))
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier))
         : null;
       const responseEstimate = battleAction.id === "pvp-force-impact"
         ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
@@ -3801,6 +3806,7 @@
         basePower,
         power,
         responsePower,
+        responseDamageMultiplier,
         typeMultiplier,
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
@@ -3895,7 +3901,7 @@
       if (damage.responseEstimate != null) {
         const responseReason = damage.action.id === "pvp-force-impact"
           ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
-          : `应对状态威力${damage.responsePower}`;
+          : `应对状态威力${damage.responsePower}${damage.responseDamageMultiplier && damage.responseDamageMultiplier !== 1 ? ` / 伤害×${damage.responseDamageMultiplier}` : ""}`;
         return `
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">
