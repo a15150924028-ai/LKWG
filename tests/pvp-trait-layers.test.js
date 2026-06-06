@@ -61,6 +61,11 @@ assert.equal(rules.resolveTraitRule(monster("绿耳松鼠", "049")).traitName, "
 assert.equal(rules.resolveTraitRule(monster("皇家狮鹫（高山地的样子）", "165")).traitName, "乘风连击");
 assert.equal(rules.resolveTraitRule(monster("圣光迪莫", "chain-dimo")).traitName, "最好的伙伴");
 assert.equal(
+  rules.resolveTraitRule(monster("同链测试象", "season-s2-afec977b0e76")),
+  null
+);
+assert.equal(rules.resolveTraitRule(monster("同链测试迪莫", "chain-dimo")), null);
+assert.equal(
   rules.resolveTraitRule({ name: "抱枕松鼠", raw: { chainId: "049" } }).traitName,
   "囤积"
 );

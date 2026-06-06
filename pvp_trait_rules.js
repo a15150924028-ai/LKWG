@@ -8,6 +8,7 @@
   const RULES = [
     {
       chainIds: ["season-s2-afec977b0e76"],
+      names: ["巨鼓象"],
       traitName: "合拍",
       statPerLayer: { atk: 0.2, defense: 0.2 }
     },
@@ -67,6 +68,7 @@
     },
     {
       chainIds: ["chain-dimo"],
+      names: ["迪莫", "圣光迪莫"],
       traitName: "最好的伙伴",
       statPerLayer: {
         atk: 0.2,
