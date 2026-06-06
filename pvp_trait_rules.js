@@ -5,7 +5,13 @@
   }
   root.LKWG_PVP_TRAIT_RULES = api;
 })(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpTraitRules() {
-  const RULES = [
+  function deepFreeze(value) {
+    if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
+    Object.values(value).forEach(deepFreeze);
+    return Object.freeze(value);
+  }
+
+  const RULES = deepFreeze([
     {
       chainIds: ["season-s2-afec977b0e76"],
       names: ["巨鼓象"],
@@ -94,9 +100,9 @@
       defaultLayers: 10,
       statPerLayer: { atk: 0.1 }
     }
-  ];
+  ]);
 
-  const BOSS_TRAIT_NAMES = {
+  const BOSS_TRAIT_NAMES = deepFreeze({
     "风暴战犬": "全神贯注",
     "黑猫密探": "先知",
     "恶魔狼王": "悼亡",
@@ -106,7 +112,7 @@
     "花魁蜂后": "虫群突袭",
     "烈火战神": "爆燃",
     "波普鹿": "超级电池"
-  };
+  });
 
   const STAT_KEYS = ["hp", "atk", "defense", "spa", "spd", "spe"];
 
@@ -120,15 +126,24 @@
   }
 
   function monsterChainId(monster) {
-    return String(
-      monster?.chainId
-      ?? monster?.evolutionChainId
-      ?? monster?.evolution_chain_id
-      ?? monster?.raw?.chainId
-      ?? monster?.raw?.evolutionChainId
-      ?? monster?.raw?.evolution_chain_id
-      ?? ""
-    );
+    const candidates = [
+      monster?.chainId,
+      monster?.evolutionChainId,
+      monster?.familyId,
+      monster?.baseId,
+      monster?.raw?.chainId,
+      monster?.raw?.evolutionChainId,
+      monster?.raw?.familyId,
+      monster?.raw?.baseId,
+      monster?.evolution_chain_id,
+      monster?.family_id,
+      monster?.base_id,
+      monster?.raw?.evolution_chain_id,
+      monster?.raw?.family_id,
+      monster?.raw?.base_id
+    ];
+    const chainId = candidates.find((value) => value != null && String(value) !== "");
+    return chainId == null ? "" : String(chainId);
   }
 
   function matchesName(name, expected) {
