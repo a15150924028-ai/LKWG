@@ -1564,6 +1564,7 @@
 
   <script src="./lcx_skill_pools.js"></script>
   <script src="./pvp_damage_rules.js"></script>
+  <script src="./pvp_trait_rules.js"></script>
   <script>
     const DATA_URL = "https://rocomwiki.app/data/bundle.json";
     const DATA_BASE = "https://rocomwiki.app";
@@ -1910,8 +1911,8 @@
     const clearBtn = document.getElementById("clearBtn");
     const dataStatus = document.getElementById("dataStatus");
     const pvpSimState = {
-      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexData = FALLBACK_DATA;
@@ -3439,14 +3440,19 @@
 
     function passiveStatMods(monster, state = null) {
       const mods = blankStatMods();
+      const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(monster, state?.traitLayers);
+      Object.assign(mods, mergeStatMods(mods, traitEffects.statMods));
       for (const item of passiveList(monster)) {
-        if (passiveStatBoostIsCurrent(item.compact)) {
+        const isResolvedTraitPassive = Boolean(
+          traitEffects.rule?.traitName && item.compact.includes(traitEffects.rule.traitName)
+        );
+        if (!isResolvedTraitPassive && passiveStatBoostIsCurrent(item.compact)) {
           Object.assign(mods, mergeStatMods(mods, statModsFromText(item.text)));
         }
-        if (/专注力/.test(item.compact) && /音速犬|护主犬/.test(monster?.name || "")) {
+        if (traitEffects.rule?.traitName !== "专注力" && /专注力/.test(item.compact) && /音速犬|护主犬/.test(monster?.name || "")) {
           mods.atk = Math.max(mods.atk, 1);
         }
-        if (/囤积/.test(item.compact) && /能量/.test(item.compact)) {
+        if (traitEffects.rule?.traitName !== "囤积" && /囤积/.test(item.compact) && /能量/.test(item.compact)) {
           const energy = Math.max(0, Math.min(10, Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
           const defenseBoost = energy * 0.1;
           mods.defense = Math.max(mods.defense, defenseBoost);
@@ -3725,18 +3731,23 @@
       const mode = damageMode(battleAction, attackerStats, defenderStats);
       const attackValue = attackerStats[mode.attackKey];
       const defenseValue = defenderStats[mode.defenseKey];
+      const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(attacker, attackerState?.traitLayers, battleAction);
+      const currentSkillCost = Math.max(0, Number(attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp) || 0);
+      const traitAdjustedSkillCost = Math.max(0, currentSkillCost - traitEffects.skillCostReduction);
+      const attackerEnergy = Number(attackerState?.energy ?? DEFAULT_PVP_ENERGY);
+      const traitAdjustedEnergy = Math.max(0, Math.min(10, (Number.isFinite(attackerEnergy) ? attackerEnergy : DEFAULT_PVP_ENERGY) + traitEffects.energyGain));
       const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
         ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
             attackerStats,
             defenderStats,
-            attackerEnergy: attackerState?.energy,
+            attackerEnergy: traitAdjustedEnergy,
             defenderEnergy: defenderState?.energy,
             attackerHpPercent: attackerState?.hpPercent ?? 100,
             defenderHpPercent: defenderState?.hpPercent ?? 100,
             attackerSelectedSkills: selectedPvpSkills(attackerState),
             defenderSelectedSkills: selectedPvpSkills(defenderState),
             skillIndex: attackerState?.pvpSkillIndex,
-            currentSkillCost: attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp,
+            currentSkillCost: traitAdjustedSkillCost,
             skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
             statusLayers: defenderState?.statusLayers || {},
             relatedTypeSkillUseCount: attackerState?.relatedTypeSkillUseCounts?.[battleAction.type] ?? 0,
@@ -3773,8 +3784,11 @@
         ? 1
         : typeMultiplier;
       const stabMultiplier = sameTypeAttackBonus(damageAction, attacker);
-      const variablePower = Math.max(1, Number(variableDamage.power) || basePower);
-      const hitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
+      const traitAdjustedPower = (value) => Math.max(1, Math.floor(
+        ((Number(value) || basePower) + traitEffects.flatPower) * traitEffects.powerMultiplier
+      ));
+      const variablePower = traitAdjustedPower(variableDamage.power);
+      const hitCount = Math.max(1, (Number(variableDamage.hitCount) || 1) + traitEffects.hitCountAdd);
       const passiveDamage = passiveDamageEffects({
         attacker,
         defender,
@@ -3792,7 +3806,7 @@
       const singleEstimate = Math.max(1, Math.floor(adjusted));
       const estimate = Math.max(1, singleEstimate * hitCount + manualDamageBonus);
       const responsePowerSource = variableDamage.responsePower
-        ? Number(variableDamage.responsePower)
+        ? traitAdjustedPower(variableDamage.responsePower)
         : (Number(variableDamage.responseDamageMultiplier) && Number(variableDamage.responseDamageMultiplier) !== 1 ? variablePower : null);
       const responseDamageMultiplier = Number(variableDamage.responseDamageMultiplier) || 1;
       const responsePower = responsePowerSource
@@ -4297,6 +4311,7 @@
       state.usedSupportSkillIds = unique(Array.isArray(state.usedSupportSkillIds) ? state.usedSupportSkillIds : []);
       state.supportText = state.supportText || "";
       state.energy = Number.isFinite(Number(state.energy)) ? Number(state.energy) : DEFAULT_PVP_ENERGY;
+      state.traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers);
       return state;
     }
 
@@ -4369,6 +4384,11 @@
       state.usedSupportSkillIds = [];
       state.supportText = "";
       state.energy = DEFAULT_PVP_ENERGY;
+      state.traitLayers = 0;
+    }
+
+    function resetPvpTraitLayers(state, monster) {
+      state.traitLayers = window.LKWG_PVP_TRAIT_RULES.defaultTraitLayers(monster);
     }
 
     function applyTeamPetToPvpSide(state, pet, monster) {
@@ -4633,7 +4653,9 @@
               renderResults();
               return;
             }
+            const monsterChanged = state.monsterId !== item.id;
             state.monsterId = item.id;
+            if (monsterChanged) resetPvpTraitLayers(state, item);
             state.action = "";
             state.forceImpact = false;
             state.skillStatMods = blankStatMods();
