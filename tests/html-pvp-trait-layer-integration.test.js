@@ -140,6 +140,17 @@ assert.match(
 assert.match(damage, /const variablePower\s*=\s*traitAdjustedPower\(variableDamage\.power\)/);
 assert.match(damage, /hitCount[\s\S]*traitEffects\.hitCountAdd/);
 
+const passiveDamage = extractFunction(html, "passiveDamageEffects");
+assert.match(
+  passiveDamage,
+  /const attackerTraitRule\s*=\s*window\.LKWG_PVP_TRAIT_RULES\.resolveTraitRule\(attacker\)/
+);
+assert.match(
+  passiveDamage,
+  /attackerTraitRule\?\.traitName\s*!==\s*"血型吸引"[\s\S]*?\/血型吸引\//,
+  "registered 血型吸引 layers should bypass the legacy automatic multiplier"
+);
+
 assert.doesNotMatch(
   html,
   /addDamageLabel\([^)]*traitEffects|variableDamageLabels[^;]*traitEffects|traitEffects\.traitName/,

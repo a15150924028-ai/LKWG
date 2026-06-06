@@ -3612,6 +3612,7 @@
       const defenderTypes = defender?.types || [];
       const attackerPassiveItems = passiveList(attacker);
       const defenderPassiveItems = passiveList(defender);
+      const attackerTraitRule = window.LKWG_PVP_TRAIT_RULES.resolveTraitRule(attacker);
       const defenderBloodlineType = bloodlineType(defenderState);
       const defenderSkillTypes = selectedPvpSkillTypes(defenderState);
 
@@ -3664,7 +3665,7 @@
           result.powerMultiplier *= 2;
           addDamageLabel(result.attackerLabels, "天通地明威力+100%");
         }
-        if (/血型吸引/.test(text)) {
+        if (attackerTraitRule?.traitName !== "血型吸引" && /血型吸引/.test(text)) {
           const typeCount = defenderSkillTypes.length;
           if (typeCount > 0) {
             result.powerMultiplier *= (1 + typeCount * 0.1);
