@@ -1057,6 +1057,39 @@
       border-color: #fecdd3;
     }
 
+    .pvp-trait-layer-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(132px, 0.8fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .pvp-trait-layer-copy {
+      min-width: 0;
+      color: var(--muted);
+    }
+
+    .pvp-trait-layer-copy strong {
+      display: block;
+      overflow: hidden;
+      color: var(--ink);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pvp-trait-layer-row .pvp-buff-controls {
+      grid-template-columns: 36px minmax(56px, 1fr) 36px;
+    }
+
+    @media (max-width: 520px) {
+      .pvp-trait-layer-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .pvp-damage-result {
       display: flex;
       flex-wrap: wrap;
@@ -4466,6 +4499,10 @@
     function renderPvpManualBuffPanel(side, state) {
       const mods = mergeStatMods(state?.skillStatMods, state?.manualStatMods);
       const damageBonus = Number(state?.manualDamageBonus) || 0;
+      const monster = monsterById.get(state?.monsterId);
+      const traitRule = window.LKWG_PVP_TRAIT_RULES.resolveTraitRule(monster);
+      const traitName = window.LKWG_PVP_TRAIT_RULES.traitName(monster);
+      const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
       return `
         <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
           <div class="pvp-buff-title">增益状态</div>
@@ -4481,6 +4518,18 @@
               </div>
             `).join("")}
           </div>
+          ${traitRule ? `
+            <div class="pvp-trait-layer-row">
+              <div class="pvp-trait-layer-copy">
+                <strong>特性层数 · ${escapeHtml(traitName)}</strong>
+              </div>
+              <div class="pvp-buff-controls">
+                <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="-1">-</button>
+                <span class="pvp-buff-value" data-pvp-trait-layer-value="${side}">${traitLayers}</span>
+                <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="1">+</button>
+              </div>
+            </div>
+          ` : ""}
         </div>
       `;
     }
@@ -4496,6 +4545,10 @@
         valueEl.classList.toggle("positive", Number(value) > 0);
         valueEl.classList.toggle("negative", Number(value) < 0);
       });
+      const traitLayerValueEl = root.querySelector(`[data-pvp-trait-layer-value="${side}"]`);
+      if (traitLayerValueEl) {
+        traitLayerValueEl.textContent = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers);
+      }
     }
 
     function renderPvpSide(side, title) {
@@ -4798,6 +4851,17 @@
             state.manualStatMods = normalizeStatMods(state.manualStatMods);
             const nextValue = (Number(state.manualStatMods[statKey]) || 0) + delta * PVP_MANUAL_BUFF_STEP;
             state.manualStatMods[statKey] = Math.round(nextValue * 10) / 10;
+            refreshPvpDamageOutputs(root);
+          });
+        });
+        root.querySelectorAll(`[data-pvp-trait-layer="${side}"]`).forEach((button) => {
+          button.addEventListener("click", () => {
+            const delta = Number(button.dataset.delta) || 0;
+            state.traitLayers = Math.max(
+              0,
+              window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers) + delta
+            );
+            refreshPvpManualBuffPanel(root, side);
             refreshPvpDamageOutputs(root);
           });
         });

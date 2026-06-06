@@ -93,6 +93,59 @@ assert.match(
   "monster selection, including team auto-fill, should reset trait layers"
 );
 
+const buffPanel = extractFunction(html, "renderPvpManualBuffPanel");
+assert.match(buffPanel, /resolveTraitRule\(monster\)/, "the panel should resolve the selected monster's trait rule");
+assert.match(buffPanel, /traitName\(monster\)/, "the panel should render the registered trait name");
+assert.match(
+  buffPanel,
+  /normalizeTraitLayers\(state\?\.traitLayers\)/,
+  "the displayed layer count should be normalized through the rules module"
+);
+assert.match(
+  buffPanel,
+  /traitRule\s*\?\s*`[\s\S]*pvp-trait-layer-row[\s\S]*`\s*:\s*""/,
+  "the trait layer row should render only when a trait rule exists"
+);
+assert.match(buffPanel, /特性层数\s*·\s*\$\{escapeHtml\(traitName\)\}/);
+assert.match(buffPanel, /data-pvp-trait-layer="\$\{side\}"\s+data-delta="-1"/);
+assert.match(buffPanel, /data-pvp-trait-layer-value="\$\{side\}"/);
+assert.match(buffPanel, /data-pvp-trait-layer="\$\{side\}"\s+data-delta="1"/);
+assert.doesNotMatch(
+  buffPanel,
+  /data-pvp-trait-layer-value[^>]*>[^<]*%/,
+  "trait layers should display as an integer, not a percentage"
+);
+
+const refreshBuffPanel = extractFunction(html, "refreshPvpManualBuffPanel");
+assert.match(refreshBuffPanel, /data-pvp-trait-layer-value="\$\{side\}"/);
+assert.match(
+  refreshBuffPanel,
+  /normalizeTraitLayers\(state\.traitLayers\)/,
+  "panel refresh should normalize the current layer count"
+);
+
+assert.match(
+  hydration,
+  /querySelectorAll\(`\[data-pvp-trait-layer="\$\{side\}"\]`\)/,
+  "both layer buttons should be bound for each side"
+);
+assert.match(hydration, /const delta\s*=\s*Number\(button\.dataset\.delta\)\s*\|\|\s*0/);
+assert.match(
+  hydration,
+  /state\.traitLayers\s*=\s*Math\.max\(\s*0,\s*window\.LKWG_PVP_TRAIT_RULES\.normalizeTraitLayers\(state\.traitLayers\)\s*\+\s*delta\s*\)/,
+  "layer changes should step by delta with a zero floor"
+);
+assert.doesNotMatch(
+  hydration,
+  /traitLayers[\s\S]{0,160}Math\.min|maxTraitLayers|MAX_TRAIT_LAYERS/,
+  "trait layers should not have an upper clamp"
+);
+assert.match(
+  hydration,
+  /state\.traitLayers\s*=[\s\S]*?refreshPvpManualBuffPanel\(root,\s*side\)[\s\S]*?refreshPvpDamageOutputs\(root\)/,
+  "layer changes should immediately refresh the panel, stats, and both damage outputs"
+);
+
 const passiveStats = extractFunction(html, "passiveStatMods");
 assert.equal(
   (passiveStats.match(/resolveTraitEffects\(/g) || []).length,
