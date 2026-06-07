@@ -22938,7 +22938,10 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         return passiveDescription(item, "特性");
       }
       if (item.kind === "bloodline") {
-        return item.description || "血脉";
+        const meta = String(item.description || "血脉")
+          .replace(/[。．.]+$/, "")
+          .replace(/血脉$/, "");
+        return meta || "血脉";
       }
       if (item.kind === "nature") {
         return "";
