@@ -1612,6 +1612,49 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (min-width: 641px) {
+      .field label,
+      .option-title,
+      .option-meta,
+      .tag,
+      .skill-chip strong,
+      .roller-slot-title span,
+      .roller-skill strong,
+      .roller-learner-preview,
+      .roller-learner-item span,
+      .stat-label,
+      .readonly-desc,
+      .pvp-damage-result,
+      .pvp-damage-result strong,
+      .pvp-line,
+      .line,
+      .subtitle,
+      .footer-note,
+      .notice {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .readonly-line {
+        overflow: visible;
+      }
+
+      .combo-option {
+        align-items: flex-start;
+      }
+
+      .tag {
+        white-space: normal;
+      }
+
+      .pvp-damage-result {
+        min-height: auto;
+      }
+    }
   </style>
 </head>
 <body>
