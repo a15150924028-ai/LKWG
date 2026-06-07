@@ -1886,7 +1886,9 @@
       { key: "defense", label: "物防" },
       { key: "spd", label: "魔防" },
       { key: "spe", label: "速度" },
-      { key: "skillDamage", label: "技能伤害", flat: true }
+      { key: "skillPowerFlat", label: "技能威力", flat: true },
+      { key: "skillPowerPercent", label: "技能威力（百分比）", powerPercent: true },
+      { key: "hitCount", label: "连击数增益", hitCount: true }
     ];
     const PVP_MANUAL_BUFF_STEP = 0.1;
     const PVP_MANUAL_DAMAGE_STEP = 10;
@@ -1972,8 +1974,8 @@
     const clearBtn = document.getElementById("clearBtn");
     const dataStatus = document.getElementById("dataStatus");
     const pvpSimState = {
-      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexData = FALLBACK_DATA;
@@ -3598,8 +3600,8 @@
       return {
         id: "pvp-force-impact",
         kind: "skill",
-        name: "原力冲击",
-        aliases: ["愿力冲击"],
+        name: "愿力冲击",
+        aliases: ["原力冲击"],
         type,
         category: "attack",
         power: FORCE_IMPACT_POWER,
@@ -3869,7 +3871,9 @@
       ));
       const variablePower = traitAdjustedPower(variableDamage.power);
       const baseHitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
-      const hitCount = Math.max(1, baseHitCount + (baseHitCount > 1 ? traitEffects.hitCountAdd : 0));
+      const manualHitCountBonus = Math.max(0, Math.round(Number(attackerState?.manualHitCountBonus) || 0));
+      const hitCountBonus = traitEffects.hitCountAdd + manualHitCountBonus;
+      const hitCount = Math.max(1, baseHitCount + (baseHitCount > 1 ? hitCountBonus : 0));
       const passiveDamage = passiveDamageEffects({
         attacker,
         defender,
@@ -3882,8 +3886,10 @@
       });
       const power = Math.max(1, Math.floor((variablePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
+      const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
+      const manualPowerMultiplier = Math.max(0, 1 + manualPowerPercentBonus);
       const defenseReduction = defenseReductionMultiplier(pvpActionFromState(defenderState, defender));
-      const settledPower = Math.max(1, power + manualDamageBonus);
+      const settledPower = Math.max(1, Math.floor((power + manualDamageBonus) * manualPowerMultiplier));
       const rawBase = (attackValue / Math.max(1, defenseValue)) * settledPower * PVP_DAMAGE_CORE_FACTOR;
       const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * defenseReduction;
       const singleEstimate = Math.max(1, Math.floor(adjusted));
@@ -3895,8 +3901,11 @@
       const responsePower = responsePowerSource
         ? Math.max(1, Math.floor((responsePowerSource + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
         : null;
+      const responseSettledPower = responsePower == null
+        ? null
+        : Math.max(1, Math.floor((responsePower + manualDamageBonus) * manualPowerMultiplier));
       const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * Math.max(1, responsePower + manualDamageBonus) * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction))
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responseSettledPower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction))
         : null;
       const responseEstimate = battleAction.id === "pvp-force-impact"
         ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
@@ -3924,6 +3933,8 @@
         percent: Math.round((estimate / Math.max(1, defenderStats.hp)) * 100),
         responsePercent: responseEstimate == null ? null : Math.round((responseEstimate / Math.max(1, defenderStats.hp)) * 100),
         manualDamageBonus,
+        manualPowerPercentBonus,
+        manualHitCountBonus,
         attackerPassiveLabels: passiveModLabels(attackerPassiveMods),
         attackerSkillLabels: passiveModLabels(attackerSkillMods),
         attackerManualLabels: passiveModLabels(attackerManualMods),
@@ -3959,7 +3970,9 @@
       const bonusText = [
         ...damage.attackerSkillLabels.map((label) => escapeHtml(`技能${label}`)),
         ...damage.attackerManualLabels.map((label) => escapeHtml(`己方手动${label}`)),
-        ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能伤害${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
+        ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能威力${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
+        ...(damage.manualPowerPercentBonus ? [escapeHtml(`己方手动技能威力${manualBuffText(damage.manualPowerPercentBonus)}`)] : []),
+        ...(damage.manualHitCountBonus ? [escapeHtml(`己方手动连击数+${damage.manualHitCountBonus}`)] : []),
         ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`))
       ].join("，");
       return { bonusText, ruleText, traitText };
@@ -4392,6 +4405,8 @@
       state.skillStatMods = normalizeStatMods(state.skillStatMods);
       state.manualStatMods = normalizeStatMods(state.manualStatMods);
       state.manualDamageBonus = Number.isFinite(Number(state.manualDamageBonus)) ? Number(state.manualDamageBonus) : 0;
+      state.manualPowerPercentBonus = Number.isFinite(Number(state.manualPowerPercentBonus)) ? Number(state.manualPowerPercentBonus) : 0;
+      state.manualHitCountBonus = Math.max(0, Math.round(Number(state.manualHitCountBonus) || 0));
       state.usedSupportSkillIds = unique(Array.isArray(state.usedSupportSkillIds) ? state.usedSupportSkillIds : []);
       state.supportText = state.supportText || "";
       state.energy = Number.isFinite(Number(state.energy)) ? Number(state.energy) : DEFAULT_PVP_ENERGY;
@@ -4462,13 +4477,19 @@
       state.skillIds = ["", "", "", ""];
       state.action = "";
       state.forceImpact = false;
+      resetPvpManualBuffs(state);
+      state.energy = DEFAULT_PVP_ENERGY;
+      state.traitLayers = 0;
+    }
+
+    function resetPvpManualBuffs(state) {
       state.skillStatMods = blankStatMods();
       state.manualStatMods = blankStatMods();
       state.manualDamageBonus = 0;
+      state.manualPowerPercentBonus = 0;
+      state.manualHitCountBonus = 0;
       state.usedSupportSkillIds = [];
       state.supportText = "";
-      state.energy = DEFAULT_PVP_ENERGY;
-      state.traitLayers = 0;
     }
 
     function resetPvpTraitLayers(state, monster) {
@@ -4539,6 +4560,30 @@
       return amount > 0 ? `+${amount}` : `${amount}`;
     }
 
+    function manualLayerBuffText(value) {
+      return `${Math.max(0, Math.round(Number(value) || 0))}层`;
+    }
+
+    function manualBuffStatValue(state, mods, stat) {
+      if (stat.flat) return Number(state?.manualDamageBonus) || 0;
+      if (stat.powerPercent) return Number(state?.manualPowerPercentBonus) || 0;
+      if (stat.hitCount) return Math.max(0, Math.round(Number(state?.manualHitCountBonus) || 0));
+      return mods[stat.key];
+    }
+
+    function manualBuffStatText(value, stat) {
+      if (stat.flat) return manualFlatBuffText(value);
+      if (stat.hitCount) return manualLayerBuffText(value);
+      return manualBuffText(value);
+    }
+
+    function manualBuffStepText(stat, delta) {
+      const sign = delta > 0 ? "+" : "-";
+      if (stat.flat) return `${sign}${PVP_MANUAL_DAMAGE_STEP}`;
+      if (stat.hitCount) return `${sign}1层`;
+      return `${sign}10%`;
+    }
+
     function manualBuffClass(value) {
       const amount = Number(value) || 0;
       if (amount > 0) return "positive";
@@ -4548,7 +4593,6 @@
 
     function renderPvpManualBuffPanel(side, state) {
       const mods = mergeStatMods(state?.skillStatMods, state?.manualStatMods);
-      const damageBonus = Number(state?.manualDamageBonus) || 0;
       const monster = monsterById.get(state?.monsterId);
       const traitRule = window.LKWG_PVP_TRAIT_RULES.resolveTraitRule(monster);
       const traitName = window.LKWG_PVP_TRAIT_RULES.traitName(monster);
@@ -4561,9 +4605,9 @@
               <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
                 <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
                 <div class="pvp-buff-controls">
-                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="-1" title="${escapeHtml(stat.label)}${stat.flat ? "-10" : "-10%"}">-</button>
-                  <span class="pvp-buff-value ${manualBuffClass(stat.flat ? damageBonus : mods[stat.key])}" data-pvp-buff-value="${side}-${stat.key}">${stat.flat ? manualFlatBuffText(damageBonus) : manualBuffText(mods[stat.key])}</span>
-                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="1" title="${escapeHtml(stat.label)}${stat.flat ? "+10" : "+10%"}">+</button>
+                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="-1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, -1)}">-</button>
+                  <span class="pvp-buff-value ${manualBuffClass(manualBuffStatValue(state, mods, stat))}" data-pvp-buff-value="${side}-${stat.key}">${manualBuffStatText(manualBuffStatValue(state, mods, stat), stat)}</span>
+                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, 1)}">+</button>
                 </div>
               </div>
             `).join("")}
@@ -4590,8 +4634,8 @@
       PVP_MANUAL_BUFF_STATS.forEach((stat) => {
         const valueEl = root.querySelector(`[data-pvp-buff-value="${side}-${stat.key}"]`);
         if (!valueEl) return;
-        const value = stat.flat ? Number(state.manualDamageBonus) || 0 : mods[stat.key];
-        valueEl.textContent = stat.flat ? manualFlatBuffText(value) : manualBuffText(value);
+        const value = manualBuffStatValue(state, mods, stat);
+        valueEl.textContent = manualBuffStatText(value, stat);
         valueEl.classList.toggle("positive", Number(value) > 0);
         valueEl.classList.toggle("negative", Number(value) < 0);
       });
@@ -4642,7 +4686,7 @@
               <div class="pvp-force-row">
                 <button class="pvp-force-button${state.forceImpact && !forceImpactLocked(state) ? " active" : ""}" type="button" data-pvp-force="${side}" aria-pressed="${state.forceImpact && !forceImpactLocked(state) ? "true" : "false"}" ${forceImpactLocked(state) ? "disabled" : ""}>
                   <span class="pvp-force-icon-wrap">${forceImpactButtonIcon(state, monster)}</span>
-                  <span>原力冲击</span>
+                  <span>愿力冲击</span>
                 </button>
               </div>
               ${renderPvpManualBuffPanel(side, state)}
@@ -4712,20 +4756,12 @@
       state.forceImpact = state.action === "force";
     }
 
-    function applyPvpSupportSkillOnce(state, skill) {
+    function applyPvpSupportSkill(state, skill) {
       if (!skill || isAttackSkill(skill)) return false;
       const mods = skillStatMods(skill);
       const labels = passiveModLabels(mods);
       if (!labels.length) return false;
-      state.usedSupportSkillIds = unique(Array.isArray(state.usedSupportSkillIds) ? state.usedSupportSkillIds : []);
-      if (state.usedSupportSkillIds.includes(skill.id)) {
-        state.supportText = `${skill.name}：已释放过，不重复叠加`;
-        state.action = "";
-        state.forceImpact = false;
-        return true;
-      }
       state.skillStatMods = mergeStatMods(state.skillStatMods, mods);
-      state.usedSupportSkillIds.push(skill.id);
       state.supportText = `${skill.name}：${labels.join(" / ")}`;
       state.action = "";
       state.forceImpact = false;
@@ -4762,11 +4798,7 @@
             if (monsterChanged) resetPvpTraitLayers(state, item);
             state.action = "";
             state.forceImpact = false;
-            state.skillStatMods = blankStatMods();
-            state.manualStatMods = blankStatMods();
-            state.manualDamageBonus = 0;
-            state.usedSupportSkillIds = [];
-            state.supportText = "";
+            resetPvpManualBuffs(state);
             state.energy = DEFAULT_PVP_ENERGY;
             if (isAlly) {
               const teamPet = teamPetForMonster(team, item.id);
@@ -4777,11 +4809,7 @@
                 state.natureId = "";
                 state.talentIds = ["", "", ""];
                 state.skillIds = ["", "", "", ""];
-                state.skillStatMods = blankStatMods();
-                state.manualStatMods = blankStatMods();
-                state.manualDamageBonus = 0;
-                state.usedSupportSkillIds = [];
-                state.supportText = "";
+                resetPvpManualBuffs(state);
                 state.energy = DEFAULT_PVP_ENERGY;
               }
             }
@@ -4855,8 +4883,8 @@
               if (item) {
                 if (isAttackSkill(item)) {
                   setPvpAction(state, `skill:${skillIndex}`);
-                } else if (applyPvpSupportSkillOnce(state, item)) {
-                  // Support skill release is recorded once per side.
+                } else if (applyPvpSupportSkill(state, item)) {
+                  // Support skill release is recorded as a stack each time.
                 } else {
                   setPvpAction(state, `skill:${skillIndex}`);
                 }
@@ -4871,7 +4899,7 @@
           skillHost?.addEventListener("click", (event) => {
             if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || !state.skillIds[skillIndex]) return;
             const skill = skillById.get(state.skillIds[skillIndex]);
-            if (applyPvpSupportSkillOnce(state, skill)) {
+            if (applyPvpSupportSkill(state, skill)) {
               refreshPvpDamageOutputs(root);
               return;
             }
@@ -4895,6 +4923,17 @@
             const delta = Number(button.dataset.delta) || 0;
             if (statConfig.flat) {
               state.manualDamageBonus = (Number(state.manualDamageBonus) || 0) + delta * PVP_MANUAL_DAMAGE_STEP;
+              refreshPvpDamageOutputs(root);
+              return;
+            }
+            if (statConfig.powerPercent) {
+              const nextValue = (Number(state.manualPowerPercentBonus) || 0) + delta * PVP_MANUAL_BUFF_STEP;
+              state.manualPowerPercentBonus = Math.round(nextValue * 10) / 10;
+              refreshPvpDamageOutputs(root);
+              return;
+            }
+            if (statConfig.hitCount) {
+              state.manualHitCountBonus = Math.max(0, Math.round(Number(state.manualHitCountBonus) || 0) + delta);
               refreshPvpDamageOutputs(root);
               return;
             }

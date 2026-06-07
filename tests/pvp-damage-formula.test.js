@@ -155,7 +155,9 @@ function calc(action, overrides = {}) {
       monsterId: attacker.id,
       skillIds: [action.id, "", "", ""],
       action: "skill:0",
-      manualDamageBonus: overrides.manualDamageBonus || 0
+      manualDamageBonus: overrides.manualDamageBonus || 0,
+      manualPowerPercentBonus: overrides.manualPowerPercentBonus || 0,
+      manualHitCountBonus: overrides.manualHitCountBonus || 0
     },
     {
       monsterId: defender.id,
@@ -170,6 +172,18 @@ assert.equal(
   calc(attackSkill, { manualDamageBonus: 10 }).estimate,
   198,
   "manual skill damage should add to settled power before attack/defense and multipliers"
+);
+
+assert.equal(
+  calc(attackSkill, { manualPowerPercentBonus: 0.1 }).estimate,
+  198,
+  "manual skill power percent should increase settled power before attack/defense and multipliers"
+);
+
+assert.equal(
+  calc(attackSkill, { manualDamageBonus: 10, manualPowerPercentBonus: 0.1 }).estimate,
+  217,
+  "flat and percent skill power bonuses should both apply to settled power"
 );
 
 assert.equal(
@@ -188,9 +202,21 @@ assert.equal(
 );
 
 assert.equal(
+  calc(attackSkill, { manualHitCountBonus: 2 }).hitCount,
+  1,
+  "non-combo attacks should not receive manual hit-count bonuses"
+);
+
+assert.equal(
   calc(comboSkill, { traitEffects: { hitCountAdd: 1 } }).hitCount,
   3,
   "combo attacks should receive hit-count bonuses"
+);
+
+assert.equal(
+  calc(comboSkill, { manualHitCountBonus: 2 }).hitCount,
+  4,
+  "combo attacks should receive manual hit-count bonuses"
 );
 
 console.log("pvp damage formula ok");
