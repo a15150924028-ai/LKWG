@@ -1525,6 +1525,12 @@
         line-height: 1.35;
       }
 
+      .combo-menu {
+        min-width: 180px;
+        width: max-content;
+        max-width: calc(100vw - 16px);
+      }
+
       .button {
         min-height: auto;
         padding: 10px 14px;
@@ -1542,6 +1548,12 @@
 
       .combo-option {
         align-items: flex-start;
+      }
+
+      .combo-option .option-title,
+      .combo-option .option-meta {
+        overflow-wrap: break-word;
+        word-break: normal;
       }
 
       .subtitle,
