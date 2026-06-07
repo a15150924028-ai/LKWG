@@ -3475,10 +3475,11 @@
       const mods = blankStatMods();
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(monster, state?.traitLayers);
       Object.assign(mods, mergeStatMods(mods, traitEffects.statMods));
+      const resolvedTraitNames = traitEffects.passiveNames?.length
+        ? traitEffects.passiveNames
+        : [traitEffects.rule?.traitName].filter(Boolean);
       for (const item of passiveList(monster)) {
-        const isResolvedTraitPassive = Boolean(
-          traitEffects.rule?.traitName && item.compact.includes(traitEffects.rule.traitName)
-        );
+        const isResolvedTraitPassive = resolvedTraitNames.some((name) => item.compact.includes(name));
         if (!isResolvedTraitPassive && passiveStatBoostIsCurrent(item.compact)) {
           Object.assign(mods, mergeStatMods(mods, statModsFromText(item.text)));
         }

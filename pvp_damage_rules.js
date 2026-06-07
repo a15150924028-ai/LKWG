@@ -160,7 +160,8 @@
     }
     const energyEmptyPowerMatch = text.match(/(?:使用后|释放后)若能量耗尽.*(?:威力|攻击威力)\+(\d+)/);
     if (energyEmptyPowerMatch) {
-      const cost = Math.max(0, numberValue(action?.pp, 0));
+      const baseCost = Math.max(0, numberValue(action?.pp, 0));
+      const cost = Math.max(0, numberValue(context.currentSkillCost, baseCost));
       if (attackerEnergy - cost <= 0) {
         const powerAdd = Number(energyEmptyPowerMatch[1]);
         power += powerAdd;

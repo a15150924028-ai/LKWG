@@ -155,6 +155,16 @@ assert.equal(
 assert.match(passiveStats, /mergeStatMods\(mods,\s*traitEffects\.statMods\)/);
 assert.match(
   passiveStats,
+  /const resolvedTraitNames[\s\S]*traitEffects\.passiveNames/,
+  "passive stat calculation should use registered trait aliases"
+);
+assert.match(
+  passiveStats,
+  /const isResolvedTraitPassive[\s\S]*resolvedTraitNames\.some/,
+  "registered trait aliases should mark resolved passives"
+);
+assert.match(
+  passiveStats,
   /const isResolvedTraitPassive[\s\S]*!isResolvedTraitPassive && passiveStatBoostIsCurrent/,
   "the resolved cumulative trait should not also flow through the generic passive stat parser"
 );

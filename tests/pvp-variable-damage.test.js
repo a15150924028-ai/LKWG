@@ -75,6 +75,14 @@ assert.equal(resolve(action("穿膛", 80, "若敌方能量不高于2，本技能
 assert.equal(resolve(action("穿膛", 80, "若敌方能量不高于2，本技能造成5倍伤害。"), { defenderEnergy: 3 }).damageMultiplier, 1);
 assert.equal(resolve(action("背袭", 40, "若敌方能量等于0，造成20倍伤害。"), { defenderEnergy: 0 }).damageMultiplier, 20);
 assert.equal(resolve(action("触底强击", 95, "使用后若能量耗尽，本次技能威力+120。", { pp: 4 }), { attackerEnergy: 4 }).power, 215);
+assert.equal(resolve(action("触底强击", 95, "使用后若能量耗尽，本次技能威力+120。", { pp: 4 }), {
+  attackerEnergy: 4,
+  currentSkillCost: 0
+}).power, 95);
+assert.equal(resolve(action("触底强击", 95, "使用后若能量耗尽，本次技能威力+120。", { pp: 4 }), {
+  attackerEnergy: 4,
+  currentSkillCost: 2
+}).power, 95);
 assert.equal(resolve(action("坟场搏击", 180, "敌方每有1能量，本次技能威力-10%。"), { defenderEnergy: 5 }).power, 90);
 
 assert.equal(resolve(action("冰锋横扫", 10, "威力等于敌方已选择技能能耗总和×10。"), {

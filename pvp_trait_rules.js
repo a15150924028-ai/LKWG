@@ -14,7 +14,7 @@
   const RULES = deepFreeze([
     {
       chainIds: ["season-s2-afec977b0e76"],
-      names: ["巨鼓象"],
+      names: ["小鼓象", "巨鼓象"],
       traitName: "合拍",
       statPerLayer: { atk: 0.2, defense: 0.2 }
     },
@@ -33,7 +33,14 @@
     { chainIds: ["165"], traitName: "乘风连击", hitCountPerLayer: 1 },
     { chainIds: ["239"], traitName: "洄游", costReductionPerLayer: 1 },
     {
-      chainIds: ["212", "216"],
+      chainIds: ["212"],
+      traitName: "拨浪鼓",
+      flatPowerPerLayer: 10,
+      actionTypes: ["poison", "cute"]
+    },
+    {
+      chainIds: ["216"],
+      names: ["烈火守护"],
       traitName: "拨浪鼓",
       flatPowerPerLayer: 10,
       actionTypes: ["poison", "cute"]
@@ -45,12 +52,12 @@
     {
       chainIds: ["221"],
       traitName: "定向精炼",
-      flatPowerPerLayer: 10,
+      powerPercentPerLayer: 0.1,
       actionTypes: ["mechanical", "ground"]
     },
     {
       chainIds: ["chain-chicken"],
-      names: ["绅士鸡"],
+      names: ["可立鸡", "晕晕鸡", "绅士鸡"],
       traitName: "指挥家",
       statPerLayer: { atk: 0.2, spa: 0.2 }
     },
@@ -97,6 +104,7 @@
       chainIds: ["chain-speeddog"],
       names: ["风暴战犬"],
       traitName: "全神贯注",
+      passiveNames: ["全神贯注", "专注力"],
       defaultLayers: 10,
       statPerLayer: { atk: 0.1 }
     }
@@ -171,6 +179,12 @@
     return BOSS_TRAIT_NAMES[name] || resolveTraitRule(monster)?.traitName || "";
   }
 
+  function traitPassiveNames(monster) {
+    const rule = resolveTraitRule(monster);
+    const names = [traitName(monster), ...(rule?.passiveNames || [])].filter(Boolean);
+    return [...new Set(names)];
+  }
+
   function scaledValue(value, layers) {
     return Math.round(Number(value || 0) * layers * 1e12) / 1e12;
   }
@@ -191,6 +205,7 @@
       rule,
       layers: normalizedLayers,
       traitName: traitName(monster),
+      passiveNames: traitPassiveNames(monster),
       statMods,
       flatPower: actionAllowed ? scaledValue(rule?.flatPowerPerLayer, normalizedLayers) : 0,
       powerMultiplier: actionAllowed
@@ -211,6 +226,7 @@
     resolveTraitRule,
     defaultTraitLayers,
     traitName,
+    traitPassiveNames,
     resolveTraitEffects
   };
 });

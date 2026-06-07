@@ -14,6 +14,7 @@ const publicApi = [
   "resolveTraitRule",
   "defaultTraitLayers",
   "traitName",
+  "traitPassiveNames",
   "resolveTraitEffects",
   "RULES",
   "BOSS_TRAIT_NAMES"
@@ -31,18 +32,19 @@ vm.runInContext(
 assert.ok(browserContext.LKWG_PVP_TRAIT_RULES);
 
 const expectedRegistry = [
-  [["season-s2-afec977b0e76"], ["巨鼓象"], "合拍", []],
+  [["season-s2-afec977b0e76"], ["小鼓象", "巨鼓象"], "合拍", []],
   [["049"], [], "囤积", []],
   [["181"], [], "身经百练", ["water", "fighting"]],
   [["165"], [], "乘风连击", []],
   [["239"], [], "洄游", []],
-  [["212", "216"], [], "拨浪鼓", ["poison", "cute"]],
+  [["212"], [], "拨浪鼓", ["poison", "cute"]],
+  [["216"], ["烈火守护"], "拨浪鼓", ["poison", "cute"]],
   [["085"], [], "嫁祸", []],
   [["102"], [], "自由飘", []],
   [["185"], [], "守护者", []],
   [["096"], [], "咔咔冲刺", []],
   [["221"], [], "定向精炼", ["mechanical", "ground"]],
-  [["chain-chicken"], ["绅士鸡"], "指挥家", []],
+  [["chain-chicken"], ["可立鸡", "晕晕鸡", "绅士鸡"], "指挥家", []],
   [["chain-chicken"], ["武者鸡"], "斗技", []],
   [["171"], [], "消波块", ["ground"]],
   [["323"], [], "血型吸引", []],
@@ -72,6 +74,7 @@ const stormDog = monster("风暴战犬", "chain-speeddog");
 assert.equal(rules.resolveTraitRule(stormDog).traitName, "全神贯注");
 assert.equal(rules.defaultTraitLayers(stormDog), 10);
 assert.equal(rules.traitName(stormDog), "全神贯注");
+assert.deepEqual(rules.traitPassiveNames(stormDog), ["全神贯注", "专注力"]);
 
 assert.deepEqual(rules.BOSS_TRAIT_NAMES, {
   "风暴战犬": "全神贯注",
@@ -107,8 +110,14 @@ for (const [name, expectedTraitName] of Object.entries(rules.BOSS_TRAIT_NAMES)) 
 }
 
 assert.equal(rules.resolveTraitRule(monster("绿耳松鼠", "049")).traitName, "囤积");
+assert.equal(rules.resolveTraitRule(monster("小鼓象", "season-s2-afec977b0e76")).traitName, "合拍");
 assert.equal(rules.resolveTraitRule(monster("皇家狮鹫（高山地的样子）", "165")).traitName, "乘风连击");
 assert.equal(rules.resolveTraitRule(monster("圣光迪莫", "chain-dimo")).traitName, "最好的伙伴");
+assert.equal(rules.resolveTraitRule(monster("可立鸡", "chain-chicken")).traitName, "指挥家");
+assert.equal(rules.resolveTraitRule(monster("晕晕鸡", "chain-chicken")).traitName, "指挥家");
+assert.equal(rules.resolveTraitRule(monster("火尾瓦特", "216")), null);
+assert.equal(rules.resolveTraitRule(monster("火尾战士", "216")), null);
+assert.equal(rules.resolveTraitRule(monster("烈火守护", "216")).traitName, "拨浪鼓");
 assert.equal(
   rules.resolveTraitRule(monster("同链测试象", "season-s2-afec977b0e76")),
   null
@@ -190,6 +199,14 @@ assert.equal(
 assert.equal(
   rules.resolveTraitEffects(monster("波多西", "221"), 3, { type: "water" }).flatPower,
   0
+);
+assert.equal(
+  rules.resolveTraitEffects(monster("波多西", "221"), 3, { type: "mechanical" }).flatPower,
+  0
+);
+assert.equal(
+  rules.resolveTraitEffects(monster("波多西", "221"), 3, { type: "mechanical" }).powerMultiplier,
+  1.3
 );
 assert.equal(rules.resolveTraitEffects(monster("武者鸡", "chain-chicken"), 3).flatPower, 60);
 assert.equal(
