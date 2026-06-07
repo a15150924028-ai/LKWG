@@ -79,6 +79,11 @@ assert.deepEqual(
   ]),
   expectedRegistry
 );
+for (const rule of rules.RULES) {
+  for (const [stat, value] of Object.entries(rule.statPerLayer || {})) {
+    assert.equal(value, 0.1, `${rule.traitName}.${stat} should be 10% per layer`);
+  }
+}
 assert.equal(rules.resolveTraitRule(monster("蹦蹦松鼠", "049")).traitName, "囤积");
 assert.equal(rules.defaultTraitLayers(monster("蹦蹦松鼠", "049")), 10);
 assert.equal(rules.defaultTraitLayers(monster("抱枕松鼠", "049")), 10);
@@ -147,7 +152,7 @@ assert.deepEqual(
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("恶魔狼", "131"), 2).statMods,
-  { hp: 0, atk: 0.6, defense: 0, spa: 0.6, spd: 0, spe: 0 }
+  { hp: 0, atk: 0.2, defense: 0, spa: 0.2, spd: 0, spe: 0 }
 );
 assert.equal(
   rules.resolveTraitEffects(monster("彩蝶鲨", "108"), 3).skillCostReduction,
@@ -155,7 +160,7 @@ assert.equal(
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("棋绮后（白子）", "chain-chess"), 4).statMods,
-  { hp: 0, atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2, spe: 0 }
+  { hp: 0, atk: 0.4, defense: 0.4, spa: 0.4, spd: 0.4, spe: 0 }
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("女王蜂", "082"), 2).statMods,
@@ -163,15 +168,15 @@ assert.deepEqual(
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("花魁蜂后", "chain-queenbee-boss"), 2).statMods,
-  { hp: 0, atk: 0.3, defense: 0.3, spa: 0.3, spd: 0.3, spe: 0.3 }
+  { hp: 0, atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2, spe: 0.2 }
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("火神", "chain-fire"), 3).statMods,
-  { hp: 0, atk: 0.6, defense: 0, spa: 0.6, spd: 0, spe: 0 }
+  { hp: 0, atk: 0.3, defense: 0, spa: 0.3, spd: 0, spe: 0 }
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("爵士鹿", "226"), 2).statMods,
-  { hp: 0, atk: 0.4, defense: 0, spa: 0.4, spd: 0, spe: 0 }
+  { hp: 0, atk: 0.2, defense: 0, spa: 0.2, spd: 0, spe: 0 }
 );
 
 assert.equal(rules.resolveTraitRule(monster("绿耳松鼠", "049")).traitName, "囤积");
@@ -239,11 +244,11 @@ assert.equal(unsupported.energyGain, 0);
 
 assert.deepEqual(
   rules.resolveTraitEffects(monster("巨鼓象", "season-s2-afec977b0e76"), 3).statMods,
-  { hp: 0, atk: 0.6, defense: 0.6, spa: 0, spd: 0, spe: 0 }
+  { hp: 0, atk: 0.3, defense: 0.3, spa: 0, spd: 0, spe: 0 }
 );
 assert.deepEqual(
   rules.resolveTraitEffects(monster("迪莫", "chain-dimo"), 2).statMods,
-  { hp: 0, atk: 0.4, defense: 0.4, spa: 0.4, spd: 0.4, spe: 0.4 }
+  { hp: 0, atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2, spe: 0.2 }
 );
 assert.equal(
   rules.resolveTraitEffects(monster("海豹船长", "181"), 2, { type: "water" }).powerMultiplier,
@@ -294,10 +299,10 @@ const firstStatEffects = rules.resolveTraitEffects(monster("巨鼓象", "season-
 const secondStatEffects = rules.resolveTraitEffects(monster("巨鼓象", "season-s2-afec977b0e76"), 2);
 assert.notEqual(firstStatEffects.statMods, secondStatEffects.statMods);
 firstStatEffects.statMods.atk = 99;
-assert.equal(secondStatEffects.statMods.atk, 0.4);
+assert.equal(secondStatEffects.statMods.atk, 0.2);
 assert.equal(
   rules.resolveTraitEffects(monster("巨鼓象", "season-s2-afec977b0e76"), 2).statMods.atk,
-  0.4
+  0.2
 );
 
 assert.throws(() => rules.RULES[0].chainIds.push("mutated"));
@@ -306,7 +311,7 @@ rules.RULES[0].statPerLayer.atk = 99;
 rules.BOSS_TRAIT_NAMES["黑猫密探"] = "mutated";
 assert.equal(
   rules.resolveTraitEffects(monster("巨鼓象", "season-s2-afec977b0e76"), 2).statMods.atk,
-  0.4
+  0.2
 );
 assert.equal(rules.traitName(monster("黑猫密探", "unsupported")), "先知");
 
