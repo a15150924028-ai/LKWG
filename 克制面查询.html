@@ -1489,6 +1489,71 @@
         padding-top: 18px;
       }
 
+      .actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .actions .button {
+        width: 100%;
+      }
+
+      .button,
+      .tag,
+      .option-title,
+      .option-meta,
+      .skill-chip strong,
+      .roller-skill strong,
+      .roller-slot-title span,
+      .field label,
+      .stat-label {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .readonly-line {
+        overflow: visible;
+      }
+
+      .combo-control input {
+        min-height: 36px;
+        padding: 6px 3px;
+        line-height: 1.35;
+      }
+
+      .button {
+        min-height: auto;
+        padding: 10px 14px;
+        line-height: 1.35;
+      }
+
+      .button,
+      .tag {
+        align-items: center;
+      }
+
+      .tag {
+        white-space: normal;
+      }
+
+      .combo-option {
+        align-items: flex-start;
+      }
+
+      .subtitle,
+      .footer-note,
+      .notice,
+      .readonly-desc,
+      .line,
+      .roller-learner-item span {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
       .team-grid {
         grid-template-columns: 1fr;
         padding: 10px;
@@ -1510,6 +1575,23 @@
     }
 
     @media (max-width: 430px) {
+      .button,
+      .tag,
+      .option-title,
+      .option-meta,
+      .skill-chip strong,
+      .roller-skill strong,
+      .roller-slot-title span,
+      .field label,
+      .stat-label {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .combo-option {
+        align-items: flex-start;
+      }
+
       .form-row,
       .pet-info-grid,
       .skills,
