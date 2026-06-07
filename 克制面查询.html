@@ -21371,6 +21371,51 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     return match ? Math.max(1, Number(match[1])) : 1;
   }
 
+
+  function getHitCountMode(skill) {
+    const text = cleanText(actionText(skill));
+    const name = skill?.name || "";
+
+    const nonComboSkills = new Set([
+      "火云车"
+    ]);
+
+    const comboSkills = new Set([
+      "音波弹"
+    ]);
+
+    if (nonComboSkills.has(name)) {
+      return {
+        baseHitCount: 1,
+        canReceiveHitCountBonus: false,
+        reason: "非连击技能"
+      };
+    }
+
+    if (comboSkills.has(name)) {
+      const match = text.match(/(\d+)连击/);
+      return {
+        baseHitCount: match ? Math.max(1, Number(match[1])) : 1,
+        canReceiveHitCountBonus: true,
+        reason: "连击技能"
+      };
+    }
+
+    const match = text.match(/(\d+)连击/);
+    if (match) {
+      return {
+        baseHitCount: Math.max(1, Number(match[1])),
+        canReceiveHitCountBonus: true,
+        reason: "描述含X连击"
+      };
+    }
+
+    return {
+      baseHitCount: 1,
+      canReceiveHitCountBonus: false,
+      reason: "普通单段攻击"
+    };
+  }
   function skillInSlot(skillIndex, slots) {
     return slots.includes(Number(skillIndex));
   }
@@ -21432,7 +21477,9 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     const labels = [];
     let power = Math.max(0, numberValue(action?.power, 0));
     let type = action?.type || null;
-    let hitCount = parseFixedHitCount(text);
+    const hitMode = getHitCountMode(action);
+    const canReceiveHitCountBonus = hitMode.canReceiveHitCountBonus;
+    let hitCount = hitMode.baseHitCount;
     let damageMultiplier = 1;
     let responseDamageMultiplier = 1;
     let ignoreResistance = false;
@@ -21440,7 +21487,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     let responsePower = null;
     const basePower = power;
 
-    if (/位于1号或3号位时连击\+1/.test(text) && skillInSlot(context.skillIndex, [0, 2])) {
+    if (canReceiveHitCountBonus && /位于1号或3号位时连击\+1/.test(text) && skillInSlot(context.skillIndex, [0, 2])) {
       hitCount += 1;
       addLabel(labels, "1/3号位连击+1");
     }
@@ -21477,7 +21524,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       power = Math.round(power * 1.5);
       addLabel(labels, "先于敌方攻击，威力+50%");
     }
-    if (/先于敌方攻击.*改为3连击/.test(text) && actsBeforeDefender) {
+    if (canReceiveHitCountBonus && /先于敌方攻击.*改为3连击/.test(text) && actsBeforeDefender) {
       hitCount = 3;
       addLabel(labels, "先于敌方攻击，改为3连击");
     }
@@ -21664,7 +21711,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       responsePower = basePower + poisonLayers * 20;
     }
     const starfallLayers = layerValue(context, "starfall");
-    if (/敌方每有1层星陨印记.*连击数\+1/.test(text) && starfallLayers > 0) {
+    if (canReceiveHitCountBonus && /敌方每有1层星陨印记.*连击数\+1/.test(text) && starfallLayers > 0) {
       hitCount += starfallLayers;
       addLabel(labels, `星陨印记${starfallLayers}层，连击+${starfallLayers}`);
     }
@@ -21693,7 +21740,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       power += powerAdd;
       addLabel(labels, `敌方换宠，威力+${powerAdd}`);
     }
-    if (/敌方本回合(?:更换|替换)精灵.*连击数翻倍/.test(text) && context.defenderSwitched) {
+    if (canReceiveHitCountBonus && /敌方本回合(?:更换|替换)精灵.*连击数翻倍/.test(text) && context.defenderSwitched) {
       hitCount *= 2;
       addLabel(labels, "敌方换宠，连击翻倍");
     }
@@ -21758,7 +21805,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       addLabel(labels, `击败${defeatCount}次，威力翻${2 ** defeatCount}倍`);
     }
     const defeatHitCountMatch = text.match(/(?:若)?击败敌方.*连击数永久\+(\d+)/);
-    if (defeatHitCountMatch && defeatCount > 0) {
+    if (canReceiveHitCountBonus && defeatHitCountMatch && defeatCount > 0) {
       const hitAdd = Number(defeatHitCountMatch[1]) * defeatCount;
       hitCount += hitAdd;
       addLabel(labels, `击败${defeatCount}次，连击+${hitAdd}`);
@@ -21772,12 +21819,12 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     }
 
     const skillCopyCount = Math.max(0, Math.round(numberValue(context.teamSkillCopies?.[action?.name], 0)));
-    if (/队伍中的精灵每携带1个.*本次技能连击数\+1/.test(text) && skillCopyCount > 0) {
+    if (canReceiveHitCountBonus && /队伍中的精灵每携带1个.*本次技能连击数\+1/.test(text) && skillCopyCount > 0) {
       hitCount += skillCopyCount;
       addLabel(labels, `${action.name}携带${skillCopyCount}个，连击+${skillCopyCount}`);
     }
     const cuteLayers = layerValue(context, "cuteTotal");
-    if (/所有精灵每有1层萌化.*连击数\+1/.test(text) && cuteLayers > 0) {
+    if (canReceiveHitCountBonus && /所有精灵每有1层萌化.*连击数\+1/.test(text) && cuteLayers > 0) {
       hitCount += cuteLayers;
       addLabel(labels, `萌化${cuteLayers}层，连击+${cuteLayers}`);
     }
@@ -21842,6 +21889,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       responseDamageMultiplier,
       ignoreResistance,
       responseIgnoreResistance,
+      canReceiveHitCountBonus,
       labels
     };
   }
@@ -24349,7 +24397,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
             defenderMixedBlood: !!defenderState?.mixedBlood || bloodlineMatchesName(defenderState, /混合/),
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
-        : { power: basePower, hitCount: 1, damageMultiplier: 1, labels: [] };
+        : { power: basePower, hitCount: 1, damageMultiplier: 1, canReceiveHitCountBonus: false, labels: [] };
       const damageAction = variableDamage.type && variableDamage.type !== battleAction.type
         ? { ...battleAction, type: variableDamage.type }
         : battleAction;
@@ -24367,8 +24415,9 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       const variablePower = traitAdjustedPower(variableDamage.power);
       const baseHitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
       const manualHitCountBonus = Math.max(0, Math.round(Number(attackerState?.manualHitCountBonus) || 0));
-      const hitCountBonus = traitEffects.hitCountAdd + manualHitCountBonus;
-      const hitCount = Math.max(1, baseHitCount + (baseHitCount > 1 ? hitCountBonus : 0));
+      const canReceiveHitCountBonus = Boolean(variableDamage.canReceiveHitCountBonus);
+      const hitCountBonus = canReceiveHitCountBonus ? traitEffects.hitCountAdd + manualHitCountBonus : 0;
+      const hitCount = Math.max(1, baseHitCount + hitCountBonus);
       const passiveDamage = passiveDamageEffects({
         attacker,
         defender,
@@ -25836,3 +25885,4 @@ window.LCX_SKILL_POOL_OVERRIDES = {
   </script>
 </body>
 </html>
+
