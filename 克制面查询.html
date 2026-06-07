@@ -22768,6 +22768,8 @@ window.LCX_SKILL_POOL_OVERRIDES = {
           value: BLOODLINES.some((bloodline) => bloodline.id === pet.bloodlineId) ? pet.bloodlineId : "",
           placeholder: "搜索血脉名称",
           emptyText: "未选择血脉",
+          displayName: bloodlineShortLabel,
+          showMeta: false,
           onSelect: (item) => {
             const current = readTeam();
             current[petIndex].bloodlineId = item?.id || "";
@@ -22927,8 +22929,8 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         <button class="combo-option" type="button" data-id="${escapeHtml(item.id)}">
           ${iconHtml(item, "combo-icon")}
           <span>
-            <span class="option-title">${escapeHtml(item.name)}</span>
-            <span class="option-meta">${escapeHtml(itemMeta(item))}</span>
+            <span class="option-title">${escapeHtml(options.displayName ? options.displayName(item) : item.name)}</span>
+            ${options.showMeta === false ? "" : `<span class="option-meta">${escapeHtml(itemMeta(item))}</span>`}
           </span>
         </button>
       `).join("") : '<button class="combo-option" type="button" data-id=""><span class="combo-icon placeholder">?</span><span><span class="option-title">没有匹配结果</span><span class="option-meta">请换关键词</span></span></button>';
@@ -25284,6 +25286,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
           placeholder: "搜索血脉名称",
           selectedPlaceholder: "",
           displayName: bloodlineShortLabel,
+          showMeta: false,
           emptyText: "未选择血脉",
           onSelect: (item) => {
             state.bloodlineId = item?.id || "";
