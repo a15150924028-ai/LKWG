@@ -3588,6 +3588,15 @@
       return skill ? { ...skill, pvpSkillIndex: skillIndex } : null;
     }
 
+    function defenseReductionMultiplier(action) {
+      if (!action || action.category !== "defense") return 1;
+      const text = `${action.name || ""} ${action.description || ""} ${action.effect || ""} ${(action.effects || []).join(" ")}`;
+      const match = text.match(/减伤\s*(\d+)%/);
+      if (!match) return 1;
+      const reduction = Math.max(0, Math.min(100, Number(match[1]) || 0));
+      return Math.max(0, 1 - reduction / 100);
+    }
+
     function sameTypeAttackBonus(action, attacker) {
       return attacker?.types?.includes(action?.type) ? SAME_TYPE_ATTACK_BONUS : 1;
     }
@@ -3831,7 +3840,8 @@
         ((Number(value) || basePower) + traitEffects.flatPower) * traitEffects.powerMultiplier
       ));
       const variablePower = traitAdjustedPower(variableDamage.power);
-      const hitCount = Math.max(1, (Number(variableDamage.hitCount) || 1) + traitEffects.hitCountAdd);
+      const baseHitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
+      const hitCount = Math.max(1, baseHitCount + (baseHitCount > 1 ? traitEffects.hitCountAdd : 0));
       const passiveDamage = passiveDamageEffects({
         attacker,
         defender,
@@ -3843,11 +3853,13 @@
         typeMultiplier
       });
       const power = Math.max(1, Math.floor((variablePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
-      const rawBase = (attackValue / Math.max(1, defenseValue)) * power * PVP_DAMAGE_CORE_FACTOR;
-      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1);
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
+      const defenseReduction = defenseReductionMultiplier(pvpActionFromState(defenderState, defender));
+      const settledPower = Math.max(1, power + manualDamageBonus);
+      const rawBase = (attackValue / Math.max(1, defenseValue)) * settledPower * PVP_DAMAGE_CORE_FACTOR;
+      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * defenseReduction;
       const singleEstimate = Math.max(1, Math.floor(adjusted));
-      const estimate = Math.max(1, singleEstimate * hitCount + manualDamageBonus);
+      const estimate = Math.max(1, singleEstimate * hitCount);
       const responsePowerSource = variableDamage.responsePower
         ? traitAdjustedPower(variableDamage.responsePower)
         : (Number(variableDamage.responseDamageMultiplier) && Number(variableDamage.responseDamageMultiplier) !== 1 ? variablePower : null);
@@ -3856,11 +3868,11 @@
         ? Math.max(1, Math.floor((responsePowerSource + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
         : null;
       const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responsePower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier))
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * Math.max(1, responsePower + manualDamageBonus) * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction))
         : null;
       const responseEstimate = battleAction.id === "pvp-force-impact"
         ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
-        : (responseSingleEstimate == null ? null : Math.max(1, responseSingleEstimate * hitCount + manualDamageBonus));
+        : (responseSingleEstimate == null ? null : Math.max(1, responseSingleEstimate * hitCount));
       return {
         attacker,
         defender,
@@ -3873,6 +3885,7 @@
         typeMultiplier,
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
+        defenseReduction,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
         singleEstimate,
         responseSingleEstimate,
