@@ -3475,6 +3475,10 @@
       const mods = blankStatMods();
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(monster, state?.traitLayers);
       Object.assign(mods, mergeStatMods(mods, traitEffects.statMods));
+      Object.defineProperty(mods, "__flat", {
+        value: normalizeStatMods(traitEffects.statFlatMods),
+        enumerable: false
+      });
       const resolvedTraitNames = traitEffects.passiveNames?.length
         ? traitEffects.passiveNames
         : [traitEffects.rule?.traitName].filter(Boolean);
@@ -3537,7 +3541,7 @@
       return Math.max(1, Math.round(trained * mod + finalBonus));
     }
 
-    function finalBattleStats(monster, state, passiveMods = passiveStatMods(monster, state)) {
+    function finalBattleStats(monster, state, passiveMods = passiveStatMods(monster, state), passiveFlatMods = passiveMods?.__flat) {
       const stats = {
         hp: finalBattleStat(monster, state, "hp"),
         atk: finalBattleStat(monster, state, "atk"),
@@ -3550,6 +3554,10 @@
         const mod = Number(passiveMods?.[key]) || 0;
         if (Math.abs(mod) > 0.0001) {
           stats[key] = Math.max(1, Math.floor(stats[key] * (1 + mod)));
+        }
+        const flat = Number(passiveFlatMods?.[key]) || 0;
+        if (Math.abs(flat) > 0.0001) {
+          stats[key] = Math.max(1, Math.round(stats[key] + flat));
         }
       });
       return stats;

@@ -51,6 +51,22 @@ const expectedRegistry = [
   [["258"], [], "恶魔的晚宴", []],
   [["chain-dimo"], ["迪莫", "圣光迪莫"], "最好的伙伴", []],
   [["327"], [], "搜刮", []],
+  [["121"], ["小黑猫", "黑猫巫师"], "预警", []],
+  [["121", "chain-blackcat-boss"], ["黑猫密探"], "先知", []],
+  [["131"], ["恶魔狼"], "悲悯", []],
+  [["131", "chain-devilwolf-boss"], ["恶魔狼王"], "悼亡", []],
+  [["108"], ["风铃鲨", "蓝蝶鲨", "彩蝶鲨"], "水翼推进", []],
+  [["108", "chain-butterflyshark-boss"], ["神谕鲨"], "水翼飞升", []],
+  [["198"], ["逗逗", "气球猫", "梦想三三"], "鼓气", []],
+  [["198", "chain-dream-boss"], ["奇梦咪"], "三鼓作气", []],
+  [["chain-chess"], ["棋绮后（白子）", "棋绮后（黑子）", "棋绮后·白子", "棋绮后·黑子"], "渗透", []],
+  [["chain-chess", "chain-chess-boss"], ["棋契陛下"], "御驾亲征", []],
+  [["082"], ["一窝蜂", "黄蜂后", "女王蜂"], "虫群鼓舞", []],
+  [["082", "chain-queenbee-boss"], ["花魁蜂后"], "虫群突袭", []],
+  [["chain-fire"], ["火花", "焰火", "火神"], "助燃", []],
+  [["chain-fire", "chain-fire-boss"], ["烈火战神"], "爆燃", []],
+  [["226"], ["电动长颈鹿", "奔乐鹿", "爵士鹿"], "蓄电池", []],
+  [["226", "chain-jazzdeer-boss"], ["波普鹿"], "超级电池", []],
   [["chain-speeddog"], ["护主犬", "音速犬"], "专注力", []],
   [["chain-speeddog"], ["风暴战犬"], "全神贯注", []]
 ];
@@ -93,21 +109,70 @@ for (const [name, expectedTraitName] of Object.entries(rules.BOSS_TRAIT_NAMES)) 
   const effects = rules.resolveTraitEffects(boss, 9, { type: "ground" });
   assert.equal(rules.traitName(boss), expectedTraitName);
   assert.equal(effects.traitName, expectedTraitName);
-  assert.equal(effects.rule, null);
-  assert.deepEqual(effects.statMods, {
-    hp: 0,
-    atk: 0,
-    defense: 0,
-    spa: 0,
-    spd: 0,
-    spe: 0
-  });
-  assert.equal(effects.flatPower, 0);
-  assert.equal(effects.powerMultiplier, 1);
-  assert.equal(effects.hitCountAdd, 0);
-  assert.equal(effects.skillCostReduction, 0);
-  assert.equal(effects.energyGain, 0);
 }
+
+const manuallyLayeredTraits = [
+  ["黑猫巫师", "121", "预警"],
+  ["黑猫密探", "chain-blackcat-boss", "先知"],
+  ["恶魔狼", "131", "悲悯"],
+  ["恶魔狼王", "chain-devilwolf-boss", "悼亡"],
+  ["彩蝶鲨", "108", "水翼推进"],
+  ["神谕鲨", "chain-butterflyshark-boss", "水翼飞升"],
+  ["梦想三三", "198", "鼓气"],
+  ["奇梦咪", "chain-dream-boss", "三鼓作气"],
+  ["棋绮后（白子）", "chain-chess", "渗透"],
+  ["棋绮后（黑子）", "chain-chess", "渗透"],
+  ["棋契陛下", "chain-chess-boss", "御驾亲征"],
+  ["女王蜂", "082", "虫群鼓舞"],
+  ["花魁蜂后", "chain-queenbee-boss", "虫群突袭"],
+  ["火神", "chain-fire", "助燃"],
+  ["烈火战神", "chain-fire-boss", "爆燃"],
+  ["爵士鹿", "226", "蓄电池"],
+  ["波普鹿", "chain-jazzdeer-boss", "超级电池"]
+];
+for (const [name, chainId, expectedTraitName] of manuallyLayeredTraits) {
+  const rule = rules.resolveTraitRule(monster(name, chainId));
+  assert.ok(rule, `${name} should have a manual trait-layer rule`);
+  assert.equal(rule.traitName, expectedTraitName);
+  assert.equal(rules.defaultTraitLayers(monster(name, chainId)), 0);
+}
+
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("黑猫巫师", "121"), 2).statFlatMods,
+  { hp: 0, atk: 0, defense: 0, spa: 0, spd: 0, spe: 100 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("黑猫密探", "chain-blackcat-boss"), 1).statFlatMods,
+  { hp: 0, atk: 0, defense: 0, spa: 0, spd: 0, spe: 50 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("恶魔狼", "131"), 2).statMods,
+  { hp: 0, atk: 0.6, defense: 0, spa: 0.6, spd: 0, spe: 0 }
+);
+assert.equal(
+  rules.resolveTraitEffects(monster("彩蝶鲨", "108"), 3).skillCostReduction,
+  3
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("棋绮后（白子）", "chain-chess"), 4).statMods,
+  { hp: 0, atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2, spe: 0 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("女王蜂", "082"), 2).statMods,
+  { hp: 0, atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2, spe: 0.2 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("花魁蜂后", "chain-queenbee-boss"), 2).statMods,
+  { hp: 0, atk: 0.3, defense: 0.3, spa: 0.3, spd: 0.3, spe: 0.3 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("火神", "chain-fire"), 3).statMods,
+  { hp: 0, atk: 0.6, defense: 0, spa: 0.6, spd: 0, spe: 0 }
+);
+assert.deepEqual(
+  rules.resolveTraitEffects(monster("爵士鹿", "226"), 2).statMods,
+  { hp: 0, atk: 0.4, defense: 0, spa: 0.4, spd: 0, spe: 0 }
+);
 
 assert.equal(rules.resolveTraitRule(monster("绿耳松鼠", "049")).traitName, "囤积");
 assert.equal(rules.resolveTraitRule(monster("小鼓象", "season-s2-afec977b0e76")).traitName, "合拍");

@@ -94,6 +94,110 @@
     },
     { chainIds: ["327"], traitName: "搜刮", statPerLayer: { spa: 0.2 } },
     {
+      chainIds: ["121"],
+      names: ["小黑猫", "黑猫巫师"],
+      traitName: "预警",
+      statFlatPerLayer: { spe: 50 }
+    },
+    {
+      chainIds: ["121", "chain-blackcat-boss"],
+      names: ["黑猫密探"],
+      traitName: "先知",
+      passiveNames: ["先知", "预警"],
+      statFlatPerLayer: { spe: 50 }
+    },
+    {
+      chainIds: ["131"],
+      names: ["恶魔狼"],
+      traitName: "悲悯",
+      statPerLayer: { atk: 0.3, spa: 0.3 }
+    },
+    {
+      chainIds: ["131", "chain-devilwolf-boss"],
+      names: ["恶魔狼王"],
+      traitName: "悼亡",
+      passiveNames: ["悼亡", "悲悯"],
+      statPerLayer: { atk: 0.3, spa: 0.3 }
+    },
+    {
+      chainIds: ["108"],
+      names: ["风铃鲨", "蓝蝶鲨", "彩蝶鲨"],
+      traitName: "水翼推进",
+      costReductionPerLayer: 1
+    },
+    {
+      chainIds: ["108", "chain-butterflyshark-boss"],
+      names: ["神谕鲨"],
+      traitName: "水翼飞升",
+      passiveNames: ["水翼飞升", "水翼推进"],
+      costReductionPerLayer: 1
+    },
+    {
+      chainIds: ["198"],
+      names: ["逗逗", "气球猫", "梦想三三"],
+      traitName: "鼓气",
+      statPerLayer: { atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2 }
+    },
+    {
+      chainIds: ["198", "chain-dream-boss"],
+      names: ["奇梦咪"],
+      traitName: "三鼓作气",
+      passiveNames: ["三鼓作气", "鼓气"],
+      statPerLayer: { atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2 }
+    },
+    {
+      chainIds: ["chain-chess"],
+      names: ["棋绮后（白子）", "棋绮后（黑子）", "棋绮后·白子", "棋绮后·黑子"],
+      traitName: "渗透",
+      statPerLayer: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
+    },
+    {
+      chainIds: ["chain-chess", "chain-chess-boss"],
+      names: ["棋契陛下"],
+      traitName: "御驾亲征",
+      passiveNames: ["御驾亲征", "渗透"],
+      statPerLayer: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
+    },
+    {
+      chainIds: ["082"],
+      names: ["一窝蜂", "黄蜂后", "女王蜂"],
+      traitName: "虫群鼓舞",
+      statPerLayer: { atk: 0.1, defense: 0.1, spa: 0.1, spd: 0.1, spe: 0.1 }
+    },
+    {
+      chainIds: ["082", "chain-queenbee-boss"],
+      names: ["花魁蜂后"],
+      traitName: "虫群突袭",
+      passiveNames: ["虫群突袭", "虫群鼓舞"],
+      statPerLayer: { atk: 0.15, defense: 0.15, spa: 0.15, spd: 0.15, spe: 0.15 }
+    },
+    {
+      chainIds: ["chain-fire"],
+      names: ["火花", "焰火", "火神"],
+      traitName: "助燃",
+      statPerLayer: { atk: 0.2, spa: 0.2 }
+    },
+    {
+      chainIds: ["chain-fire", "chain-fire-boss"],
+      names: ["烈火战神"],
+      traitName: "爆燃",
+      passiveNames: ["爆燃", "助燃"],
+      statPerLayer: { atk: 0.2, spa: 0.2 }
+    },
+    {
+      chainIds: ["226"],
+      names: ["电动长颈鹿", "奔乐鹿", "爵士鹿"],
+      traitName: "蓄电池",
+      statPerLayer: { atk: 0.2, spa: 0.2 }
+    },
+    {
+      chainIds: ["226", "chain-jazzdeer-boss"],
+      names: ["波普鹿"],
+      traitName: "超级电池",
+      passiveNames: ["超级电池", "蓄电池"],
+      statPerLayer: { atk: 0.2, spa: 0.2 }
+    },
+    {
       chainIds: ["chain-speeddog"],
       names: ["护主犬", "音速犬"],
       traitName: "专注力",
@@ -193,11 +297,17 @@
     const rule = resolveTraitRule(monster);
     const normalizedLayers = normalizeTraitLayers(layers);
     const statMods = Object.fromEntries(STAT_KEYS.map((key) => [key, 0]));
+    const statFlatMods = Object.fromEntries(STAT_KEYS.map((key) => [key, 0]));
     const actionAllowed = !rule?.actionTypes?.length || rule.actionTypes.includes(action?.type);
 
     for (const [key, value] of Object.entries(rule?.statPerLayer || {})) {
       if (Object.hasOwn(statMods, key)) {
         statMods[key] = scaledValue(value, normalizedLayers);
+      }
+    }
+    for (const [key, value] of Object.entries(rule?.statFlatPerLayer || {})) {
+      if (Object.hasOwn(statFlatMods, key)) {
+        statFlatMods[key] = scaledValue(value, normalizedLayers);
       }
     }
 
@@ -207,6 +317,7 @@
       traitName: traitName(monster),
       passiveNames: traitPassiveNames(monster),
       statMods,
+      statFlatMods,
       flatPower: actionAllowed ? scaledValue(rule?.flatPowerPerLayer, normalizedLayers) : 0,
       powerMultiplier: actionAllowed
         ? 1 + scaledValue(rule?.powerPercentPerLayer, normalizedLayers)
