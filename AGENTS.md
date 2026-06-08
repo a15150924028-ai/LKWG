@@ -53,3 +53,30 @@ Use this entry format:
   - Added the first work log entry to start the project history.
 - Verification: Checked the repository root, confirmed no existing agent markdown file was present, and reviewed recent git history for context.
 - Status: Complete.
+
+### 2026-06-08 18:23 +08:00 - Codex
+
+- Request: Implement the plan to switch the app's联网更新数据 database refresh from `rocomwiki.app/data/bundle.json` to the BWiki 洛克王国世界 WIKI source, without changing other app functions.
+- Files changed:
+  - `克制面查询.html`
+  - `AGENTS.md`
+- Changes:
+  - Replaced the old联网更新数据 source constants and footer copy with BWiki source references.
+  - Added a BWiki MediaWiki API fetch layer that reads 精灵图鉴、技能图鉴 and page wikitext, then converts the data into the existing bundle/database shape.
+  - Kept the existing normalization, cache key, team storage, calculation, PVP, bloodline, and render paths unchanged.
+  - Added short retry handling for BWiki API calls and kept updates scoped to browser-local database refresh.
+- Verification: Ran Node static checks for the BWiki constants/fetcher/parser and old source removal; parsed all inline script blocks with `new Function`; ran a mocked BWiki bundle parser test for skill, monster, passive, and skill-pool mapping; verified BWiki API access with PowerShell `Invoke-WebRequest` returning HTTP 200 for 技能图鉴. Browser click verification was not run because no Browser tool or standard Chrome/Edge executable was available in this environment.
+- Status: Complete.
+
+### 2026-06-08 18:31 +08:00 - Codex
+
+- Request: Fix the `联网更新数据` click failure that showed `更新失败：Failed to fetch。已使用本地缓存或内置示例。`
+- Files changed:
+  - `克制面查询.html`
+  - `AGENTS.md`
+- Changes:
+  - Added a BWiki MediaWiki JSONP fallback for browser environments where direct `fetch()` to the BWiki API fails from the local HTML page.
+  - Added a per-session JSONP mode flag so later BWiki batch requests skip repeated failed `fetch()` retries after the fallback succeeds once.
+  - Kept the change scoped to the BWiki data refresh path and did not change team storage, calculations, rendering, PVP, or other app behavior.
+- Verification: Watched a JSONP fallback static check fail before the fix; reran it after the fix and it passed. Ran static checks for JSONP mode, BWiki update-path requirements, inline script parsing with `new Function`, `Invoke-WebRequest` against a BWiki `callback=` API URL returning HTTP 200, and `git diff --check`. Browser click verification was not run because no local browser automation tool was available in this environment.
+- Status: Complete.
