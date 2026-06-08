@@ -24102,9 +24102,73 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       };
     }
 
+    function mergeWebsiteSkillPools(primaryBundle, websitePoolBundle) {
+      if (!primaryBundle?.monsters?.length || !websitePoolBundle?.monsters?.length) return primaryBundle;
+
+      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
+      const valuesByName = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
+      const uniqueIds = (values) => [...new Set(values.filter(Boolean))];
+
+      const mergedSkills = (primaryBundle.skills || []).map((skill) => ({ ...skill }));
+      const primarySkillById = new Map(mergedSkills.map((skill) => [skill.id, skill]));
+      const primarySkillIdByName = new Map();
+      mergedSkills.forEach((skill) => {
+        valuesByName(skill).forEach((name) => {
+          if (!primarySkillIdByName.has(name)) primarySkillIdByName.set(name, skill.id);
+        });
+      });
+
+      const websiteSkillById = new Map((websitePoolBundle.skills || []).map((skill) => [skill.id, skill]));
+      const skillIdFromWebsitePool = (websiteSkillId) => {
+        const websiteSkill = websiteSkillById.get(websiteSkillId);
+        if (!websiteSkill) return "";
+        for (const name of valuesByName(websiteSkill)) {
+          const primarySkillId = primarySkillIdByName.get(name);
+          if (primarySkillId) return primarySkillId;
+        }
+        if (!primarySkillById.has(websiteSkill.id)) {
+          const copiedSkill = { ...websiteSkill };
+          mergedSkills.push(copiedSkill);
+          primarySkillById.set(copiedSkill.id, copiedSkill);
+          valuesByName(copiedSkill).forEach((name) => {
+            if (!primarySkillIdByName.has(name)) primarySkillIdByName.set(name, copiedSkill.id);
+          });
+        }
+        return websiteSkill.id;
+      };
+
+      const mergedMonsters = (primaryBundle.monsters || []).map((monster) => ({ ...monster, skills: [...(monster.skills || [])] }));
+      const primaryMonsterByName = new Map();
+      mergedMonsters.forEach((monster) => {
+        valuesByName(monster).forEach((name) => {
+          if (!primaryMonsterByName.has(name)) primaryMonsterByName.set(name, monster);
+        });
+      });
+
+      (websitePoolBundle.monsters || []).forEach((websiteMonster) => {
+        const primaryMonster = valuesByName(websiteMonster).map((name) => primaryMonsterByName.get(name)).find(Boolean);
+        if (!primaryMonster || !Array.isArray(websiteMonster.skills)) return;
+        const websiteSkillIds = websiteMonster.skills.map(skillIdFromWebsitePool).filter(Boolean);
+        if (!websiteSkillIds.length) return;
+        primaryMonster.skills = uniqueIds([...(primaryMonster.skills || []), ...websiteSkillIds]);
+      });
+
+      return {
+        ...primaryBundle,
+        monsters: mergedMonsters,
+        skills: mergedSkills
+      };
+    }
+
     async function fetchRemoteBundle() {
       try {
-        return await fetchBwikiBundle();
+        const bwikiBundle = await fetchBwikiBundle();
+        try {
+          const legacyBundle = await fetchLegacyBundle(null);
+          return mergeWebsiteSkillPools(bwikiBundle, legacyBundle);
+        } catch (legacyError) {
+          return bwikiBundle;
+        }
       } catch (bwikiError) {
         return fetchLegacyBundle(bwikiError);
       }

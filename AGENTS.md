@@ -224,3 +224,18 @@ Use this entry format:
   - Updated static tests to reject the old local patch and added a live website-source check proving `机幕方舟` includes `过山车` in the fallback source skill pool.
 - Verification: Watched `node tests/roller-icon-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-source-data-live.test.js`, which confirmed website source includes `过山车` in `机幕方舟`'s skill pool. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-08 22:51 +08:00 - Codex
+
+- Request: Fix `过山车` not appearing in `机幕方舟`'s skill pool after removing the local patch.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/website-skill-pool-merge-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed BWiki's `机幕方舟` page omits `过山车` from its skill fields while the online fallback website source includes it.
+  - Added `mergeWebsiteSkillPools()` so successful BWiki refreshes are supplemented with website fallback skill pools by monster/skill name.
+  - Mapped fallback website skill IDs to BWiki skill IDs when BWiki already has the skill, and carried website-only skill records forward when BWiki lacks them.
+  - Kept the deleted local `过山车` patch removed; the fix uses online website data, not hardcoded local pool injection.
+- Verification: Watched `node tests/website-skill-pool-merge-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-source-data-live.test.js`; `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.
