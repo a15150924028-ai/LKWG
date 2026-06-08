@@ -26,6 +26,20 @@ Each entry must include:
 - Verification performed, or a clear note that verification was not run.
 - Current status, such as complete, partial, blocked, or needs review.
 
+## Required GitHub Publish Procedure
+
+Every time an agent updates files in this repository, it must publish that update to GitHub and make sure the update lands on `main`.
+
+After verification and work-log updates:
+
+1. Run `git status --short` and inspect the diff.
+2. Stage only the files that belong to the current user request.
+3. Commit the scoped changes with a clear commit message.
+4. If working on a branch other than `main`, push the branch, merge it into `main`, then push `main`.
+5. If already on `main`, push `main` to `origin`.
+6. If unrelated local changes are present, do not stage them silently. Ask the user which files should be included.
+7. If GitHub authentication, merge conflicts, or failed checks block publishing, document the blocker in the work log and tell the user.
+
 Use this entry format:
 
 ```md
@@ -54,6 +68,18 @@ Use this entry format:
 - Verification: Checked the repository root, confirmed no existing agent markdown file was present, and reviewed recent git history for context.
 - Status: Complete.
 
+### 2026-06-08 19:02 +08:00 - Codex
+
+- Request: Add a standing rule that every file update must be pushed to GitHub and merged to `main`.
+- Files changed:
+  - `AGENTS.md`
+- Changes:
+  - Added a required GitHub publish procedure for future agents.
+  - Specified that updated files must be committed, pushed to GitHub, and landed on `main`.
+  - Added safeguards for unrelated pending changes, authentication blockers, merge conflicts, and failed checks.
+- Verification: Read `AGENTS.md`; checked `git status --short`; confirmed the repo is on `codex/bwiki-data-source`; ran `node tests/default-build-static.test.js`; ran `git diff --check`.
+- Status: Complete.
+
 ### 2026-06-08 18:23 +08:00 - Codex
 
 - Request: Implement the plan to switch the app's联网更新数据 database refresh from `rocomwiki.app/data/bundle.json` to the BWiki 洛克王国世界 WIKI source, without changing other app functions.
@@ -79,4 +105,31 @@ Use this entry format:
   - Added a per-session JSONP mode flag so later BWiki batch requests skip repeated failed `fetch()` retries after the fallback succeeds once.
   - Kept the change scoped to the BWiki data refresh path and did not change team storage, calculations, rendering, PVP, or other app behavior.
 - Verification: Watched a JSONP fallback static check fail before the fix; reran it after the fix and it passed. Ran static checks for JSONP mode, BWiki update-path requirements, inline script parsing with `new Function`, `Invoke-WebRequest` against a BWiki `callback=` API URL returning HTTP 200, and `git diff --check`. Browser click verification was not run because no local browser automation tool was available in this environment.
+- Status: Complete.
+
+### 2026-06-08 18:41 +08:00 - Codex
+
+- Request: 未选择性格、天分时，默认踏实性格、生命、物防、魔防。
+- Files changed:
+  - `克制面查询.html`
+  - `tests/default-build-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a static regression test for the default damage build constants and combo empty-state copy.
+  - Updated team and PVP nature/talent combo empty states to show the effective defaults: 踏实性格、生命、物防、魔防.
+  - Kept existing default stat calculation behavior unchanged.
+- Verification: Watched `node tests/default-build-static.test.js` fail before the HTML change, then reran it after the change and it passed. Parsed all inline script blocks with `new Function`; ran `git diff --check`.
+- Status: Complete.
+
+### 2026-06-08 18:50 +08:00 - Codex
+
+- Request: Redesign the UI/UX in a duplicate file only, keeping the current app files unchanged.
+- Files changed:
+  - `克制面查询-简洁版.html`
+  - `AGENTS.md`
+- Changes:
+  - Created `克制面查询-简洁版.html` from the current working copy of `克制面查询.html`.
+  - Added a CSS-only redesign override block to the duplicate for a simpler sticky command bar, clearer section hierarchy, cleaner cards and controls, improved spacing, and responsive mobile layout.
+  - Left the original app HTML behavior, data refresh, team storage, calculations, and PVP logic unchanged.
+- Verification: Parsed all inline scripts in `克制面查询-简洁版.html` with `new Function`; ran `node tests/default-build-static.test.js`; ran `git diff --check`; confirmed Playwright and standard browser commands were unavailable, so rendered browser verification was not run.
 - Status: Complete.
