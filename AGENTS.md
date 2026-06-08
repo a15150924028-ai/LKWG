@@ -193,3 +193,18 @@ Use this entry format:
   - Added a static regression test for legacy image URL mapping and cached icon repair.
 - Verification: Watched `node tests/legacy-image-url-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; verified representative `rocomwiki.app` creature and skill image URLs return HTTP 200 image responses; verified the BWiki `过山车` icon URL returns HTTP 200 image response; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-08 20:54 +08:00 - Codex
+
+- Request: Remove the active local skill pool overrides, use website skill pools by default, and keep a rollback path.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/local-skill-pool-rollback-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Renamed the active `LCX_SKILL_POOL_OVERRIDES` export to `LCX_LEGACY_SKILL_POOL_OVERRIDES` so local pools are no longer used by default.
+  - Added a `roco-world-use-local-skill-pool-overrides` localStorage gate and `window.useLocalSkillPoolRollback()` helper for temporary rollback to the old local pools.
+  - Preserved the last loaded website bundle as the source for recomputing data when the rollback flag is toggled.
+  - Added a static regression test for the default website-skill-pool path and rollback helper.
+- Verification: Watched `node tests/local-skill-pool-rollback-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.

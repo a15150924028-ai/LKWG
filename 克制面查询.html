@@ -1728,7 +1728,7 @@
   </main>
 
   <script>
-window.LCX_SKILL_POOL_OVERRIDES = {
+window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
   "迪莫": {
     "skills": [
       "猛烈撞击",
@@ -20244,6 +20244,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
     const DATA_STORAGE_KEY = "roco-world-dex-data-v1";
+    const LOCAL_SKILL_POOL_ROLLBACK_KEY = "roco-world-use-local-skill-pool-overrides";
 
     const TYPES = [
       { key: "grass", name: "草", iconKey: "grass" },
@@ -20619,6 +20620,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
+    let dexSourceData = FALLBACK_DATA;
     let dexData = FALLBACK_DATA;
     let monsterById = new Map();
     let skillById = new Map();
@@ -24204,9 +24206,43 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       };
     }
 
+    function shouldUseLocalSkillPoolRollback() {
+      try {
+        return localStorage.getItem(LOCAL_SKILL_POOL_ROLLBACK_KEY) === "1";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setLocalSkillPoolRollback(enabled) {
+      try {
+        if (enabled) {
+          localStorage.setItem(LOCAL_SKILL_POOL_ROLLBACK_KEY, "1");
+        } else {
+          localStorage.removeItem(LOCAL_SKILL_POOL_ROLLBACK_KEY);
+        }
+      } catch (error) {
+        return false;
+      }
+      return shouldUseLocalSkillPoolRollback();
+    }
+
+    if (typeof window !== "undefined") {
+      window.useLocalSkillPoolRollback = function useLocalSkillPoolRollback(enabled = true) {
+        const isEnabled = setLocalSkillPoolRollback(enabled);
+        if (dexSourceData) {
+          applyDexData(dexSourceData);
+          renderTeam();
+          renderResults();
+        }
+        return isEnabled;
+      };
+    }
+
     function localSkillPoolOverrides() {
-      return typeof window !== "undefined" && window.LCX_SKILL_POOL_OVERRIDES
-        ? window.LCX_SKILL_POOL_OVERRIDES
+      if (!shouldUseLocalSkillPoolRollback()) return null;
+      return typeof window !== "undefined" && window.LCX_LEGACY_SKILL_POOL_OVERRIDES
+        ? window.LCX_LEGACY_SKILL_POOL_OVERRIDES
         : null;
     }
 
@@ -24290,6 +24326,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     }
 
     function applyDexData(data) {
+      dexSourceData = data;
       const nextData = {
         ...data,
         monsters: withBossForms(data.monsters || []),
