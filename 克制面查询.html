@@ -20310,8 +20310,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       wing: "#6b9bc3",
       ground: "#a67847"
     };
-    const ARK_ROLLER_SKILL_ID = "patched-roller-coaster";
-    const ARK_ROLLER_MONSTER_RE = /机幕方舟|积木方舟/;
     const BWIKI_SUPPLEMENTAL_SKILL_PAGES = ["过山车"];
     const BWIKI_SUPPLEMENTAL_SKILL_INDEX = {
       "过山车": { title: "过山车", elements: ["steel"], category: "状态" }
@@ -24277,54 +24275,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       };
     }
 
-    function ensureArkRollerSkill(data) {
-      data.skills = data.skills || [];
-      data.monsters = data.monsters || [];
-
-      let rollerSkill = data.skills.find((skill) => skill.name === "过山车");
-      if (!rollerSkill) {
-        rollerSkill = {
-          kind: "skill",
-          id: ARK_ROLLER_SKILL_ID,
-          name: "过山车",
-          aliases: ["机幕方舟专属"],
-          icon: "",
-          type: "mechanical",
-          category: "status",
-          power: null,
-          accuracy: null,
-          pp: 1,
-          priority: 0,
-          description: "机幕方舟专属技能，可通过过山车传递队友技能。",
-          raw: {
-            id: ARK_ROLLER_SKILL_ID,
-            name: "过山车",
-            element: TYPE_TO_ELEMENT.mechanical,
-            category: "status",
-            power: null,
-            accuracy: null,
-            pp: 1,
-            priority: 0,
-            description: "机幕方舟专属技能，可通过过山车传递队友技能。"
-          }
-        };
-        data.skills.push(rollerSkill);
-        data.skills.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
-      }
-      rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url || BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[rollerSkill.name]);
-
-      data.monsters
-        .filter((monster) => ARK_ROLLER_MONSTER_RE.test(monster.name))
-        .forEach((monster) => {
-          monster.skillIds = unique([...(monster.skillIds || []), rollerSkill.id]);
-          if (monster.raw) {
-            monster.raw.skills = unique([...(monster.raw.skills || []), rollerSkill.id]);
-          }
-        });
-
-      return data;
-    }
-
     function applyDexData(data) {
       dexSourceData = data;
       const nextData = {
@@ -24338,7 +24288,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       nextData.skills.forEach((skill) => {
         skill.icon = repairCachedImageUrl(skill.icon);
       });
-      dexData = ensureArkRollerSkill(applyLocalSkillPoolOverrides(applyLatestMonsterStatOverrides(nextData)));
+      dexData = applyLocalSkillPoolOverrides(applyLatestMonsterStatOverrides(nextData));
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
       skillById = new Map(dexData.skills.map((skill) => [skill.id, skill]));
       passiveById = new Map((dexData.passives || []).map((passive) => [passive.id, passive]));

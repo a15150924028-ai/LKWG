@@ -208,3 +208,19 @@ Use this entry format:
   - Added a static regression test for the default website-skill-pool path and rollback helper.
 - Verification: Watched `node tests/local-skill-pool-rollback-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-08 21:09 +08:00 - Codex
+
+- Request: Remove the local `过山车` skill and Ark skill-pool patch now that website data contains the skill, and verify the skill still exists after removing the patch.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/roller-icon-static.test.js`
+  - `tests/bwiki-fallback-static.test.js`
+  - `tests/roller-source-data-live.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the `ensureArkRollerSkill()` local patch that created a synthetic `过山车` skill and forced it into `机幕方舟`/`积木方舟` skill pools.
+  - Kept the BWiki supplemental skill-page fetch and icon URL so `过山车` is still read from website data when BWiki does not list it in `技能图鉴`.
+  - Updated static tests to reject the old local patch and added a live website-source check proving `机幕方舟` includes `过山车` in the fallback source skill pool.
+- Verification: Watched `node tests/roller-icon-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-source-data-live.test.js`, which confirmed website source includes `过山车` in `机幕方舟`'s skill pool. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.
