@@ -133,3 +133,16 @@ Use this entry format:
   - Left the original app HTML behavior, data refresh, team storage, calculations, and PVP logic unchanged.
 - Verification: Parsed all inline scripts in `克制面查询-简洁版.html` with `new Function`; ran `node tests/default-build-static.test.js`; ran `git diff --check`; confirmed Playwright and standard browser commands were unavailable, so rendered browser verification was not run.
 - Status: Complete.
+
+### 2026-06-08 20:05 +08:00 - Codex
+
+- Request: Delete invalid local skill pool overrides that no longer match BWiki monster names or aliases.
+- Files changed:
+  - `克制面查询.html`
+  - `AGENTS.md`
+- Changes:
+  - Removed 39 dead `LCX_SKILL_POOL_OVERRIDES` entries whose top-level pool names do not match any current BWiki monster name or alias.
+  - Kept the 336 matching skill pool overrides intact, including partially matching pools where at least one skill still resolves.
+  - Left the duplicate simplified HTML file unchanged after restoring an accidental intermediate edit.
+- Verification: Ran `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran a BWiki monster-name/alias reconciliation check confirming 336 remaining pools and 0 invalid pool names.
+- Status: Complete.
