@@ -178,3 +178,18 @@ Use this entry format:
   - Added a static regression test for the resilient update path and adjusted the roller icon test for the new icon fallback chain.
 - Verification: Watched `node tests/bwiki-fallback-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-icon-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; fetched `https://rocomwiki.app/data/bundle.json` and confirmed 489 monsters, 517 skills, and `过山车`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-08 20:36 +08:00 - Codex
+
+- Request: Fix broken精灵和技能图片 so the app uses the website image assets.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/legacy-image-url-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `LEGACY_ASSET_BASE` for `https://rocomwiki.app`.
+  - Changed legacy `/creature-atlas/...` and `/skill-icons/...` image paths to resolve against `rocomwiki.app` instead of the BWiki host.
+  - Added cached-image repair so previously cached wrong BWiki-hosted creature and skill image URLs are corrected during data application.
+  - Added a static regression test for legacy image URL mapping and cached icon repair.
+- Verification: Watched `node tests/legacy-image-url-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; verified representative `rocomwiki.app` creature and skill image URLs return HTTP 200 image responses; verified the BWiki `过山车` icon URL returns HTTP 200 image response; ran `git diff --check`.
+- Status: Complete.

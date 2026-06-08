@@ -20235,6 +20235,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
   <script>
     const DATA_URL = "https://wiki.biligame.com/rocom/%E9%A6%96%E9%A1%B5";
     const LEGACY_DATA_URL = "https://rocomwiki.app/data/bundle.json";
+    const LEGACY_ASSET_BASE = "https://rocomwiki.app";
     const DATA_BASE = "https://wiki.biligame.com/rocom";
     const BWIKI_API_URL = "https://wiki.biligame.com/rocom/api.php";
     const BWIKI_ORIGIN = "https://wiki.biligame.com";
@@ -20638,8 +20639,16 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       if (!url) return "";
       if (/^https?:\/\//i.test(url)) return url;
       if (url.startsWith("//")) return `https:${url}`;
+      if (/^\/(?:creature-atlas|skill-icons)\//.test(url)) return `${LEGACY_ASSET_BASE}${url}`;
       if (url.startsWith("/rocom/")) return `${BWIKI_ORIGIN}${url}`;
       return `${DATA_BASE}${url.startsWith("/") ? "" : "/"}${url}`;
+    }
+
+    function repairCachedImageUrl(url) {
+      const text = String(url || "");
+      return text
+        .replace(`${DATA_BASE}/creature-atlas/`, `${LEGACY_ASSET_BASE}/creature-atlas/`)
+        .replace(`${DATA_BASE}/skill-icons/`, `${LEGACY_ASSET_BASE}/skill-icons/`);
     }
 
     function unique(items) {
@@ -24286,6 +24295,12 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         monsters: withBossForms(data.monsters || []),
         skills: (data.skills || []).map(applyS2SkillOverride)
       };
+      nextData.monsters.forEach((monster) => {
+        monster.icon = repairCachedImageUrl(monster.icon);
+      });
+      nextData.skills.forEach((skill) => {
+        skill.icon = repairCachedImageUrl(skill.icon);
+      });
       dexData = ensureArkRollerSkill(applyLocalSkillPoolOverrides(applyLatestMonsterStatOverrides(nextData)));
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
       skillById = new Map(dexData.skills.map((skill) => [skill.id, skill]));
