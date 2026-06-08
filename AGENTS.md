@@ -161,3 +161,20 @@ Use this entry format:
   - Added a static regression test covering the supplemental page, icon URL, skill fetch inclusion, page icon mapping, and fallback icon preservation.
 - Verification: Watched `node tests/roller-icon-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`. A live BWiki API verification attempt was blocked by the site security policy with HTTP 567.
 - Status: Complete.
+
+### 2026-06-08 20:28 +08:00 - Codex
+
+- Request: Fix the failed `联网更新数据` path and make the `过山车` icon update from online data instead of staying on the old fallback icon.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-fallback-static.test.js`
+  - `tests/roller-icon-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added an online fallback bundle source at `https://rocomwiki.app/data/bundle.json` for cases where BWiki API/JSONP requests are blocked by site security policy.
+  - Changed `updateDexData()` to use a BWiki-first `fetchRemoteBundle()` helper that falls back to the online bundle instead of failing the update.
+  - Ensured existing `过山车` skill records from cached or fallback data receive the BWiki skill icon URL.
+  - Updated footer and update-status copy to describe the BWiki-primary, fallback-source behavior.
+  - Added a static regression test for the resilient update path and adjusted the roller icon test for the new icon fallback chain.
+- Verification: Watched `node tests/bwiki-fallback-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-icon-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; fetched `https://rocomwiki.app/data/bundle.json` and confirmed 489 monsters, 517 skills, and `过山车`; ran `git diff --check`.
+- Status: Complete.

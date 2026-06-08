@@ -28,7 +28,7 @@ assertIncludes(
   "Supplemental BWiki skills must use the page skill icon when the index has no icon."
 );
 assertIncludes(
-  "rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url);",
+  "rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url || BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[rollerSkill.name]);",
   "The patched 过山车 fallback must keep the fetched BWiki icon when available."
 );
 

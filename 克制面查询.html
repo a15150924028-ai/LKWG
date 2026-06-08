@@ -1724,7 +1724,7 @@
       <div class="matrix-wrap" id="matrixWrap"></div>
     </section>
 
-    <p class="footer-note">数据源：BWiki 洛克王国世界 WIKI。点击“联网更新数据”会从 BWiki 刷新精灵、特性、精灵技能池和技能数值，并只缓存到当前浏览器本机数据库。</p>
+    <p class="footer-note">数据源：优先使用 BWiki 洛克王国世界 WIKI；当 BWiki API 被站点防护拦截时，自动使用联网备用数据。点击“联网更新数据”只缓存到当前浏览器本机数据库。</p>
   </main>
 
   <script>
@@ -20234,6 +20234,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
 </script>
   <script>
     const DATA_URL = "https://wiki.biligame.com/rocom/%E9%A6%96%E9%A1%B5";
+    const LEGACY_DATA_URL = "https://rocomwiki.app/data/bundle.json";
     const DATA_BASE = "https://wiki.biligame.com/rocom";
     const BWIKI_API_URL = "https://wiki.biligame.com/rocom/api.php";
     const BWIKI_ORIGIN = "https://wiki.biligame.com";
@@ -24078,6 +24079,28 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       };
     }
 
+    async function fetchLegacyBundle(bwikiError) {
+      const response = await fetch(LEGACY_DATA_URL, { cache: "no-cache" });
+      if (!response.ok) {
+        throw new Error(`BWiki 更新失败：${bwikiError?.message || "未知错误"}；备用数据 HTTP ${response.status}`);
+      }
+      const bundle = await response.json();
+      return {
+        ...bundle,
+        currentSeason: bundle.currentSeason || "联网备用数据",
+        source_commit: bundle.source_commit || LEGACY_DATA_URL,
+        bwikiFallbackReason: bwikiError?.message || ""
+      };
+    }
+
+    async function fetchRemoteBundle() {
+      try {
+        return await fetchBwikiBundle();
+      } catch (bwikiError) {
+        return fetchLegacyBundle(bwikiError);
+      }
+    }
+
     function normalizeBundle(bundle) {
       const passives = (bundle.passives || []).map((passive) => ({
         kind: "passive",
@@ -24243,7 +24266,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         data.skills.push(rollerSkill);
         data.skills.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
       }
-      rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url);
+      rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url || BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[rollerSkill.name]);
 
       data.monsters
         .filter((monster) => ARK_ROLLER_MONSTER_RE.test(monster.name))
@@ -24275,9 +24298,9 @@ window.LCX_SKILL_POOL_OVERRIDES = {
 
     async function updateDexData() {
       updateBtn.disabled = true;
-      dataStatus.textContent = "正在从 BWiki 联网更新精灵、特性、精灵技能池和技能数值...";
+      dataStatus.textContent = "正在联网更新精灵、特性、精灵技能池和技能数值（BWiki 优先，失败时使用备用源）...";
       try {
-        const bundle = await fetchBwikiBundle();
+        const bundle = await fetchRemoteBundle();
         const normalized = normalizeBundle(bundle);
         localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(normalized));
         applyDexData(normalized);
