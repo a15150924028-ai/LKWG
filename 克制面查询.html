@@ -20309,6 +20309,13 @@ window.LCX_SKILL_POOL_OVERRIDES = {
     };
     const ARK_ROLLER_SKILL_ID = "patched-roller-coaster";
     const ARK_ROLLER_MONSTER_RE = /机幕方舟|积木方舟/;
+    const BWIKI_SUPPLEMENTAL_SKILL_PAGES = ["过山车"];
+    const BWIKI_SUPPLEMENTAL_SKILL_INDEX = {
+      "过山车": { title: "过山车", elements: ["steel"], category: "状态" }
+    };
+    const BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS = {
+      "过山车": "https://patchwiki.biligame.com/images/rocom/2/2f/e6u2ebe4da2cyrcgh7m7sfj6z1jp4h4.png"
+    };
     const BOSS_FORM_SUFFIX = "__boss_form";
     const REAL_BOSS_FORM_NAMES = new Set([
       "圣光迪莫",
@@ -23928,6 +23935,18 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       return pagesByBatch.flat();
     }
 
+    function firstBwikiImageUrl(page) {
+      return page?.bwiki_image_url || BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[page?.title] || "";
+    }
+
+    async function fetchBwikiSupplementalSkillPages() {
+      const pages = await fetchBwikiWikitextPages(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
+      return pages.map((page) => ({
+        ...page,
+        bwiki_image_url: BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[page.title] || ""
+      }));
+    }
+
     function parseBwikiSkillPage(page, indexEntry = {}) {
       const fields = parseBwikiTemplate(revisionWikitext(page), "技能信息");
       const name = fields["技能名称"] || page.title;
@@ -23937,7 +23956,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         id: bwikiId("skill", name),
         name,
         name_aliases: unique([page.title].filter((title) => title && title !== name)),
-        image_url: indexEntry.image_url || "",
+        image_url: indexEntry.image_url || firstBwikiImageUrl(page),
         element,
         category: BWIKI_CATEGORY_TO_CATEGORY[fields["技能类别"]] || BWIKI_CATEGORY_TO_CATEGORY[indexEntry.category] || "",
         power: parseBwikiNumber(fields["威力"]),
@@ -24023,9 +24042,14 @@ window.LCX_SKILL_POOL_OVERRIDES = {
       const monsterIndex = parseBwikiIndexEntries(monsterIndexHtml, "monster");
       const skillIndex = parseBwikiIndexEntries(skillIndexHtml, "skill");
 
-      const skillPages = await fetchBwikiWikitextPages([...skillIndex.keys()]);
+      const skillTitles = unique([...skillIndex.keys(), ...BWIKI_SUPPLEMENTAL_SKILL_PAGES]);
+      const skillPages = await fetchBwikiWikitextPages(skillTitles);
+      const supplementalSkillPages = await fetchBwikiSupplementalSkillPages();
+      const skillPagesByTitle = new Map([...skillPages, ...supplementalSkillPages].map((page) => [page.title, page]));
       const skills = skillPages
-        .map((page) => parseBwikiSkillPage(page, skillIndex.get(page.title)))
+        .map((page) => skillPagesByTitle.get(page.title))
+        .filter(Boolean)
+        .map((page) => parseBwikiSkillPage(page, skillIndex.get(page.title) || BWIKI_SUPPLEMENTAL_SKILL_INDEX[page.title]))
         .filter(Boolean);
       const skillIdByName = new Map();
       skills.forEach((skill) => {
@@ -24219,6 +24243,7 @@ window.LCX_SKILL_POOL_OVERRIDES = {
         data.skills.push(rollerSkill);
         data.skills.sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
       }
+      rollerSkill.icon = absoluteUrl(rollerSkill.icon || rollerSkill.raw?.image_url);
 
       data.monsters
         .filter((monster) => ARK_ROLLER_MONSTER_RE.test(monster.name))

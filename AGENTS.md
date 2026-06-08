@@ -146,3 +146,18 @@ Use this entry format:
   - Left the duplicate simplified HTML file unchanged after restoring an accidental intermediate edit.
 - Verification: Ran `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran a BWiki monster-name/alias reconciliation check confirming 336 remaining pools and 0 invalid pool names.
 - Status: Complete.
+
+### 2026-06-08 20:19 +08:00 - Codex
+
+- Request: Use the BWiki online data icon for the `过山车` skill icon.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/roller-icon-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `过山车` as a supplemental BWiki skill page because it is not listed in `技能图鉴`.
+  - Added the BWiki skill icon URL for `过山车` so the patched skill and the “使用过山车” button can use the online data icon instead of the mechanical fallback.
+  - Preserved the patched fallback skill icon from fetched or supplemental BWiki data.
+  - Added a static regression test covering the supplemental page, icon URL, skill fetch inclusion, page icon mapping, and fallback icon preservation.
+- Verification: Watched `node tests/roller-icon-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`. A live BWiki API verification attempt was blocked by the site security policy with HTTP 567.
+- Status: Complete.
