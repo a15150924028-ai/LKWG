@@ -2318,6 +2318,7 @@
     },
     {
       chainIds: ["049"],
+      names: ["绿耳松鼠", "蹦蹦鼠", "蹦床松鼠"],
       traitName: "囤积",
       defaultLayers: 10,
       statPerLayer: { defense: 0.1, spd: 0.1 }
@@ -2535,6 +2536,25 @@
     return String(monster?.name || "");
   }
 
+  function compactTraitText(value) {
+    return String(value || "").replace(/[\s·・（）()【】\[\]《》<>]/g, "");
+  }
+
+  function monsterCandidateNames(monster) {
+    const raw = monster?.raw || {};
+    const nestedRaw = raw.raw || {};
+    return [
+      monster?.name,
+      ...(monster?.aliases || []),
+      raw.name,
+      raw.title,
+      raw["精灵名称"],
+      nestedRaw.name,
+      nestedRaw.title,
+      nestedRaw["精灵名称"]
+    ].filter(Boolean);
+  }
+
   function monsterChainId(monster) {
     const candidates = [
       monster?.chainId,
@@ -2557,15 +2577,42 @@
   }
 
   function matchesName(name, expected) {
-    return name === expected || name.startsWith(`${expected}（`);
+    const actual = compactTraitText(name);
+    const target = compactTraitText(expected);
+    return actual === target || actual.startsWith(target);
+  }
+
+  function monsterPassiveNames(monster) {
+    const raw = monster?.raw || {};
+    const nestedRaw = raw.raw || {};
+    return [
+      monster?.traitName,
+      monster?.passiveName,
+      raw.traitName,
+      raw.passiveName,
+      raw["特性"],
+      raw["英雄特性"],
+      nestedRaw.traitName,
+      nestedRaw.passiveName,
+      nestedRaw["特性"],
+      nestedRaw["英雄特性"]
+    ].filter(Boolean);
+  }
+
+  function passiveMatchesRule(monster, rule) {
+    const rulePassiveNames = [rule?.traitName, ...(rule?.passiveNames || [])].map(compactTraitText).filter(Boolean);
+    if (!rulePassiveNames.length) return false;
+    return monsterPassiveNames(monster).some((name) => rulePassiveNames.includes(compactTraitText(name)));
   }
 
   function matchesRule(monster, rule) {
     const chainId = monsterChainId(monster);
-    if (!rule.chainIds.includes(chainId)) return false;
-    if (!rule.names?.length) return true;
-    const name = monsterName(monster);
-    return rule.names.some((expected) => matchesName(name, expected));
+    const chainMatches = rule.chainIds.includes(chainId);
+    const nameMatches = Boolean(rule.names?.length)
+      && monsterCandidateNames(monster).some((name) => rule.names.some((expected) => matchesName(name, expected)));
+    if (nameMatches || passiveMatchesRule(monster, rule)) return true;
+    if (!rule.names?.length) return chainMatches;
+    return chainMatches && monsterCandidateNames(monster).some((name) => rule.names.some((expected) => matchesName(name, expected)));
   }
 
   function resolveTraitRule(monster) {

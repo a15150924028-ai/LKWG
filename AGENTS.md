@@ -461,3 +461,20 @@ Use this entry format:
   - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired data and PVP logic.
 - Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the production change because `repairCachedSkillCategory` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 17:13 +08:00 - Codex
+
+- Request: Fix PVP battle hero traits not displaying for examples including 音速犬、火神、蹦床松鼠、波普鹿、风暴战犬、梦想三三.
+- Files changed:
+  - `克制面查询.html`
+  - `克制面查询-简洁版.html`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed PVP hero-trait matching so named rules can resolve by monster name, aliases, BWiki title/name fields, and boss/form suffixes even when BWiki/cache data does not provide a usable evolution-chain ID.
+  - Added generic matching from BWiki raw and nested cached `特性` / `英雄特性` fields back to the hero-trait rule table, so chain-ID-only rules can still display when the source data has the trait name.
+  - Added 蹦床松鼠 and its line names to the existing 囤积 rule.
+  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired PVP trait logic.
+  - Added a static regression test covering the reported examples, named boss/form suffix matching, and raw/nested BWiki trait-name matching.
+- Verification: Watched `node tests/pvp-hero-trait-display-static.test.js` fail before the production change on 音速犬 without a chain ID, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.
