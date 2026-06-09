@@ -5231,11 +5231,59 @@
       return 0;
     }
 
+    function hasStructuredEvolutionInfo(monster) {
+      const raw = monster?.raw || {};
+      return Boolean(
+        raw.chainId || raw.evolutionChainId || raw.evolution_chain_id ||
+        raw.familyId || raw.family_id || raw.baseId || raw.base_id ||
+        raw.stage || raw.evolutionStage || raw.evolution_stage || raw.evoStage || raw.rank
+      );
+    }
+
+    function compactMonsterName(value) {
+      return String(value || "").replace(/[\s·・（）()]/g, "");
+    }
+
+    function pvpMonsterNameKeys(monster) {
+      return [monster?.name, ...(monster?.aliases || []), ...(monster?.raw?.name_aliases || [])]
+        .map(compactMonsterName)
+        .filter(Boolean);
+    }
+
+    function pvpTraitFallbackEvolutionNames(monster) {
+      const traitRules = window.LKWG_PVP_TRAIT_RULES;
+      const rule = traitRules?.resolveTraitRule?.(monster);
+      const chainIds = new Set(rule?.chainIds || []);
+      if (!chainIds.size || !Array.isArray(traitRules?.RULES)) return [];
+      return unique(traitRules.RULES
+        .filter((item) => (item.chainIds || []).some((chainId) => chainIds.has(chainId)))
+        .flatMap((item) => item.names || []));
+    }
+
+    function pvpMonsterByFallbackEvolutionName(name, sourceMonster) {
+      const key = compactMonsterName(name);
+      const matches = dexData.monsters.filter((monster) => (
+        !isBossVariant(monster) &&
+        !isGeneratedBossForm(monster) &&
+        pvpMonsterNameKeys(monster).includes(key)
+      ));
+      if (!matches.length) return null;
+      const sourceStructured = hasStructuredEvolutionInfo(sourceMonster);
+      return matches.find((monster) => hasStructuredEvolutionInfo(monster) === sourceStructured) || matches[0];
+    }
+
+    function pvpTraitFallbackEvolutionLine(monster) {
+      const names = pvpTraitFallbackEvolutionNames(monster);
+      if (!names.length) return [];
+      const line = names.map((name) => pvpMonsterByFallbackEvolutionName(name, monster)).filter(Boolean);
+      return unique(line.map((item) => item.id)).map((id) => monsterById.get(id)).filter(Boolean);
+    }
+
     function pvpEvolutionLine(monster) {
       if (!monster) return [];
       const key = evolutionGroupKey(monster);
       if (!key) return [monster];
-      return dexData.monsters
+      const structuredLine = dexData.monsters
         .filter((item) => evolutionGroupKey(item) === key && !isBossVariant(item) && !isGeneratedBossForm(item))
         .sort((a, b) => (
           evolutionStageValue(a) - evolutionStageValue(b)
@@ -5243,6 +5291,9 @@
           || monsterNoValue(a) - monsterNoValue(b)
           || a.name.localeCompare(b.name, "zh-CN")
         ));
+      if (structuredLine.length > 1) return structuredLine;
+      const fallbackLine = pvpTraitFallbackEvolutionLine(monster);
+      return fallbackLine.length > 1 ? fallbackLine : structuredLine;
     }
 
     function pvpCuteAdjacentMonster(monster, delta) {
@@ -5775,6 +5826,14 @@
                 </div>
               </div>
             `).join("")}
+            <div class="pvp-buff-item" data-pvp-buff-stat="cuteLayer">
+              <div class="pvp-buff-label">萌化</div>
+              <div class="pvp-buff-controls">
+                <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="-1">-</button>
+                <span class="pvp-buff-value" data-pvp-cute-layer-value="${side}">${cuteLayers}</span>
+                <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="1">+</button>
+              </div>
+            </div>
           </div>
           ${traitRule ? `
             <div class="pvp-trait-layer-row">
@@ -5788,16 +5847,6 @@
               </div>
             </div>
           ` : ""}
-          <div class="pvp-trait-layer-row">
-            <div class="pvp-trait-layer-copy">
-              <strong>萌化</strong>
-            </div>
-            <div class="pvp-buff-controls">
-              <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="-1">-</button>
-              <span class="pvp-buff-value" data-pvp-cute-layer-value="${side}">${cuteLayers}</span>
-              <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="1">+</button>
-            </div>
-          </div>
         </div>
       `;
     }

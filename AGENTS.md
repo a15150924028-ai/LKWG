@@ -547,3 +547,17 @@ Use this entry format:
   - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js`, `node tests/pvp-special-power-rules-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because no Browser control tool was exposed in this turn.
 - Status: Complete.
+
+### 2026-06-09 21:02 +08:00 - Codex
+
+- Request: Fix the cute-layer UI placement and make Sonic Dog automatically gain cute +1 from Super Candy.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Moved the `萌化` controls into the main PVP buff grid so they appear as part of `增益状态` alongside other buff controls.
+  - Added a generic fallback evolution-line resolver that uses existing PVP trait-rule family names when cached monster data lacks BWiki `chainId`/`evolutionStage` fields.
+  - Covered the Sonic Dog line fallback so cached `音速犬` can still resolve downward to `护主犬` and Super Candy can enter the 160-power, post-use cute +1 branch.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation on the old-cache Sonic Dog case, then reran it after the change and it passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because no Browser control tool was exposed in this turn.
+- Status: Complete.
