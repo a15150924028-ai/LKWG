@@ -23811,7 +23811,10 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         .filter((chunk) => chunk.startsWith("<div class=\"divsort\""));
       chunks.forEach((chunk) => {
         const attrs = chunk.match(/^<div class="divsort"([^>]*)>/)?.[1] || "";
-        const title = decodeHtmlEntities(chunk.match(/<a\b[^>]*\btitle="([^"]+)"/)?.[1] || "");
+        const linkTitles = [...chunk.matchAll(/<a\b[^>]*\btitle="([^"]+)"/g)]
+          .map((match) => decodeHtmlEntities(match[1] || "").trim())
+          .filter(Boolean);
+        const title = linkTitles.find((candidate) => !/^(?:文件|File)[:：]/i.test(candidate)) || linkTitles[0] || "";
         if (!title || entries.has(title)) return;
         const imageClass = kind === "skill" ? "rocom_skill_bg_img" : "rocom_prop_icon";
         const imageMatch = chunk.match(new RegExp(`<img[^>]+class="${imageClass}"[^>]+src="([^"]+)"`))

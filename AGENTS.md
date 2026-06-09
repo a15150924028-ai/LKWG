@@ -324,3 +324,17 @@ Use this entry format:
   - Added regression tests for rendered monster stats and rendered skill fields replacing stale wikitext data.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before rendered stats parsing, then reran it after the change and it passed. Watched `node tests/bwiki-rendered-skill-profile-static.test.js` fail before rendered skill parsing, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked rendered BWiki 龙鱼 stats/passive and rendered BWiki 潮涌/过山车 skill fields; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 10:31 +08:00 - Codex
+
+- Request: Fix online update failure caused by BWiki index parsing `文件:技能图标 ...png` pages as skill titles.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-index-title-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated BWiki index parsing to inspect all link titles in a card and prefer the first non-file page title, avoiding icon file pages such as `文件:技能图标 铁蒺藜.png`.
+  - Kept icon URL extraction from the image link unchanged.
+  - Added a static regression test for BWiki cards where the icon file link appears before the actual skill page link.
+- Verification: Watched `node tests/bwiki-index-title-static.test.js` fail before the parser change, then reran it after the change and it passed. Ran a live BWiki 技能图鉴 index parse check confirming `fileTitleCount: 0`. Ran `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.
