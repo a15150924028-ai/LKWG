@@ -496,3 +496,21 @@ Use this entry format:
   - Added a static regression test covering 水泡盾-style compact 减伤80% labels and 羽化加速-style 全技能威力+20 support-state application.
 - Verification: Watched `node tests/pvp-support-defense-effects-static.test.js` fail before the production change because `supportSkillEffects` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 20:21 +08:00 - Codex
+
+- Request: First fix Dimo's PVP trait to 20% per layer, then fix Water Shield damage reduction; stop maintaining the simplified HTML version.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `tests/simple-html-sync-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated the PVP `最好的伙伴` trait rule so Dimo gains 20% per layer to physical attack, physical defense, magic attack, magic defense, and speed.
+  - Added a regression check proving Dimo resolves `最好的伙伴` at 20% per layer.
+  - Fixed the root cause for Water Shield by keeping defense-category skills selectable as PVP actions instead of consuming them as support buffs, allowing the existing defense-reduction rule to apply and display.
+  - Added a regression check proving defense skills with response buffs are not swallowed by support-skill handling.
+  - Removed the obsolete simplified-HTML sync test because the simplified version is no longer maintained.
+- Verification: Ran `node tests/pvp-hero-trait-display-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

@@ -2383,11 +2383,11 @@
       names: ["迪莫", "圣光迪莫"],
       traitName: "最好的伙伴",
       statPerLayer: {
-        atk: 0.1,
-        defense: 0.1,
-        spa: 0.1,
-        spd: 0.1,
-        spe: 0.1
+        atk: 0.2,
+        defense: 0.2,
+        spa: 0.2,
+        spd: 0.2,
+        spe: 0.2
       },
       energyPerLayer: 2
     },
@@ -5823,6 +5823,7 @@
 
     function applyPvpSupportSkill(state, skill) {
       if (!skill || isAttackSkill(skill)) return false;
+      if (skill.category === "defense") return false;
       const effects = supportSkillEffects(skill);
       const labels = effects.labels;
       if (!labels.length) return false;

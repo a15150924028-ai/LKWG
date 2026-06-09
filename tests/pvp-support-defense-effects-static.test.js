@@ -77,6 +77,11 @@ assert(
   shieldReduction.labels.includes("\u6c34\u6ce1\u76fe\u51cf\u4f2480%"),
   "Defense skill damage reduction should produce a visible reduction label."
 );
+const defenderState = { skillStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0 };
+assert(
+  !sandbox.applyPvpSupportSkill(defenderState, waterShield),
+  "Defense skills with response buffs should stay selectable as PVP actions instead of being consumed as support buffs."
+);
 
 const featherBoost = {
   name: "\u7fbd\u5316\u52a0\u901f",

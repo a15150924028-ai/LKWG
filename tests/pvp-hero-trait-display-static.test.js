@@ -52,6 +52,18 @@ assert(
   "PVP hero trait should match nested cached BWiki passive names when chain id is missing."
 );
 
+const dimoEffects = traitRules.resolveTraitEffects({ name: "\u8fea\u83ab", raw: {} }, 1);
+assert(
+  dimoEffects.traitName === "\u6700\u597d\u7684\u4f19\u4f34",
+  "Dimo should resolve the 最好的伙伴 PVP trait."
+);
+["atk", "defense", "spa", "spd", "spe"].forEach((statKey) => {
+  assert(
+    Math.abs(dimoEffects.statMods[statKey] - 0.2) < 1e-9,
+    `Dimo 最好的伙伴 should add 20% ${statKey} per layer.`
+  );
+});
+
 assert(
   html.includes("${traitRule ? `"),
   "PVP trait layer row should still be gated by resolved trait rules."
