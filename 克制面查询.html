@@ -3000,16 +3000,57 @@
         .replace(`${DATA_BASE}/skill-icons/`, `${LEGACY_ASSET_BASE}/skill-icons/`);
     }
 
+    function repairCachedSkillCategory(skill) {
+      const raw = skill?.raw || {};
+      const nestedRaw = raw.raw || {};
+      const descriptionCandidates = [
+        skill?.description,
+        raw.description,
+        nestedRaw.description,
+        raw.rendered?.description,
+        nestedRaw.rendered?.description,
+        raw["效果"],
+        nestedRaw["效果"]
+      ];
+      const candidates = [
+        skill?.category,
+        raw.category,
+        nestedRaw.category,
+        raw.rendered?.category,
+        nestedRaw.rendered?.category,
+        raw["技能类别"],
+        nestedRaw["技能类别"]
+      ];
+      for (const candidate of candidates) {
+        const text = String(candidate || "").trim();
+        if (!text) continue;
+        if (["physical", "special", "attack", "defense", "status"].includes(text)) {
+          return inferRenderedSkillCategory(text, descriptionCandidates.find(Boolean));
+        }
+        const repaired = BWIKI_CATEGORY_TO_CATEGORY[text];
+        if (repaired) return inferRenderedSkillCategory(repaired, descriptionCandidates.find(Boolean));
+      }
+      const description = descriptionCandidates.map((value) => String(value || "")).find(Boolean) || "";
+      if (/物理|物伤/.test(description)) return "physical";
+      if (/魔法|魔伤/.test(description)) return "special";
+      return skill?.category;
+    }
+
     function repairCachedSkillPower(skill) {
       if (!isAttackSkill(skill)) return skill?.power;
       const current = parseBwikiNumber(skill?.power);
       if (Number.isFinite(current)) return current;
       const raw = skill?.raw || {};
+      const nestedRaw = raw.raw || {};
       const candidates = [
         raw.power,
+        nestedRaw.power,
         raw.rendered?.power,
+        nestedRaw.rendered?.power,
         raw["威力"],
-        raw["力威"]
+        nestedRaw["威力"],
+        raw["力威"],
+        nestedRaw["力威"]
       ];
       for (const candidate of candidates) {
         const repaired = parseBwikiNumber(candidate);
@@ -4752,7 +4793,7 @@
             defenderHpPercent: defenderState?.hpPercent ?? 100,
             attackerSelectedSkills: selectedPvpSkills(attackerState),
             defenderSelectedSkills: selectedPvpSkills(defenderState),
-            skillIndex: attackerState?.pvpSkillIndex,
+            skillIndex: battleAction.pvpSkillIndex,
             currentSkillCost: traitAdjustedSkillCost,
             skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
             statusLayers: defenderState?.statusLayers || {},
@@ -7015,6 +7056,7 @@
       });
       nextData.skills.forEach((skill) => {
         skill.icon = repairCachedImageUrl(skill.icon);
+        skill.category = repairCachedSkillCategory(skill);
         skill.power = repairCachedSkillPower(skill);
       });
       dexData = nextData;

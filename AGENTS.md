@@ -444,3 +444,20 @@ Use this entry format:
   - Added a regression test to keep the simplified HTML script/data logic identical to the main HTML and reject stale local override code from returning.
 - Verification: Confirmed BWiki `缠丝劲` has `技能类别=物攻`, `威力=25`, and `效果=造成物伤，2连击。`; ran `node tests/simple-html-sync-static.test.js`; ran `node tests/pvp-selected-skill-damage-static.test.js`; ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warning for `克制面查询-简洁版.html`.
 - Status: Complete.
+
+### 2026-06-09 17:01 +08:00 - Codex
+
+- Request: Re-check the main app root cause for PVP selected skills still showing no damage, using the prior skill-pool/stat-pool context and avoiding special-value patches.
+- Files changed:
+  - `克制面查询.html`
+  - `克制面查询-简洁版.html`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added generic cached skill category repair during dex data application so old browser-local BWiki cache entries recover canonical `physical`/`special`/`attack` categories from current, rendered, and nested raw BWiki fields.
+  - Extended cached skill power repair to read nested BWiki raw/rendered fields such as `raw.raw["威力"]`, fixing stale normalized cache entries without hardcoded skill-name patches.
+  - Applied cached category repair before cached power repair, because PVP damage rejects non-attack categories before checking numeric power.
+  - Passed the selected PVP skill slot from the action object into variable damage rules, matching where `pvpActionFromState()` stores the slot.
+  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired data and PVP logic.
+- Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the production change because `repairCachedSkillCategory` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

@@ -51,9 +51,11 @@ vm.runInNewContext(`
   ${extractFunction("parseBwikiRenderedSkillProfile")}
   ${extractFunction("applyBwikiRenderedSkillProfiles")}
   ${extractFunction("parseBwikiNumber")}
+  ${extractFunction("repairCachedSkillCategory")}
   ${extractFunction("repairCachedSkillPower")}
   this.parseBwikiRenderedSkillProfile = parseBwikiRenderedSkillProfile;
   this.applyBwikiRenderedSkillProfiles = applyBwikiRenderedSkillProfiles;
+  this.repairCachedSkillCategory = repairCachedSkillCategory;
   this.repairCachedSkillPower = repairCachedSkillPower;
 `, sandbox);
 
@@ -110,6 +112,42 @@ assert(
 assert(
   html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";'),
   "Rendered profile cache key should invalidate v1 profiles that stored null attack power."
+);
+
+const nestedCachedBrokenSkill = {
+  id: "silk",
+  name: "\u7f20\u4e1d\u52b2",
+  type: "fighting",
+  category: "",
+  power: null,
+  description: "",
+  raw: {
+    category: "",
+    power: null,
+    rendered: { category: "attack", power: null, description: "\u9020\u6210\u7269\u4f24\uff0c2\u8fde\u51fb\u3002" },
+    raw: {
+      "\u6280\u80fd\u7c7b\u522b": "\u7269\u653b",
+      "\u5a01\u529b": "25",
+      "\u6548\u679c": "\u9020\u6210\u7269\u4f24\uff0c2\u8fde\u51fb\u3002"
+    }
+  }
+};
+nestedCachedBrokenSkill.category = sandbox.repairCachedSkillCategory(nestedCachedBrokenSkill);
+assert(
+  nestedCachedBrokenSkill.category === "physical",
+  "Cached attack skills should recover canonical category from nested raw BWiki fields."
+);
+assert(
+  sandbox.repairCachedSkillPower(nestedCachedBrokenSkill) === 25,
+  "Cached attack skills should recover power from nested raw BWiki fields after category repair."
+);
+assert(
+  html.includes("skill.category = repairCachedSkillCategory(skill);"),
+  "Cached skill category repair should run during data application before power repair."
+);
+assert(
+  html.includes("skillIndex: battleAction.pvpSkillIndex"),
+  "PVP variable damage rules should receive the selected skill slot from the action."
 );
 
 console.log("PVP selected skill damage static checks passed.");
