@@ -31,6 +31,10 @@ assert(
   "Rendered BWiki profile cache should invalidate old profiles that were parsed before split-arrow evolution chains were supported."
 );
 assert(
+  html.includes('const DATA_STORAGE_KEY = "roco-world-dex-data-v2";'),
+  "Dex data cache should invalidate normalized v1 data that was generated before rendered evolution-chain repair."
+);
+assert(
   html.includes("fetchBwikiRenderedSkillProfileMap(skillTitles, skillRevisionByTitle)"),
   "Rendered skill profile fetching should receive skill revision metadata."
 );
