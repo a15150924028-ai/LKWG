@@ -38,9 +38,13 @@ vm.runInNewContext(`
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
   ${extractFunction("plainBwikiText")}
+  ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
+  ${extractFunction("applyBwikiRenderedMonsterSkills")}
   ${extractFunction("parseBwikiSkillLearnerNames")}
   ${extractFunction("applyBwikiSkillLearners")}
   this.plainBwikiText = plainBwikiText;
+  this.parseBwikiRenderedMonsterSkillNames = parseBwikiRenderedMonsterSkillNames;
+  this.applyBwikiRenderedMonsterSkills = applyBwikiRenderedMonsterSkills;
   this.parseBwikiSkillLearnerNames = parseBwikiSkillLearnerNames;
   this.applyBwikiSkillLearners = applyBwikiSkillLearners;
 `, sandbox);
@@ -68,6 +72,18 @@ assert(hiddenTermsLearners.includes("\u7a83\u5149\u868a"), "BWiki learner parsin
 assert(!hiddenTermsLearners.includes("\u67f4\u6e23\u866b"), "BWiki learner parsing should not import fallback-only learners.");
 assert(!hiddenTermsLearners.includes("\u7c89\u7c89\u661f"), "BWiki learner parsing should not import unrelated fallback learners.");
 
+const arkRenderedHtml = `
+  <div>\u89e3\u9501\uff1a[\u6280\u80fd\u77f3]</div>
+  <div>\u94c1\u84ba\u85dc</div><div>&#215;</div><div>\u94c1\u84ba\u85dc</div><div>\u8017\u80fd</div>
+  <div>\u89e3\u9501\uff1a[\u6280\u80fd\u77f3]</div>
+  <div>\u94c1\u84ba\u85dc</div><div>\u8fc7\u5c71\u8f66</div><div>\u8017\u80fd</div>
+  <div>\u89e3\u9501\uff1a\uff08\u4f20\u8bf4\uff09\u5408\u4f53\uff1a\u673a\u5e55\u65b9\u821f</div>
+  <div>&#215;</div><div>\u8fc7\u5c71\u8f66</div><div>\u8017\u80fd</div>
+`;
+const arkRenderedSkills = sandbox.parseBwikiRenderedMonsterSkillNames(arkRenderedHtml);
+assert(arkRenderedSkills.includes("\u8fc7\u5c71\u8f66"), "Rendered BWiki monster skill cards should add \u8fc7\u5c71\u8f66.");
+assert(arkRenderedSkills.includes("\u94c1\u84ba\u85dc"), "Rendered BWiki monster skill cards should keep normal skill-stone skills.");
+
 const bundle = {
   monsters: [
     { id: "ark", name: "\u673a\u5e55\u65b9\u821f", name_aliases: ["\u673a\u5893\u65b9\u821f"], skills: [] }
@@ -80,6 +96,10 @@ const applied = sandbox.applyBwikiSkillLearners(bundle, new Map([["\u8fc7\u5c71\
 assert(applied.monsters[0].skills.includes("roller"), "BWiki skill learner pages should add their listed skill to matching monster pools.");
 assert(bundle.monsters[0].skills.length === 0, "BWiki learner application should not mutate the original bundle.");
 
+const renderedApplied = sandbox.applyBwikiRenderedMonsterSkills(bundle, new Map([["\u673a\u5e55\u65b9\u821f", ["\u8fc7\u5c71\u8f66"]]]));
+assert(renderedApplied.monsters[0].skills.includes("roller"), "BWiki rendered monster skill cards should add their listed skills to matching monster pools.");
+
+assert(html.includes("applyBwikiRenderedMonsterSkills({"), "BWiki bundle parsing should apply rendered monster skill cards.");
 assert(html.includes("applyBwikiSkillLearners({"), "BWiki bundle parsing should apply skill-page learner relationships.");
 
 console.log("BWiki skill learner static checks passed.");

@@ -255,3 +255,23 @@ Use this entry format:
   - Replaced the old fallback-merge regression test with a BWiki learner parser test that verifies `隐藏条款` uses the 11 BWiki-listed learners and excludes fallback-only learners.
 - Verification: Watched `node tests/bwiki-skill-learner-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/roller-source-data-live.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 08:37 +08:00 - Codex
+
+- Request: Stop using the incorrect fallback JSON source; generate the local cache from BWiki only, and fix `过山车` from BWiki data.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-only-update-static.test.js`
+  - `tests/bwiki-skill-learner-static.test.js`
+  - `tests/bwiki-rendered-monster-skills-live.test.js`
+  - `tests/bwiki-fallback-static.test.js`
+  - `tests/roller-source-data-live.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed `rocomwiki.app/data/bundle.json` from the online update path and deleted the legacy fallback fetch helper.
+  - Changed `联网更新数据` so BWiki success overwrites the browser-local cache, while BWiki failure leaves the app on existing cache or built-in sample data.
+  - Added BWiki rendered monster-page skill-card parsing, so skills present in rendered BWiki pages, such as `机幕方舟` learning `过山车`, are included without local hardcoding or fallback JSON.
+  - Made supplemental BWiki skill learner parsing fail loudly instead of silently generating incomplete BWiki data.
+  - Replaced fallback-source tests with BWiki-only and rendered-BWiki learner tests.
+- Verification: Watched `node tests/bwiki-only-update-static.test.js` fail before removing the fallback source, then reran it after the change and it passed. Ran `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.

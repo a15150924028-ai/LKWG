@@ -1724,7 +1724,7 @@
       <div class="matrix-wrap" id="matrixWrap"></div>
     </section>
 
-    <p class="footer-note">数据源：优先使用 BWiki 洛克王国世界 WIKI；当 BWiki API 被站点防护拦截时，自动使用联网备用数据。点击“联网更新数据”只缓存到当前浏览器本机数据库。</p>
+    <p class="footer-note">数据源：BWiki 洛克王国世界 WIKI。点击“联网更新数据”会从 BWiki 重新生成并覆盖当前浏览器本机数据库。</p>
   </main>
 
   <script>
@@ -20234,7 +20234,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
 </script>
   <script>
     const DATA_URL = "https://wiki.biligame.com/rocom/%E9%A6%96%E9%A1%B5";
-    const LEGACY_DATA_URL = "https://rocomwiki.app/data/bundle.json";
     const LEGACY_ASSET_BASE = "https://rocomwiki.app";
     const DATA_BASE = "https://wiki.biligame.com/rocom";
     const BWIKI_API_URL = "https://wiki.biligame.com/rocom/api.php";
@@ -23973,17 +23972,78 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       return unique(learners);
     }
 
+    function parseBwikiRenderedMonsterSkillNames(html) {
+      const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
+      const skillNames = [];
+      lines.forEach((line, index) => {
+        if (!/^解锁[：:]/.test(line)) return;
+        const candidates = [];
+        for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+          const current = lines[cursor];
+          if (/^解锁[：:]/.test(current)) break;
+          if (current === "耗能") break;
+          if (!current || current === "×" || current === "&#215;") continue;
+          candidates.push(current);
+        }
+        const skillName = candidates[candidates.length - 1];
+        if (skillName) skillNames.push(skillName);
+      });
+      return unique(skillNames);
+    }
+
+    async function fetchBwikiRenderedMonsterSkillMap(titles) {
+      const entries = await mapWithConcurrency(
+        titles,
+        BWIKI_PAGE_FETCH_CONCURRENCY,
+        async (title) => {
+          const html = await fetchBwikiParsedHtml(title);
+          const skillNames = parseBwikiRenderedMonsterSkillNames(html);
+          return [title, skillNames];
+        }
+      );
+      return new Map(entries.filter(([, skillNames]) => skillNames.length));
+    }
+
+    function applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName) {
+      if (!skillNamesByMonsterName?.size || !bundle?.monsters?.length || !bundle?.skills?.length) return bundle;
+
+      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
+      const namesFor = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
+      const skillIdByName = new Map();
+      (bundle.skills || []).forEach((skill) => {
+        namesFor(skill).forEach((name) => {
+          if (!skillIdByName.has(name)) skillIdByName.set(name, skill.id);
+        });
+      });
+
+      const monsters = (bundle.monsters || []).map((monster) => ({ ...monster, skills: [...(monster.skills || [])] }));
+      const monsterByName = new Map();
+      monsters.forEach((monster) => {
+        namesFor(monster).forEach((name) => {
+          if (!monsterByName.has(name)) monsterByName.set(name, monster);
+        });
+      });
+
+      skillNamesByMonsterName.forEach((skillNames, monsterName) => {
+        const monster = monsterByName.get(compactKey(monsterName));
+        if (!monster) return;
+        const skillIds = (skillNames || []).map((skillName) => skillIdByName.get(compactKey(skillName))).filter(Boolean);
+        if (!skillIds.length) return;
+        monster.skills = unique([...(monster.skills || []), ...skillIds]);
+      });
+
+      return { ...bundle, monsters };
+    }
+
     async function fetchBwikiSkillLearnerMap(titles) {
       const entries = await mapWithConcurrency(
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
-          try {
-            const html = await fetchBwikiParsedHtml(title);
-            return [title, parseBwikiSkillLearnerNames(html)];
-          } catch (error) {
-            return [title, []];
-          }
+          const html = await fetchBwikiParsedHtml(title);
+          const learners = parseBwikiSkillLearnerNames(html);
+          if (!learners.length) throw new Error(`BWiki ${title} 技能学习精灵解析为空`);
+          return [title, learners];
         }
       );
       return new Map(entries.filter(([, learners]) => learners.length));
@@ -24145,6 +24205,8 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       let monsters = monsterPages
         .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
         .filter(Boolean);
+      const renderedMonsterSkills = await fetchBwikiRenderedMonsterSkillMap([...monsterIndex.keys()]);
+      ({ monsters } = applyBwikiRenderedMonsterSkills({ monsters, skills }, renderedMonsterSkills));
       const supplementalSkillLearners = await fetchBwikiSkillLearnerMap(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
       ({ monsters } = applyBwikiSkillLearners({ monsters, skills }, supplementalSkillLearners));
 
@@ -24163,26 +24225,8 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       };
     }
 
-    async function fetchLegacyBundle(bwikiError) {
-      const response = await fetch(LEGACY_DATA_URL, { cache: "no-cache" });
-      if (!response.ok) {
-        throw new Error(`BWiki 更新失败：${bwikiError?.message || "未知错误"}；备用数据 HTTP ${response.status}`);
-      }
-      const bundle = await response.json();
-      return {
-        ...bundle,
-        currentSeason: bundle.currentSeason || "联网备用数据",
-        source_commit: bundle.source_commit || LEGACY_DATA_URL,
-        bwikiFallbackReason: bwikiError?.message || ""
-      };
-    }
-
     async function fetchRemoteBundle() {
-      try {
-        return await fetchBwikiBundle();
-      } catch (bwikiError) {
-        return fetchLegacyBundle(bwikiError);
-      }
+      return await fetchBwikiBundle();
     }
 
     function normalizeBundle(bundle) {
@@ -24375,7 +24419,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
 
     async function updateDexData() {
       updateBtn.disabled = true;
-      dataStatus.textContent = "正在联网更新精灵、特性、精灵技能池和技能数值（BWiki 优先，失败时使用备用源）...";
+      dataStatus.textContent = "正在联网更新精灵、特性、精灵技能池和技能数值（BWiki）...";
       try {
         const bundle = await fetchRemoteBundle();
         const normalized = normalizeBundle(bundle);
