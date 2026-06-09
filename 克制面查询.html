@@ -24129,7 +24129,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         async (title) => {
           const html = await fetchBwikiParsedHtml(title);
           const learners = parseBwikiSkillLearnerNames(html);
-          if (!learners.length) throw new Error(`BWiki ${title} 技能学习精灵解析为空`);
           return [title, learners];
         }
       );

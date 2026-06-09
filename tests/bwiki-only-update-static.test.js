@@ -33,9 +33,9 @@ assertIncludes(
   'dataStatus.textContent = "\u6b63\u5728\u8054\u7f51\u66f4\u65b0\u7cbe\u7075\u3001\u7279\u6027\u3001\u7cbe\u7075\u6280\u80fd\u6c60\u548c\u6280\u80fd\u6570\u503c\uff08BWiki\uff09...";',
   "The update status should describe the BWiki-only source."
 );
-assertIncludes(
-  'throw new Error(`BWiki ${title} \u6280\u80fd\u5b66\u4e60\u7cbe\u7075\u89e3\u6790\u4e3a\u7a7a`);',
-  "Required BWiki skill learner pages should fail the update instead of silently generating incomplete pools."
+assertExcludes(
+  '\u6280\u80fd\u5b66\u4e60\u7cbe\u7075\u89e3\u6790\u4e3a\u7a7a',
+  "Empty BWiki supplemental learner pages should not fail the update when rendered monster skill cards provide the skill pools."
 );
 assertExcludes(
   "\u5907\u7528\u6e90",

@@ -291,3 +291,19 @@ Use this entry format:
   - Added a static regression test for rendered passive parsing and bundle application, and updated the existing skill learner test to assert the new rendered profile application path.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked the BWiki rendered 龙鱼 page parses `洄游` with `永久-2`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 09:43 +08:00 - Codex
+
+- Request: Fix the online update failure `BWiki 过山车 技能学习精灵解析为空`.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-empty-supplemental-learner-static.test.js`
+  - `tests/bwiki-only-update-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed BWiki skill learner fetching so an empty learner list returns an empty map entry that is filtered out instead of failing the whole update.
+  - Kept `过山车` skill-pool sourcing on rendered monster skill cards, because the BWiki `过山车` skill page currently shows default, bloodline, and skill-stone learner counts as 0.
+  - Added a regression test proving empty supplemental learner pages do not block BWiki-only updates.
+  - Updated the BWiki-only static test to reject the old empty-learner failure message.
+- Verification: Watched `node tests/bwiki-empty-supplemental-learner-static.test.js` fail on the old empty-learner throw, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked that the BWiki `过山车` learner page is empty; ran `git diff --check`.
+- Status: Complete.
