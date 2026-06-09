@@ -114,6 +114,20 @@ assert(sandbox.applyPvpCuteLayerDelta(state, -1), "Applying cute -1 should succe
 assert(state.monsterId === "storm-dog", "Applying cute -1 should replace the selected monster with the upper form.");
 assert(state.cuteLayers === 0, "Applying cute -1 should decrement the stored layer count.");
 
+const actedState = {
+  monsterId: "sonic-dog",
+  cuteLayers: 0,
+  action: "skill:0",
+  actionMonsterId: "sonic-dog",
+  actionCuteLayers: 0,
+  forceImpact: false
+};
+assert(sandbox.applyPvpCuteLayerDelta(actedState, 1), "Post-use cute +1 should switch Sonic Dog into Guard Dog.");
+assert(actedState.monsterId === "guard-dog", "Post-use cute +1 should leave the panel on the lower form.");
+assert(actedState.action === "", "Cute form changes should clear the selected action instead of reusing a stale pre-use skill.");
+assert(actedState.actionMonsterId === "", "Cute form changes should clear the pre-use action monster snapshot.");
+assert(actedState.actionCuteLayers === 0, "Cute form changes should clear the pre-use cute-layer snapshot.");
+
 assert(html.includes('data-pvp-buff-stat="cuteLayer"'), "PVP buff UI should render cute controls inside the buff grid.");
 assert(html.includes("data-pvp-cute-layer="), "PVP buff UI should expose cute layer controls.");
 assert(html.includes("state.cuteLayers"), "PVP state should persist cute layers.");

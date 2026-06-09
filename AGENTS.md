@@ -561,3 +561,18 @@ Use this entry format:
   - Covered the Sonic Dog line fallback so cached `音速犬` can still resolve downward to `护主犬` and Super Candy can enter the 160-power, post-use cute +1 branch.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation on the old-cache Sonic Dog case, then reran it after the change and it passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because no Browser control tool was exposed in this turn.
 - Status: Complete.
+
+### 2026-06-09 21:15 +08:00 - Codex
+
+- Request: Explain and fix why Guard Dog still showed Super Candy as 160 damage after Sonic Dog used Super Candy.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified the root cause as stale PVP action snapshots: after a successful cute-layer form shift, the panel showed the new lower form but damage calculation still reused the previous form's `actionMonsterId` and `actionCuteLayers`.
+  - Changed the generic cute-layer form switching path to clear the selected action, action monster snapshot, cute-layer snapshot, and force-impact flag after any successful form shift.
+  - Added a regression test proving Sonic Dog switching into Guard Dog clears the stale pre-use action snapshot instead of continuing to show the old 160-power Super Candy result.
+  - Kept the simplified HTML version untouched.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before the production change on the stale action snapshot assertion, then reran it after the change and it passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

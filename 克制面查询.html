@@ -5321,6 +5321,10 @@
       if (!target) return false;
       state.monsterId = target.id;
       state.cuteLayers = Math.max(0, currentLayers + step);
+      state.action = "";
+      state.actionMonsterId = "";
+      state.actionCuteLayers = 0;
+      state.forceImpact = false;
       return true;
     }
 
