@@ -5821,9 +5821,18 @@
       state.forceImpact = state.action === "force";
     }
 
+    function selectPvpSkillAction(state, skillIndex, skill) {
+      const action = `skill:${skillIndex}`;
+      if (skill?.category === "defense") {
+        state.action = action;
+        state.forceImpact = false;
+        return;
+      }
+      setPvpAction(state, action);
+    }
+
     function applyPvpSupportSkill(state, skill) {
       if (!skill || isAttackSkill(skill)) return false;
-      if (skill.category === "defense") return false;
       const effects = supportSkillEffects(skill);
       const labels = effects.labels;
       if (!labels.length) return false;
@@ -5832,6 +5841,7 @@
       state.manualPowerPercentBonus = (Number(state.manualPowerPercentBonus) || 0) + (Number(effects.manualPowerPercentBonus) || 0);
       state.manualHitCountBonus = Math.max(0, Math.round(Number(state.manualHitCountBonus) || 0) + Math.max(0, Math.round(Number(effects.manualHitCountBonus) || 0)));
       state.supportText = `${skill.name}：${labels.join(" / ")}`;
+      if (skill.category === "defense") return false;
       state.action = "";
       state.forceImpact = false;
       return true;
@@ -5956,7 +5966,7 @@
                 } else if (applyPvpSupportSkill(state, item)) {
                   // Support skill release is recorded as a stack each time.
                 } else {
-                  setPvpAction(state, `skill:${skillIndex}`);
+                  selectPvpSkillAction(state, skillIndex, item);
                 }
               } else if (state.action === `skill:${skillIndex}`) {
                 state.action = "";
@@ -5973,7 +5983,7 @@
               refreshPvpDamageOutputs(root);
               return;
             }
-            setPvpAction(state, `skill:${skillIndex}`);
+            selectPvpSkillAction(state, skillIndex, skill);
             refreshPvpDamageOutputs(root);
           });
         });

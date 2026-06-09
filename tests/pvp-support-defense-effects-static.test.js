@@ -59,9 +59,12 @@ vm.runInNewContext(`
   ${extractFunction("skillPowerEffectsFromText")}
   ${extractFunction("supportSkillEffectLabels")}
   ${extractFunction("supportSkillEffects")}
+  ${extractFunction("setPvpAction")}
+  ${extractFunction("selectPvpSkillAction")}
   ${extractFunction("applyPvpSupportSkill")}
   ${extractFunction("defenseReductionEffect")}
   this.supportSkillEffects = supportSkillEffects;
+  this.selectPvpSkillAction = selectPvpSkillAction;
   this.applyPvpSupportSkill = applyPvpSupportSkill;
   this.defenseReductionEffect = defenseReductionEffect;
 `, sandbox);
@@ -81,6 +84,20 @@ const defenderState = { skillStatMods: {}, manualDamageBonus: 0, manualPowerPerc
 assert(
   !sandbox.applyPvpSupportSkill(defenderState, waterShield),
   "Defense skills with response buffs should stay selectable as PVP actions instead of being consumed as support buffs."
+);
+assert(
+  Math.abs(defenderState.skillStatMods.spa - 0.7) < 1e-9,
+  "Defense skills should still apply their own magic-attack support buffs."
+);
+assert(
+  /\u9b54\u653b\+70%/.test(defenderState.supportText),
+  "Defense skill support text should show its parsed buff."
+);
+const selectedDefenseState = { action: "skill:0", forceImpact: false };
+sandbox.selectPvpSkillAction(selectedDefenseState, 0, waterShield);
+assert(
+  selectedDefenseState.action === "skill:0",
+  "Clicking an already selected defense skill should keep it as the active PVP action."
 );
 
 const featherBoost = {

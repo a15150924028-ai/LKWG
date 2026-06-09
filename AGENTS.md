@@ -514,3 +514,17 @@ Use this entry format:
   - Removed the obsolete simplified-HTML sync test because the simplified version is no longer maintained.
 - Verification: Ran `node tests/pvp-hero-trait-display-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 20:29 +08:00 - Codex
+
+- Request: Fix Water Shield losing its magic-attack buff while still keeping defense skills as PVP defense actions.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed `applyPvpSupportSkill()` so defense-category skills still apply parsed support buffs, then return `false` so they are not consumed as pure support actions.
+  - Added `selectPvpSkillAction()` so defense skills remain selected as PVP actions when clicked again instead of being toggled off by the generic action toggle.
+  - Added regression checks proving Water Shield applies `魔攻+70%`, keeps its support text, and remains the active defense action.
+- Verification: Watched `node tests/pvp-support-defense-effects-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.
