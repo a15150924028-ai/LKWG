@@ -400,3 +400,17 @@ Use this entry format:
   - Added a regression test covering batch failure, split retry, single-page skip, and warning behavior.
 - Verification: Watched `node tests/bwiki-wikitext-batch-resilience-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-wikitext-batch-resilience-static.test.js`; `node tests/default-build-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/no-local-skill-pool-rollback-static.test.js`; `node tests/roller-icon-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which parsed the live BWiki `机幕方舟` rendered skill cards and confirmed `过山车`.
 - Status: Complete.
+
+### 2026-06-09 16:32 +08:00 - Codex
+
+- Request: Fix PVP skill selection showing no damage for selected attack skills.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Fixed rendered BWiki skill profile parsing to recognize the current `威力` label as well as the older/reversed `力威` label.
+  - Prevented the rendered skill description parser from treating `威力` as effect text.
+  - Added a regression test using `炽伤`-style rendered skill data so selected PVP attack skills keep numeric power after rendered profile application.
+- Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warning for `克制面查询.html`. Browser verification was not run because the in-app Browser navigation/screenshot tool was not exposed in this turn.
+- Status: Complete.

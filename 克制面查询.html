@@ -6676,7 +6676,7 @@
         }
       }
 
-      const powerIndex = lines.indexOf("力威");
+      const powerIndex = lines.findIndex((line) => line === "威力" || line === "力威");
       if (powerIndex > 0) {
         for (let cursor = powerIndex - 1; cursor >= Math.max(0, powerIndex - 4); cursor -= 1) {
           if (!/^\d+$/.test(lines[cursor])) continue;
@@ -6693,7 +6693,7 @@
         for (let cursor = descriptionStart; cursor < lines.length; cursor += 1) {
           const current = lines[cursor];
           if (descriptionStopLines.has(current) || /^默认（\d+）$/.test(current) || /^血脉（\d+）$/.test(current) || /^技能石（\d+）$/.test(current)) break;
-          if (/^\d+$/.test(current) || current === "能耗" || current === "力威" || BWIKI_CATEGORY_TO_CATEGORY[current] || /系$/.test(current)) continue;
+          if (/^\d+$/.test(current) || current === "能耗" || current === "威力" || current === "力威" || BWIKI_CATEGORY_TO_CATEGORY[current] || /系$/.test(current)) continue;
           profile.description = current;
           break;
         }
