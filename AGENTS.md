@@ -307,3 +307,20 @@ Use this entry format:
   - Updated the BWiki-only static test to reject the old empty-learner failure message.
 - Verification: Watched `node tests/bwiki-empty-supplemental-learner-static.test.js` fail on the old empty-learner throw, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked that the BWiki `过山车` learner page is empty; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 10:05 +08:00 - Codex
+
+- Request: Update wikitext-derived data by reading BWiki rendered HTML and replacing stale wikitext values.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/bwiki-rendered-skill-profile-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added rendered BWiki monster stat parsing and applied rendered stats back into monster records, so rendered page values replace stale wikitext stats.
+  - Removed the local latest monster stat override pool and its application pass.
+  - Added rendered BWiki skill page parsing for element, energy cost, category, power, and description, then applied those rendered values over wikitext skill fields.
+  - Removed the local S2 skill override pool and its application pass so skill data comes from BWiki rendered pages instead of local patches.
+  - Added regression tests for rendered monster stats and rendered skill fields replacing stale wikitext data.
+- Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before rendered stats parsing, then reran it after the change and it passed. Watched `node tests/bwiki-rendered-skill-profile-static.test.js` fail before rendered skill parsing, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked rendered BWiki 龙鱼 stats/passive and rendered BWiki 潮涌/过山车 skill fields; ran `git diff --check`.
+- Status: Complete.

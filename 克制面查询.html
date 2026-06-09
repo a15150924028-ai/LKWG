@@ -20455,33 +20455,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       { id: "talent-spe", kind: "talent", name: "速度", aliases: ["速度", "先手", "速度+60"], iconText: "速", iconColor: "#0ea5e9" }
     ];
 
-    const LATEST_MONSTER_STAT_OVERRIDES = {
-      "皇家狮鹫（崖间地的样子）": { hp: 107, spa: 69, atk: 127, spd: 65 },
-      "皇家狮鹫（高山地的样子）": { hp: 109, spa: 59, atk: 123, spd: 70 },
-      "高脚鹤": { hp: 96, spa: 98, atk: 98 },
-      "锤头鹑": { hp: 128, spa: 75, atk: 77, spd: 81, defense: 101 },
-      "逗地鼠（枯水期的样子）": { defense: 121, spd: 85 },
-      "逗地鼠（储水期的样子）": { hp: 112, spa: 23, defense: 85, spd: 131 },
-      "武者鸡": { hp: 116, spa: 66, atk: 137, defense: 111 },
-      "绅士鸡": { hp: 107, spa: 120, atk: 120, defense: 102 },
-      "窃光蚊": { atk: 113, spa: 113, defense: 71, spd: 125 },
-      "九幽菇": { atk: 110, spa: 103, defense: 125, spd: 103 },
-      "梦悠悠": { atk: 65, spa: 157 },
-      "叮叮恶魔": { hp: 117, spa: 53, atk: 125, spd: 73, defense: 103 },
-      "仪式巨像": { atk: 84, spa: 89 },
-      "祭礼巨像": { atk: 96, spa: 101 },
-      "彩蝶鲨": { atk: 98, spa: 98 },
-      "神谕鲨": { hp: 107, spa: 120 },
-      "古蜥多": { hp: 85, defense: 134, spd: 74 },
-      "寒音蛇": { atk: 87, spa: 87 },
-      "黑猫巫师": { hp: 149, spa: 124, atk: 53, spd: 129, defense: 90 },
-      "黑猫密探": { hp: 149, spa: 143, atk: 65, spd: 129, defense: 90 },
-      "龙鱼": { hp: 89, atk: 103, spa: 109, spd: 104, defense: 100, spe: 135 },
-      "幻影刺棘": { hp: 113, spd: 125, defense: 66 },
-      "爵士鹿": { atk: 77, spa: 20 },
-      "波普鹿": { atk: 79, spa: 21 },
-      "圆号鱼": { hp: 113, atk: 31 }
-    };
     const TALENT_STAT_BY_ID = {
       "talent-hp": "hp",
       "talent-atk": "atk",
@@ -20531,38 +20504,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
     ];
     const PVP_MANUAL_BUFF_STEP = 0.1;
     const PVP_MANUAL_DAMAGE_STEP = 10;
-    const S2_SKILL_OVERRIDES = {
-      "水刃": { category: "physical", description: "造成物伤。应对状态：本技能能耗永久-3。" },
-      "聒噪": { description: "敌方获得全攻击技能能耗+2，持续3回合。" },
-      "阻断": { category: "special", power: 75, description: "造成魔伤。应对状态：额外打断被应对技能。" },
-      "斩断": { category: "physical", power: 70, description: "造成物伤。应对状态：额外打断被应对技能。" },
-      "截拳": { category: "physical", power: 85, description: "造成物伤。应对状态：额外造成打断，回复该技能能耗的能量。" },
-      "地刺": { category: "physical", power: 90, description: "造成物伤。应对状态：额外打断被应对技能。" },
-      "咆哮": { description: "敌方获得物攻-60%，速度-60。" },
-      "甜心续航": { pp: 3, description: "自己和敌方获得萌化：回复40%生命和0能量。" },
-      "啮合传递": { description: "自己获得速度+30。本技能位于1号或3号位时，额外获得物攻+80%，传动1。" },
-      "冰蛋壳": { description: "减伤70%。应对攻击：敌方获得2层减速印记。" },
-      "涌泉": { category: "special", power: 90, description: "造成魔伤。本技能能耗每-1，威力+10。" },
-      "淬火": { pp: 2, description: "减伤80%。应对攻击：下次攻击技能威力翻倍。" },
-      "不动如山": { pp: 2, description: "减伤90%。应对攻击：自身物攻+50%。" },
-      "灾厄": { category: "physical", power: 60, description: "对自己造成60威力物伤。应对状态：改为对敌方造成180威力物伤。" },
-      "感染病": { category: "special", power: 110, description: "造成魔伤。若击败敌方，则将中毒转化为中毒印记。" },
-      "龙吟": { description: "蓄力，自身获得双攻+150%和速度+80。" },
-      "防反": { description: "减伤70%。应对攻击：自己获得物攻和魔攻+70%。" },
-      "落雨": { description: "将天气改为雨天，持续8回合。天气「雨天」：双方水系技能威力+75%。" },
-      "闪击": { description: "造成物伤。速度低于对手或和对手相同时，威力仍为60；速度高于对手271及以上时，威力提升至200。" },
-      "鸣沙陷阱": { description: "造成物伤。物防低于对手或和对手相同时，威力仍为60；物防高于对手271及以上时，威力提升至200。" },
-      "聚盐": { description: "2连击，每次连击自己回复8%生命。使用后本技能连击数永久+1，不再恢复能量。" },
-      "落雷": { pp: 3, category: "special", power: 35, description: "造成魔伤。每次入场，本技能威力永久+40。" },
-      "破防": { pp: 2, description: "敌方获得双防-70%。应对防御：额外使被应对技能冷却2回合。" },
-      "触底强击": { pp: 4, category: "special", power: 95, description: "造成魔伤。使用后若能量耗尽，本次技能威力+120。" },
-      "羽翼庇护": { pp: 2, description: "减伤70%。应对攻击：自己获得连击数+2。" },
-      "虫群过境": { pp: 3, category: "physical", power: 30, description: "造成物伤，2连击。己方队伍获得1次奉献：获得连击数+1。" },
-      "焚毁": { category: "special", power: 40, description: "造成魔伤。驱散敌方所有印记，每驱散1层，获得物攻+20%。" },
-      "绵里藏针": { pp: 2, power: 60, description: "若自己上回合未攻击敌方并造成伤害，本技能威力每回合永久+20。" },
-      "芳香诱引": { pp: 2, description: "自己获得连击数+2。应对防御：额外造成打断，且敌方下回合获得眩晕。" }
-    };
-
     const RELATION = {
       normal: { strong: [], weak: ["ground", "ghost", "mechanical"] },
       grass: { strong: ["water", "light", "ground"], weak: ["fire", "dragon", "poison", "bug", "wing", "mechanical"] },
@@ -23996,6 +23937,28 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       const profile = {
         skillNames: parseBwikiRenderedMonsterSkillNames(html)
       };
+      const renderedStatEntries = [
+        ["生命", "hp"],
+        ["物攻", "atk"],
+        ["魔攻", "spa"],
+        ["物防", "defense"],
+        ["魔防", "spd"],
+        ["速度", "spe"]
+      ];
+      const renderedStats = {};
+      renderedStatEntries.forEach(([label, key]) => {
+        const labelIndex = lines.findIndex((line) => line === label);
+        if (labelIndex < 0) return;
+        for (let cursor = labelIndex + 1; cursor < Math.min(lines.length, labelIndex + 5); cursor += 1) {
+          const match = lines[cursor].match(/^\d+$/);
+          if (!match) continue;
+          renderedStats[key] = Number(match[0]);
+          break;
+        }
+      });
+      if (renderedStatEntries.every(([, key]) => Number.isFinite(renderedStats[key]))) {
+        profile.stats = renderedStats;
+      }
       const passiveStopLines = new Set(["抗击伤害倍率", "性格", "特长", "来源", "筛选", "技能", "课题", "进化", "生态"]);
       const passiveStart = lines.findIndex((line, index) => line === "特性" && lines[index + 1] === "特性");
       if (passiveStart >= 0) {
@@ -24027,7 +23990,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
           return [title, profile];
         }
       );
-      return new Map(entries.filter(([, profile]) => profile?.skillNames?.length || profile?.passive?.name));
+      return new Map(entries.filter(([, profile]) => profile?.skillNames?.length || profile?.passive?.name || profile?.stats));
     }
 
     function applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName) {
@@ -24087,10 +24050,18 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       });
 
       profilesByMonsterName.forEach((profile, monsterName) => {
-        const passive = profile?.passive;
-        if (!passive?.name) return;
         const monster = monsterByName.get(compactKey(monsterName));
         if (!monster) return;
+        if (profile?.stats) {
+          monster.stats = { ...(monster.stats || {}), ...profile.stats };
+          monster.raw = {
+            ...(monster.raw || {}),
+            stats: { ...(monster.raw?.stats || {}), ...profile.stats },
+            rendered_bwiki_stats: true
+          };
+        }
+        const passive = profile?.passive;
+        if (!passive?.name) return;
         let nextPassive = passiveByName.get(compactKey(passive.name));
         if (!nextPassive) {
           nextPassive = {
@@ -24166,6 +24137,110 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       });
 
       return { ...bundle, monsters };
+    }
+
+    function inferRenderedSkillCategory(category, description) {
+      if (category !== "attack") return category;
+      const text = String(description || "");
+      if (/物理|物伤/.test(text)) return "physical";
+      if (/魔法|魔伤/.test(text)) return "special";
+      return category;
+    }
+
+    function parseBwikiRenderedSkillProfile(html) {
+      const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
+      const profile = {};
+      const elementLine = lines.find((line) => /系$/.test(line) && BWIKI_ELEMENT_TO_ELEMENT[line.replace(/系$/, "")]);
+      if (elementLine) profile.element = BWIKI_ELEMENT_TO_ELEMENT[elementLine.replace(/系$/, "")];
+
+      const energyIndex = lines.indexOf("能耗");
+      if (energyIndex > 0) {
+        for (let cursor = energyIndex - 1; cursor >= Math.max(0, energyIndex - 4); cursor -= 1) {
+          if (!/^\d+$/.test(lines[cursor])) continue;
+          profile.pp = Number(lines[cursor]);
+          break;
+        }
+      }
+
+      let categoryIndex = -1;
+      if (energyIndex >= 0) {
+        for (let cursor = energyIndex + 1; cursor < Math.min(lines.length, energyIndex + 5); cursor += 1) {
+          const category = BWIKI_CATEGORY_TO_CATEGORY[lines[cursor]];
+          if (!category) continue;
+          profile.category = category;
+          categoryIndex = cursor;
+          break;
+        }
+      }
+
+      const powerIndex = lines.indexOf("力威");
+      if (powerIndex > 0) {
+        for (let cursor = powerIndex - 1; cursor >= Math.max(0, powerIndex - 4); cursor -= 1) {
+          if (!/^\d+$/.test(lines[cursor])) continue;
+          profile.power = Number(lines[cursor]);
+          break;
+        }
+      } else {
+        profile.power = null;
+      }
+
+      const descriptionStart = powerIndex >= 0 ? powerIndex + 1 : categoryIndex + 1;
+      const descriptionStopLines = new Set(["技能石来源", "MediaWiki:TabJS", "默认（0）", "血脉（0）", "技能石（0）"]);
+      if (descriptionStart > 0) {
+        for (let cursor = descriptionStart; cursor < lines.length; cursor += 1) {
+          const current = lines[cursor];
+          if (descriptionStopLines.has(current) || /^默认（\d+）$/.test(current) || /^血脉（\d+）$/.test(current) || /^技能石（\d+）$/.test(current)) break;
+          if (/^\d+$/.test(current) || current === "能耗" || current === "力威" || BWIKI_CATEGORY_TO_CATEGORY[current] || /系$/.test(current)) continue;
+          profile.description = current;
+          break;
+        }
+      }
+
+      if (profile.category) {
+        profile.category = inferRenderedSkillCategory(profile.category, profile.description);
+      }
+      return profile;
+    }
+
+    async function fetchBwikiRenderedSkillProfileMap(titles) {
+      const entries = await mapWithConcurrency(
+        titles,
+        BWIKI_PAGE_FETCH_CONCURRENCY,
+        async (title) => {
+          const html = await fetchBwikiParsedHtml(title);
+          const profile = parseBwikiRenderedSkillProfile(html);
+          return [title, profile];
+        }
+      );
+      return new Map(entries.filter(([, profile]) => profile?.element || Number.isFinite(profile?.pp) || profile?.category || profile?.description));
+    }
+
+    function applyBwikiRenderedSkillProfiles(bundle, profilesBySkillName) {
+      if (!profilesBySkillName?.size || !bundle?.skills?.length) return bundle;
+      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
+      const namesFor = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
+      const skills = (bundle.skills || []).map((skill) => ({ ...skill }));
+      const skillByName = new Map();
+      skills.forEach((skill) => {
+        namesFor(skill).forEach((name) => {
+          if (!skillByName.has(name)) skillByName.set(name, skill);
+        });
+      });
+      profilesBySkillName.forEach((profile, skillName) => {
+        const skill = skillByName.get(compactKey(skillName));
+        if (!skill) return;
+        if (profile.element) skill.element = profile.element;
+        if (Number.isFinite(profile.pp)) skill.pp = profile.pp;
+        if (profile.category) skill.category = profile.category;
+        if (Object.hasOwn(profile, "power")) skill.power = profile.power;
+        if (profile.description) skill.description = profile.description;
+        skill.raw = {
+          ...(skill.raw || {}),
+          rendered_bwiki: true,
+          rendered: profile
+        };
+      });
+      return { ...bundle, skills };
     }
 
     async function fetchBwikiSupplementalSkillPages() {
@@ -24275,11 +24350,13 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       const skillPages = await fetchBwikiWikitextPages(skillTitles);
       const supplementalSkillPages = await fetchBwikiSupplementalSkillPages();
       const skillPagesByTitle = new Map([...skillPages, ...supplementalSkillPages].map((page) => [page.title, page]));
-      const skills = skillPages
+      let skills = skillPages
         .map((page) => skillPagesByTitle.get(page.title))
         .filter(Boolean)
         .map((page) => parseBwikiSkillPage(page, skillIndex.get(page.title) || BWIKI_SUPPLEMENTAL_SKILL_INDEX[page.title]))
         .filter(Boolean);
+      const renderedSkillProfiles = await fetchBwikiRenderedSkillProfileMap(skillTitles);
+      ({ skills } = applyBwikiRenderedSkillProfiles({ skills }, renderedSkillProfiles));
       const skillIdByName = new Map();
       skills.forEach((skill) => {
         skillIdByName.set(skill.name, skill.id);
@@ -24353,7 +24430,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         priority: skill.priority,
         description: skill.description || "",
         raw: skill
-      })).map(applyS2SkillOverride).filter((skill) => skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+      })).filter((skill) => skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
 
       return {
         generatedAt: bundle.generated_at || new Date().toISOString(),
@@ -24364,49 +24441,6 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         passives,
         bloodlines: BLOODLINES,
         skills
-      };
-    }
-
-    function applyS2SkillOverride(skill) {
-      const override = S2_SKILL_OVERRIDES[skill?.name];
-      if (!override) return skill;
-      const next = { ...skill, ...override };
-      if (skill.raw) {
-        next.raw = { ...skill.raw, ...override };
-      }
-      return next;
-    }
-
-    function compactMonsterName(value) {
-      return String(value || "").replace(/[\s·・（）()]/g, "");
-    }
-
-    function latestMonsterStatOverride(monster) {
-      const candidates = [monster?.name, ...(monster?.aliases || [])].map(compactMonsterName).filter(Boolean);
-      for (const [name, override] of Object.entries(LATEST_MONSTER_STAT_OVERRIDES)) {
-        const compactName = compactMonsterName(name);
-        if (candidates.includes(compactName)) return override;
-      }
-      return null;
-    }
-
-    function applyLatestMonsterStatOverrides(data) {
-      if (!data?.monsters?.length) return data;
-      return {
-        ...data,
-        monsters: data.monsters.map((monster) => {
-          const override = latestMonsterStatOverride(monster);
-          if (!override) return monster;
-          const stats = { ...(monster.raw?.stats || {}), ...override };
-          return {
-            ...monster,
-            raw: {
-              ...(monster.raw || {}),
-              stats,
-              latest_stat_override: true
-            }
-          };
-        })
       };
     }
 
@@ -24486,7 +24520,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       const nextData = {
         ...data,
         monsters: withBossForms(data.monsters || []),
-        skills: (data.skills || []).map(applyS2SkillOverride)
+        skills: data.skills || []
       };
       nextData.monsters.forEach((monster) => {
         monster.icon = repairCachedImageUrl(monster.icon);
@@ -24494,7 +24528,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       nextData.skills.forEach((skill) => {
         skill.icon = repairCachedImageUrl(skill.icon);
       });
-      dexData = applyLocalSkillPoolOverrides(applyLatestMonsterStatOverrides(nextData));
+      dexData = applyLocalSkillPoolOverrides(nextData);
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
       skillById = new Map(dexData.skills.map((skill) => [skill.id, skill]));
       passiveById = new Map((dexData.passives || []).map((passive) => [passive.id, passive]));
