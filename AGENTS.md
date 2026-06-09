@@ -275,3 +275,19 @@ Use this entry format:
   - Replaced fallback-source tests with BWiki-only and rendered-BWiki learner tests.
 - Verification: Watched `node tests/bwiki-only-update-static.test.js` fail before removing the fallback source, then reran it after the change and it passed. Ran `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 09:00 +08:00 - Codex
+
+- Request: Use BWiki rendered webpage data for monster passives instead of stale wikitext passive fields.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/bwiki-skill-learner-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added rendered BWiki monster profile parsing so the same rendered monster-page request now returns skill-card names plus passive name and passive description.
+  - Applied rendered passive data back into the BWiki bundle's monster passive IDs and passive records, replacing stale wikitext descriptions such as 龙鱼 `洄游` `永久-1` with the rendered webpage value `永久-2`.
+  - Kept rendered monster skill-card behavior intact while avoiding a second rendered-page fetch for the same monster.
+  - Added a static regression test for rendered passive parsing and bundle application, and updated the existing skill learner test to assert the new rendered profile application path.
+- Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; live-checked the BWiki rendered 龙鱼 page parses `洄游` with `永久-2`; ran `git diff --check`.
+- Status: Complete.

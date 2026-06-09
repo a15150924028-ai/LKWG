@@ -23991,17 +23991,43 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       return unique(skillNames);
     }
 
-    async function fetchBwikiRenderedMonsterSkillMap(titles) {
+    function parseBwikiRenderedMonsterProfile(html) {
+      const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
+      const profile = {
+        skillNames: parseBwikiRenderedMonsterSkillNames(html)
+      };
+      const passiveStopLines = new Set(["抗击伤害倍率", "性格", "特长", "来源", "筛选", "技能", "课题", "进化", "生态"]);
+      const passiveStart = lines.findIndex((line, index) => line === "特性" && lines[index + 1] === "特性");
+      if (passiveStart >= 0) {
+        const passiveLines = [];
+        for (let cursor = passiveStart + 1; cursor < lines.length; cursor += 1) {
+          const current = lines[cursor];
+          if (current === "特性") continue;
+          if (passiveStopLines.has(current) || /^解锁[：:]/.test(current)) break;
+          passiveLines.push(current);
+        }
+        const [name, ...descriptionLines] = passiveLines;
+        if (name) {
+          profile.passive = {
+            name,
+            description: descriptionLines.join("")
+          };
+        }
+      }
+      return profile;
+    }
+
+    async function fetchBwikiRenderedMonsterProfileMap(titles) {
       const entries = await mapWithConcurrency(
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
           const html = await fetchBwikiParsedHtml(title);
-          const skillNames = parseBwikiRenderedMonsterSkillNames(html);
-          return [title, skillNames];
+          const profile = parseBwikiRenderedMonsterProfile(html);
+          return [title, profile];
         }
       );
-      return new Map(entries.filter(([, skillNames]) => skillNames.length));
+      return new Map(entries.filter(([, profile]) => profile?.skillNames?.length || profile?.passive?.name));
     }
 
     function applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName) {
@@ -24033,6 +24059,67 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       });
 
       return { ...bundle, monsters };
+    }
+
+    function applyBwikiRenderedMonsterProfiles(bundle, profilesByMonsterName) {
+      if (!profilesByMonsterName?.size || !bundle?.monsters?.length) return bundle;
+      const skillNamesByMonsterName = new Map();
+      profilesByMonsterName.forEach((profile, monsterName) => {
+        if (profile?.skillNames?.length) skillNamesByMonsterName.set(monsterName, profile.skillNames);
+      });
+      const skillApplied = applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName);
+
+      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
+      const namesFor = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
+      const monsters = (skillApplied.monsters || []).map((monster) => ({ ...monster, passives: [...(monster.passives || [])] }));
+      const passives = (skillApplied.passives || []).map((passive) => ({ ...passive }));
+      const monsterByName = new Map();
+      monsters.forEach((monster) => {
+        namesFor(monster).forEach((name) => {
+          if (!monsterByName.has(name)) monsterByName.set(name, monster);
+        });
+      });
+      const passiveByName = new Map();
+      passives.forEach((passive) => {
+        namesFor(passive).forEach((name) => {
+          if (!passiveByName.has(name)) passiveByName.set(name, passive);
+        });
+      });
+
+      profilesByMonsterName.forEach((profile, monsterName) => {
+        const passive = profile?.passive;
+        if (!passive?.name) return;
+        const monster = monsterByName.get(compactKey(monsterName));
+        if (!monster) return;
+        let nextPassive = passiveByName.get(compactKey(passive.name));
+        if (!nextPassive) {
+          nextPassive = {
+            id: bwikiId("passive", passive.name),
+            name: passive.name,
+            name_aliases: [],
+            description: "",
+            trigger: ""
+          };
+          passives.push(nextPassive);
+          namesFor(nextPassive).forEach((name) => passiveByName.set(name, nextPassive));
+        }
+        nextPassive.name = passive.name;
+        nextPassive.description = passive.description || nextPassive.description || "";
+        nextPassive.trigger = passive.description || nextPassive.trigger || "";
+        nextPassive.raw = {
+          ...(nextPassive.raw || {}),
+          rendered_bwiki: true
+        };
+        monster.passives = [nextPassive.id];
+        monster.raw = {
+          ...(monster.raw || {}),
+          "特性": passive.name,
+          "特性描述": passive.description || "",
+          rendered_bwiki_passive: true
+        };
+      });
+
+      return { ...skillApplied, monsters, passives };
     }
 
     async function fetchBwikiSkillLearnerMap(titles) {
@@ -24205,8 +24292,9 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
       let monsters = monsterPages
         .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
         .filter(Boolean);
-      const renderedMonsterSkills = await fetchBwikiRenderedMonsterSkillMap([...monsterIndex.keys()]);
-      ({ monsters } = applyBwikiRenderedMonsterSkills({ monsters, skills }, renderedMonsterSkills));
+      const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()]);
+      let passives = [...passiveByName.values()];
+      ({ monsters, passives } = applyBwikiRenderedMonsterProfiles({ monsters, skills, passives }, renderedMonsterProfiles));
       const supplementalSkillLearners = await fetchBwikiSkillLearnerMap(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
       ({ monsters } = applyBwikiSkillLearners({ monsters, skills }, supplementalSkillLearners));
 
@@ -24220,7 +24308,7 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         seasons: [],
         source_commit: DATA_URL,
         monsters,
-        passives: [...passiveByName.values()],
+        passives,
         skills
       };
     }

@@ -99,7 +99,7 @@ assert(bundle.monsters[0].skills.length === 0, "BWiki learner application should
 const renderedApplied = sandbox.applyBwikiRenderedMonsterSkills(bundle, new Map([["\u673a\u5e55\u65b9\u821f", ["\u8fc7\u5c71\u8f66"]]]));
 assert(renderedApplied.monsters[0].skills.includes("roller"), "BWiki rendered monster skill cards should add their listed skills to matching monster pools.");
 
-assert(html.includes("applyBwikiRenderedMonsterSkills({"), "BWiki bundle parsing should apply rendered monster skill cards.");
+assert(html.includes("applyBwikiRenderedMonsterProfiles({"), "BWiki bundle parsing should apply rendered monster profile data, including skill cards.");
 assert(html.includes("applyBwikiSkillLearners({"), "BWiki bundle parsing should apply skill-page learner relationships.");
 
 console.log("BWiki skill learner static checks passed.");
