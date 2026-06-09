@@ -42,12 +42,19 @@ vm.runInNewContext(`
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
+  const cleanWikiText = (value) => String(value || "").trim();
+  function isAttackSkill(skill) {
+    return skill && ["physical", "special", "attack"].includes(skill.category);
+  }
   ${extractFunction("plainBwikiText")}
   ${extractFunction("inferRenderedSkillCategory")}
   ${extractFunction("parseBwikiRenderedSkillProfile")}
   ${extractFunction("applyBwikiRenderedSkillProfiles")}
+  ${extractFunction("parseBwikiNumber")}
+  ${extractFunction("repairCachedSkillPower")}
   this.parseBwikiRenderedSkillProfile = parseBwikiRenderedSkillProfile;
   this.applyBwikiRenderedSkillProfiles = applyBwikiRenderedSkillProfiles;
+  this.repairCachedSkillPower = repairCachedSkillPower;
 `, sandbox);
 
 const burnHtml = `
@@ -79,5 +86,30 @@ const bundle = {
 const applied = sandbox.applyBwikiRenderedSkillProfiles(bundle, new Map([["\u70bd\u4f24", profile]]));
 assert(applied.skills[0].power === 80, "PVP selected attack skills should keep numeric power after rendered profile application.");
 assert(!html.includes('lines.indexOf("力威")'), "Rendered skill profile parsing should not depend only on the reversed 力威 label.");
+
+const cachedBrokenSkill = {
+  id: "burn",
+  name: "\u70bd\u4f24",
+  type: "fire",
+  category: "physical",
+  power: null,
+  raw: {
+    "\u5a01\u529b": "80",
+    rendered_bwiki: true,
+    rendered: { power: null }
+  }
+};
+assert(
+  sandbox.repairCachedSkillPower(cachedBrokenSkill) === 80,
+  "Cached PVP attack skills with null power should recover power from raw BWiki fields."
+);
+assert(
+  html.includes("skill.power = repairCachedSkillPower(skill);"),
+  "Cached skill power repair should run during data application."
+);
+assert(
+  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";'),
+  "Rendered profile cache key should invalidate v1 profiles that stored null attack power."
+);
 
 console.log("PVP selected skill damage static checks passed.");

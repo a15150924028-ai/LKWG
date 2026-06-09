@@ -27,7 +27,7 @@ function assert(condition, message) {
 }
 
 assert(
-  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v1";'),
+  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";'),
   "Rendered BWiki profile cache should use a dedicated localStorage key."
 );
 assert(
@@ -64,7 +64,7 @@ const sandbox = {
 };
 
 vm.runInNewContext(`
-  const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v1";
+  const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";
   const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
   let fetchCount = 0;
   async function mapWithConcurrency(items, concurrency, worker) {

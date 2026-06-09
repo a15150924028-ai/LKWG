@@ -2652,7 +2652,7 @@
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
     const DATA_STORAGE_KEY = "roco-world-dex-data-v1";
-    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v1";
+    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";
 
     const TYPES = [
       { key: "grass", name: "草", iconKey: "grass" },
@@ -2998,6 +2998,24 @@
       return text
         .replace(`${DATA_BASE}/creature-atlas/`, `${LEGACY_ASSET_BASE}/creature-atlas/`)
         .replace(`${DATA_BASE}/skill-icons/`, `${LEGACY_ASSET_BASE}/skill-icons/`);
+    }
+
+    function repairCachedSkillPower(skill) {
+      if (!isAttackSkill(skill)) return skill?.power;
+      const current = parseBwikiNumber(skill?.power);
+      if (Number.isFinite(current)) return current;
+      const raw = skill?.raw || {};
+      const candidates = [
+        raw.power,
+        raw.rendered?.power,
+        raw["威力"],
+        raw["力威"]
+      ];
+      for (const candidate of candidates) {
+        const repaired = parseBwikiNumber(candidate);
+        if (Number.isFinite(repaired)) return repaired;
+      }
+      return skill?.power;
     }
 
     function unique(items) {
@@ -6268,12 +6286,12 @@
       try {
         const parsed = JSON.parse(localStorage.getItem(BWIKI_RENDERED_PROFILE_CACHE_KEY) || "null");
         return {
-          version: 1,
-          skill: parsed?.version === 1 && parsed?.skill && typeof parsed.skill === "object" ? parsed.skill : {},
-          monster: parsed?.version === 1 && parsed?.monster && typeof parsed.monster === "object" ? parsed.monster : {}
+          version: 2,
+          skill: parsed?.version === 2 && parsed?.skill && typeof parsed.skill === "object" ? parsed.skill : {},
+          monster: parsed?.version === 2 && parsed?.monster && typeof parsed.monster === "object" ? parsed.monster : {}
         };
       } catch (error) {
-        return { version: 1, skill: {}, monster: {} };
+        return { version: 2, skill: {}, monster: {} };
       }
     }
 
@@ -6997,6 +7015,7 @@
       });
       nextData.skills.forEach((skill) => {
         skill.icon = repairCachedImageUrl(skill.icon);
+        skill.power = repairCachedSkillPower(skill);
       });
       dexData = nextData;
       monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));

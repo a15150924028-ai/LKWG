@@ -414,3 +414,18 @@ Use this entry format:
   - Added a regression test using `炽伤`-style rendered skill data so selected PVP attack skills keep numeric power after rendered profile application.
 - Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warning for `克制面查询.html`. Browser verification was not run because the in-app Browser navigation/screenshot tool was not exposed in this turn.
 - Status: Complete.
+
+### 2026-06-09 16:39 +08:00 - Codex
+
+- Request: Continue fixing the PVP selected-skill damage issue after the previous parser-only fix did not resolve the user's browser state.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added cached skill power repair during dex data application so existing browser-local database entries with `power: null` recover numeric attack power from raw BWiki fields.
+  - Bumped the rendered BWiki profile cache key/version from v1 to v2 so old rendered skill profiles that cached null attack power are not reused.
+  - Extended the PVP selected-skill regression test to cover broken cached `炽伤` data and cache-version invalidation.
+- Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail on missing cached-skill repair before the HTML change, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.
