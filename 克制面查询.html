@@ -23988,12 +23988,20 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
-          const html = await fetchBwikiParsedHtml(title);
-          const profile = parseBwikiRenderedMonsterProfile(html);
-          return [title, profile];
+          try {
+            const html = await fetchBwikiParsedHtml(title);
+            const profile = parseBwikiRenderedMonsterProfile(html);
+            return [title, profile];
+          } catch (error) {
+            console.warn(`BWiki ${title} 渲染精灵页读取失败，保留 wikitext 数据。`, error);
+            return null;
+          }
         }
       );
-      return new Map(entries.filter(([, profile]) => profile?.skillNames?.length || profile?.passive?.name || profile?.stats));
+      return new Map(entries.filter((entry) => {
+        const profile = entry?.[1];
+        return profile?.skillNames?.length || profile?.passive?.name || profile?.stats;
+      }));
     }
 
     function applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName) {
@@ -24210,12 +24218,20 @@ window.LCX_LEGACY_SKILL_POOL_OVERRIDES = {
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
-          const html = await fetchBwikiParsedHtml(title);
-          const profile = parseBwikiRenderedSkillProfile(html);
-          return [title, profile];
+          try {
+            const html = await fetchBwikiParsedHtml(title);
+            const profile = parseBwikiRenderedSkillProfile(html);
+            return [title, profile];
+          } catch (error) {
+            console.warn(`BWiki ${title} 渲染技能页读取失败，保留 wikitext 数据。`, error);
+            return null;
+          }
         }
       );
-      return new Map(entries.filter(([, profile]) => profile?.element || Number.isFinite(profile?.pp) || profile?.category || profile?.description));
+      return new Map(entries.filter((entry) => {
+        const profile = entry?.[1];
+        return profile?.element || Number.isFinite(profile?.pp) || profile?.category || profile?.description;
+      }));
     }
 
     function applyBwikiRenderedSkillProfiles(bundle, profilesBySkillName) {

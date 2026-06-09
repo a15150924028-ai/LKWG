@@ -338,3 +338,17 @@ Use this entry format:
   - Added a static regression test for BWiki cards where the icon file link appears before the actual skill page link.
 - Verification: Watched `node tests/bwiki-index-title-static.test.js` fail before the parser change, then reran it after the change and it passed. Ran a live BWiki 技能图鉴 index parse check confirming `fileTitleCount: 0`. Ran `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-rendered-monster-skills-live.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 10:40 +08:00 - Codex
+
+- Request: Fix the online update failure `BWiki 纤维化 JSONP 请求失败`.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-skill-profile-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed rendered BWiki skill-profile fetching so one failed rendered skill page, such as `纤维化`, is skipped instead of failing the whole BWiki update.
+  - Changed rendered BWiki monster-profile fetching the same way, so individual rendered page failures keep the existing wikitext-derived base data.
+  - Added a regression test proving a failed rendered skill page is skipped while successful rendered skill pages still apply.
+- Verification: Watched `node tests/bwiki-rendered-skill-profile-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`. `node tests/bwiki-rendered-monster-skills-live.test.js` could not complete because BWiki returned HTTP 567 for the live `机幕方舟` parse request.
+- Status: Complete.
