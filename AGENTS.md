@@ -239,3 +239,19 @@ Use this entry format:
   - Kept the deleted local `过山车` patch removed; the fix uses online website data, not hardcoded local pool injection.
 - Verification: Watched `node tests/website-skill-pool-merge-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/roller-source-data-live.test.js`; `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-09 08:25 +08:00 - Codex
+
+- Request: Fix incorrect `隐藏条款` learners from the root cause, without special-value patches or one-off supplementation.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-skill-learner-static.test.js`
+  - `tests/website-skill-pool-merge-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the broad `mergeWebsiteSkillPools()` fallback-source union that could import overly broad fallback learners into successful BWiki refreshes.
+  - Added generic BWiki skill-page learner parsing for rendered learner lists such as default, bloodline, and skill-stone learners.
+  - Applied BWiki skill-page learner relationships back into BWiki monster skill pools by normalized skill and monster names.
+  - Replaced the old fallback-merge regression test with a BWiki learner parser test that verifies `隐藏条款` uses the 11 BWiki-listed learners and excludes fallback-only learners.
+- Verification: Watched `node tests/bwiki-skill-learner-static.test.js` fail before the HTML change, then reran it after the change and it passed. Ran `node tests/bwiki-fallback-static.test.js`; `node tests/roller-icon-static.test.js`; `node tests/roller-source-data-live.test.js`; `node tests/local-skill-pool-rollback-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`.
+- Status: Complete.
