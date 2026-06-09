@@ -1866,6 +1866,41 @@
     return skills.filter((skill) => skill?.type === typeKey).length;
   }
 
+  function actionNameCandidates(action) {
+    return [action?.name, ...(action?.aliases || []), ...(action?.raw?.name_aliases || [])]
+      .map((name) => cleanText(name))
+      .filter(Boolean);
+  }
+
+  function actionNameMatches(action, names) {
+    const candidates = actionNameCandidates(action);
+    return names.some((name) => candidates.includes(cleanText(name)));
+  }
+
+  const SPECIAL_PVP_POWER_RULES = [
+    {
+      names: ["超级糖果"],
+      resolve(action, context = {}) {
+        const canGainCuteLayer = Boolean(context.canGainCuteLayer);
+        return {
+          power: canGainCuteLayer ? 160 : 100,
+          labels: [
+            canGainCuteLayer
+              ? "超级糖果：可获得萌化+1，威力160"
+              : "超级糖果：无法获得萌化+1，威力100"
+          ],
+          postUseEffects: canGainCuteLayer ? { cuteLayerDelta: 1 } : {},
+          powerRuleMatched: true
+        };
+      }
+    }
+  ];
+
+  function resolveSpecialPvpPowerRule(action, context = {}) {
+    const rule = SPECIAL_PVP_POWER_RULES.find((item) => actionNameMatches(action, item.names));
+    return rule ? rule.resolve(action, context) : null;
+  }
+
   function resolvePvpVariableDamage(action, context = {}) {
     const text = cleanText(actionText(action));
     const labels = [];
@@ -1879,6 +1914,11 @@
     let ignoreResistance = false;
     let responseIgnoreResistance = false;
     let responsePower = null;
+    const specialPowerRule = resolveSpecialPvpPowerRule(action, context);
+    if (specialPowerRule) {
+      power = Math.max(1, numberValue(specialPowerRule.power, power));
+      (specialPowerRule.labels || []).forEach((label) => addLabel(labels, label));
+    }
     const basePower = power;
 
     if (canReceiveHitCountBonus && /位于1号或3号位时连击\+1/.test(text) && skillInSlot(context.skillIndex, [0, 2])) {
@@ -2284,12 +2324,15 @@
       ignoreResistance,
       responseIgnoreResistance,
       canReceiveHitCountBonus,
-      labels
+      labels,
+      postUseEffects: specialPowerRule?.postUseEffects || {},
+      powerRuleMatched: Boolean(specialPowerRule?.powerRuleMatched)
     };
   }
 
   return {
     DEFAULT_ENERGY,
+    resolveSpecialPvpPowerRule,
     resolvePvpVariableDamage
   };
 });
@@ -3010,8 +3053,8 @@
     const clearBtn = document.getElementById("clearBtn");
     const dataStatus = document.getElementById("dataStatus");
     const pvpSimState = {
-      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", forceImpact: false, traitLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexSourceData = FALLBACK_DATA;
@@ -4877,13 +4920,13 @@
     }
 
     function calcPvpDamage(attackerState, defenderState, action) {
-      const attacker = monsterById.get(attackerState?.monsterId);
+      const attacker = monsterById.get(attackerState?.actionMonsterId || attackerState?.monsterId);
       const defender = monsterById.get(defenderState?.monsterId);
       if (!attacker || !defender || !action) return null;
       const effectiveAction = effectiveActionForPassives(action, attacker);
       const battleAction = effectiveAction.action;
-      const basePower = Number(battleAction.power) || 0;
-      if (!basePower || !isAttackSkill(battleAction)) {
+      const actionBasePower = Number(battleAction.power) || 0;
+      if (!isAttackSkill(battleAction)) {
         return { error: `${action.name} 暂无可计算威力` };
       }
 
@@ -4898,6 +4941,7 @@
       const attackValue = attackerStats[mode.attackKey];
       const defenseValue = defenderStats[mode.defenseKey];
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(attacker, attackerState?.traitLayers, battleAction);
+      const actionCuteLayers = normalizePvpCuteLayers(attackerState?.actionCuteLayers ?? attackerState?.cuteLayers);
       const currentSkillCost = Math.max(0, Number(attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp) || 0);
       const traitAdjustedSkillCost = Math.max(0, currentSkillCost - traitEffects.skillCostReduction);
       const attackerEnergy = Number(attackerState?.energy ?? DEFAULT_PVP_ENERGY);
@@ -4936,9 +4980,15 @@
             adjacentSkillPowers: attackerState?.adjacentSkillPowers?.[battleAction.id] || [],
             defenderTurnsWithoutSkillDamage: defenderState?.turnsWithoutSkillDamage ?? 0,
             defenderMixedBlood: !!defenderState?.mixedBlood || bloodlineMatchesName(defenderState, /混合/),
+            cuteTotal: actionCuteLayers,
+            canGainCuteLayer: canGainPvpCuteLayer(attacker),
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
-        : { power: basePower, hitCount: 1, damageMultiplier: 1, canReceiveHitCountBonus: false, labels: [] };
+        : { power: actionBasePower, hitCount: 1, damageMultiplier: 1, canReceiveHitCountBonus: false, labels: [] };
+      if (!actionBasePower && !variableDamage.powerRuleMatched) {
+        return { error: `${action.name} 暂无可计算威力` };
+      }
+      const basePower = Math.max(1, Number(variableDamage.power) || actionBasePower);
       const damageAction = variableDamage.type && variableDamage.type !== battleAction.type
         ? { ...battleAction, type: variableDamage.type }
         : battleAction;
@@ -5179,6 +5229,48 @@
         if (Number.isFinite(parsed)) return parsed;
       }
       return 0;
+    }
+
+    function pvpEvolutionLine(monster) {
+      if (!monster) return [];
+      const key = evolutionGroupKey(monster);
+      if (!key) return [monster];
+      return dexData.monsters
+        .filter((item) => evolutionGroupKey(item) === key && !isBossVariant(item) && !isGeneratedBossForm(item))
+        .sort((a, b) => (
+          evolutionStageValue(a) - evolutionStageValue(b)
+          || monsterStatTotal(a) - monsterStatTotal(b)
+          || monsterNoValue(a) - monsterNoValue(b)
+          || a.name.localeCompare(b.name, "zh-CN")
+        ));
+    }
+
+    function pvpCuteAdjacentMonster(monster, delta) {
+      const line = pvpEvolutionLine(monster);
+      const index = line.findIndex((item) => item.id === monster?.id);
+      if (index < 0) return null;
+      const targetIndex = delta > 0 ? index - 1 : index + 1;
+      return line[targetIndex] || null;
+    }
+
+    function canGainPvpCuteLayer(monster) {
+      return Boolean(pvpCuteAdjacentMonster(monster, 1));
+    }
+
+    function normalizePvpCuteLayers(value) {
+      return Math.max(0, Math.round(Number(value) || 0));
+    }
+
+    function applyPvpCuteLayerDelta(state, delta) {
+      const step = delta > 0 ? 1 : -1;
+      const currentLayers = normalizePvpCuteLayers(state?.cuteLayers);
+      if (step < 0 && currentLayers <= 0) return false;
+      const monster = monsterById.get(state?.monsterId);
+      const target = pvpCuteAdjacentMonster(monster, step);
+      if (!target) return false;
+      state.monsterId = target.id;
+      state.cuteLayers = Math.max(0, currentLayers + step);
+      return true;
     }
 
     function bestEvolutionRepresentative(monsters) {
@@ -5475,6 +5567,8 @@
       }
       state.skillIds = Array.from({ length: 4 }, (_, index) => state.skillIds[index] || "");
       state.action = typeof state.action === "string" ? state.action : "";
+      state.actionMonsterId = state.action ? (typeof state.actionMonsterId === "string" ? state.actionMonsterId : "") : "";
+      state.actionCuteLayers = state.action ? normalizePvpCuteLayers(state.actionCuteLayers) : 0;
       if (state.forceImpact && !state.action) state.action = "force";
       if (forceImpactLocked(state) && state.action === "force") state.action = "";
       state.forceImpact = state.action === "force";
@@ -5487,6 +5581,7 @@
       state.supportText = state.supportText || "";
       state.energy = Number.isFinite(Number(state.energy)) ? Number(state.energy) : DEFAULT_PVP_ENERGY;
       state.traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers);
+      state.cuteLayers = normalizePvpCuteLayers(state.cuteLayers);
       return state;
     }
 
@@ -5541,10 +5636,13 @@
       state.talentIds = ["", "", ""];
       state.skillIds = ["", "", "", ""];
       state.action = "";
+      state.actionMonsterId = "";
+      state.actionCuteLayers = 0;
       state.forceImpact = false;
       resetPvpManualBuffs(state);
       state.energy = DEFAULT_PVP_ENERGY;
       state.traitLayers = 0;
+      state.cuteLayers = 0;
     }
 
     function resetPvpManualBuffs(state) {
@@ -5662,6 +5760,7 @@
       const traitRule = window.LKWG_PVP_TRAIT_RULES.resolveTraitRule(monster);
       const traitName = window.LKWG_PVP_TRAIT_RULES.traitName(monster);
       const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
+      const cuteLayers = normalizePvpCuteLayers(state?.cuteLayers);
       return `
         <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
           <div class="pvp-buff-title">增益状态</div>
@@ -5689,6 +5788,16 @@
               </div>
             </div>
           ` : ""}
+          <div class="pvp-trait-layer-row">
+            <div class="pvp-trait-layer-copy">
+              <strong>萌化</strong>
+            </div>
+            <div class="pvp-buff-controls">
+              <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="-1">-</button>
+              <span class="pvp-buff-value" data-pvp-cute-layer-value="${side}">${cuteLayers}</span>
+              <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="1">+</button>
+            </div>
+          </div>
         </div>
       `;
     }
@@ -5707,6 +5816,10 @@
       const traitLayerValueEl = root.querySelector(`[data-pvp-trait-layer-value="${side}"]`);
       if (traitLayerValueEl) {
         traitLayerValueEl.textContent = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers);
+      }
+      const cuteLayerValueEl = root.querySelector(`[data-pvp-cute-layer-value="${side}"]`);
+      if (cuteLayerValueEl) {
+        cuteLayerValueEl.textContent = normalizePvpCuteLayers(state.cuteLayers);
       }
     }
 
@@ -5818,17 +5931,41 @@
 
     function setPvpAction(state, action) {
       state.action = state.action === action ? "" : action;
+      state.actionMonsterId = state.action ? (state.monsterId || "") : "";
+      state.actionCuteLayers = state.action ? normalizePvpCuteLayers(state.cuteLayers) : 0;
       state.forceImpact = state.action === "force";
+    }
+
+    function hasPvpSpecialPowerRule(skill) {
+      return Boolean(window.LKWG_PVP_DAMAGE_RULES?.resolveSpecialPvpPowerRule?.(skill, {}));
     }
 
     function selectPvpSkillAction(state, skillIndex, skill) {
       const action = `skill:${skillIndex}`;
-      if (skill?.category === "defense") {
+      if (skill?.category === "defense" || hasPvpSpecialPowerRule(skill)) {
         state.action = action;
+        state.actionMonsterId = state.monsterId || "";
+        state.actionCuteLayers = normalizePvpCuteLayers(state.cuteLayers);
         state.forceImpact = false;
         return;
       }
       setPvpAction(state, action);
+    }
+
+    function pvpPostUseEffects(state, skill) {
+      const monster = monsterById.get(state?.actionMonsterId || state?.monsterId);
+      const resolved = window.LKWG_PVP_DAMAGE_RULES?.resolveSpecialPvpPowerRule?.(skill, {
+        canGainCuteLayer: canGainPvpCuteLayer(monster),
+        cuteTotal: state?.cuteLayers ?? 0
+      });
+      return resolved?.postUseEffects || {};
+    }
+
+    function applyPvpPostUseSkillEffects(state, skill) {
+      const effects = pvpPostUseEffects(state, skill);
+      const cuteLayerDelta = Math.round(Number(effects.cuteLayerDelta) || 0);
+      if (!cuteLayerDelta) return false;
+      return applyPvpCuteLayerDelta(state, cuteLayerDelta);
     }
 
     function applyPvpSupportSkill(state, skill) {
@@ -5843,6 +5980,8 @@
       state.supportText = `${skill.name}：${labels.join(" / ")}`;
       if (skill.category === "defense") return false;
       state.action = "";
+      state.actionMonsterId = "";
+      state.actionCuteLayers = 0;
       state.forceImpact = false;
       return true;
     }
@@ -5876,7 +6015,10 @@
             state.monsterId = item.id;
             if (monsterChanged) resetPvpTraitLayers(state, item);
             state.action = "";
+            state.actionMonsterId = "";
+            state.actionCuteLayers = 0;
             state.forceImpact = false;
+            state.cuteLayers = 0;
             resetPvpManualBuffs(state);
             state.energy = DEFAULT_PVP_ENERGY;
             if (isAlly) {
@@ -5888,6 +6030,9 @@
                 state.natureId = "";
                 state.talentIds = ["", "", ""];
                 state.skillIds = ["", "", "", ""];
+                state.actionMonsterId = "";
+                state.actionCuteLayers = 0;
+                state.cuteLayers = 0;
                 resetPvpManualBuffs(state);
                 state.energy = DEFAULT_PVP_ENERGY;
               }
@@ -5960,9 +6105,11 @@
             prefixHtml: `<span class="pvp-skill-index">${skillIndex + 1}</span>`,
             onSelect: (item) => {
               state.skillIds[skillIndex] = item?.id || "";
+              let postUseChanged = false;
               if (item) {
                 if (isAttackSkill(item)) {
-                  setPvpAction(state, `skill:${skillIndex}`);
+                  selectPvpSkillAction(state, skillIndex, item);
+                  postUseChanged = applyPvpPostUseSkillEffects(state, item);
                 } else if (applyPvpSupportSkill(state, item)) {
                   // Support skill release is recorded as a stack each time.
                 } else {
@@ -5970,9 +6117,14 @@
                 }
               } else if (state.action === `skill:${skillIndex}`) {
                 state.action = "";
+                state.actionMonsterId = "";
                 state.forceImpact = false;
               }
-              refreshPvpDamageOutputs(root);
+              if (postUseChanged) {
+                renderResults();
+              } else {
+                refreshPvpDamageOutputs(root);
+              }
             }
           });
           const skillHost = root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`);
@@ -5984,7 +6136,11 @@
               return;
             }
             selectPvpSkillAction(state, skillIndex, skill);
-            refreshPvpDamageOutputs(root);
+            if (applyPvpPostUseSkillEffects(state, skill)) {
+              renderResults();
+            } else {
+              refreshPvpDamageOutputs(root);
+            }
           });
         });
 
@@ -6032,6 +6188,18 @@
             );
             refreshPvpManualBuffPanel(root, side);
             refreshPvpDamageOutputs(root);
+          });
+        });
+        root.querySelectorAll(`[data-pvp-cute-layer="${side}"]`).forEach((button) => {
+          button.addEventListener("click", () => {
+            const delta = Number(button.dataset.delta) || 0;
+            if (applyPvpCuteLayerDelta(state, delta)) {
+              renderResults();
+            } else {
+              state.cuteLayers = normalizePvpCuteLayers(state.cuteLayers);
+              refreshPvpManualBuffPanel(root, side);
+              refreshPvpDamageOutputs(root);
+            }
           });
         });
         updatePvpActionClasses(root, side);
@@ -6601,10 +6769,29 @@
       return unique(skillNames);
     }
 
+    function parseBwikiRenderedEvolutionLine(html) {
+      const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
+      const stopLines = new Set(["生态", "性别比例", "蛋组", "获取", "来源", "筛选"]);
+      const names = [];
+      lines.forEach((line, index) => {
+        if (!/^进化链\d*/.test(line)) return;
+        for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+          const current = lines[cursor];
+          if (/^进化链\d*/.test(current) || stopLines.has(current)) break;
+          if (!current.includes("▶")) continue;
+          const name = current.replace(/▶.*/, "").trim();
+          if (!name || /^Lv\./i.test(name) || /首领化|进化之力/.test(name)) continue;
+          names.push(name);
+        }
+      });
+      return unique(names);
+    }
+
     function parseBwikiRenderedMonsterProfile(html) {
       const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
       const profile = {
-        skillNames: parseBwikiRenderedMonsterSkillNames(html)
+        skillNames: parseBwikiRenderedMonsterSkillNames(html),
+        evolutionLine: parseBwikiRenderedEvolutionLine(html)
       };
       const renderedStatEntries = [
         ["生命", "hp"],
@@ -6684,7 +6871,7 @@
       if (cacheChanged) writeBwikiRenderedProfileCache(cache);
       return new Map(entries.filter((entry) => {
         const profile = entry?.[1];
-        return profile?.skillNames?.length || profile?.passive?.name || profile?.stats;
+        return profile?.skillNames?.length || profile?.passive?.name || profile?.stats || profile?.evolutionLine?.length;
       }));
     }
 
@@ -6747,6 +6934,20 @@
       profilesByMonsterName.forEach((profile, monsterName) => {
         const monster = monsterByName.get(compactKey(monsterName));
         if (!monster) return;
+        if (profile?.evolutionLine?.length > 1) {
+          const chainId = `bwiki-evolution-${profile.evolutionLine[0]}`;
+          profile.evolutionLine.forEach((name, index) => {
+            const form = monsterByName.get(compactKey(name));
+            if (!form) return;
+            form.raw = {
+              ...(form.raw || {}),
+              chainId,
+              evolutionChainId: chainId,
+              evolutionStage: index + 1,
+              rendered_bwiki_evolution: true
+            };
+          });
+        }
         if (profile?.stats) {
           monster.stats = { ...(monster.stats || {}), ...profile.stats };
           monster.raw = {

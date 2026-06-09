@@ -528,3 +528,22 @@ Use this entry format:
   - Added regression checks proving Water Shield applies `魔攻+70%`, keeps its support text, and remains the active defense action.
 - Verification: Watched `node tests/pvp-support-defense-effects-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 20:48 +08:00 - Codex
+
+- Request: Implement PVP items 3, 4, and 5: special skill power rules, Super Candy cute-layer logic, and cute-layer UI/form switching, while preserving other functions.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a centralized special PVP power-rule pool and registered `超级糖果` with independent 160/100 power judgment based on whether the current attacker can gain `萌化+1`.
+  - Added post-use PVP effect handling so successful Super Candy use snapshots the pre-use monster/layer state for damage, then applies `萌化+1` and switches to the next lower form.
+  - Added PVP cute-layer state, non-negative normalization, buff-panel controls, and form up/down switching while preserving nature, talents, skills, and existing buffs.
+  - Added rendered BWiki evolution-chain parsing so pages such as `风暴战犬` can populate shared chain IDs and evolution stages from the online `进化链` section instead of local special patches.
+  - Kept the simplified HTML version untouched.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js`, `node tests/pvp-special-power-rules-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because no Browser control tool was exposed in this turn.
+- Status: Complete.

@@ -41,6 +41,7 @@ vm.runInNewContext(`
   }
   ${extractFunction("plainBwikiText")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
+  ${extractFunction("parseBwikiRenderedEvolutionLine")}
   ${extractFunction("applyBwikiRenderedMonsterSkills")}
   ${extractFunction("parseBwikiRenderedMonsterProfile")}
   ${extractFunction("applyBwikiRenderedMonsterProfiles")}
@@ -78,6 +79,23 @@ assert(profile.stats.spa === 109, "Rendered BWiki monster profile should parse r
 assert(profile.stats.defense === 100, "Rendered BWiki monster profile should parse rendered physical defense.");
 assert(profile.stats.spd === 104, "Rendered BWiki monster profile should parse rendered magical defense.");
 assert(profile.stats.spe === 135, "Rendered BWiki monster profile should parse rendered speed.");
+
+const stormDogHtml = `
+  <section>
+    <div>\u8fdb\u5316\u94fe1</div>
+    <div>\u62a4\u4e3b\u72ac\u25b6</div>
+    <div>\u97f3\u901f\u72ac\u25b6</div>
+    <div>Lv.26</div>
+    <div>\u98ce\u66b4\u6218\u72ac\u25b6</div>
+    <div>\u9996\u9886\u5316</div>
+    <div>\u751f\u6001</div>
+  </section>
+`;
+const stormProfile = sandbox.parseBwikiRenderedMonsterProfile(stormDogHtml);
+assert(
+  stormProfile.evolutionLine.join(">") === "\u62a4\u4e3b\u72ac>\u97f3\u901f\u72ac>\u98ce\u66b4\u6218\u72ac",
+  "Rendered BWiki monster profile should parse evolution-chain names from the rendered evolution section."
+);
 
 const bundle = {
   monsters: [
@@ -124,6 +142,27 @@ assert(
   "Rendered BWiki passive application should not mutate the original bundle."
 );
 assert(bundle.monsters[0].stats.hp === 75, "Rendered BWiki stat application should not mutate the original bundle.");
+
+const evolutionBundle = {
+  monsters: [
+    { id: "guard", name: "\u62a4\u4e3b\u72ac", name_aliases: [], skills: [], passives: [], raw: {} },
+    { id: "sonic", name: "\u97f3\u901f\u72ac", name_aliases: [], skills: [], passives: [], raw: {} },
+    { id: "storm", name: "\u98ce\u66b4\u6218\u72ac", name_aliases: [], skills: [], passives: [], raw: {} }
+  ],
+  passives: [],
+  skills: []
+};
+const evolutionApplied = sandbox.applyBwikiRenderedMonsterProfiles(
+  evolutionBundle,
+  new Map([["\u98ce\u66b4\u6218\u72ac", stormProfile]])
+);
+assert(
+  evolutionApplied.monsters.every((monster) => monster.raw.chainId === "bwiki-evolution-\u62a4\u4e3b\u72ac"),
+  "Rendered BWiki evolution lines should assign a shared chain id to every listed form."
+);
+assert(evolutionApplied.monsters[0].raw.evolutionStage === 1, "The first rendered evolution form should be stage 1.");
+assert(evolutionApplied.monsters[1].raw.evolutionStage === 2, "The second rendered evolution form should be stage 2.");
+assert(evolutionApplied.monsters[2].raw.evolutionStage === 3, "The third rendered evolution form should be stage 3.");
 
 assert(html.includes("applyBwikiRenderedMonsterProfiles({"), "BWiki bundle parsing should apply rendered monster profiles.");
 assert(!html.includes("fetchBwikiRenderedMonsterSkillMap"), "Rendered monster pages should be fetched once for profile and skill data.");

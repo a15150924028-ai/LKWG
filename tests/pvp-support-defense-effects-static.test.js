@@ -59,6 +59,7 @@ vm.runInNewContext(`
   ${extractFunction("skillPowerEffectsFromText")}
   ${extractFunction("supportSkillEffectLabels")}
   ${extractFunction("supportSkillEffects")}
+  ${extractFunction("normalizePvpCuteLayers")}
   ${extractFunction("setPvpAction")}
   ${extractFunction("selectPvpSkillAction")}
   ${extractFunction("applyPvpSupportSkill")}
