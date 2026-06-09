@@ -6318,6 +6318,23 @@
       return Object.values(payload?.query?.pages || {}).filter((page) => page && !page.missing);
     }
 
+    async function fetchBwikiWikitextBatchResilient(titles) {
+      try {
+        return await fetchBwikiWikitextBatch(titles);
+      } catch (error) {
+        if (titles.length <= 1) {
+          console.warn(`BWiki ${titles[0] || "页面"} wikitext 读取失败，跳过该页。`, error);
+          return [];
+        }
+        const midpoint = Math.ceil(titles.length / 2);
+        const [left, right] = await Promise.all([
+          fetchBwikiWikitextBatchResilient(titles.slice(0, midpoint)),
+          fetchBwikiWikitextBatchResilient(titles.slice(midpoint))
+        ]);
+        return [...left, ...right];
+      }
+    }
+
     async function mapWithConcurrency(items, concurrency, worker) {
       const results = [];
       let index = 0;
@@ -6340,7 +6357,7 @@
       const pagesByBatch = await mapWithConcurrency(
         batches,
         BWIKI_PAGE_FETCH_CONCURRENCY,
-        fetchBwikiWikitextBatch
+        fetchBwikiWikitextBatchResilient
       );
       return pagesByBatch.flat();
     }

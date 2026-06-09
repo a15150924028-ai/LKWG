@@ -385,3 +385,18 @@ Use this entry format:
   - Updated static tests for the new revision-aware rendered profile fetching path.
 - Verification: Watched `node tests/bwiki-rendered-cache-progress-static.test.js` fail before the cache/progress implementation, then reran it after the change and it passed. Ran `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/default-build-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/no-local-skill-pool-rollback-static.test.js`; `node tests/roller-icon-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which parsed the live BWiki `机幕方舟` rendered skill cards and confirmed `过山车`.
 - Status: Complete.
+
+### 2026-06-09 16:23 +08:00 - Codex
+
+- Request: Fix the online update failure `BWiki 页面批量读取 JSONP 请求失败`.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-wikitext-batch-resilience-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a resilient BWiki wikitext batch reader that retries failed page batches by splitting them into smaller batches.
+  - Changed unrecoverable single-page wikitext failures to skip only that page instead of failing the whole online update.
+  - Kept the update source BWiki-only and did not add any fallback data source.
+  - Added a regression test covering batch failure, split retry, single-page skip, and warning behavior.
+- Verification: Watched `node tests/bwiki-wikitext-batch-resilience-static.test.js` fail before implementation, then reran it after the change and it passed. Ran `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/bwiki-wikitext-batch-resilience-static.test.js`; `node tests/default-build-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/no-local-skill-pool-rollback-static.test.js`; `node tests/roller-icon-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which parsed the live BWiki `机幕方舟` rendered skill cards and confirmed `过山车`.
+- Status: Complete.
