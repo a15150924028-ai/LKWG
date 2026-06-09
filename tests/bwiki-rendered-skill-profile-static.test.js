@@ -74,6 +74,17 @@ vm.runInNewContext(`
     if (failingRenderedTitles.has(title)) throw new Error('BWiki ' + title + ' JSONP \u8bf7\u6c42\u5931\u8d25');
     return renderedHtmlByTitle.get(title) || "";
   }
+  function readBwikiRenderedProfileCache() {
+    return { version: 1, skill: {}, monster: {} };
+  }
+  function writeBwikiRenderedProfileCache() {}
+  function getCachedBwikiRenderedProfile() {
+    return null;
+  }
+  function setCachedBwikiRenderedProfile() {
+    return false;
+  }
+  function updateBwikiProgress() {}
   ${extractFunction("plainBwikiText")}
   ${extractFunction("inferRenderedSkillCategory")}
   ${extractFunction("parseBwikiRenderedSkillProfile")}
@@ -139,7 +150,7 @@ assert(applied.skills[0].power === 80, "Rendered BWiki skill profile should repl
 assert(applied.skills[0].description.includes("\u9020\u6210\u7269\u7406\u4f24\u5bb3"), "Rendered BWiki skill profile should replace stale wikitext description.");
 assert(bundle.skills[0].pp === 3, "Rendered BWiki skill profile application should not mutate the original bundle.");
 
-assert(html.includes("fetchBwikiRenderedSkillProfileMap(skillTitles)"), "BWiki bundle parsing should fetch rendered skill profiles.");
+assert(html.includes("fetchBwikiRenderedSkillProfileMap(skillTitles, skillRevisionByTitle)"), "BWiki bundle parsing should fetch rendered skill profiles.");
 assert(html.includes("applyBwikiRenderedSkillProfiles({"), "BWiki bundle parsing should apply rendered skill profiles.");
 assert(!html.includes("S2_SKILL_OVERRIDES"), "Rendered BWiki skill profiles should replace the local skill override pool.");
 assert(!html.includes("applyS2SkillOverride"), "Rendered BWiki skill profiles should not be replaced by a local skill override pass.");

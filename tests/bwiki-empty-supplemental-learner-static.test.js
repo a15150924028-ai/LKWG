@@ -67,7 +67,7 @@ sandbox.fetchedHtmlByTitle.set("\u8fc7\u5c71\u8f66", `
   assert(typeof learners?.get === "function", "Empty BWiki supplemental learner results should still return a Map-like object.");
   assert(learners.size === 0, "Empty BWiki supplemental learner results should be skipped instead of failing the update.");
   assert(
-    html.includes("fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()])"),
+    html.includes("fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle)"),
     "Rendered monster skill cards should remain the source for supplemental skills with empty learner pages."
   );
   console.log("BWiki empty supplemental learner static checks passed.");

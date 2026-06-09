@@ -368,3 +368,20 @@ Use this entry format:
   - Replaced the rollback-presence static test with a removal-regression test that rejects old local skill-pool override code.
 - Verification: Watched `node tests/no-local-skill-pool-rollback-static.test.js` fail before deleting the old pool, then reran it after the change and it passed. Ran `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/default-build-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/no-local-skill-pool-rollback-static.test.js`; `node tests/roller-icon-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`. `node tests/bwiki-rendered-monster-skills-live.test.js` could not complete because BWiki returned HTTP 567 for the live `机幕方舟` parse request.
 - Status: Complete.
+
+### 2026-06-09 11:34 +08:00 - Codex
+
+- Request: Optimize `联网更新数据` speed by adding rendered BWiki page caching and progress display only.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/bwiki-empty-supplemental-learner-static.test.js`
+  - `tests/bwiki-rendered-skill-profile-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a localStorage cache for parsed rendered BWiki skill and monster profiles, keyed by BWiki revision ID or timestamp.
+  - Changed rendered skill and monster profile fetching to reuse matching cached profiles and only request pages whose revision is new or uncached.
+  - Added progress text for BWiki index, base page, skill render page, and monster render page stages, including cache-hit counts for render stages.
+  - Updated static tests for the new revision-aware rendered profile fetching path.
+- Verification: Watched `node tests/bwiki-rendered-cache-progress-static.test.js` fail before the cache/progress implementation, then reran it after the change and it passed. Ran `node tests/bwiki-empty-supplemental-learner-static.test.js`; `node tests/bwiki-index-title-static.test.js`; `node tests/bwiki-only-update-static.test.js`; `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/bwiki-rendered-monster-profile-static.test.js`; `node tests/bwiki-rendered-skill-profile-static.test.js`; `node tests/bwiki-skill-learner-static.test.js`; `node tests/default-build-static.test.js`; `node tests/legacy-image-url-static.test.js`; `node tests/no-local-skill-pool-rollback-static.test.js`; `node tests/roller-icon-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran `git diff --check`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which parsed the live BWiki `机幕方舟` rendered skill cards and confirmed `过山车`.
+- Status: Complete.

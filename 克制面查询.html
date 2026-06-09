@@ -2652,6 +2652,7 @@
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
     const DATA_STORAGE_KEY = "roco-world-dex-data-v1";
+    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v1";
 
     const TYPES = [
       { key: "grass", name: "草", iconKey: "grass" },
@@ -6258,6 +6259,54 @@
         || "";
     }
 
+    function bwikiPageRevisionKey(page) {
+      const revision = page?.revisions?.[0];
+      return String(revision?.revid || revision?.timestamp || "");
+    }
+
+    function readBwikiRenderedProfileCache() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(BWIKI_RENDERED_PROFILE_CACHE_KEY) || "null");
+        return {
+          version: 1,
+          skill: parsed?.version === 1 && parsed?.skill && typeof parsed.skill === "object" ? parsed.skill : {},
+          monster: parsed?.version === 1 && parsed?.monster && typeof parsed.monster === "object" ? parsed.monster : {}
+        };
+      } catch (error) {
+        return { version: 1, skill: {}, monster: {} };
+      }
+    }
+
+    function writeBwikiRenderedProfileCache(cache) {
+      try {
+        localStorage.setItem(BWIKI_RENDERED_PROFILE_CACHE_KEY, JSON.stringify(cache));
+      } catch (error) {
+        console.warn("BWiki 渲染页缓存写入失败。", error);
+      }
+    }
+
+    function getCachedBwikiRenderedProfile(cache, kind, title, revisionKey) {
+      if (!revisionKey) return null;
+      const cached = cache?.[kind]?.[title];
+      return cached?.revisionKey === revisionKey ? cached.profile || null : null;
+    }
+
+    function setCachedBwikiRenderedProfile(cache, kind, title, revisionKey, profile) {
+      if (!cache || !kind || !title || !revisionKey || !profile) return false;
+      cache[kind] = cache[kind] && typeof cache[kind] === "object" ? cache[kind] : {};
+      cache[kind][title] = {
+        revisionKey,
+        profile
+      };
+      return true;
+    }
+
+    function updateBwikiProgress(stage, done, total, cacheHits = 0) {
+      if (typeof dataStatus === "undefined" || !dataStatus) return;
+      const cacheText = cacheHits ? `，缓存 ${cacheHits}` : "";
+      dataStatus.textContent = `正在联网更新 BWiki：${stage} ${done}/${total}${cacheText}...`;
+    }
+
     async function fetchBwikiWikitextBatch(titles) {
       const payload = await fetchBwikiJson({
         action: "query",
@@ -6391,21 +6440,39 @@
       return profile;
     }
 
-    async function fetchBwikiRenderedMonsterProfileMap(titles) {
+    async function fetchBwikiRenderedMonsterProfileMap(titles, revisionByTitle = new Map()) {
+      const cache = readBwikiRenderedProfileCache();
+      let cacheChanged = false;
+      let done = 0;
+      let cacheHits = 0;
+      updateBwikiProgress("精灵渲染页", done, titles.length, cacheHits);
       const entries = await mapWithConcurrency(
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
+          const revisionKey = revisionByTitle.get(title) || "";
+          const cachedProfile = getCachedBwikiRenderedProfile(cache, "monster", title, revisionKey);
+          if (cachedProfile) {
+            cacheHits += 1;
+            done += 1;
+            updateBwikiProgress("精灵渲染页", done, titles.length, cacheHits);
+            return [title, cachedProfile];
+          }
+          let entry = null;
           try {
             const html = await fetchBwikiParsedHtml(title);
             const profile = parseBwikiRenderedMonsterProfile(html);
-            return [title, profile];
+            if (setCachedBwikiRenderedProfile(cache, "monster", title, revisionKey, profile)) cacheChanged = true;
+            entry = [title, profile];
           } catch (error) {
             console.warn(`BWiki ${title} 渲染精灵页读取失败，保留 wikitext 数据。`, error);
-            return null;
           }
+          done += 1;
+          updateBwikiProgress("精灵渲染页", done, titles.length, cacheHits);
+          return entry;
         }
       );
+      if (cacheChanged) writeBwikiRenderedProfileCache(cache);
       return new Map(entries.filter((entry) => {
         const profile = entry?.[1];
         return profile?.skillNames?.length || profile?.passive?.name || profile?.stats;
@@ -6621,21 +6688,39 @@
       return profile;
     }
 
-    async function fetchBwikiRenderedSkillProfileMap(titles) {
+    async function fetchBwikiRenderedSkillProfileMap(titles, revisionByTitle = new Map()) {
+      const cache = readBwikiRenderedProfileCache();
+      let cacheChanged = false;
+      let done = 0;
+      let cacheHits = 0;
+      updateBwikiProgress("技能渲染页", done, titles.length, cacheHits);
       const entries = await mapWithConcurrency(
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
+          const revisionKey = revisionByTitle.get(title) || "";
+          const cachedProfile = getCachedBwikiRenderedProfile(cache, "skill", title, revisionKey);
+          if (cachedProfile) {
+            cacheHits += 1;
+            done += 1;
+            updateBwikiProgress("技能渲染页", done, titles.length, cacheHits);
+            return [title, cachedProfile];
+          }
+          let entry = null;
           try {
             const html = await fetchBwikiParsedHtml(title);
             const profile = parseBwikiRenderedSkillProfile(html);
-            return [title, profile];
+            if (setCachedBwikiRenderedProfile(cache, "skill", title, revisionKey, profile)) cacheChanged = true;
+            entry = [title, profile];
           } catch (error) {
             console.warn(`BWiki ${title} 渲染技能页读取失败，保留 wikitext 数据。`, error);
-            return null;
           }
+          done += 1;
+          updateBwikiProgress("技能渲染页", done, titles.length, cacheHits);
+          return entry;
         }
       );
+      if (cacheChanged) writeBwikiRenderedProfileCache(cache);
       return new Map(entries.filter((entry) => {
         const profile = entry?.[1];
         return profile?.element || Number.isFinite(profile?.pp) || profile?.category || profile?.description;
@@ -6766,23 +6851,30 @@
     }
 
     async function fetchBwikiBundle() {
+      updateBwikiProgress("读取图鉴", 0, 2);
       const [monsterIndexHtml, skillIndexHtml] = await Promise.all([
         fetchBwikiParsedHtml("精灵图鉴"),
         fetchBwikiParsedHtml("技能图鉴")
       ]);
+      updateBwikiProgress("读取图鉴", 2, 2);
       const monsterIndex = parseBwikiIndexEntries(monsterIndexHtml, "monster");
       const skillIndex = parseBwikiIndexEntries(skillIndexHtml, "skill");
 
       const skillTitles = unique([...skillIndex.keys(), ...BWIKI_SUPPLEMENTAL_SKILL_PAGES]);
+      updateBwikiProgress("技能基础页", 0, skillTitles.length);
       const skillPages = await fetchBwikiWikitextPages(skillTitles);
       const supplementalSkillPages = await fetchBwikiSupplementalSkillPages();
       const skillPagesByTitle = new Map([...skillPages, ...supplementalSkillPages].map((page) => [page.title, page]));
+      updateBwikiProgress("技能基础页", skillTitles.length, skillTitles.length);
+      const skillRevisionByTitle = new Map([...skillPagesByTitle.values()]
+        .map((page) => [page.title, bwikiPageRevisionKey(page)])
+        .filter(([title, revisionKey]) => title && revisionKey));
       let skills = skillPages
         .map((page) => skillPagesByTitle.get(page.title))
         .filter(Boolean)
         .map((page) => parseBwikiSkillPage(page, skillIndex.get(page.title) || BWIKI_SUPPLEMENTAL_SKILL_INDEX[page.title]))
         .filter(Boolean);
-      const renderedSkillProfiles = await fetchBwikiRenderedSkillProfileMap(skillTitles);
+      const renderedSkillProfiles = await fetchBwikiRenderedSkillProfileMap(skillTitles, skillRevisionByTitle);
       ({ skills } = applyBwikiRenderedSkillProfiles({ skills }, renderedSkillProfiles));
       const skillIdByName = new Map();
       skills.forEach((skill) => {
@@ -6791,11 +6883,16 @@
       });
 
       const passiveByName = new Map();
+      updateBwikiProgress("精灵基础页", 0, monsterIndex.size);
       const monsterPages = await fetchBwikiWikitextPages([...monsterIndex.keys()]);
+      updateBwikiProgress("精灵基础页", monsterIndex.size, monsterIndex.size);
+      const monsterRevisionByTitle = new Map(monsterPages
+        .map((page) => [page.title, bwikiPageRevisionKey(page)])
+        .filter(([title, revisionKey]) => title && revisionKey));
       let monsters = monsterPages
         .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
         .filter(Boolean);
-      const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()]);
+      const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle);
       let passives = [...passiveByName.values()];
       ({ monsters, passives } = applyBwikiRenderedMonsterProfiles({ monsters, skills, passives }, renderedMonsterProfiles));
       const supplementalSkillLearners = await fetchBwikiSkillLearnerMap(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
