@@ -429,3 +429,18 @@ Use this entry format:
   - Extended the PVP selected-skill regression test to cover broken cached `炽伤` data and cache-version invalidation.
 - Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail on missing cached-skill repair before the HTML change, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 16:50 +08:00 - Codex
+
+- Request: Find the root cause for the PVP selected-skill damage issue still appearing, without special-value patches.
+- Files changed:
+  - `克制面查询-简洁版.html`
+  - `tests/simple-html-sync-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified that the reported `阿米亚特`/`缠丝劲` UI was coming from the stale simplified HTML duplicate, not the main HTML that had received the recent BWiki/PVP fixes.
+  - Synced `克制面查询-简洁版.html` to reuse the current main app script/data logic while preserving the simplified page shell and CSS.
+  - Removed the simplified duplicate's stale local skill-pool overrides, S2 skill overrides, local stat overrides, and old `过山车` patch by replacing its script tail with the main file's current script tail.
+  - Added a regression test to keep the simplified HTML script/data logic identical to the main HTML and reject stale local override code from returning.
+- Verification: Confirmed BWiki `缠丝劲` has `技能类别=物攻`, `威力=25`, and `效果=造成物伤，2连击。`; ran `node tests/simple-html-sync-static.test.js`; ran `node tests/pvp-selected-skill-damage-static.test.js`; ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warning for `克制面查询-简洁版.html`.
+- Status: Complete.
