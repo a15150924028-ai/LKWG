@@ -478,3 +478,21 @@ Use this entry format:
   - Added a static regression test covering the reported examples, named boss/form suffix matching, and raw/nested BWiki trait-name matching.
 - Verification: Watched `node tests/pvp-hero-trait-display-static.test.js` fail before the production change on 音速犬 without a chain ID, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 17:45 +08:00 - Codex
+
+- Request: Fix PVP issues where 水泡盾减伤词条 was missing and clicking 羽化加速 did not add 技能威力+20, without special-value patches.
+- Files changed:
+  - `克制面查询.html`
+  - `克制面查询-简洁版.html`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added generic support-skill effect parsing for flat skill power, percentage skill power, and hit-count bonuses from status/defense skill text such as 全技能威力+20.
+  - Changed PVP support skill clicks to record those parsed support effects into the existing later-damage state fields and show them in the recorded support text.
+  - Reworked defense skill reduction parsing into a generic effect object that supports 减伤N%、伤害降低N%、伤害减少N%、伤害减免N%, and exposes a visible reduction label in damage details.
+  - Kept the old `defenseReductionMultiplier()` wrapper for existing callers while using the richer reduction effect in PVP damage output.
+  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired PVP support/defense logic.
+  - Added a static regression test covering 水泡盾-style compact 减伤80% labels and 羽化加速-style 全技能威力+20 support-state application.
+- Verification: Watched `node tests/pvp-support-defense-effects-static.test.js` fail before the production change because `supportSkillEffects` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

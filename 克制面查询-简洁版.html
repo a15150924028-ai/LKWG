@@ -5123,6 +5123,62 @@
       return statModsFromText(`${skill.name || ""} ${skill.description || ""}`);
     }
 
+    function skillPowerEffectsFromText(text) {
+      const compact = compactBattleText(text);
+      const effects = {
+        manualDamageBonus: 0,
+        manualPowerPercentBonus: 0,
+        manualHitCountBonus: 0
+      };
+      const flatPatterns = [
+        /(?:自己|自身|己方)?(?:获得|得到|取得)?(?:全技能|所有技能|技能)(?:威力|力威)\+(\d+)(?!%)/g,
+        /(?:自己|自身|己方)?(?:获得|得到|取得)?(?:全技能|所有技能|技能)(?:威力|力威)(?:提升|提高|增加|上升|加成)(\d+)(?!%)/g
+      ];
+      flatPatterns.forEach((pattern) => {
+        for (const match of compact.matchAll(pattern)) {
+          effects.manualDamageBonus += Number(match[1]) || 0;
+        }
+      });
+      const percentPatterns = [
+        /(?:自己|自身|己方)?(?:获得|得到|取得)?(?:全技能|所有技能|技能)(?:威力|力威)\+(\d+)%/g,
+        /(?:自己|自身|己方)?(?:获得|得到|取得)?(?:全技能|所有技能|技能)(?:威力|力威)(?:提升|提高|增加|上升|加成)(\d+)%/g
+      ];
+      percentPatterns.forEach((pattern) => {
+        for (const match of compact.matchAll(pattern)) {
+          effects.manualPowerPercentBonus += (Number(match[1]) || 0) / 100;
+        }
+      });
+      for (const match of compact.matchAll(/(?:连击数|连击)\+(\d+)/g)) {
+        effects.manualHitCountBonus += Number(match[1]) || 0;
+      }
+      return effects;
+    }
+
+    function supportSkillEffectLabels(effects) {
+      return [
+        ...passiveModLabels(effects?.statMods),
+        ...(effects?.manualDamageBonus ? [`技能威力${effects.manualDamageBonus > 0 ? "+" : ""}${effects.manualDamageBonus}`] : []),
+        ...(effects?.manualPowerPercentBonus ? [`技能威力${manualBuffText(effects.manualPowerPercentBonus)}`] : []),
+        ...(effects?.manualHitCountBonus ? [`连击数+${effects.manualHitCountBonus}`] : [])
+      ];
+    }
+
+    function supportSkillEffects(skill) {
+      const statMods = skillStatMods(skill);
+      const powerEffects = skillPowerEffectsFromText(`${skill?.name || ""} ${skill?.description || ""}`);
+      const effects = { statMods, ...powerEffects };
+      return { ...effects, labels: supportSkillEffectLabels(effects) };
+    }
+
+    function supportStateLabels(state) {
+      return supportSkillEffectLabels({
+        statMods: state?.skillStatMods,
+        manualDamageBonus: Number(state?.manualDamageBonus) || 0,
+        manualPowerPercentBonus: Number(state?.manualPowerPercentBonus) || 0,
+        manualHitCountBonus: Math.max(0, Math.round(Number(state?.manualHitCountBonus) || 0))
+      });
+    }
+
     function passiveModLabels(mods) {
       return PASSIVE_STAT_ALIASES
         .filter((stat) => Math.abs(Number(mods?.[stat.key]) || 0) > 0.0001)
@@ -5190,13 +5246,29 @@
       return skill ? { ...skill, pvpSkillIndex: skillIndex } : null;
     }
 
+    function defenseReductionEffect(action) {
+      if (!action || action.category !== "defense") return { multiplier: 1, labels: [] };
+      const text = compactBattleText(`${action.name || ""} ${action.description || ""} ${action.effect || ""} ${(action.effects || []).join(" ")}`);
+      const patterns = [
+        /减伤(\d+)%/g,
+        /(?:受到|所受)?伤害(?:降低|减少|减免)(\d+)%/g,
+        /(?:受到|所受)?(?:技能)?伤害-(\d+)%/g
+      ];
+      let reduction = 0;
+      patterns.forEach((pattern) => {
+        for (const match of text.matchAll(pattern)) {
+          reduction = Math.max(reduction, Number(match[1]) || 0);
+        }
+      });
+      reduction = Math.max(0, Math.min(100, reduction));
+      return {
+        multiplier: Math.max(0, 1 - reduction / 100),
+        labels: reduction ? [`${action.name || "防御技能"}减伤${reduction}%`] : []
+      };
+    }
+
     function defenseReductionMultiplier(action) {
-      if (!action || action.category !== "defense") return 1;
-      const text = `${action.name || ""} ${action.description || ""} ${action.effect || ""} ${(action.effects || []).join(" ")}`;
-      const match = text.match(/减伤\s*(\d+)%/);
-      if (!match) return 1;
-      const reduction = Math.max(0, Math.min(100, Number(match[1]) || 0));
-      return Math.max(0, 1 - reduction / 100);
+      return defenseReductionEffect(action).multiplier;
     }
 
     function sameTypeAttackBonus(action, attacker) {
@@ -5461,10 +5533,10 @@
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
       const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
       const manualPowerMultiplier = Math.max(0, 1 + manualPowerPercentBonus);
-      const defenseReduction = defenseReductionMultiplier(pvpActionFromState(defenderState, defender));
+      const defenseReduction = defenseReductionEffect(pvpActionFromState(defenderState, defender));
       const settledPower = Math.max(1, Math.floor((power + manualDamageBonus) * manualPowerMultiplier));
       const rawBase = (attackValue / Math.max(1, defenseValue)) * settledPower * PVP_DAMAGE_CORE_FACTOR;
-      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * defenseReduction;
+      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * defenseReduction.multiplier;
       const singleEstimate = Math.max(1, Math.floor(adjusted));
       const estimate = Math.max(1, singleEstimate * hitCount);
       const responsePowerSource = variableDamage.responsePower
@@ -5478,7 +5550,7 @@
         ? null
         : Math.max(1, Math.floor((responsePower + manualDamageBonus) * manualPowerMultiplier));
       const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responseSettledPower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction))
+        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responseSettledPower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction.multiplier))
         : null;
       const responseEstimate = battleAction.id === "pvp-force-impact"
         ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
@@ -5495,7 +5567,7 @@
         typeMultiplier,
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
-        defenseReduction,
+        defenseReduction: defenseReduction.multiplier,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
         singleEstimate,
         responseSingleEstimate,
@@ -5514,7 +5586,7 @@
         defenderPassiveLabels: passiveModLabels(defenderPassiveMods),
         defenderManualLabels: passiveModLabels(defenderManualMods),
         attackerDamageLabels: [...effectiveAction.labels, ...passiveDamage.attackerLabels],
-        defenderDamageLabels: passiveDamage.defenderLabels,
+        defenderDamageLabels: [...passiveDamage.defenderLabels, ...defenseReduction.labels],
         variableDamageLabels: variableDamage.labels || []
       };
     }
@@ -5572,7 +5644,7 @@
       const action = pvpActionFromState(state, monster);
       if (!action) {
         if (state.supportText) {
-          const labels = passiveModLabels(state.skillStatMods);
+          const labels = supportStateLabels(state);
           return `<div class="pvp-damage-result" data-pvp-damage-result="${side}">已记录${escapeHtml(state.supportText)}，点击攻击技能后计算伤害${labels.length ? `（当前技能增益：${escapeHtml(labels.join(" / "))}）` : ""}</div>`;
         }
         return `<div class="pvp-damage-result" data-pvp-damage-result="${side}">点击技能后显示伤害</div>`;
@@ -6311,10 +6383,13 @@
 
     function applyPvpSupportSkill(state, skill) {
       if (!skill || isAttackSkill(skill)) return false;
-      const mods = skillStatMods(skill);
-      const labels = passiveModLabels(mods);
+      const effects = supportSkillEffects(skill);
+      const labels = effects.labels;
       if (!labels.length) return false;
-      state.skillStatMods = mergeStatMods(state.skillStatMods, mods);
+      state.skillStatMods = mergeStatMods(state.skillStatMods, effects.statMods);
+      state.manualDamageBonus = (Number(state.manualDamageBonus) || 0) + (Number(effects.manualDamageBonus) || 0);
+      state.manualPowerPercentBonus = (Number(state.manualPowerPercentBonus) || 0) + (Number(effects.manualPowerPercentBonus) || 0);
+      state.manualHitCountBonus = Math.max(0, Math.round(Number(state.manualHitCountBonus) || 0) + Math.max(0, Math.round(Number(effects.manualHitCountBonus) || 0)));
       state.supportText = `${skill.name}：${labels.join(" / ")}`;
       state.action = "";
       state.forceImpact = false;
