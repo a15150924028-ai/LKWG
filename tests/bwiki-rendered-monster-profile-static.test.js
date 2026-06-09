@@ -97,6 +97,23 @@ assert(
   "Rendered BWiki monster profile should parse evolution-chain names from the rendered evolution section."
 );
 
+const splitArrowEvolutionHtml = `
+  <section>
+    <div>\u8fdb\u5316\u94fe1</div>
+    <div>\u52a0\u6cb9\u6d77\u8475</div>
+    <div>\u25b6</div>
+    <div>\u52a0\u6cb9\u87f9</div>
+    <div>\u25b6</div>
+    <div>\u9700\u5728\u4ed6\u4eba\u4e16\u754c</div>
+    <div>\u751f\u6001</div>
+  </section>
+`;
+const splitArrowProfile = sandbox.parseBwikiRenderedMonsterProfile(splitArrowEvolutionHtml);
+assert(
+  splitArrowProfile.evolutionLine.join(">") === "\u52a0\u6cb9\u6d77\u8475>\u52a0\u6cb9\u87f9",
+  "Rendered BWiki monster profile should parse evolution-chain names when BWiki puts arrow separators on their own lines."
+);
+
 const bundle = {
   monsters: [
     {

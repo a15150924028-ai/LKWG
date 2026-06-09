@@ -27,8 +27,8 @@ function assert(condition, message) {
 }
 
 assert(
-  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";'),
-  "Rendered BWiki profile cache should use a dedicated localStorage key."
+  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";'),
+  "Rendered BWiki profile cache should invalidate old profiles that were parsed before split-arrow evolution chains were supported."
 );
 assert(
   html.includes("fetchBwikiRenderedSkillProfileMap(skillTitles, skillRevisionByTitle)"),
@@ -64,7 +64,7 @@ const sandbox = {
 };
 
 vm.runInNewContext(`
-  const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";
+  const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
   const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
   let fetchCount = 0;
   async function mapWithConcurrency(items, concurrency, worker) {
@@ -120,6 +120,18 @@ assert(
   !sandbox.getCachedBwikiRenderedProfile(saved, "skill", "\u6f6e\u6d8c", "67890"),
   "Rendered profile cache should miss when the BWiki revision changes."
 );
+
+storage.set("roco-world-bwiki-rendered-profile-cache-v3", JSON.stringify({
+  version: 2,
+  skill: { "\u6f6e\u6d8c": { revisionKey: "12345", profile: { power: 80 } } },
+  monster: { "\u52a0\u6cb9\u87f9": { revisionKey: "abc", profile: { evolutionLine: [] } } }
+}));
+const outdatedCache = sandbox.readBwikiRenderedProfileCache();
+assert(
+  !sandbox.getCachedBwikiRenderedProfile(outdatedCache, "skill", "\u6f6e\u6d8c", "12345"),
+  "Rendered profile cache should ignore v2 data so monster profiles are reparsed with split-arrow evolution support."
+);
+sandbox.writeBwikiRenderedProfileCache(saved);
 
 sandbox.updateBwikiProgress("\u6280\u80fd\u6e32\u67d3\u9875", 3, 10, 2);
 assert(

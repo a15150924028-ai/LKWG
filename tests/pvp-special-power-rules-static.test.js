@@ -46,6 +46,10 @@ assert(!failed.postUseEffects?.cuteLayerDelta, "Super Candy should not gain a la
 assert(html.includes("resolveSpecialPvpPowerRule"), "Special PVP power rules should be centralized in a rule-pool resolver.");
 assert(html.includes("canGainPvpCuteLayer(attacker)"), "PVP damage calculation should pass the attacker's current cute availability into power rules.");
 assert(html.includes("actionCuteLayers"), "PVP damage calculation should snapshot pre-use cute layers for post-use form changes.");
+assert(
+  html.includes("pvpActionSnapshotMatchesCurrentMonster"),
+  "PVP damage calculation should ignore stale pre-use snapshots after a post-use form change."
+);
 assert(html.includes("applyPvpPostUseSkillEffects"), "PVP skill use should have a post-use effect application path.");
 
 console.log("PVP special power rule static checks passed.");

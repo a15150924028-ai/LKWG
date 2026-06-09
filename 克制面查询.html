@@ -2742,7 +2742,7 @@
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
     const DATA_STORAGE_KEY = "roco-world-dex-data-v1";
-    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";
+    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
 
     const TYPES = [
       { key: "grass", name: "草", iconKey: "grass" },
@@ -4919,8 +4919,15 @@
         : { attackKey: "spa", defenseKey: "spd", label: "魔攻" };
     }
 
+    function pvpActionSnapshotMatchesCurrentMonster(state) {
+      const snapshotMonsterId = state?.actionMonsterId || "";
+      const currentMonsterId = state?.monsterId || "";
+      return Boolean(snapshotMonsterId && currentMonsterId && snapshotMonsterId === currentMonsterId);
+    }
+
     function calcPvpDamage(attackerState, defenderState, action) {
-      const attacker = monsterById.get(attackerState?.actionMonsterId || attackerState?.monsterId);
+      const useActionSnapshot = pvpActionSnapshotMatchesCurrentMonster(attackerState);
+      const attacker = monsterById.get(useActionSnapshot ? attackerState?.actionMonsterId : attackerState?.monsterId);
       const defender = monsterById.get(defenderState?.monsterId);
       if (!attacker || !defender || !action) return null;
       const effectiveAction = effectiveActionForPassives(action, attacker);
@@ -4941,7 +4948,7 @@
       const attackValue = attackerStats[mode.attackKey];
       const defenseValue = defenderStats[mode.defenseKey];
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(attacker, attackerState?.traitLayers, battleAction);
-      const actionCuteLayers = normalizePvpCuteLayers(attackerState?.actionCuteLayers ?? attackerState?.cuteLayers);
+      const actionCuteLayers = normalizePvpCuteLayers(useActionSnapshot ? attackerState?.actionCuteLayers : attackerState?.cuteLayers);
       const currentSkillCost = Math.max(0, Number(attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp) || 0);
       const traitAdjustedSkillCost = Math.max(0, currentSkillCost - traitEffects.skillCostReduction);
       const attackerEnergy = Number(attackerState?.energy ?? DEFAULT_PVP_ENERGY);
@@ -6006,7 +6013,7 @@
     }
 
     function pvpPostUseEffects(state, skill) {
-      const monster = monsterById.get(state?.actionMonsterId || state?.monsterId);
+      const monster = monsterById.get(pvpActionSnapshotMatchesCurrentMonster(state) ? state?.actionMonsterId : state?.monsterId);
       const resolved = window.LKWG_PVP_DAMAGE_RULES?.resolveSpecialPvpPowerRule?.(skill, {
         canGainCuteLayer: canGainPvpCuteLayer(monster),
         cuteTotal: state?.cuteLayers ?? 0
@@ -6681,12 +6688,12 @@
       try {
         const parsed = JSON.parse(localStorage.getItem(BWIKI_RENDERED_PROFILE_CACHE_KEY) || "null");
         return {
-          version: 2,
-          skill: parsed?.version === 2 && parsed?.skill && typeof parsed.skill === "object" ? parsed.skill : {},
-          monster: parsed?.version === 2 && parsed?.monster && typeof parsed.monster === "object" ? parsed.monster : {}
+          version: 3,
+          skill: parsed?.version === 3 && parsed?.skill && typeof parsed.skill === "object" ? parsed.skill : {},
+          monster: parsed?.version === 3 && parsed?.monster && typeof parsed.monster === "object" ? parsed.monster : {}
         };
       } catch (error) {
-        return { version: 2, skill: {}, monster: {} };
+        return { version: 3, skill: {}, monster: {} };
       }
     }
 
@@ -6831,9 +6838,9 @@
         for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
           const current = lines[cursor];
           if (/^进化链\d*/.test(current) || stopLines.has(current)) break;
-          if (!current.includes("▶")) continue;
-          const name = current.replace(/▶.*/, "").trim();
-          if (!name || /^Lv\./i.test(name) || /首领化|进化之力/.test(name)) continue;
+          if (/^▶+$/.test(current)) continue;
+          const name = current.includes("▶") ? current.replace(/▶.*/, "").trim() : current.trim();
+          if (!name || /^Lv\./i.test(name) || /首领化|进化之力|^需(?:要|在)?/.test(name)) continue;
           names.push(name);
         }
       });

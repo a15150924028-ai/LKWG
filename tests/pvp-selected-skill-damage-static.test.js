@@ -110,8 +110,8 @@ assert(
   "Cached skill power repair should run during data application."
 );
 assert(
-  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v2";'),
-  "Rendered profile cache key should invalidate v1 profiles that stored null attack power."
+  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";'),
+  "Rendered profile cache key should invalidate older profiles that stored null attack power or incomplete monster evolution data."
 );
 
 const nestedCachedBrokenSkill = {

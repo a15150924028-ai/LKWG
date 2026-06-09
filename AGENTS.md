@@ -576,3 +576,22 @@ Use this entry format:
   - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before the production change on the stale action snapshot assertion, then reran it after the change and it passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-09 21:30 +08:00 - Codex
+
+- Request: Fix the remaining PVP issues where Guard Dog still showed Super Candy as 160 damage and Cheer Crab did not gain cute +1 from Super Candy.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Fixed rendered BWiki evolution-chain parsing for pages that put `▶` separators on their own lines, such as `加油海葵 > 加油蟹`.
+  - Filtered generic evolution-condition lines such as `需在他人世界` so they do not become fake evolution stages.
+  - Bumped the rendered BWiki profile cache key/version to v3 so old cached monster profiles without parsed evolution lines are ignored and reparsed.
+  - Added a stale-action snapshot guard so PVP damage and Super Candy post-use checks only use the pre-use snapshot while it still matches the current panel monster; after a form change, current monster data is used.
+  - Kept the simplified HTML version untouched.
+- Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js`, `node tests/bwiki-rendered-cache-progress-static.test.js`, and `node tests/pvp-special-power-rules-static.test.js` fail before the production changes, then reran them after the changes and they passed. Live-checked the current parser against the BWiki `加油蟹` page and confirmed `加油海葵>加油蟹`. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.
