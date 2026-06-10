@@ -744,3 +744,19 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-boss-forms-static.test.js` and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. A live BWiki parser check for `黑猫密探` was blocked by the site returning HTML instead of JSON; Browser screenshot verification was not run because the in-app Browser control tool was not exposed in this turn.
 - Status: Complete.
+
+### 2026-06-10 19:56 +08:00 - Codex
+
+- Request: Create a no-third-party-image, lower-copyright-risk copy of `克制面查询.html` for later WeChat Mini Program migration, without changing the original file or core calculation logic.
+- Files changed:
+  - `克制面查询_无图低风险版.html`
+  - `AGENTS.md`
+- Changes:
+  - Created `克制面查询_无图低风险版.html` from the current `克制面查询.html` and left the original HTML file untouched.
+  - Disabled monster and skill image rendering by keeping normalized monster/skill `icon` fields empty and using a separate no-image dex cache key.
+  - Removed rendered use of third-party `patchwiki.biligame.com`, `rocomwiki.app`, element SVG, PNG, SVG, WebP, `<img>`, and `src=` image paths from the no-image copy.
+  - Replaced monster, skill, attribute, and bloodline image display with CSS text badges or name initials across combos, selected cards, PVP preview, results, roller modules, chips, and the type matrix.
+  - Added the requested footer notice about the non-official tool status, no default third-party image loading, and user responsibility for data authorization.
+  - Preserved PVP calculation, type relation, damage simulation, skill pool, roller, local team storage, update, clear, and result-rendering logic outside the image-rendering path.
+- Verification: Watched an inline no-image static check fail before implementation on `normalizeBundle` still using image URLs, then reran it after the change and it passed. Confirmed `rg` finds no `patchwiki.biligame.com`, `rocomwiki.app`, `/icons/elements/`, `<img`, `src=`, `.png`, `.svg`, or `.webp` in `克制面查询_无图低风险版.html`; confirmed remaining `image_url` matches are data fields only. Ran `node tests/default-build-static.test.js`; parsed inline scripts in `克制面查询.html` and `克制面查询_无图低风险版.html` with `new Function`; ran `git diff --check`. Browser screenshot verification was not run because no Browser control tool was exposed in this turn.
+- Status: Complete.
