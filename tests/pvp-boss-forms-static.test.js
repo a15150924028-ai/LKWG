@@ -42,10 +42,12 @@ vm.runInNewContext(`
   ${extractFunction("pvpMonsterNameKeys")}
   ${extractFunction("isBossVariant")}
   ${extractFunction("isGeneratedBossForm")}
+  ${extractFunction("bossFormNamesFromMonsters")}
   ${extractFunction("bossFormDisplayName")}
   ${extractFunction("bossFormSourceMonster")}
   ${extractFunction("createGeneratedBossForm")}
   ${extractFunction("withBossForms")}
+  this.bossFormNamesFromMonsters = bossFormNamesFromMonsters;
   this.withBossForms = withBossForms;
   this.isBossVariant = isBossVariant;
   this.isGeneratedBossForm = isGeneratedBossForm;
@@ -55,8 +57,14 @@ const monsters = [
   { id: "dimo", name: "\u8fea\u83ab", aliases: [], icon: "dimo.png", types: ["light"], skillIds: ["s1"], raw: { chainId: "chain-dimo", evolutionStage: 1, stats: { hp: 100 } } },
   { id: "guard", name: "\u62a4\u4e3b\u72ac", aliases: [], icon: "guard.png", types: ["normal"], skillIds: ["s2"], raw: { chainId: "chain-dog", evolutionStage: 1 } },
   { id: "sonic", name: "\u97f3\u901f\u72ac", aliases: [], icon: "sonic.png", types: ["normal"], skillIds: ["s3"], raw: { chainId: "chain-dog", evolutionStage: 2 } },
-  { id: "storm", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], icon: "storm.png", types: ["normal"], skillIds: ["s4"], raw: { chainId: "chain-dog", evolutionStage: 3 } }
+  { id: "storm", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], icon: "storm.png", types: ["normal"], skillIds: ["s4"], raw: { chainId: "chain-dog", evolutionStage: 3 } },
+  { id: "new-boss-source", name: "\u52a8\u6001\u5f62\u6001\u6e90", aliases: [], icon: "new.png", types: ["water"], skillIds: ["s5"], raw: { bossFormAvailable: true } },
+  { id: "listed-boss-source", name: "\u540d\u5355\u5f62\u6001\u6e90", aliases: [], icon: "listed.png", types: ["fire"], skillIds: ["s6"], raw: { bossFormNames: ["\u540d\u5355\u5f62\u6001\u6e90"] } }
 ];
+
+const bossNames = sandbox.bossFormNamesFromMonsters(monsters);
+assert(bossNames.includes("\u52a8\u6001\u5f62\u6001\u6e90"), "Boss-capable forms parsed from BWiki data should be added to the boss form name pool.");
+assert(bossNames.includes("\u540d\u5355\u5f62\u6001\u6e90"), "Rendered BWiki boss form name lists should be added to the boss form name pool.");
 
 const withBoss = sandbox.withBossForms(monsters);
 assert(withBoss.some((monster) => monster.id === "storm"), "Normal final forms should remain in the PVP monster pool.");
@@ -72,6 +80,10 @@ const dimoBoss = withBoss.find((monster) => monster.name === "\u5723\u5149\u8fea
 assert(dimoBoss, "PVP monster pool should generate missing boss forms from trait-rule family names.");
 assert(dimoBoss.raw.baseMonsterId === "dimo", "Missing boss forms should use the available family source monster.");
 assert(dimoBoss.types.includes("light"), "Generated missing boss forms should preserve source typing.");
+
+const dynamicBoss = withBoss.find((monster) => monster.name === "\u52a8\u6001\u5f62\u6001\u6e90\uff08\u9996\u9886\uff09");
+assert(dynamicBoss, "PVP monster pool should generate boss forms discovered from BWiki rendered monster data.");
+assert(dynamicBoss.raw.baseMonsterId === "new-boss-source", "Dynamic boss forms should preserve their discovered source monster.");
 
 const generatedAgain = sandbox.withBossForms(withBoss);
 assert(

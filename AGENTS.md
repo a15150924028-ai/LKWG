@@ -683,3 +683,23 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `风暴战犬` was excluded from its normal evolution line, and watched `node tests/pvp-boss-forms-static.test.js` fail because boss-form generation helpers were missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 14:26 +08:00 - Codex
+
+- Request: 解决精灵不全、首领精灵没有，以及不能手动萌化的问题。
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added BWiki rendered evolution parsing for `首领化` markers and applied those markers back to source monster records.
+  - Changed generated boss-form creation to use BWiki-discovered boss-capable forms in addition to the older local fallback names, then bumped dex and rendered-profile cache keys to rebuild stale local data.
+  - Changed PVP cute evolution lookup so generated boss forms resolve through their source monster, allowing manual `萌化 +` to move to the correct lower form.
+  - Filtered BWiki rendered evolution file links such as `文件:Head 5018.png` so they do not pollute evolution chains.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/pvp-boss-forms-static.test.js`, `node tests/pvp-cute-layer-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked the BWiki `风暴战犬` rendered page parses boss names as `风暴战犬` and evolution line as `护主犬 > 音速犬 > 风暴战犬`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because the Browser navigation/screenshot tool was not exposed in this turn.
+- Status: Complete.

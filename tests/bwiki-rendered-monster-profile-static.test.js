@@ -41,6 +41,7 @@ vm.runInNewContext(`
   }
   ${extractFunction("plainBwikiText")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
+  ${extractFunction("parseBwikiRenderedBossFormNames")}
   ${extractFunction("parseBwikiRenderedEvolutionLine")}
   ${extractFunction("compactBwikiNameKey")}
   ${extractFunction("bwikiNamesFor")}
@@ -91,6 +92,7 @@ const stormDogHtml = `
     <div>\u62a4\u4e3b\u72ac\u25b6</div>
     <div>\u97f3\u901f\u72ac\u25b6</div>
     <div>Lv.26</div>
+    <div>\u6587\u4ef6:Head 5018.png</div>
     <div>\u98ce\u66b4\u6218\u72ac\u25b6</div>
     <div>\u9996\u9886\u5316</div>
     <div>\u751f\u6001</div>
@@ -100,6 +102,10 @@ const stormProfile = sandbox.parseBwikiRenderedMonsterProfile(stormDogHtml);
 assert(
   stormProfile.evolutionLine.join(">") === "\u62a4\u4e3b\u72ac>\u97f3\u901f\u72ac>\u98ce\u66b4\u6218\u72ac",
   "Rendered BWiki monster profile should parse evolution-chain names from the rendered evolution section."
+);
+assert(
+  stormProfile.bossFormNames.join(">") === "\u98ce\u66b4\u6218\u72ac",
+  "Rendered BWiki monster profile should mark the form before a boss-evolution marker as boss-capable."
 );
 
 const splitArrowEvolutionHtml = `
@@ -192,6 +198,10 @@ assert(
 assert(evolutionApplied.monsters[0].raw.evolutionStage === 1, "The first rendered evolution form should be stage 1.");
 assert(evolutionApplied.monsters[1].raw.evolutionStage === 2, "The second rendered evolution form should be stage 2.");
 assert(evolutionApplied.monsters[2].raw.evolutionStage === 3, "The third rendered evolution form should be stage 3.");
+assert(
+  evolutionApplied.monsters[2].raw.bossFormAvailable,
+  "Rendered BWiki boss-evolution markers should be applied to the source form's raw data."
+);
 
 assert(html.includes("applyBwikiRenderedMonsterProfiles({"), "BWiki bundle parsing should apply rendered monster profiles.");
 assert(html.includes("missingBwikiEvolutionFormNames(monsters, renderedMonsterProfiles)"), "BWiki bundle parsing should fetch evolution forms that are missing from the monster index.");

@@ -2809,12 +2809,13 @@
     const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
-    const DATA_STORAGE_KEY = "roco-world-dex-data-v3";
-    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
-    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2"];
+    const DATA_STORAGE_KEY = "roco-world-dex-data-v4";
+    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v4";
+    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2", "roco-world-dex-data-v3"];
     const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
       "roco-world-bwiki-rendered-profile-cache-v1",
-      "roco-world-bwiki-rendered-profile-cache-v2"
+      "roco-world-bwiki-rendered-profile-cache-v2",
+      "roco-world-bwiki-rendered-profile-cache-v3"
     ];
 
     const TYPES = [
@@ -5333,6 +5334,11 @@
       );
     }
 
+    function pvpEvolutionSourceMonster(monster) {
+      if (!isGeneratedBossForm(monster)) return monster;
+      return monsterById.get(monster?.raw?.baseMonsterId) || monster;
+    }
+
     function compactMonsterName(value) {
       return String(value || "").replace(/[\s·・（）()]/g, "");
     }
@@ -5402,8 +5408,9 @@
 
     function pvpEvolutionLine(monster) {
       if (!monster) return [];
-      const key = evolutionGroupKey(monster);
-      if (!key) return [monster];
+      const sourceMonster = pvpEvolutionSourceMonster(monster);
+      const key = evolutionGroupKey(sourceMonster);
+      if (!key) return [sourceMonster];
       const structuredLine = dexData.monsters
         .filter((item) => evolutionGroupKey(item) === key && !isGeneratedBossForm(item))
         .sort((a, b) => (
@@ -5413,9 +5420,9 @@
           || a.name.localeCompare(b.name, "zh-CN")
         ));
       if (structuredLine.length > 1) return structuredLine;
-      const rawLine = pvpRawEvolutionLine(monster);
+      const rawLine = pvpRawEvolutionLine(sourceMonster);
       if (rawLine.length > 1) return rawLine;
-      const fallbackLine = pvpTraitFallbackEvolutionLine(monster);
+      const fallbackLine = pvpTraitFallbackEvolutionLine(sourceMonster);
       return fallbackLine.length > 1 ? fallbackLine : structuredLine;
     }
 
@@ -5425,7 +5432,8 @@
 
     function pvpCuteAdjacentMonster(monster, delta) {
       const line = pvpEvolutionLine(monster);
-      const index = line.findIndex((item) => item.id === monster?.id);
+      const sourceMonster = pvpEvolutionSourceMonster(monster);
+      const index = line.findIndex((item) => item.id === sourceMonster?.id);
       if (index < 0) return null;
       const targetIndex = delta > 0 ? index - 1 : index + 1;
       return line[targetIndex] || null;
@@ -6569,6 +6577,25 @@
       return null;
     }
 
+    function bossFormNamesFromMonsters(monsters) {
+      const names = new Set(REAL_BOSS_FORM_NAMES);
+      (monsters || []).forEach((monster) => {
+        const raw = monster?.raw || {};
+        const rawNames = [
+          ...(Array.isArray(raw.bossFormNames) ? raw.bossFormNames : []),
+          ...(Array.isArray(raw.boss_form_names) ? raw.boss_form_names : [])
+        ];
+        rawNames.forEach((name) => {
+          if (name) names.add(name);
+        });
+        if (raw.bossFormAvailable || raw.boss_form_available) {
+          const sourceName = raw.bossFormName || raw.boss_form_name || monster.name;
+          if (sourceName) names.add(sourceName);
+        }
+      });
+      return [...names].filter(Boolean);
+    }
+
     function createGeneratedBossForm(source, bossName, usedIds = new Set()) {
       if (!source || !bossName) return null;
       const displayName = bossFormDisplayName(bossName);
@@ -6597,7 +6624,7 @@
       const baseMonsters = (monsters || []).filter((monster) => !isGeneratedBossForm(monster));
       const usedIds = new Set(baseMonsters.map((monster) => monster.id));
       const existingNames = new Set(baseMonsters.map((monster) => compactMonsterName(monster.name)));
-      const bossForms = [...REAL_BOSS_FORM_NAMES].map((bossName) => {
+      const bossForms = bossFormNamesFromMonsters(baseMonsters).map((bossName) => {
         const displayName = bossFormDisplayName(bossName);
         if (existingNames.has(compactMonsterName(displayName))) return null;
         const source = bossFormSourceMonster(baseMonsters, bossName);
@@ -7089,18 +7116,42 @@
           if (/^进化链\d*/.test(current) || stopLines.has(current)) break;
           if (/^▶+$/.test(current)) continue;
           const name = current.includes("▶") ? current.replace(/▶.*/, "").trim() : current.trim();
-          if (!name || /^Lv\./i.test(name) || /首领化|进化之力|^需(?:要|在)?/.test(name)) continue;
+          if (!name || /^Lv\./i.test(name) || /^文件[:：]/.test(name) || /首领化|进化之力|^需(?:要|在)?/.test(name)) continue;
           names.push(name);
         }
       });
       return unique(names);
     }
 
+    function parseBwikiRenderedBossFormNames(html) {
+      const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
+      const stopLines = new Set(["生态", "性别比例", "蛋组", "获取", "来源", "筛选"]);
+      const bossNames = [];
+      lines.forEach((line, index) => {
+        if (!/^进化链\d*/.test(line)) return;
+        let latestFormName = "";
+        for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+          const current = lines[cursor];
+          if (/^进化链\d*/.test(current) || stopLines.has(current)) break;
+          if (/首领化/.test(current)) {
+            if (latestFormName) bossNames.push(latestFormName);
+            continue;
+          }
+          if (/^▶+$/.test(current)) continue;
+          const name = current.includes("▶") ? current.replace(/▶.*/, "").trim() : current.trim();
+          if (!name || /^Lv\./i.test(name) || /^文件[:：]/.test(name) || /^需(?:要|在)?/.test(name)) continue;
+          latestFormName = name;
+        }
+      });
+      return unique(bossNames);
+    }
+
     function parseBwikiRenderedMonsterProfile(html) {
       const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
       const profile = {
         skillNames: parseBwikiRenderedMonsterSkillNames(html),
-        evolutionLine: parseBwikiRenderedEvolutionLine(html)
+        evolutionLine: parseBwikiRenderedEvolutionLine(html),
+        bossFormNames: parseBwikiRenderedBossFormNames(html)
       };
       const renderedStatEntries = [
         ["生命", "hp"],
@@ -7284,6 +7335,19 @@
               evolutionChainId: chainId,
               evolutionStage: index + 1,
               rendered_bwiki_evolution: true
+            };
+          });
+        }
+        if (profile?.bossFormNames?.length) {
+          profile.bossFormNames.forEach((name) => {
+            const form = monsterByName.get(compactBwikiNameKey(name));
+            if (!form) return;
+            form.raw = {
+              ...(form.raw || {}),
+              bossFormAvailable: true,
+              bossFormName: name,
+              bossFormNames: unique([...(form.raw?.bossFormNames || []), name]),
+              rendered_bwiki_boss_form: true
             };
           });
         }

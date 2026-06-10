@@ -48,6 +48,7 @@ vm.runInNewContext(`
       { id: "legacy-guard-dog", name: "\u62a4\u4e3b\u72ac", aliases: [], raw: {} },
       { id: "legacy-sonic-dog", name: "\u97f3\u901f\u72ac", aliases: [], raw: {} },
       { id: "legacy-storm-dog", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], raw: {} },
+      { id: "storm-dog-boss", name: "\u98ce\u66b4\u6218\u72ac\uff08\u9996\u9886\uff09", aliases: ["\u98ce\u66b4\u6218\u72ac"], raw: { isGeneratedBossForm: true, baseMonsterId: "storm-dog", chainId: "dog-boss", evolutionStage: 3 } },
       { id: "cheer-anemone", name: "\u52a0\u6cb9\u6d77\u8475", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
       { id: "cheer-crab", name: "\u52a0\u6cb9\u87f9", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
       { id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: { chainId: "dimo", evolutionStage: 1 } },
@@ -81,6 +82,7 @@ vm.runInNewContext(`
   ${extractFunction("evolutionGroupKey")}
   ${extractFunction("evolutionStageValue")}
   ${extractFunction("hasStructuredEvolutionInfo")}
+  ${extractFunction("pvpEvolutionSourceMonster")}
   ${extractFunction("compactMonsterName")}
   ${extractFunction("pvpMonsterNameKeys")}
   ${extractFunction("rawEvolutionLineNames")}
@@ -121,6 +123,7 @@ vm.runInNewContext(`
 const stormDog = sandbox.monsterById.get("storm-dog");
 const sonicDog = sandbox.monsterById.get("sonic-dog");
 const guardDog = sandbox.monsterById.get("guard-dog");
+const stormDogBoss = sandbox.monsterById.get("storm-dog-boss");
 const dimo = sandbox.monsterById.get("dimo");
 const chrysanthemumPear = sandbox.monsterById.get("chrysanthemum-pear");
 
@@ -129,6 +132,7 @@ assert(
   "PVP evolution line should sort forms from lowest to highest stage."
 );
 assert(sandbox.pvpCuteAdjacentMonster(stormDog, 1)?.id === "sonic-dog", "Cute +1 should move one form downward.");
+assert(sandbox.pvpCuteAdjacentMonster(stormDogBoss, 1)?.id === "sonic-dog", "Manual cute +1 should work when the selected high form is a generated boss form.");
 assert(sandbox.pvpCuteAdjacentMonster(sonicDog, 1)?.id === "guard-dog", "Cute +1 should keep moving downward until the lowest form.");
 assert(!sandbox.pvpCuteAdjacentMonster(guardDog, 1), "The lowest form should not gain another cute layer.");
 assert(sandbox.pvpCuteAdjacentMonster(sonicDog, -1)?.id === "storm-dog", "Cute -1 should move one form upward.");
