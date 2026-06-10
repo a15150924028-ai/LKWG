@@ -111,7 +111,7 @@ assert(
 );
 assert(
   html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v4";'),
-  "Rendered profile cache key should invalidate older profiles that stored null attack power, incomplete monster evolution data, or missing boss-form markers."
+  "Rendered profile cache key should preserve reusable rendered pages while dex v5 rebuilds missing supplemental boss monsters."
 );
 
 const nestedCachedBrokenSkill = {

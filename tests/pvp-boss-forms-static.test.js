@@ -28,7 +28,7 @@ function assert(condition, message) {
 const sandbox = {};
 vm.runInNewContext(`
   const BOSS_FORM_SUFFIX = "__boss_form";
-  const REAL_BOSS_FORM_NAMES = new Set(["\\u5723\\u5149\\u8fea\\u83ab", "\\u98ce\\u66b4\\u6218\\u72ac"]);
+  const REAL_BOSS_FORM_NAMES = new Set(["\\u5723\\u5149\\u8fea\\u83ab", "\\u98ce\\u66b4\\u6218\\u72ac", "\\u5f69\\u8679\\u72ec\\u89d2\\u517d"]);
   const unique = (values) => [...new Set(values.filter(Boolean))];
   const window = {
     LKWG_PVP_TRAIT_RULES: {
@@ -58,6 +58,7 @@ const monsters = [
   { id: "guard", name: "\u62a4\u4e3b\u72ac", aliases: [], icon: "guard.png", types: ["normal"], skillIds: ["s2"], raw: { chainId: "chain-dog", evolutionStage: 1 } },
   { id: "sonic", name: "\u97f3\u901f\u72ac", aliases: [], icon: "sonic.png", types: ["normal"], skillIds: ["s3"], raw: { chainId: "chain-dog", evolutionStage: 2 } },
   { id: "storm", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], icon: "storm.png", types: ["normal"], skillIds: ["s4"], raw: { chainId: "chain-dog", evolutionStage: 3 } },
+  { id: "rainbow-boss", name: "\u5f69\u8679\u72ec\u89d2\u517d", aliases: [], icon: "rainbow.png", types: ["light"], skillIds: ["s7"], raw: { "\u7cbe\u7075\u5f62\u6001": "\u9996\u9886\u5f62\u6001" } },
   { id: "new-boss-source", name: "\u52a8\u6001\u5f62\u6001\u6e90", aliases: [], icon: "new.png", types: ["water"], skillIds: ["s5"], raw: { bossFormAvailable: true } },
   { id: "listed-boss-source", name: "\u540d\u5355\u5f62\u6001\u6e90", aliases: [], icon: "listed.png", types: ["fire"], skillIds: ["s6"], raw: { bossFormNames: ["\u540d\u5355\u5f62\u6001\u6e90"] } }
 ];
@@ -75,6 +76,13 @@ assert(stormBoss.raw.baseMonsterId === "storm", "Generated boss forms should kee
 assert(stormBoss.skillIds.includes("s4"), "Generated boss forms should preserve source skills.");
 assert(stormBoss.aliases.includes("\u98ce\u66b4\u6218\u72ac"), "Generated boss forms should remain searchable by the base boss name.");
 assert(sandbox.isBossVariant(stormBoss), "Generated boss forms should count as boss variants.");
+
+const directRainbowBoss = withBoss.find((monster) => monster.id === "rainbow-boss");
+assert(sandbox.isBossVariant(directRainbowBoss), "BWiki monster pages whose form field is boss form should count directly as boss variants.");
+assert(
+  !withBoss.some((monster) => monster.name === "\u5f69\u8679\u72ec\u89d2\u517d\uff08\u9996\u9886\uff09"),
+  "Direct BWiki boss monster pages should not generate duplicate suffixed boss forms."
+);
 
 const dimoBoss = withBoss.find((monster) => monster.name === "\u5723\u5149\u8fea\u83ab\uff08\u9996\u9886\uff09");
 assert(dimoBoss, "PVP monster pool should generate missing boss forms from trait-rule family names.");

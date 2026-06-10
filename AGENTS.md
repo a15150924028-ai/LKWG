@@ -703,3 +703,25 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-boss-forms-static.test.js`, `node tests/pvp-cute-layer-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked the BWiki `风暴战犬` rendered page parses boss names as `风暴战犬` and evolution line as `护主犬 > 音速犬 > 风暴战犬`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because the Browser navigation/screenshot tool was not exposed in this turn.
 - Status: Complete.
+
+### 2026-06-10 14:52 +08:00 - Codex
+
+- Request: Fix the remaining missing boss monsters after online update, using the screenshot case where `彩虹独角兽` was missing and update took a long time.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-empty-supplemental-learner-static.test.js`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/bwiki-supplemental-boss-monsters-static.test.js`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified that BWiki has pages such as `彩虹独角兽` with `精灵形态=首领形态`, but those pages are absent from the rendered `精灵图鉴` index, so the BWiki-only update never fetched them.
+  - Added supplemental BWiki monster page fetching for known boss-form names missing from the index, so missing boss pages are parsed as real monsters.
+  - Treated BWiki `精灵形态=首领形态` as a direct boss variant and avoided generating duplicate `（首领）` copies for direct boss pages.
+  - Parsed rendered monster images from supplemental pages and applied them to records that do not have index-card image URLs.
+  - Bumped the normalized dex cache key to v5 so the browser rebuilds the local monster list, while keeping the rendered-page cache reusable to avoid another full slow rendered-page refetch.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/bwiki-supplemental-boss-monsters-static.test.js`, `node tests/pvp-boss-forms-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked BWiki and confirmed `精灵图鉴` does not contain `彩虹独角兽`, while the `彩虹独角兽` page exists with `精灵形态=首领形态`, `主属性=光`, `特性=夺目`, and a rendered image URL; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

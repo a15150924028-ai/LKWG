@@ -73,8 +73,8 @@ sandbox.fetchedHtmlByTitle.set("\u8fc7\u5c71\u8f66", `
   const failedLearners = await sandbox.fetchBwikiSkillLearnerMap(["\u8fc7\u5c71\u8f66"]);
   assert(failedLearners.size === 0, "Failed BWiki supplemental learner pages should be skipped instead of failing the update.");
   assert(
-    html.includes("fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle)"),
-    "Rendered monster skill cards should remain the source for supplemental skills with empty learner pages."
+    html.includes("fetchBwikiRenderedMonsterProfileMap(monsterTitles, monsterRevisionByTitle)"),
+    "Rendered monster skill cards should remain the source for supplemental skills with empty learner pages and supplemental monster pages."
   );
   console.log("BWiki empty supplemental learner static checks passed.");
 })().catch((error) => {

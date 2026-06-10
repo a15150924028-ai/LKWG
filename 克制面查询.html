@@ -2809,9 +2809,9 @@
     const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
-    const DATA_STORAGE_KEY = "roco-world-dex-data-v4";
+    const DATA_STORAGE_KEY = "roco-world-dex-data-v5";
     const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v4";
-    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2", "roco-world-dex-data-v3"];
+    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2", "roco-world-dex-data-v3", "roco-world-dex-data-v4"];
     const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
       "roco-world-bwiki-rendered-profile-cache-v1",
       "roco-world-bwiki-rendered-profile-cache-v2",
@@ -5287,9 +5287,11 @@
         monster?.raw?.variant,
         monster?.raw?.type,
         monster?.raw?.rarity,
+        monster?.raw?.["精灵形态"],
+        monster?.raw?.["地区形态名称"],
         ...(monster?.raw?.tags || [])
       ].join(" ");
-      return /boss|leader/i.test(`${image} ${tags}`) || /首领|Boss|BOSS/.test(monster?.name || "");
+      return /boss|leader/i.test(`${image} ${tags}`) || /首领|Boss|BOSS/.test(`${monster?.name || ""} ${tags}`);
     }
 
     function isGeneratedBossForm(monster) {
@@ -6555,7 +6557,7 @@
     function bossFormSourceMonster(monsters, bossName) {
       const key = compactMonsterName(bossName);
       const byName = new Map();
-      (monsters || []).filter((monster) => !isGeneratedBossForm(monster)).forEach((monster) => {
+      (monsters || []).filter((monster) => !isGeneratedBossForm(monster) && !isBossVariant(monster)).forEach((monster) => {
         pvpMonsterNameKeys(monster).forEach((nameKey) => {
           if (!byName.has(nameKey)) byName.set(nameKey, monster);
         });
@@ -6588,7 +6590,7 @@
         rawNames.forEach((name) => {
           if (name) names.add(name);
         });
-        if (raw.bossFormAvailable || raw.boss_form_available) {
+        if (!isBossVariant(monster) && (raw.bossFormAvailable || raw.boss_form_available)) {
           const sourceName = raw.bossFormName || raw.boss_form_name || monster.name;
           if (sourceName) names.add(sourceName);
         }
@@ -7105,6 +7107,14 @@
       return unique(skillNames);
     }
 
+    function parseBwikiRenderedMonsterImageUrl(html) {
+      const source = String(html || "");
+      const imageBlock = source.match(/<div[^>]+class="[^"]*rocom_sprite_grament_img[^"]*"[\s\S]*?<\/div>/i)?.[0] || "";
+      const imageMatch = imageBlock.match(/<img[^>]+src="([^"]+)"/i)
+        || source.match(/<img[^>]+src="([^"]*\/images\/rocom\/[^"]+)"/i);
+      return decodeHtmlEntities(imageMatch?.[1] || "");
+    }
+
     function parseBwikiRenderedEvolutionLine(html) {
       const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
       const stopLines = new Set(["生态", "性别比例", "蛋组", "获取", "来源", "筛选"]);
@@ -7149,6 +7159,7 @@
     function parseBwikiRenderedMonsterProfile(html) {
       const lines = plainBwikiText(html).split("\n").map((line) => line.trim()).filter(Boolean);
       const profile = {
+        imageUrl: parseBwikiRenderedMonsterImageUrl(html),
         skillNames: parseBwikiRenderedMonsterSkillNames(html),
         evolutionLine: parseBwikiRenderedEvolutionLine(html),
         bossFormNames: parseBwikiRenderedBossFormNames(html)
@@ -7324,6 +7335,13 @@
       profilesByMonsterName.forEach((profile, monsterName) => {
         const monster = monsterByName.get(compactBwikiNameKey(monsterName));
         if (!monster) return;
+        if (profile?.imageUrl) {
+          monster.image_url = profile.imageUrl;
+          monster.raw = {
+            ...(monster.raw || {}),
+            rendered_bwiki_image_url: profile.imageUrl
+          };
+        }
         if (profile?.evolutionLine?.length > 1) {
           const chainId = `bwiki-evolution-${profile.evolutionLine[0]}`;
           profile.evolutionLine.forEach((name, index) => {
@@ -7662,7 +7680,7 @@
         id: bwikiId("monster", displayName),
         name: displayName,
         name_aliases: unique([baseName, formName].filter((alias) => alias && alias !== displayName)),
-        image_url: indexEntry.image_url || "",
+        image_url: indexEntry.image_url || firstBwikiImageUrl(page),
         elements,
         skills: skillNames.map((name) => skillIdByName.get(name)).filter(Boolean),
         passives: passiveIds,
@@ -7676,6 +7694,11 @@
       };
     }
 
+    function supplementalBwikiMonsterTitles(monsterIndex) {
+      const indexedTitles = new Set([...monsterIndex.keys()].map((title) => String(title || "")));
+      return [...REAL_BOSS_FORM_NAMES].filter((title) => title && !indexedTitles.has(title));
+    }
+
     async function fetchBwikiBundle() {
       updateBwikiProgress("读取图鉴", 0, 2);
       const [monsterIndexHtml, skillIndexHtml] = await Promise.all([
@@ -7685,6 +7708,7 @@
       updateBwikiProgress("读取图鉴", 2, 2);
       const monsterIndex = parseBwikiIndexEntries(monsterIndexHtml, "monster");
       const skillIndex = parseBwikiIndexEntries(skillIndexHtml, "skill");
+      const monsterTitles = unique([...monsterIndex.keys(), ...supplementalBwikiMonsterTitles(monsterIndex)]);
 
       const skillTitles = unique([...skillIndex.keys(), ...BWIKI_SUPPLEMENTAL_SKILL_PAGES]);
       updateBwikiProgress("技能基础页", 0, skillTitles.length);
@@ -7709,16 +7733,16 @@
       });
 
       const passiveByName = new Map();
-      updateBwikiProgress("精灵基础页", 0, monsterIndex.size);
-      const monsterPages = await fetchBwikiWikitextPages([...monsterIndex.keys()]);
-      updateBwikiProgress("精灵基础页", monsterIndex.size, monsterIndex.size);
+      updateBwikiProgress("精灵基础页", 0, monsterTitles.length);
+      const monsterPages = await fetchBwikiWikitextPages(monsterTitles);
+      updateBwikiProgress("精灵基础页", monsterTitles.length, monsterTitles.length);
       const monsterRevisionByTitle = new Map(monsterPages
         .map((page) => [page.title, bwikiPageRevisionKey(page)])
         .filter(([title, revisionKey]) => title && revisionKey));
       let monsters = monsterPages
         .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
         .filter(Boolean);
-      const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle);
+      const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap(monsterTitles, monsterRevisionByTitle);
       const missingEvolutionTitles = missingBwikiEvolutionFormNames(monsters, renderedMonsterProfiles);
       if (missingEvolutionTitles.length) {
         const supplementalMonsterPages = await fetchBwikiWikitextPages(missingEvolutionTitles);

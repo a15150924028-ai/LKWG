@@ -40,6 +40,7 @@ vm.runInNewContext(`
     return normalized ? \`bwiki-\${prefix}-\${normalized}\` : \`bwiki-\${prefix}-empty\`;
   }
   ${extractFunction("plainBwikiText")}
+  ${extractFunction("parseBwikiRenderedMonsterImageUrl")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
   ${extractFunction("parseBwikiRenderedBossFormNames")}
   ${extractFunction("parseBwikiRenderedEvolutionLine")}
@@ -85,6 +86,19 @@ assert(profile.stats.spa === 109, "Rendered BWiki monster profile should parse r
 assert(profile.stats.defense === 100, "Rendered BWiki monster profile should parse rendered physical defense.");
 assert(profile.stats.spd === 104, "Rendered BWiki monster profile should parse rendered magical defense.");
 assert(profile.stats.spe === 135, "Rendered BWiki monster profile should parse rendered speed.");
+
+const rainbowIconHtml = `
+  <section>
+    <div class="rocom_sprite_grament_img">
+      <img src="https://patchwiki.biligame.com/images/rocom/6/6a/rainbow.png" />
+    </div>
+  </section>
+`;
+const rainbowIconProfile = sandbox.parseBwikiRenderedMonsterProfile(rainbowIconHtml);
+assert(
+  rainbowIconProfile.imageUrl === "https://patchwiki.biligame.com/images/rocom/6/6a/rainbow.png",
+  "Rendered BWiki monster profile should parse the monster image from pages missing from the index."
+);
 
 const stormDogHtml = `
   <section>
@@ -201,6 +215,22 @@ assert(evolutionApplied.monsters[2].raw.evolutionStage === 3, "The third rendere
 assert(
   evolutionApplied.monsters[2].raw.bossFormAvailable,
   "Rendered BWiki boss-evolution markers should be applied to the source form's raw data."
+);
+
+const imageBundle = {
+  monsters: [
+    { id: "rainbow", name: "\u5f69\u8679\u72ec\u89d2\u517d", name_aliases: [], image_url: "", skills: [], passives: [], raw: {} }
+  ],
+  passives: [],
+  skills: []
+};
+const imageApplied = sandbox.applyBwikiRenderedMonsterProfiles(
+  imageBundle,
+  new Map([["\u5f69\u8679\u72ec\u89d2\u517d", rainbowIconProfile]])
+);
+assert(
+  imageApplied.monsters[0].image_url === "https://patchwiki.biligame.com/images/rocom/6/6a/rainbow.png",
+  "Rendered BWiki monster images should fill supplemental monster records that lack index images."
 );
 
 assert(html.includes("applyBwikiRenderedMonsterProfiles({"), "BWiki bundle parsing should apply rendered monster profiles.");
