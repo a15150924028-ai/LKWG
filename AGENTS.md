@@ -631,3 +631,19 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation because `missingBwikiEvolutionFormNames` was missing, then reran it after the change and it passed. Ran `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/pvp-cute-layer-static.test.js`; `node tests/pvp-special-power-rules-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 10:06 +08:00 - Codex
+
+- Request: Fix the online update failure `BWiki 过山车 JSONP 请求失败。已使用本地缓存或内置示例。`
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-empty-supplemental-learner-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified that supplemental BWiki skill learner fetching still treated a single `过山车` rendered-page JSONP failure as fatal.
+  - Changed supplemental learner parsing to skip failed single skill pages with a warning instead of failing the whole BWiki update.
+  - Added the same non-fatal guard around supplemental skill wikitext page fetching so optional supplemental pages cannot abort the update.
+  - Added regression coverage for a failing `过山车` supplemental learner page.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/bwiki-empty-supplemental-learner-static.test.js` fail before implementation on `BWiki 过山车 JSONP 请求失败`, then reran it after the change and it passed. Ran `node tests/bwiki-wikitext-batch-resilience-static.test.js`; `node tests/roller-icon-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

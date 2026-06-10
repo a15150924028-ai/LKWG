@@ -7124,12 +7124,20 @@
         titles,
         BWIKI_PAGE_FETCH_CONCURRENCY,
         async (title) => {
-          const html = await fetchBwikiParsedHtml(title);
-          const learners = parseBwikiSkillLearnerNames(html);
-          return [title, learners];
+          try {
+            const html = await fetchBwikiParsedHtml(title);
+            const learners = parseBwikiSkillLearnerNames(html);
+            return [title, learners];
+          } catch (error) {
+            console.warn(`BWiki ${title} 技能学习精灵读取失败，跳过该补充学习关系。`, error);
+            return null;
+          }
         }
       );
-      return new Map(entries.filter(([, learners]) => learners.length));
+      return new Map(entries.filter((entry) => {
+        const learners = entry?.[1];
+        return learners?.length;
+      }));
     }
 
     function applyBwikiSkillLearners(bundle, learnerNamesBySkillName) {
@@ -7296,7 +7304,12 @@
     }
 
     async function fetchBwikiSupplementalSkillPages() {
-      const pages = await fetchBwikiWikitextPages(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
+      let pages = [];
+      try {
+        pages = await fetchBwikiWikitextPages(BWIKI_SUPPLEMENTAL_SKILL_PAGES);
+      } catch (error) {
+        console.warn("BWiki 补充技能页面读取失败，跳过补充技能页面。", error);
+      }
       return pages.map((page) => ({
         ...page,
         bwiki_image_url: BWIKI_SUPPLEMENTAL_SKILL_IMAGE_URLS[page.title] || ""

@@ -26,10 +26,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-const sandbox = {};
+const sandbox = { console: { warn() {} } };
 vm.runInNewContext(`
   const BWIKI_PAGE_FETCH_CONCURRENCY = 4;
   const fetchedHtmlByTitle = new Map();
+  const failingTitles = new Set();
   const unique = (values) => [...new Set(values.filter(Boolean))];
   const decodeHtmlEntities = (value) => String(value || "")
     .replace(/&quot;/g, '"')
@@ -45,12 +46,14 @@ vm.runInNewContext(`
     return results;
   }
   async function fetchBwikiParsedHtml(title) {
+    if (failingTitles.has(title)) throw new Error(\`BWiki \${title} JSONP 请求失败\`);
     return fetchedHtmlByTitle.get(title) || "";
   }
   ${extractFunction("plainBwikiText")}
   ${extractFunction("parseBwikiSkillLearnerNames")}
   ${extractFunction("fetchBwikiSkillLearnerMap")}
   this.fetchedHtmlByTitle = fetchedHtmlByTitle;
+  this.failingTitles = failingTitles;
   this.fetchBwikiSkillLearnerMap = fetchBwikiSkillLearnerMap;
 `, sandbox);
 
@@ -66,6 +69,9 @@ sandbox.fetchedHtmlByTitle.set("\u8fc7\u5c71\u8f66", `
   const learners = await sandbox.fetchBwikiSkillLearnerMap(["\u8fc7\u5c71\u8f66"]);
   assert(typeof learners?.get === "function", "Empty BWiki supplemental learner results should still return a Map-like object.");
   assert(learners.size === 0, "Empty BWiki supplemental learner results should be skipped instead of failing the update.");
+  sandbox.failingTitles.add("\u8fc7\u5c71\u8f66");
+  const failedLearners = await sandbox.fetchBwikiSkillLearnerMap(["\u8fc7\u5c71\u8f66"]);
+  assert(failedLearners.size === 0, "Failed BWiki supplemental learner pages should be skipped instead of failing the update.");
   assert(
     html.includes("fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle)"),
     "Rendered monster skill cards should remain the source for supplemental skills with empty learner pages."
