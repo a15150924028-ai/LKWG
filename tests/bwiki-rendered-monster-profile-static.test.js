@@ -40,6 +40,11 @@ vm.runInNewContext(`
     return normalized ? \`bwiki-\${prefix}-\${normalized}\` : \`bwiki-\${prefix}-empty\`;
   }
   ${extractFunction("plainBwikiText")}
+  ${extractFunction("bwikiImageTagUrl")}
+  ${extractFunction("isBwikiPlaceholderImageUrl")}
+  ${extractFunction("isUsableBwikiImageUrl")}
+  ${extractFunction("isBwikiMonsterPortraitTag")}
+  ${extractFunction("firstUsableBwikiImageUrl")}
   ${extractFunction("parseBwikiRenderedMonsterImageUrl")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
   ${extractFunction("parseBwikiRenderedBossFormNames")}
@@ -98,6 +103,25 @@ const rainbowIconProfile = sandbox.parseBwikiRenderedMonsterProfile(rainbowIconH
 assert(
   rainbowIconProfile.imageUrl === "https://patchwiki.biligame.com/images/rocom/6/6a/rainbow.png",
   "Rendered BWiki monster profile should parse the monster image from pages missing from the index."
+);
+
+const placeholderBossIconHtml = `
+  <section>
+    <div class="rocom_sprite_grament_img">
+      <img src="https://patchwiki.biligame.com/images/rocom/6/6a/svdrku51m42xsdnlb4plq24ekbrrhb6.png" />
+    </div>
+    <div>
+      <img alt="JL_heimaowushi_shouling.png" src="https://patchwiki.biligame.com/images/rocom/thumb/4/42/0g2677q4oxakjxcoq3g66jcnxhxvm94.png/160px-JL_heimaowushi_shouling.png" data-file-width="1024" data-file-height="1024" />
+    </div>
+    <div>
+      <img alt="Head 3568.png" src="https://patchwiki.biligame.com/images/rocom/thumb/4/4a/f7njq6ztjpucc0hjl261qr1onzd03v8.png/40px-Head_3568.png" data-file-width="128" data-file-height="128" />
+    </div>
+  </section>
+`;
+const placeholderBossIconProfile = sandbox.parseBwikiRenderedMonsterProfile(placeholderBossIconHtml);
+assert(
+  placeholderBossIconProfile.imageUrl === "https://patchwiki.biligame.com/images/rocom/thumb/4/42/0g2677q4oxakjxcoq3g66jcnxhxvm94.png/160px-JL_heimaowushi_shouling.png",
+  "Rendered BWiki monster profile should ignore placeholder sprite images and prefer the real boss portrait."
 );
 
 const stormDogHtml = `

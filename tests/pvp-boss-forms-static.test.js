@@ -28,13 +28,14 @@ function assert(condition, message) {
 const sandbox = {};
 vm.runInNewContext(`
   const BOSS_FORM_SUFFIX = "__boss_form";
-  const REAL_BOSS_FORM_NAMES = new Set(["\\u5723\\u5149\\u8fea\\u83ab", "\\u98ce\\u66b4\\u6218\\u72ac", "\\u5f69\\u8679\\u72ec\\u89d2\\u517d"]);
+  const REAL_BOSS_FORM_NAMES = new Set(["\\u5723\\u5149\\u8fea\\u83ab", "\\u98ce\\u66b4\\u6218\\u72ac", "\\u5f69\\u8679\\u72ec\\u89d2\\u517d", "\\u9ed1\\u732b\\u5bc6\\u63a2"]);
   const unique = (values) => [...new Set(values.filter(Boolean))];
   const window = {
     LKWG_PVP_TRAIT_RULES: {
       RULES: [
         { names: ["\\u8fea\\u83ab", "\\u5723\\u5149\\u8fea\\u83ab"] },
-        { names: ["\\u62a4\\u4e3b\\u72ac", "\\u97f3\\u901f\\u72ac", "\\u98ce\\u66b4\\u6218\\u72ac"] }
+        { names: ["\\u62a4\\u4e3b\\u72ac", "\\u97f3\\u901f\\u72ac", "\\u98ce\\u66b4\\u6218\\u72ac"] },
+        { names: ["\\u5c0f\\u9ed1\\u732b", "\\u9ed1\\u732b\\u5bc6\\u63a2"] }
       ]
     }
   };
@@ -59,6 +60,8 @@ const monsters = [
   { id: "sonic", name: "\u97f3\u901f\u72ac", aliases: [], icon: "sonic.png", types: ["normal"], skillIds: ["s3"], raw: { chainId: "chain-dog", evolutionStage: 2 } },
   { id: "storm", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], icon: "storm.png", types: ["normal"], skillIds: ["s4"], raw: { chainId: "chain-dog", evolutionStage: 3 } },
   { id: "rainbow-boss", name: "\u5f69\u8679\u72ec\u89d2\u517d", aliases: [], icon: "rainbow.png", types: ["light"], skillIds: ["s7"], raw: { "\u7cbe\u7075\u5f62\u6001": "\u9996\u9886\u5f62\u6001" } },
+  { id: "black-cat-base", name: "\u5c0f\u9ed1\u732b", aliases: [], icon: "black-base.png", types: ["normal"], skillIds: ["s8"], raw: { chainId: "chain-black-cat", evolutionStage: 1 } },
+  { id: "black-cat-boss", name: "\u9ed1\u732b\u5bc6\u63a2", aliases: [], icon: "black-boss.png", types: ["normal"], skillIds: ["s9"], raw: { "\u7cbe\u7075\u5f62\u6001": "\u9996\u9886\u5f62\u6001" } },
   { id: "new-boss-source", name: "\u52a8\u6001\u5f62\u6001\u6e90", aliases: [], icon: "new.png", types: ["water"], skillIds: ["s5"], raw: { bossFormAvailable: true } },
   { id: "listed-boss-source", name: "\u540d\u5355\u5f62\u6001\u6e90", aliases: [], icon: "listed.png", types: ["fire"], skillIds: ["s6"], raw: { bossFormNames: ["\u540d\u5355\u5f62\u6001\u6e90"] } }
 ];
@@ -82,6 +85,10 @@ assert(sandbox.isBossVariant(directRainbowBoss), "BWiki monster pages whose form
 assert(
   !withBoss.some((monster) => monster.name === "\u5f69\u8679\u72ec\u89d2\u517d\uff08\u9996\u9886\uff09"),
   "Direct BWiki boss monster pages should not generate duplicate suffixed boss forms."
+);
+assert(
+  !withBoss.some((monster) => monster.name === "\u9ed1\u732b\u5bc6\u63a2\uff08\u9996\u9886\uff09"),
+  "Direct BWiki boss pages should not generate duplicate suffixed boss forms even when a trait-rule family source exists."
 );
 
 const dimoBoss = withBoss.find((monster) => monster.name === "\u5723\u5149\u8fea\u83ab\uff08\u9996\u9886\uff09");

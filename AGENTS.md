@@ -725,3 +725,22 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-supplemental-boss-monsters-static.test.js`, `node tests/pvp-boss-forms-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked BWiki and confirmed `精灵图鉴` does not contain `彩虹独角兽`, while the `彩虹独角兽` page exists with `精灵形态=首领形态`, `主属性=光`, `特性=夺目`, and a rendered image URL; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 15:17 +08:00 - Codex
+
+- Request: Fix duplicate boss monsters in PVP search and missing boss images, and explain whether images are locally cached.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Prevented generated `（首领）` copies when a direct BWiki boss monster page already exists, including cases where trait-rule family fallback can still find a normal source form.
+  - Changed rendered BWiki monster image parsing to ignore the known placeholder URL and prefer real boss portrait image tags, then fall back only to a single unambiguous head icon.
+  - Bumped normalized dex data cache to v6 and rendered BWiki profile cache to v5 so old cached duplicate/placeholder-image data is rebuilt.
+  - Added regression tests for duplicate direct boss pages, placeholder boss image parsing, and the cache invalidation keys.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/pvp-boss-forms-static.test.js` and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. A live BWiki parser check for `黑猫密探` was blocked by the site returning HTML instead of JSON; Browser screenshot verification was not run because the in-app Browser control tool was not exposed in this turn.
+- Status: Complete.

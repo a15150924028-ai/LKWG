@@ -2809,13 +2809,14 @@
     const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
-    const DATA_STORAGE_KEY = "roco-world-dex-data-v5";
-    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v4";
-    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2", "roco-world-dex-data-v3", "roco-world-dex-data-v4"];
+    const DATA_STORAGE_KEY = "roco-world-dex-data-v6";
+    const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v5";
+    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2", "roco-world-dex-data-v3", "roco-world-dex-data-v4", "roco-world-dex-data-v5"];
     const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
       "roco-world-bwiki-rendered-profile-cache-v1",
       "roco-world-bwiki-rendered-profile-cache-v2",
-      "roco-world-bwiki-rendered-profile-cache-v3"
+      "roco-world-bwiki-rendered-profile-cache-v3",
+      "roco-world-bwiki-rendered-profile-cache-v4"
     ];
 
     const TYPES = [
@@ -6626,8 +6627,13 @@
       const baseMonsters = (monsters || []).filter((monster) => !isGeneratedBossForm(monster));
       const usedIds = new Set(baseMonsters.map((monster) => monster.id));
       const existingNames = new Set(baseMonsters.map((monster) => compactMonsterName(monster.name)));
+      const directBossNames = new Set();
+      baseMonsters.filter(isBossVariant).forEach((monster) => {
+        pvpMonsterNameKeys(monster).forEach((nameKey) => directBossNames.add(nameKey));
+      });
       const bossForms = bossFormNamesFromMonsters(baseMonsters).map((bossName) => {
         const displayName = bossFormDisplayName(bossName);
+        if (directBossNames.has(compactMonsterName(bossName))) return null;
         if (existingNames.has(compactMonsterName(displayName))) return null;
         const source = bossFormSourceMonster(baseMonsters, bossName);
         const bossForm = createGeneratedBossForm(source, bossName, usedIds);
@@ -7107,12 +7113,39 @@
       return unique(skillNames);
     }
 
+    function bwikiImageTagUrl(tag) {
+      return decodeHtmlEntities(String(tag || "").match(/\bsrc="([^"]+)"/i)?.[1] || "");
+    }
+
+    function isBwikiPlaceholderImageUrl(url) {
+      return /svdrku51m42xsdnlb4plq24ekbrrhb6|placeholder/i.test(String(url || ""));
+    }
+
+    function isUsableBwikiImageUrl(url) {
+      const text = String(url || "");
+      return /\/images\/rocom\//i.test(text) && !isBwikiPlaceholderImageUrl(text);
+    }
+
+    function isBwikiMonsterPortraitTag(tag) {
+      const text = decodeHtmlEntities(String(tag || ""));
+      return /\bJL[ _-]|shouling|boss|\u9996\u9886|\u7acb\u7ed8/i.test(text);
+    }
+
+    function firstUsableBwikiImageUrl(tags) {
+      const tag = (tags || []).find((candidate) => isUsableBwikiImageUrl(bwikiImageTagUrl(candidate)));
+      return tag ? bwikiImageTagUrl(tag) : "";
+    }
+
     function parseBwikiRenderedMonsterImageUrl(html) {
       const source = String(html || "");
+      const imageTags = [...source.matchAll(/<img\b[^>]*>/gi)].map((match) => match[0]);
+      const portraitUrl = firstUsableBwikiImageUrl(imageTags.filter(isBwikiMonsterPortraitTag));
+      if (portraitUrl) return portraitUrl;
       const imageBlock = source.match(/<div[^>]+class="[^"]*rocom_sprite_grament_img[^"]*"[\s\S]*?<\/div>/i)?.[0] || "";
-      const imageMatch = imageBlock.match(/<img[^>]+src="([^"]+)"/i)
-        || source.match(/<img[^>]+src="([^"]*\/images\/rocom\/[^"]+)"/i);
-      return decodeHtmlEntities(imageMatch?.[1] || "");
+      const imageBlockUrl = firstUsableBwikiImageUrl([...imageBlock.matchAll(/<img\b[^>]*>/gi)].map((match) => match[0]));
+      if (imageBlockUrl) return imageBlockUrl;
+      const headTags = imageTags.filter((tag) => /\balt="Head \d+\.png"/i.test(tag));
+      return headTags.length === 1 ? firstUsableBwikiImageUrl(headTags) : "";
     }
 
     function parseBwikiRenderedEvolutionLine(html) {

@@ -110,8 +110,8 @@ assert(
   "Cached skill power repair should run during data application."
 );
 assert(
-  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v4";'),
-  "Rendered profile cache key should preserve reusable rendered pages while dex v5 rebuilds missing supplemental boss monsters."
+  html.includes('const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v5";'),
+  "Rendered profile cache key should invalidate v4 placeholder boss image profiles while dex v6 rebuilds normalized data."
 );
 
 const nestedCachedBrokenSkill = {
