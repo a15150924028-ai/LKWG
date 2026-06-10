@@ -35,6 +35,10 @@ assert(
   "Dex data cache should invalidate normalized v1 data that was generated before rendered evolution-chain repair."
 );
 assert(
+  html.includes("saveDexDataToStorage(normalized)"),
+  "Online update should save dex data through quota-aware storage cleanup instead of writing directly to localStorage."
+);
+assert(
   html.includes("fetchBwikiRenderedSkillProfileMap(skillTitles, skillRevisionByTitle)"),
   "Rendered skill profile fetching should receive skill revision metadata."
 );
@@ -52,23 +56,37 @@ assert(
 );
 
 const storage = new Map();
+let quotaFailuresRemaining = 0;
 const sandbox = {
   localStorage: {
     getItem(key) {
       return storage.has(key) ? storage.get(key) : null;
     },
     setItem(key, value) {
+      if (quotaFailuresRemaining > 0 && key === "roco-world-dex-data-v2") {
+        quotaFailuresRemaining -= 1;
+        const error = new Error("exceeded the quota");
+        error.name = "QuotaExceededError";
+        throw error;
+      }
       storage.set(key, String(value));
     },
     removeItem(key) {
       storage.delete(key);
     }
   },
-  dataStatus: { textContent: "" }
+  dataStatus: { textContent: "" },
+  console: { warn() {} }
 };
 
 vm.runInNewContext(`
+  const DATA_STORAGE_KEY = "roco-world-dex-data-v2";
   const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
+  const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1"];
+  const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
+    "roco-world-bwiki-rendered-profile-cache-v1",
+    "roco-world-bwiki-rendered-profile-cache-v2"
+  ];
   const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
   let fetchCount = 0;
   async function mapWithConcurrency(items, concurrency, worker) {
@@ -90,6 +108,9 @@ vm.runInNewContext(`
   ${extractFunction("writeBwikiRenderedProfileCache")}
   ${extractFunction("getCachedBwikiRenderedProfile")}
   ${extractFunction("setCachedBwikiRenderedProfile")}
+  ${extractFunction("removeLocalStorageKeys")}
+  ${extractFunction("isStorageQuotaError")}
+  ${extractFunction("saveDexDataToStorage")}
   ${extractFunction("updateBwikiProgress")}
   ${extractFunction("fetchBwikiRenderedSkillProfileMap")}
   this.bwikiPageRevisionKey = bwikiPageRevisionKey;
@@ -97,6 +118,7 @@ vm.runInNewContext(`
   this.writeBwikiRenderedProfileCache = writeBwikiRenderedProfileCache;
   this.getCachedBwikiRenderedProfile = getCachedBwikiRenderedProfile;
   this.setCachedBwikiRenderedProfile = setCachedBwikiRenderedProfile;
+  this.saveDexDataToStorage = saveDexDataToStorage;
   this.updateBwikiProgress = updateBwikiProgress;
   this.fetchBwikiRenderedSkillProfileMap = fetchBwikiRenderedSkillProfileMap;
   this.getFetchCount = () => fetchCount;
@@ -135,6 +157,27 @@ assert(
   !sandbox.getCachedBwikiRenderedProfile(outdatedCache, "skill", "\u6f6e\u6d8c", "12345"),
   "Rendered profile cache should ignore v2 data so monster profiles are reparsed with split-arrow evolution support."
 );
+sandbox.writeBwikiRenderedProfileCache(saved);
+
+storage.set("roco-world-dex-data-v1", "old-dex");
+storage.set("roco-world-bwiki-rendered-profile-cache-v2", "old-rendered-cache");
+quotaFailuresRemaining = 1;
+const savedAfterCleanup = sandbox.saveDexDataToStorage({ monsters: [{ id: "m1" }], skills: [{ id: "s1" }] });
+assert(savedAfterCleanup.saved, "Dex storage should retry successfully after clearing obsolete cache keys.");
+assert(!storage.has("roco-world-dex-data-v1"), "Dex storage should remove the obsolete v1 dex cache before writing v2.");
+assert(!storage.has("roco-world-bwiki-rendered-profile-cache-v2"), "Dex storage should remove obsolete rendered profile caches before writing v2 dex data.");
+assert(storage.has("roco-world-dex-data-v2"), "Dex storage should write the current v2 dex cache after cleanup.");
+
+storage.set("roco-world-bwiki-rendered-profile-cache-v3", "large-rendered-cache");
+quotaFailuresRemaining = 1;
+const savedAfterRenderedCleanup = sandbox.saveDexDataToStorage({ monsters: [{ id: "m2" }], skills: [{ id: "s2" }] });
+assert(savedAfterRenderedCleanup.saved, "Dex storage should retry after clearing rebuildable rendered profile cache.");
+assert(savedAfterRenderedCleanup.clearedRenderedCache, "Dex storage should report when it cleared the rebuildable rendered profile cache.");
+assert(!storage.has("roco-world-bwiki-rendered-profile-cache-v3"), "Dex storage should clear current rendered profile cache when quota is still exceeded.");
+
+quotaFailuresRemaining = 2;
+const unsaved = sandbox.saveDexDataToStorage({ monsters: [{ id: "m3" }], skills: [{ id: "s3" }] });
+assert(!unsaved.saved, "Dex storage should return an unsaved result instead of throwing when quota remains exceeded after cleanup.");
 sandbox.writeBwikiRenderedProfileCache(saved);
 
 sandbox.updateBwikiProgress("\u6280\u80fd\u6e32\u67d3\u9875", 3, 10, 2);

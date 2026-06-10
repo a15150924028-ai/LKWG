@@ -596,3 +596,19 @@ Use this entry format:
   - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js`, `node tests/bwiki-rendered-cache-progress-static.test.js`, and `node tests/pvp-special-power-rules-static.test.js` fail before the production changes, including the dex-cache v2 assertion, then reran them after the changes and they passed. Live-checked the current parser against the BWiki `加油蟹` page and confirmed `加油海葵>加油蟹`. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 09:29 +08:00 - Codex
+
+- Request: Fix the online update failure `Failed to execute 'setItem' on 'Storage': Setting the value of 'roco-world-dex-data-v2' exceeded the quota`.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added quota-aware dex data storage that removes obsolete v1 dex cache and old rendered profile caches before writing the current v2 dex cache.
+  - Added a retry path that clears the rebuildable current rendered profile cache if browser storage is still over quota.
+  - Changed online update so freshly fetched BWiki data is still applied to the current page even if persistent localStorage caching remains unavailable after cleanup.
+  - Added regression coverage for obsolete cache cleanup, rendered profile cache cleanup, and non-throwing behavior when quota remains exceeded.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/bwiki-rendered-cache-progress-static.test.js` fail before implementation on the missing quota-aware storage path, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

@@ -2743,6 +2743,11 @@
     const STORAGE_KEY = "roco-world-type-tool-v3";
     const DATA_STORAGE_KEY = "roco-world-dex-data-v2";
     const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
+    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1"];
+    const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
+      "roco-world-bwiki-rendered-profile-cache-v1",
+      "roco-world-bwiki-rendered-profile-cache-v2"
+    ];
 
     const TYPES = [
       { key: "grass", name: "草", iconKey: "grass" },
@@ -6705,6 +6710,41 @@
       }
     }
 
+    function removeLocalStorageKeys(keys) {
+      (keys || []).forEach((key) => {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          console.warn(`localStorage remove failed: ${key}`, error);
+        }
+      });
+    }
+
+    function isStorageQuotaError(error) {
+      const text = `${error?.name || ""} ${error?.message || ""}`;
+      return /quota|exceed/i.test(text);
+    }
+
+    function saveDexDataToStorage(data) {
+      const payload = JSON.stringify(data);
+      removeLocalStorageKeys([...LEGACY_DATA_STORAGE_KEYS, ...LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS]);
+      try {
+        localStorage.setItem(DATA_STORAGE_KEY, payload);
+        return { saved: true, clearedRenderedCache: false };
+      } catch (error) {
+        if (!isStorageQuotaError(error)) throw error;
+        removeLocalStorageKeys([BWIKI_RENDERED_PROFILE_CACHE_KEY]);
+        try {
+          localStorage.setItem(DATA_STORAGE_KEY, payload);
+          return { saved: true, clearedRenderedCache: true };
+        } catch (retryError) {
+          if (!isStorageQuotaError(retryError)) throw retryError;
+          console.warn("Dex data cache write skipped because localStorage quota is still exceeded", retryError);
+          return { saved: false, clearedRenderedCache: true, error: retryError };
+        }
+      }
+    }
+
     function getCachedBwikiRenderedProfile(cache, kind, title, revisionKey) {
       if (!revisionKey) return null;
       const cached = cache?.[kind]?.[title];
@@ -7469,8 +7509,13 @@
       try {
         const bundle = await fetchRemoteBundle();
         const normalized = normalizeBundle(bundle);
-        localStorage.setItem(DATA_STORAGE_KEY, JSON.stringify(normalized));
+        const storageResult = saveDexDataToStorage(normalized);
         applyDexData(normalized);
+        if (!storageResult.saved) {
+          dataStatus.textContent += "（本次数据已应用，但浏览器本地存储空间不足，未能持久缓存。）";
+        } else if (storageResult.clearedRenderedCache) {
+          dataStatus.textContent += "（已清理可重建的页面缓存以释放空间。）";
+        }
         renderTeam(sanitizeTeamForDex(loadTeam()));
         renderResults();
       } catch (error) {
