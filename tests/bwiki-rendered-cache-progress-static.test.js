@@ -31,8 +31,8 @@ assert(
   "Rendered BWiki profile cache should invalidate old profiles that were parsed before split-arrow evolution chains were supported."
 );
 assert(
-  html.includes('const DATA_STORAGE_KEY = "roco-world-dex-data-v2";'),
-  "Dex data cache should invalidate normalized v1 data that was generated before rendered evolution-chain repair."
+  html.includes('const DATA_STORAGE_KEY = "roco-world-dex-data-v3";'),
+  "Dex data cache should invalidate normalized v2 data that was generated before supplemental evolution forms were fetched."
 );
 assert(
   html.includes("saveDexDataToStorage(normalized)"),
@@ -63,7 +63,7 @@ const sandbox = {
       return storage.has(key) ? storage.get(key) : null;
     },
     setItem(key, value) {
-      if (quotaFailuresRemaining > 0 && key === "roco-world-dex-data-v2") {
+      if (quotaFailuresRemaining > 0 && key === "roco-world-dex-data-v3") {
         quotaFailuresRemaining -= 1;
         const error = new Error("exceeded the quota");
         error.name = "QuotaExceededError";
@@ -80,9 +80,9 @@ const sandbox = {
 };
 
 vm.runInNewContext(`
-  const DATA_STORAGE_KEY = "roco-world-dex-data-v2";
+  const DATA_STORAGE_KEY = "roco-world-dex-data-v3";
   const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
-  const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1"];
+  const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2"];
   const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
     "roco-world-bwiki-rendered-profile-cache-v1",
     "roco-world-bwiki-rendered-profile-cache-v2"
@@ -159,14 +159,14 @@ assert(
 );
 sandbox.writeBwikiRenderedProfileCache(saved);
 
-storage.set("roco-world-dex-data-v1", "old-dex");
+storage.set("roco-world-dex-data-v2", "old-dex");
 storage.set("roco-world-bwiki-rendered-profile-cache-v2", "old-rendered-cache");
 quotaFailuresRemaining = 1;
 const savedAfterCleanup = sandbox.saveDexDataToStorage({ monsters: [{ id: "m1" }], skills: [{ id: "s1" }] });
 assert(savedAfterCleanup.saved, "Dex storage should retry successfully after clearing obsolete cache keys.");
-assert(!storage.has("roco-world-dex-data-v1"), "Dex storage should remove the obsolete v1 dex cache before writing v2.");
-assert(!storage.has("roco-world-bwiki-rendered-profile-cache-v2"), "Dex storage should remove obsolete rendered profile caches before writing v2 dex data.");
-assert(storage.has("roco-world-dex-data-v2"), "Dex storage should write the current v2 dex cache after cleanup.");
+assert(!storage.has("roco-world-dex-data-v2"), "Dex storage should remove the obsolete v2 dex cache before writing v3.");
+assert(!storage.has("roco-world-bwiki-rendered-profile-cache-v2"), "Dex storage should remove obsolete rendered profile caches before writing v3 dex data.");
+assert(storage.has("roco-world-dex-data-v3"), "Dex storage should write the current v3 dex cache after cleanup.");
 
 storage.set("roco-world-bwiki-rendered-profile-cache-v3", "large-rendered-cache");
 quotaFailuresRemaining = 1;

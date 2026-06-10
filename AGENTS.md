@@ -612,3 +612,22 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-rendered-cache-progress-static.test.js` fail before implementation on the missing quota-aware storage path, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 09:41 +08:00 - Codex
+
+- Request: Fix Cheer Crab still not gaining cute +1 from Super Candy.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/bwiki-rendered-cache-progress-static.test.js`
+  - `tests/bwiki-rendered-monster-profile-static.test.js`
+  - `tests/bwiki-skill-learner-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified that rendered evolution chains can reference lower forms that are missing from the monster index, so the existing evolution-stage application skipped those forms.
+  - Added generic detection for evolution-chain form names missing from the parsed monster list.
+  - Changed the BWiki update path to fetch missing evolution form pages, parse them as normal monster records, merge them into the bundle, then apply rendered evolution stages.
+  - Bumped the normalized dex cache key to v3 so old v2 data without supplemental evolution forms is ignored and rebuilt.
+  - Updated BWiki tests to cover split evolution chains with missing lower forms and the new cache invalidation.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation because `missingBwikiEvolutionFormNames` was missing, then reran it after the change and it passed. Ran `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/pvp-cute-layer-static.test.js`; `node tests/pvp-special-power-rules-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

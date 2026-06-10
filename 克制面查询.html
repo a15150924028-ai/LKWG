@@ -2741,9 +2741,9 @@
     const BWIKI_PAGE_FETCH_CONCURRENCY = 2;
     let bwikiJsonpMode = false;
     const STORAGE_KEY = "roco-world-type-tool-v3";
-    const DATA_STORAGE_KEY = "roco-world-dex-data-v2";
+    const DATA_STORAGE_KEY = "roco-world-dex-data-v3";
     const BWIKI_RENDERED_PROFILE_CACHE_KEY = "roco-world-bwiki-rendered-profile-cache-v3";
-    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1"];
+    const LEGACY_DATA_STORAGE_KEYS = ["roco-world-dex-data-v1", "roco-world-dex-data-v2"];
     const LEGACY_BWIKI_RENDERED_PROFILE_CACHE_KEYS = [
       "roco-world-bwiki-rendered-profile-cache-v1",
       "roco-world-bwiki-rendered-profile-cache-v2"
@@ -6975,30 +6975,67 @@
       }));
     }
 
+    function compactBwikiNameKey(value) {
+      return String(value || "").replace(/[\s·・（）()]/g, "");
+    }
+
+    function bwikiNamesFor(entry) {
+      return [entry?.name, ...(entry?.name_aliases || [])].map(compactBwikiNameKey).filter(Boolean);
+    }
+
+    function bwikiMonsterByNameMap(monsters) {
+      const monsterByName = new Map();
+      (monsters || []).forEach((monster) => {
+        bwikiNamesFor(monster).forEach((name) => {
+          if (!monsterByName.has(name)) monsterByName.set(name, monster);
+        });
+      });
+      return monsterByName;
+    }
+
+    function missingBwikiEvolutionFormNames(monsters, profilesByMonsterName) {
+      if (!profilesByMonsterName?.size) return [];
+      const monsterByName = bwikiMonsterByNameMap(monsters);
+      const missingNames = [];
+      profilesByMonsterName.forEach((profile) => {
+        (profile?.evolutionLine || []).forEach((name) => {
+          if (name && !monsterByName.has(compactBwikiNameKey(name))) missingNames.push(name);
+        });
+      });
+      return unique(missingNames);
+    }
+
+    function mergeBwikiMonsterRecords(monsters, supplementalMonsters) {
+      const monsterByName = bwikiMonsterByNameMap(monsters);
+      const merged = [...(monsters || [])];
+      (supplementalMonsters || []).forEach((monster) => {
+        const exists = bwikiNamesFor(monster).some((name) => monsterByName.has(name));
+        if (exists) return;
+        merged.push(monster);
+        bwikiNamesFor(monster).forEach((name) => {
+          if (!monsterByName.has(name)) monsterByName.set(name, monster);
+        });
+      });
+      return merged;
+    }
+
     function applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName) {
       if (!skillNamesByMonsterName?.size || !bundle?.monsters?.length || !bundle?.skills?.length) return bundle;
 
-      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
-      const namesFor = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
       const skillIdByName = new Map();
       (bundle.skills || []).forEach((skill) => {
-        namesFor(skill).forEach((name) => {
+        bwikiNamesFor(skill).forEach((name) => {
           if (!skillIdByName.has(name)) skillIdByName.set(name, skill.id);
         });
       });
 
       const monsters = (bundle.monsters || []).map((monster) => ({ ...monster, skills: [...(monster.skills || [])] }));
-      const monsterByName = new Map();
-      monsters.forEach((monster) => {
-        namesFor(monster).forEach((name) => {
-          if (!monsterByName.has(name)) monsterByName.set(name, monster);
-        });
-      });
+      const monsterByName = bwikiMonsterByNameMap(monsters);
 
       skillNamesByMonsterName.forEach((skillNames, monsterName) => {
-        const monster = monsterByName.get(compactKey(monsterName));
+        const monster = monsterByName.get(compactBwikiNameKey(monsterName));
         if (!monster) return;
-        const skillIds = (skillNames || []).map((skillName) => skillIdByName.get(compactKey(skillName))).filter(Boolean);
+        const skillIds = (skillNames || []).map((skillName) => skillIdByName.get(compactBwikiNameKey(skillName))).filter(Boolean);
         if (!skillIds.length) return;
         monster.skills = unique([...(monster.skills || []), ...skillIds]);
       });
@@ -7014,30 +7051,23 @@
       });
       const skillApplied = applyBwikiRenderedMonsterSkills(bundle, skillNamesByMonsterName);
 
-      const compactKey = (value) => String(value || "").replace(/[\s·・（）()]/g, "");
-      const namesFor = (entry) => [entry?.name, ...(entry?.name_aliases || [])].map(compactKey).filter(Boolean);
       const monsters = (skillApplied.monsters || []).map((monster) => ({ ...monster, passives: [...(monster.passives || [])] }));
       const passives = (skillApplied.passives || []).map((passive) => ({ ...passive }));
-      const monsterByName = new Map();
-      monsters.forEach((monster) => {
-        namesFor(monster).forEach((name) => {
-          if (!monsterByName.has(name)) monsterByName.set(name, monster);
-        });
-      });
+      const monsterByName = bwikiMonsterByNameMap(monsters);
       const passiveByName = new Map();
       passives.forEach((passive) => {
-        namesFor(passive).forEach((name) => {
+        bwikiNamesFor(passive).forEach((name) => {
           if (!passiveByName.has(name)) passiveByName.set(name, passive);
         });
       });
 
       profilesByMonsterName.forEach((profile, monsterName) => {
-        const monster = monsterByName.get(compactKey(monsterName));
+        const monster = monsterByName.get(compactBwikiNameKey(monsterName));
         if (!monster) return;
         if (profile?.evolutionLine?.length > 1) {
           const chainId = `bwiki-evolution-${profile.evolutionLine[0]}`;
           profile.evolutionLine.forEach((name, index) => {
-            const form = monsterByName.get(compactKey(name));
+            const form = monsterByName.get(compactBwikiNameKey(name));
             if (!form) return;
             form.raw = {
               ...(form.raw || {}),
@@ -7058,7 +7088,7 @@
         }
         const passive = profile?.passive;
         if (!passive?.name) return;
-        let nextPassive = passiveByName.get(compactKey(passive.name));
+        let nextPassive = passiveByName.get(compactBwikiNameKey(passive.name));
         if (!nextPassive) {
           nextPassive = {
             id: bwikiId("passive", passive.name),
@@ -7068,7 +7098,7 @@
             trigger: ""
           };
           passives.push(nextPassive);
-          namesFor(nextPassive).forEach((name) => passiveByName.set(name, nextPassive));
+          bwikiNamesFor(nextPassive).forEach((name) => passiveByName.set(name, nextPassive));
         }
         nextPassive.name = passive.name;
         nextPassive.description = passive.description || nextPassive.description || "";
@@ -7403,6 +7433,21 @@
         .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
         .filter(Boolean);
       const renderedMonsterProfiles = await fetchBwikiRenderedMonsterProfileMap([...monsterIndex.keys()], monsterRevisionByTitle);
+      const missingEvolutionTitles = missingBwikiEvolutionFormNames(monsters, renderedMonsterProfiles);
+      if (missingEvolutionTitles.length) {
+        const supplementalMonsterPages = await fetchBwikiWikitextPages(missingEvolutionTitles);
+        const supplementalMonsterRevisionByTitle = new Map(supplementalMonsterPages
+          .map((page) => [page.title, bwikiPageRevisionKey(page)])
+          .filter(([title, revisionKey]) => title && revisionKey));
+        const supplementalMonsters = supplementalMonsterPages
+          .map((page) => parseBwikiMonsterPage(page, monsterIndex.get(page.title), skillIdByName, passiveByName))
+          .filter(Boolean);
+        monsters = mergeBwikiMonsterRecords(monsters, supplementalMonsters);
+        const supplementalRenderedProfiles = await fetchBwikiRenderedMonsterProfileMap(missingEvolutionTitles, supplementalMonsterRevisionByTitle);
+        supplementalRenderedProfiles.forEach((profile, title) => {
+          if (!renderedMonsterProfiles.has(title)) renderedMonsterProfiles.set(title, profile);
+        });
+      }
       let passives = [...passiveByName.values()];
       ({ monsters, passives } = applyBwikiRenderedMonsterProfiles({ monsters, skills, passives }, renderedMonsterProfiles));
       const supplementalSkillLearners = await fetchBwikiSkillLearnerMap(BWIKI_SUPPLEMENTAL_SKILL_PAGES);

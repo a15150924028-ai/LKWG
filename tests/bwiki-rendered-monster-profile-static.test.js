@@ -42,10 +42,15 @@ vm.runInNewContext(`
   ${extractFunction("plainBwikiText")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
   ${extractFunction("parseBwikiRenderedEvolutionLine")}
+  ${extractFunction("compactBwikiNameKey")}
+  ${extractFunction("bwikiNamesFor")}
+  ${extractFunction("bwikiMonsterByNameMap")}
+  ${extractFunction("missingBwikiEvolutionFormNames")}
   ${extractFunction("applyBwikiRenderedMonsterSkills")}
   ${extractFunction("parseBwikiRenderedMonsterProfile")}
   ${extractFunction("applyBwikiRenderedMonsterProfiles")}
   this.parseBwikiRenderedMonsterProfile = parseBwikiRenderedMonsterProfile;
+  this.missingBwikiEvolutionFormNames = missingBwikiEvolutionFormNames;
   this.applyBwikiRenderedMonsterProfiles = applyBwikiRenderedMonsterProfiles;
 `, sandbox);
 
@@ -112,6 +117,13 @@ const splitArrowProfile = sandbox.parseBwikiRenderedMonsterProfile(splitArrowEvo
 assert(
   splitArrowProfile.evolutionLine.join(">") === "\u52a0\u6cb9\u6d77\u8475>\u52a0\u6cb9\u87f9",
   "Rendered BWiki monster profile should parse evolution-chain names when BWiki puts arrow separators on their own lines."
+);
+assert(
+  sandbox.missingBwikiEvolutionFormNames(
+    [{ id: "cheer-crab", name: "\u52a0\u6cb9\u87f9", name_aliases: [], raw: {} }],
+    new Map([["\u52a0\u6cb9\u87f9", splitArrowProfile]])
+  ).join(">") === "\u52a0\u6cb9\u6d77\u8475",
+  "Rendered BWiki evolution lines should identify lower forms that are missing from the monster index."
 );
 
 const bundle = {
@@ -182,6 +194,7 @@ assert(evolutionApplied.monsters[1].raw.evolutionStage === 2, "The second render
 assert(evolutionApplied.monsters[2].raw.evolutionStage === 3, "The third rendered evolution form should be stage 3.");
 
 assert(html.includes("applyBwikiRenderedMonsterProfiles({"), "BWiki bundle parsing should apply rendered monster profiles.");
+assert(html.includes("missingBwikiEvolutionFormNames(monsters, renderedMonsterProfiles)"), "BWiki bundle parsing should fetch evolution forms that are missing from the monster index.");
 assert(!html.includes("fetchBwikiRenderedMonsterSkillMap"), "Rendered monster pages should be fetched once for profile and skill data.");
 assert(!html.includes("LATEST_MONSTER_STAT_OVERRIDES"), "Rendered BWiki stats should replace the local monster stat override pool.");
 assert(!html.includes("applyLatestMonsterStatOverrides"), "Rendered BWiki stats should not be replaced by a local stat override pass.");

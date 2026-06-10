@@ -39,6 +39,9 @@ vm.runInNewContext(`
     .replace(/&gt;/g, ">");
   ${extractFunction("plainBwikiText")}
   ${extractFunction("parseBwikiRenderedMonsterSkillNames")}
+  ${extractFunction("compactBwikiNameKey")}
+  ${extractFunction("bwikiNamesFor")}
+  ${extractFunction("bwikiMonsterByNameMap")}
   ${extractFunction("applyBwikiRenderedMonsterSkills")}
   ${extractFunction("parseBwikiSkillLearnerNames")}
   ${extractFunction("applyBwikiSkillLearners")}
