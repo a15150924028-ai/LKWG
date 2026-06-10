@@ -5280,7 +5280,6 @@
 
     function isBossVariant(monster) {
       if (monster?.isGeneratedBossForm || monster?.raw?.isGeneratedBossForm) return true;
-      if (REAL_BOSS_FORM_NAMES.has(monster?.name || "")) return true;
       const image = monster?.raw?.image_url || monster?.icon || "";
       const tags = [
         monster?.raw?.form,
@@ -5386,7 +5385,6 @@
     function pvpMonsterByFallbackEvolutionName(name, sourceMonster) {
       const key = compactMonsterName(name);
       const matches = dexData.monsters.filter((monster) => (
-        !isBossVariant(monster) &&
         !isGeneratedBossForm(monster) &&
         pvpMonsterNameKeys(monster).includes(key)
       ));
@@ -5407,7 +5405,7 @@
       const key = evolutionGroupKey(monster);
       if (!key) return [monster];
       const structuredLine = dexData.monsters
-        .filter((item) => evolutionGroupKey(item) === key && !isBossVariant(item) && !isGeneratedBossForm(item))
+        .filter((item) => evolutionGroupKey(item) === key && !isGeneratedBossForm(item))
         .sort((a, b) => (
           evolutionStageValue(a) - evolutionStageValue(b)
           || monsterStatTotal(a) - monsterStatTotal(b)
@@ -5421,6 +5419,10 @@
       return fallbackLine.length > 1 ? fallbackLine : structuredLine;
     }
 
+    function canGainInfinitePvpCuteLayer(monster) {
+      return pvpMonsterNameKeys(monster).some((name) => ["菊花梨", "菊花里"].map(compactMonsterName).includes(name));
+    }
+
     function pvpCuteAdjacentMonster(monster, delta) {
       const line = pvpEvolutionLine(monster);
       const index = line.findIndex((item) => item.id === monster?.id);
@@ -5430,7 +5432,7 @@
     }
 
     function canGainPvpCuteLayer(monster) {
-      return Boolean(pvpCuteAdjacentMonster(monster, 1));
+      return canGainInfinitePvpCuteLayer(monster) || Boolean(pvpCuteAdjacentMonster(monster, 1));
     }
 
     function normalizePvpCuteLayers(value) {
@@ -5443,8 +5445,11 @@
       if (step < 0 && currentLayers <= 0) return false;
       const monster = monsterById.get(state?.monsterId);
       const target = pvpCuteAdjacentMonster(monster, step);
-      if (!target) return false;
-      state.monsterId = target.id;
+      if (!target) {
+        if (!(step > 0 && canGainInfinitePvpCuteLayer(monster))) return false;
+      } else {
+        state.monsterId = target.id;
+      }
       state.cuteLayers = Math.max(0, currentLayers + step);
       state.action = "";
       state.actionMonsterId = "";
@@ -6534,9 +6539,76 @@
       matrixWrap.innerHTML = `<table aria-label="属性关系表"><thead>${header}</thead><tbody>${rows}</tbody></table>`;
     }
 
+    function bossFormDisplayName(name) {
+      const baseName = String(name || "").trim();
+      return /首领|Boss|BOSS/.test(baseName) ? baseName : `${baseName}（首领）`;
+    }
+
+    function bossFormSourceMonster(monsters, bossName) {
+      const key = compactMonsterName(bossName);
+      const byName = new Map();
+      (monsters || []).filter((monster) => !isGeneratedBossForm(monster)).forEach((monster) => {
+        pvpMonsterNameKeys(monster).forEach((nameKey) => {
+          if (!byName.has(nameKey)) byName.set(nameKey, monster);
+        });
+      });
+      if (byName.has(key)) return byName.get(key);
+
+      const traitRules = window.LKWG_PVP_TRAIT_RULES;
+      const rule = Array.isArray(traitRules?.RULES)
+        ? traitRules.RULES.find((item) => (item.names || []).some((name) => compactMonsterName(name) === key))
+        : null;
+      const sourceNames = (rule?.names || [])
+        .filter((name) => compactMonsterName(name) !== key)
+        .slice()
+        .reverse();
+      for (const sourceName of sourceNames) {
+        const source = byName.get(compactMonsterName(sourceName));
+        if (source) return source;
+      }
+      return null;
+    }
+
+    function createGeneratedBossForm(source, bossName, usedIds = new Set()) {
+      if (!source || !bossName) return null;
+      const displayName = bossFormDisplayName(bossName);
+      let id = `${source.id || compactMonsterName(bossName)}${BOSS_FORM_SUFFIX}`;
+      if (usedIds.has(id)) id = `${id}_${compactMonsterName(bossName)}`;
+      return {
+        ...source,
+        id,
+        name: displayName,
+        aliases: unique([bossName, source.name, ...(source.aliases || []), ...(source.raw?.name_aliases || [])]),
+        skillIds: [...(source.skillIds || [])],
+        raw: {
+          ...(source.raw || {}),
+          isGeneratedBossForm: true,
+          baseMonsterId: source.id,
+          bossFormName: bossName,
+          displayName,
+          chainId: `${source.raw?.chainId || source.raw?.evolutionChainId || source.id || compactMonsterName(bossName)}-boss`,
+          evolutionChainId: `${source.raw?.chainId || source.raw?.evolutionChainId || source.id || compactMonsterName(bossName)}-boss`,
+          evolutionStage: source.raw?.evolutionStage || source.raw?.evolution_stage || source.raw?.stage || 1
+        }
+      };
+    }
+
     function withBossForms(monsters) {
-      return (monsters || [])
-        .filter((monster) => !isGeneratedBossForm(monster))
+      const baseMonsters = (monsters || []).filter((monster) => !isGeneratedBossForm(monster));
+      const usedIds = new Set(baseMonsters.map((monster) => monster.id));
+      const existingNames = new Set(baseMonsters.map((monster) => compactMonsterName(monster.name)));
+      const bossForms = [...REAL_BOSS_FORM_NAMES].map((bossName) => {
+        const displayName = bossFormDisplayName(bossName);
+        if (existingNames.has(compactMonsterName(displayName))) return null;
+        const source = bossFormSourceMonster(baseMonsters, bossName);
+        const bossForm = createGeneratedBossForm(source, bossName, usedIds);
+        if (bossForm) {
+          usedIds.add(bossForm.id);
+          existingNames.add(compactMonsterName(displayName));
+        }
+        return bossForm;
+      }).filter(Boolean);
+      return [...baseMonsters, ...bossForms]
         .sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
     }
 

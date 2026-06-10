@@ -665,3 +665,21 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `rawEvolutionLineNames` was missing, and watched `node tests/pvp-special-power-rules-static.test.js` fail because `resolvePvpPostUseEffects` was missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 11:25 +08:00 - Codex
+
+- Request: Fix PVP cute-layer rules according to the confirmed requirements, restore boss monster selection, and keep simplified HTML untouched.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Fixed the root cause where names listed as boss-capable forms, such as `风暴战犬`, were treated as boss variants and removed from normal PVP evolution chains.
+  - Changed PVP cute evolution lookup to exclude only generated boss forms, so ordinary non-lowest forms can still resolve lower and upper forms.
+  - Added generated boss forms in `withBossForms()` from the existing boss-name pool, using exact source monsters or trait-rule family sources when the boss page is missing from BWiki data.
+  - Kept generated boss forms searchable by their base boss name and marked them as generated boss variants for PVP display/counting.
+  - Added the confirmed `菊花梨`/`菊花里` exception so it can gain cute +1 without a lower form while ordinary single-form monsters still cannot.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `风暴战犬` was excluded from its normal evolution line, and watched `node tests/pvp-boss-forms-static.test.js` fail because boss-form generation helpers were missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

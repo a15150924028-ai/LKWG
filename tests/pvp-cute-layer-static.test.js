@@ -50,12 +50,15 @@ vm.runInNewContext(`
       { id: "legacy-storm-dog", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], raw: {} },
       { id: "cheer-anemone", name: "\u52a0\u6cb9\u6d77\u8475", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
       { id: "cheer-crab", name: "\u52a0\u6cb9\u87f9", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
-      { id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: { chainId: "dimo", evolutionStage: 1 } }
+      { id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: { chainId: "dimo", evolutionStage: 1 } },
+      { id: "chrysanthemum-pear", name: "\u83ca\u82b1\u68a8", aliases: ["\u83ca\u82b1\u91cc"], raw: {} }
     ]
   };
   let monsterById = new Map(dexData.monsters.map((monster) => [monster.id, monster]));
-  function isBossVariant() { return false; }
-  function isGeneratedBossForm() { return false; }
+  const BOSS_FORM_SUFFIX = "__boss_form";
+  const REAL_BOSS_FORM_NAMES = new Set(["\\u98ce\\u66b4\\u6218\\u72ac"]);
+  ${extractFunction("isBossVariant")}
+  ${extractFunction("isGeneratedBossForm")}
   function monsterStatTotal() { return 0; }
   function monsterNoValue(monster) { return Number(monster?.raw?.evolutionStage) || 0; }
   const unique = (values) => [...new Set(values.filter(Boolean))];
@@ -86,6 +89,7 @@ vm.runInNewContext(`
   ${extractFunction("pvpMonsterByFallbackEvolutionName")}
   ${extractFunction("pvpTraitFallbackEvolutionLine")}
   ${extractFunction("pvpEvolutionLine")}
+  ${extractFunction("canGainInfinitePvpCuteLayer")}
   ${extractFunction("pvpCuteAdjacentMonster")}
   ${extractFunction("canGainPvpCuteLayer")}
   ${extractFunction("normalizePvpCuteLayers")}
@@ -118,6 +122,7 @@ const stormDog = sandbox.monsterById.get("storm-dog");
 const sonicDog = sandbox.monsterById.get("sonic-dog");
 const guardDog = sandbox.monsterById.get("guard-dog");
 const dimo = sandbox.monsterById.get("dimo");
+const chrysanthemumPear = sandbox.monsterById.get("chrysanthemum-pear");
 
 assert(
   sandbox.pvpEvolutionLine(stormDog).map((monster) => monster.name).join(">") === "\u62a4\u4e3b\u72ac>\u97f3\u901f\u72ac>\u98ce\u66b4\u6218\u72ac",
@@ -128,6 +133,7 @@ assert(sandbox.pvpCuteAdjacentMonster(sonicDog, 1)?.id === "guard-dog", "Cute +1
 assert(!sandbox.pvpCuteAdjacentMonster(guardDog, 1), "The lowest form should not gain another cute layer.");
 assert(sandbox.pvpCuteAdjacentMonster(sonicDog, -1)?.id === "storm-dog", "Cute -1 should move one form upward.");
 assert(!sandbox.canGainPvpCuteLayer(dimo), "A single-form lowest-stage monster should not gain cute +1.");
+assert(sandbox.canGainPvpCuteLayer(chrysanthemumPear), "Chrysanthemum Pear should be the special case that can gain cute +1 without a lower form.");
 assert(sandbox.normalizePvpCuteLayers(-3) === 0, "Cute layers should never become negative.");
 
 const legacySonicDog = sandbox.monsterById.get("legacy-sonic-dog");
@@ -168,6 +174,11 @@ assert(
 assert(cheerState.monsterId === "cheer-anemone", "Successful cute status skills should switch high forms to the lower form.");
 assert(cheerState.cuteLayers === 1, "Successful cute status skills should increase cute layers.");
 assert(cheerState.skillFlatStatMods.spe === 150, "Successful cute status skills should apply their flat speed bonus.");
+
+const chrysanthemumState = { monsterId: "chrysanthemum-pear", cuteLayers: 3, skillFlatStatMods: {} };
+assert(sandbox.applyPvpCuteLayerDelta(chrysanthemumState, 1), "Chrysanthemum Pear should gain cute +1 even without a lower form.");
+assert(chrysanthemumState.monsterId === "chrysanthemum-pear", "Infinite cute +1 should not switch to a missing lower form.");
+assert(chrysanthemumState.cuteLayers === 4, "Infinite cute +1 should still increment cute layers.");
 
 const actedState = {
   monsterId: "sonic-dog",
