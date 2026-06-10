@@ -1877,6 +1877,61 @@
     return names.some((name) => candidates.includes(cleanText(name)));
   }
 
+  function blankRuleStatMods() {
+    return Object.fromEntries(Object.values(STAT_NAME_TO_KEY).map((key) => [key, 0]));
+  }
+
+  function addRuleStatFlatMod(mods, statName, value) {
+    const key = STAT_NAME_TO_KEY[statName];
+    const amount = Math.round(numberValue(value, 0));
+    if (!key || !amount) return;
+    mods[key] = (Number(mods[key]) || 0) + amount;
+  }
+
+  function ruleStatFlatLabels(mods) {
+    return Object.entries(STAT_NAME_TO_KEY)
+      .map(([name, key]) => [name, Math.round(numberValue(mods?.[key], 0))])
+      .filter(([, value]) => value)
+      .map(([name, value]) => `${name}${value > 0 ? "+" : ""}${value}`);
+  }
+
+  function mergePvpPostUseEffects(...effectsList) {
+    const merged = { statFlatMods: blankRuleStatMods(), labels: [] };
+    effectsList.filter(Boolean).forEach((effects) => {
+      merged.cuteLayerDelta = (Number(merged.cuteLayerDelta) || 0) + (Number(effects.cuteLayerDelta) || 0);
+      Object.keys(merged.statFlatMods).forEach((key) => {
+        merged.statFlatMods[key] += Number(effects.statFlatMods?.[key]) || 0;
+      });
+      if (effects.requiresSuccessfulCuteLayer) merged.requiresSuccessfulCuteLayer = true;
+      (effects.labels || []).forEach((label) => addLabel(merged.labels, label));
+    });
+    if (!Object.values(merged.statFlatMods).some((value) => Math.abs(Number(value) || 0) > 0.0001)) {
+      delete merged.statFlatMods;
+    }
+    return merged;
+  }
+
+  function resolveTextPvpPostUseEffects(action, context = {}) {
+    const text = cleanText(actionText(action));
+    const canGainCuteLayer = Boolean(context.canGainCuteLayer);
+    const grantsCuteLayer = /(?:自己|自身|己方)?获得萌化\+?1|萌化\+1/.test(text);
+    if (!grantsCuteLayer || !canGainCuteLayer) return {};
+
+    const statFlatMods = blankRuleStatMods();
+    Object.keys(STAT_NAME_TO_KEY).forEach((statName) => {
+      const pattern = new RegExp(`${statName}\\+(\\d+)(?!%)`, "g");
+      for (const match of text.matchAll(pattern)) {
+        addRuleStatFlatMod(statFlatMods, statName, match[1]);
+      }
+    });
+    return {
+      cuteLayerDelta: 1,
+      statFlatMods,
+      labels: ["获得萌化+1", ...ruleStatFlatLabels(statFlatMods)],
+      requiresSuccessfulCuteLayer: true
+    };
+  }
+
   const SPECIAL_PVP_POWER_RULES = [
     {
       names: ["超级糖果"],
@@ -1901,6 +1956,14 @@
     return rule ? rule.resolve(action, context) : null;
   }
 
+  function resolvePvpPostUseEffects(action, context = {}) {
+    const specialPowerRule = resolveSpecialPvpPowerRule(action, context);
+    return mergePvpPostUseEffects(
+      specialPowerRule ? null : resolveTextPvpPostUseEffects(action, context),
+      specialPowerRule?.postUseEffects
+    );
+  }
+
   function resolvePvpVariableDamage(action, context = {}) {
     const text = cleanText(actionText(action));
     const labels = [];
@@ -1915,6 +1978,10 @@
     let responseIgnoreResistance = false;
     let responsePower = null;
     const specialPowerRule = resolveSpecialPvpPowerRule(action, context);
+    const postUseEffects = mergePvpPostUseEffects(
+      specialPowerRule ? null : resolveTextPvpPostUseEffects(action, context),
+      specialPowerRule?.postUseEffects
+    );
     if (specialPowerRule) {
       power = Math.max(1, numberValue(specialPowerRule.power, power));
       (specialPowerRule.labels || []).forEach((label) => addLabel(labels, label));
@@ -2325,7 +2392,7 @@
       responseIgnoreResistance,
       canReceiveHitCountBonus,
       labels,
-      postUseEffects: specialPowerRule?.postUseEffects || {},
+      postUseEffects,
       powerRuleMatched: Boolean(specialPowerRule?.powerRuleMatched)
     };
   }
@@ -2333,6 +2400,7 @@
   return {
     DEFAULT_ENERGY,
     resolveSpecialPvpPowerRule,
+    resolvePvpPostUseEffects,
     resolvePvpVariableDamage
   };
 });
@@ -3058,8 +3126,8 @@
     const clearBtn = document.getElementById("clearBtn");
     const dataStatus = document.getElementById("dataStatus");
     const pvpSimState = {
-      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexSourceData = FALLBACK_DATA;
@@ -4664,7 +4732,7 @@
         manualDamageBonus: Number(state?.manualDamageBonus) || 0,
         manualPowerPercentBonus: Number(state?.manualPowerPercentBonus) || 0,
         manualHitCountBonus: Math.max(0, Math.round(Number(state?.manualHitCountBonus) || 0))
-      });
+      }).concat(statFlatModLabels(state?.skillFlatStatMods));
     }
 
     function passiveModLabels(mods) {
@@ -4673,6 +4741,15 @@
         .map((stat) => {
           const value = Math.round((Number(mods[stat.key]) || 0) * 100);
           return `${stat.label}${value > 0 ? "+" : ""}${value}%`;
+        });
+    }
+
+    function statFlatModLabels(mods) {
+      return PASSIVE_STAT_ALIASES
+        .filter((stat) => Math.abs(Number(mods?.[stat.key]) || 0) > 0.0001)
+        .map((stat) => {
+          const value = Math.round(Number(mods[stat.key]) || 0);
+          return `${stat.label}${value > 0 ? "+" : ""}${value}`;
         });
     }
 
@@ -4688,6 +4765,7 @@
     }
 
     function finalBattleStats(monster, state, passiveMods = passiveStatMods(monster, state), passiveFlatMods = passiveMods?.__flat) {
+      const skillFlatMods = normalizeStatMods(state?.skillFlatStatMods);
       const stats = {
         hp: finalBattleStat(monster, state, "hp"),
         atk: finalBattleStat(monster, state, "atk"),
@@ -4704,6 +4782,10 @@
         const flat = Number(passiveFlatMods?.[key]) || 0;
         if (Math.abs(flat) > 0.0001) {
           stats[key] = Math.max(1, Math.round(stats[key] + flat));
+        }
+        const skillFlat = Number(skillFlatMods?.[key]) || 0;
+        if (Math.abs(skillFlat) > 0.0001) {
+          stats[key] = Math.max(1, Math.round(stats[key] + skillFlat));
         }
       });
       return stats;
@@ -5262,6 +5344,35 @@
         .filter(Boolean);
     }
 
+    function rawEvolutionLineNames(monster) {
+      const raw = monster?.raw || {};
+      const sources = [
+        raw.evolutionLine,
+        raw.evolution_line,
+        raw.evolutionNames,
+        raw.evolution_names,
+        raw.evolution_chain,
+        raw.rendered?.evolutionLine,
+        raw.rendered?.evolution_line,
+        raw.profile?.evolutionLine,
+        raw["进化链"],
+        raw["进化路线"],
+        raw["进化"]
+      ];
+      return unique(sources.flatMap((source) => {
+        if (Array.isArray(source)) return source;
+        if (typeof source !== "string") return [];
+        return source.split(/(?:>|＞|→|▶|\/|、|,|，|\n)+/);
+      }).map((name) => String(name || "").trim()).filter(Boolean));
+    }
+
+    function pvpRawEvolutionLine(monster) {
+      const names = rawEvolutionLineNames(monster);
+      if (!names.length) return [];
+      const line = names.map((name) => pvpMonsterByFallbackEvolutionName(name, monster)).filter(Boolean);
+      return unique(line.map((item) => item.id)).map((id) => monsterById.get(id)).filter(Boolean);
+    }
+
     function pvpTraitFallbackEvolutionNames(monster) {
       const traitRules = window.LKWG_PVP_TRAIT_RULES;
       const rule = traitRules?.resolveTraitRule?.(monster);
@@ -5304,6 +5415,8 @@
           || a.name.localeCompare(b.name, "zh-CN")
         ));
       if (structuredLine.length > 1) return structuredLine;
+      const rawLine = pvpRawEvolutionLine(monster);
+      if (rawLine.length > 1) return rawLine;
       const fallbackLine = pvpTraitFallbackEvolutionLine(monster);
       return fallbackLine.length > 1 ? fallbackLine : structuredLine;
     }
@@ -5640,6 +5753,7 @@
       if (forceImpactLocked(state) && state.action === "force") state.action = "";
       state.forceImpact = state.action === "force";
       state.skillStatMods = normalizeStatMods(state.skillStatMods);
+      state.skillFlatStatMods = normalizeStatMods(state.skillFlatStatMods);
       state.manualStatMods = normalizeStatMods(state.manualStatMods);
       state.manualDamageBonus = Number.isFinite(Number(state.manualDamageBonus)) ? Number(state.manualDamageBonus) : 0;
       state.manualPowerPercentBonus = Number.isFinite(Number(state.manualPowerPercentBonus)) ? Number(state.manualPowerPercentBonus) : 0;
@@ -5714,6 +5828,7 @@
 
     function resetPvpManualBuffs(state) {
       state.skillStatMods = blankStatMods();
+      state.skillFlatStatMods = blankStatMods();
       state.manualStatMods = blankStatMods();
       state.manualDamageBonus = 0;
       state.manualPowerPercentBonus = 0;
@@ -6019,18 +6134,36 @@
 
     function pvpPostUseEffects(state, skill) {
       const monster = monsterById.get(pvpActionSnapshotMatchesCurrentMonster(state) ? state?.actionMonsterId : state?.monsterId);
-      const resolved = window.LKWG_PVP_DAMAGE_RULES?.resolveSpecialPvpPowerRule?.(skill, {
+      const context = {
         canGainCuteLayer: canGainPvpCuteLayer(monster),
         cuteTotal: state?.cuteLayers ?? 0
-      });
-      return resolved?.postUseEffects || {};
+      };
+      if (window.LKWG_PVP_DAMAGE_RULES?.resolvePvpPostUseEffects) {
+        return window.LKWG_PVP_DAMAGE_RULES.resolvePvpPostUseEffects(skill, context) || {};
+      }
+      return window.LKWG_PVP_DAMAGE_RULES?.resolveSpecialPvpPowerRule?.(skill, context)?.postUseEffects || {};
     }
 
     function applyPvpPostUseSkillEffects(state, skill) {
       const effects = pvpPostUseEffects(state, skill);
       const cuteLayerDelta = Math.round(Number(effects.cuteLayerDelta) || 0);
-      if (!cuteLayerDelta) return false;
-      return applyPvpCuteLayerDelta(state, cuteLayerDelta);
+      let changed = false;
+      let cuteLayerChanged = false;
+      if (cuteLayerDelta) {
+        cuteLayerChanged = applyPvpCuteLayerDelta(state, cuteLayerDelta);
+        changed = cuteLayerChanged;
+      }
+      if (effects.requiresSuccessfulCuteLayer && !cuteLayerChanged) return changed;
+      const statFlatMods = normalizeStatMods(effects.statFlatMods);
+      if (Object.values(statFlatMods).some((value) => Math.abs(Number(value) || 0) > 0.0001)) {
+        state.skillFlatStatMods = mergeStatMods(state.skillFlatStatMods, statFlatMods);
+        changed = true;
+      }
+      if (changed && effects.labels?.length) {
+        const text = `${skill.name}：${effects.labels.join(" / ")}`;
+        state.supportText = state.supportText ? `${state.supportText} / ${text}` : text;
+      }
+      return changed;
     }
 
     function applyPvpSupportSkill(state, skill) {
@@ -6174,12 +6307,12 @@
               if (item) {
                 if (isAttackSkill(item)) {
                   selectPvpSkillAction(state, skillIndex, item);
-                  postUseChanged = applyPvpPostUseSkillEffects(state, item);
                 } else if (applyPvpSupportSkill(state, item)) {
                   // Support skill release is recorded as a stack each time.
                 } else {
                   selectPvpSkillAction(state, skillIndex, item);
                 }
+                postUseChanged = applyPvpPostUseSkillEffects(state, item);
               } else if (state.action === `skill:${skillIndex}`) {
                 state.action = "";
                 state.actionMonsterId = "";
@@ -6196,16 +6329,20 @@
           skillHost?.addEventListener("click", (event) => {
             if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || !state.skillIds[skillIndex]) return;
             const skill = skillById.get(state.skillIds[skillIndex]);
-            if (applyPvpSupportSkill(state, skill)) {
+            const supportChanged = applyPvpSupportSkill(state, skill);
+            if (!supportChanged) {
+              selectPvpSkillAction(state, skillIndex, skill);
+            }
+            const postUseChanged = applyPvpPostUseSkillEffects(state, skill);
+            if (supportChanged || postUseChanged) {
+              if (postUseChanged) {
+                renderResults();
+                return;
+              }
               refreshPvpDamageOutputs(root);
               return;
             }
-            selectPvpSkillAction(state, skillIndex, skill);
-            if (applyPvpPostUseSkillEffects(state, skill)) {
-              renderResults();
-            } else {
-              refreshPvpDamageOutputs(root);
-            }
+            refreshPvpDamageOutputs(root);
           });
         });
 

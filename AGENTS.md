@@ -647,3 +647,21 @@ Use this entry format:
   - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-empty-supplemental-learner-static.test.js` fail before implementation on `BWiki 过山车 JSONP 请求失败`, then reran it after the change and it passed. Ran `node tests/bwiki-wikitext-batch-resilience-static.test.js`; `node tests/roller-icon-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-10 10:48 +08:00 - Codex
+
+- Request: Fix PVP cute-layer behavior where only Sonic Dog could gain cute layers, manual cute + failed for other high forms, and status skills such as Show Weakness did not grant speed after successful cute gain.
+- Files changed:
+  - `克制面查询.html`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Identified that PVP cute-form resolution only used structured chain fields or hero-trait fallback names, so ordinary high forms with only cached raw/rendered evolution-line names had no lower form.
+  - Added generic raw/rendered evolution-line parsing as a shared PVP form-chain source before trait fallback, allowing Super Candy and manual cute + to use the same lower-form lookup.
+  - Added a generic PVP post-use effect resolver for skills whose text grants cute +1, keeping status skills as status skills while still applying cute-layer post-use behavior.
+  - Added flat post-use stat storage and final-stat application so success-bound bonuses such as speed +150 are calculated only after successful cute gain.
+  - Kept Super Candy's independent special power rule as the higher-priority rule so its cute +1 effect is not duplicated by generic text parsing.
+  - Left the existing simplified HTML deletion in the working tree untouched.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `rawEvolutionLineNames` was missing, and watched `node tests/pvp-special-power-rules-static.test.js` fail because `resolvePvpPostUseEffects` was missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
+- Status: Complete.

@@ -43,6 +43,21 @@ assert(
 );
 assert(!failed.postUseEffects?.cuteLayerDelta, "Super Candy should not gain a layer when cute +1 is impossible.");
 
+const cuteStatusSkill = {
+  id: "cute-status",
+  name: "\u793a\u5f31",
+  type: "cute",
+  category: "status",
+  power: null,
+  description: "\u81ea\u5df1\u83b7\u5f97\u840c\u5316+1\uff0c\u82e5\u6210\u529f\u83b7\u5f97\u840c\u5316\uff0c\u901f\u5ea6+150\u3002"
+};
+const statusSuccess = damageRules.resolvePvpPostUseEffects(cuteStatusSkill, { canGainCuteLayer: true });
+assert(statusSuccess.cuteLayerDelta === 1, "Status skills that grant cute +1 should declare a post-use cute layer effect.");
+assert(statusSuccess.statFlatMods?.spe === 150, "Successful cute-gain status skills should apply their flat speed bonus.");
+const statusFailed = damageRules.resolvePvpPostUseEffects(cuteStatusSkill, { canGainCuteLayer: false });
+assert(!statusFailed.cuteLayerDelta, "Status skills should not gain cute layers when the attacker cannot gain cute +1.");
+assert(!statusFailed.statFlatMods?.spe, "Cute-gain success bonuses should not apply when cute +1 fails.");
+
 assert(html.includes("resolveSpecialPvpPowerRule"), "Special PVP power rules should be centralized in a rule-pool resolver.");
 assert(html.includes("canGainPvpCuteLayer(attacker)"), "PVP damage calculation should pass the attacker's current cute availability into power rules.");
 assert(html.includes("actionCuteLayers"), "PVP damage calculation should snapshot pre-use cute layers for post-use form changes.");

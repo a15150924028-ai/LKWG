@@ -48,6 +48,8 @@ vm.runInNewContext(`
       { id: "legacy-guard-dog", name: "\u62a4\u4e3b\u72ac", aliases: [], raw: {} },
       { id: "legacy-sonic-dog", name: "\u97f3\u901f\u72ac", aliases: [], raw: {} },
       { id: "legacy-storm-dog", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], raw: {} },
+      { id: "cheer-anemone", name: "\u52a0\u6cb9\u6d77\u8475", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
+      { id: "cheer-crab", name: "\u52a0\u6cb9\u87f9", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
       { id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: { chainId: "dimo", evolutionStage: 1 } }
     ]
   };
@@ -57,11 +59,29 @@ vm.runInNewContext(`
   function monsterStatTotal() { return 0; }
   function monsterNoValue(monster) { return Number(monster?.raw?.evolutionStage) || 0; }
   const unique = (values) => [...new Set(values.filter(Boolean))];
+  function blankStatMods() {
+    return { hp: 0, atk: 0, defense: 0, spa: 0, spd: 0, spe: 0 };
+  }
+  function normalizeStatMods(mods = {}) {
+    const next = blankStatMods();
+    Object.keys(next).forEach((key) => { next[key] = Number(mods?.[key]) || 0; });
+    return next;
+  }
+  function mergeStatMods(...modsList) {
+    const next = blankStatMods();
+    modsList.forEach((mods) => {
+      const normalized = normalizeStatMods(mods);
+      Object.keys(next).forEach((key) => { next[key] += normalized[key]; });
+    });
+    return next;
+  }
   ${extractFunction("evolutionGroupKey")}
   ${extractFunction("evolutionStageValue")}
   ${extractFunction("hasStructuredEvolutionInfo")}
   ${extractFunction("compactMonsterName")}
   ${extractFunction("pvpMonsterNameKeys")}
+  ${extractFunction("rawEvolutionLineNames")}
+  ${extractFunction("pvpRawEvolutionLine")}
   ${extractFunction("pvpTraitFallbackEvolutionNames")}
   ${extractFunction("pvpMonsterByFallbackEvolutionName")}
   ${extractFunction("pvpTraitFallbackEvolutionLine")}
@@ -70,6 +90,20 @@ vm.runInNewContext(`
   ${extractFunction("canGainPvpCuteLayer")}
   ${extractFunction("normalizePvpCuteLayers")}
   ${extractFunction("applyPvpCuteLayerDelta")}
+  ${extractFunction("pvpActionSnapshotMatchesCurrentMonster")}
+  ${extractFunction("pvpPostUseEffects")}
+  ${extractFunction("applyPvpPostUseSkillEffects")}
+  window.LKWG_PVP_DAMAGE_RULES = {
+    resolvePvpPostUseEffects(skill, context) {
+      if (!/\\u840c\\u5316\\+1/.test(skill?.description || "") || !context.canGainCuteLayer) return { requiresSuccessfulCuteLayer: true };
+      return {
+        cuteLayerDelta: 1,
+        statFlatMods: { spe: 150 },
+        labels: ["\\u83b7\\u5f97\\u840c\\u5316+1", "\\u901f\\u5ea6+150"],
+        requiresSuccessfulCuteLayer: true
+      };
+    }
+  };
   this.dexData = dexData;
   this.monsterById = monsterById;
   this.pvpEvolutionLine = pvpEvolutionLine;
@@ -77,6 +111,7 @@ vm.runInNewContext(`
   this.canGainPvpCuteLayer = canGainPvpCuteLayer;
   this.normalizePvpCuteLayers = normalizePvpCuteLayers;
   this.applyPvpCuteLayerDelta = applyPvpCuteLayerDelta;
+  this.applyPvpPostUseSkillEffects = applyPvpPostUseSkillEffects;
 `, sandbox);
 
 const stormDog = sandbox.monsterById.get("storm-dog");
@@ -105,6 +140,16 @@ assert(
   "Cached Sonic Dog without chain fields should still gain cute +1 into Guard Dog."
 );
 
+const cheerCrab = sandbox.monsterById.get("cheer-crab");
+assert(
+  sandbox.pvpEvolutionLine(cheerCrab).map((monster) => monster.name).join(">") === "\u52a0\u6cb9\u6d77\u8475>\u52a0\u6cb9\u87f9",
+  "PVP evolution line should use raw rendered evolution names when no structured chain fields or trait-rule fallback exists."
+);
+assert(
+  sandbox.pvpCuteAdjacentMonster(cheerCrab, 1)?.id === "cheer-anemone",
+  "Cheer Crab should gain cute +1 into Cheer Anemone from raw evolution-line data."
+);
+
 const state = { monsterId: "storm-dog", cuteLayers: 0, natureId: "nature", talentIds: ["a", "b", "c"], skillIds: ["s1", "s2", "", ""] };
 assert(sandbox.applyPvpCuteLayerDelta(state, 1), "Applying cute +1 should succeed when a lower form exists.");
 assert(state.monsterId === "sonic-dog", "Applying cute +1 should replace the selected monster with the lower form.");
@@ -113,6 +158,16 @@ assert(state.natureId === "nature" && state.skillIds[0] === "s1", "Cute form cha
 assert(sandbox.applyPvpCuteLayerDelta(state, -1), "Applying cute -1 should succeed when an upper form exists.");
 assert(state.monsterId === "storm-dog", "Applying cute -1 should replace the selected monster with the upper form.");
 assert(state.cuteLayers === 0, "Applying cute -1 should decrement the stored layer count.");
+
+const weakStatusSkill = { name: "\u793a\u5f31", category: "status", description: "\u83b7\u5f97\u840c\u5316+1\uff0c\u82e5\u6210\u529f\u83b7\u5f97\u840c\u5316\uff0c\u901f\u5ea6+150\u3002" };
+const cheerState = { monsterId: "cheer-crab", cuteLayers: 0, skillFlatStatMods: {} };
+assert(
+  sandbox.applyPvpPostUseSkillEffects(cheerState, weakStatusSkill),
+  "Status skills that grant cute +1 should run through the PVP post-use cute effect path."
+);
+assert(cheerState.monsterId === "cheer-anemone", "Successful cute status skills should switch high forms to the lower form.");
+assert(cheerState.cuteLayers === 1, "Successful cute status skills should increase cute layers.");
+assert(cheerState.skillFlatStatMods.spe === 150, "Successful cute status skills should apply their flat speed bonus.");
 
 const actedState = {
   monsterId: "sonic-dog",
@@ -131,5 +186,10 @@ assert(actedState.actionCuteLayers === 0, "Cute form changes should clear the pr
 assert(html.includes('data-pvp-buff-stat="cuteLayer"'), "PVP buff UI should render cute controls inside the buff grid.");
 assert(html.includes("data-pvp-cute-layer="), "PVP buff UI should expose cute layer controls.");
 assert(html.includes("state.cuteLayers"), "PVP state should persist cute layers.");
+assert(html.includes("skillFlatStatMods"), "PVP state should persist flat post-use stat bonuses such as speed +150.");
+assert(
+  html.includes("const skillFlatMods = normalizeStatMods(state?.skillFlatStatMods);"),
+  "PVP final stats should include flat post-use stat bonuses."
+);
 
 console.log("PVP cute layer static checks passed.");
