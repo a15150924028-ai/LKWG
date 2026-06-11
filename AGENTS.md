@@ -961,3 +961,20 @@ Use this entry format:
   - Added a static regression test that rejects reintroducing the deleted pet-result-card module markers.
 - Verification: Watched `node tests/no-pet-result-cards-static.test.js` fail before implementation on the existing `inputPetResults` marker, then pass after removing the module. Parsed all inline scripts with `new Function`. Ran all 13 retained Node tests.
 - Status: Complete.
+
+### 2026-06-11 18:16 +08:00 - Codex
+
+- Request: Embed the roller button image directly in `index.html` instead of keeping it as a separate local image file.
+- Files changed:
+  - `index.html`
+  - `assets/roller-skill.png`
+  - `tests/roller-runtime-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Converted the roller button PNG to a `data:image/png;base64,...` URI in the button markup.
+  - Changed the roller icon refresh path to reuse the embedded data URI instead of referencing `assets/roller-skill.png`.
+  - Deleted the separate `assets/roller-skill.png` file so the roller image is fully contained in the HTML.
+  - Updated regression tests to require an embedded PNG data URI and reject the removed asset path.
+- Verification: Watched `node tests/roller-runtime-static.test.js` and `node tests/local-bundle-external-static.test.js` fail before implementation on the missing embedded data URI and old asset path, then pass after embedding. Ran all 13 retained Node tests. Parsed all inline scripts with `new Function` and verified `index.html` has one embedded PNG image, no `assets/roller-skill.png` reference, and no separate roller PNG file.
+- Status: Complete.

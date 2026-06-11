@@ -257,9 +257,10 @@ assertNotIncludes(fallbackBody, "bloodlines", "FALLBACK_DATA must not carry bloo
 assertNotIncludes(html, "patchwiki.biligame.com", "index.html must not request patchwiki assets.");
 assertNotIncludes(html, "rocomwiki.app", "index.html must not request rocomwiki assets.");
 assertNotIncludes(html, "sourceCommit", "index.html must not keep source metadata fields.");
-assertIncludes(html, 'src="assets/roller-skill.png"', "index.html may render only the local roller button image.");
+assertNotIncludes(html, "assets/roller-skill.png", "index.html must embed the roller button image instead of requesting an asset file.");
+assertIncludes(html, 'src="data:image/png;base64,', "index.html may render only the embedded roller button image.");
 const imgTags = html.match(/<img\b/gi) || [];
-assert(imgTags.length === 1, "index.html must render exactly one local image: the roller button icon.");
+assert(imgTags.length === 1, "index.html must render exactly one embedded image: the roller button icon.");
 assertIncludes(
   html,
   "页面默认读取线上数据包；如数据包不可用，将使用内置兜底数据。本工具为非官方阵容与伤害计算辅助工具。",

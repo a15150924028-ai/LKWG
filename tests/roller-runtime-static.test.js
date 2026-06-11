@@ -29,7 +29,7 @@ function extractFunction(name) {
 [
   'id="rollerBtn"',
   'id="undoRollerBtn"',
-  'src="assets/roller-skill.png"',
+  'src="data:image/png;base64,',
   'class="button-icon roller-icon"',
   "使用过山车",
   "撤回过山车",
@@ -38,11 +38,15 @@ function extractFunction(name) {
   "monster.skillIds.map((id) => skillById.get(id)).filter(Boolean)",
   "skillById.get(pet.rollerSkillId)",
 ].forEach((needle) => assert(html.includes(needle), `Roller runtime must keep: ${needle}`));
-assert(fs.existsSync(rollerIconPath), "Roller button icon must be stored as a local project asset.");
-const pngHeader = fs.readFileSync(rollerIconPath).subarray(0, 8).toString("hex");
-assert(pngHeader === "89504e470d0a1a0a", "Roller button icon must be a PNG file.");
+assert(!fs.existsSync(rollerIconPath), "Roller button icon must be embedded in index.html, not kept as a separate asset file.");
+assert(!html.includes("assets/roller-skill.png"), "Roller button icon must not reference a separate asset file.");
+const dataUriMatch = html.match(/src="(data:image\/png;base64,[A-Za-z0-9+/=]+)"/);
+assert(dataUriMatch, "Roller button icon must use an embedded PNG data URI.");
+const embeddedPng = Buffer.from(dataUriMatch[1].split(",")[1], "base64");
+const pngHeader = embeddedPng.subarray(0, 8).toString("hex");
+assert(pngHeader === "89504e470d0a1a0a", "Embedded roller button icon must decode to a PNG file.");
 const updateIconBody = extractFunction("updateRollerButtonIcon");
-assert(updateIconBody.includes('image.src = "assets/roller-skill.png"'), "Roller icon refresh must keep the local PNG asset.");
+assert(updateIconBody.includes('image.src = ROLLER_ICON_DATA_URI'), "Roller icon refresh must keep the embedded PNG data URI.");
 assert(!updateIconBody.includes("typeBadgeLabel"), "Roller icon refresh must not replace the local PNG with a text badge.");
 
 const roller = bundle.skills.find((skill) => skill.name === "过山车");
