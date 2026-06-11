@@ -782,3 +782,20 @@ Use this entry format:
   - Left unrelated workspace changes, including the existing deletion of `克制面查询-简洁版.html`, untouched and unstaged.
 - Verification: Watched `node tests/bwiki-data-pool-exports-static.test.js` fail before the exporter existed, fail again on skill order, rendered-stat provenance, and extra-record detection, then pass after each implementation fix. Ran the live exporter successfully; validated all five JSON files; confirmed 494 monster records, 499 skill records, all 494 stat records contain six stats, and the comparison report contains 0 mismatches. Ran the 20 scoped non-live Node tests (the tracked suite plus the exporter test); parsed executable inline scripts with `new Function`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which confirmed `机幕方舟` includes `过山车`; ran scoped `git diff --check`. The unrelated untracked `tests/local-bundle-maintenance-static.test.js` was excluded from this task's verification and remains unstaged.
 - Status: Complete with documented BWiki rendered-page coverage limitation.
+
+### 2026-06-11 09:47 +08:00 - Codex
+
+- Request: Keep the no-image build as a single-file HTML, embed the formal data pool, make startup fully offline, and add built-in data import, export, validation, CRUD maintenance, CSV assistance, browser saving, and single-file HTML generation without changing core battle calculations.
+- Files changed:
+  - `克制面查询_无图低风险版.html`
+  - `tests/local-bundle-maintenance-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Embedded a sanitized `#LOCAL_BUNDLE_DATA` JSON block containing 494 monsters, 499 skills, 184 passives, 19 bloodlines, and the PVP preset collection; the page no longer needs an external runtime JSON file.
+  - Changed startup order to browser-maintained localStorage data, then embedded HTML data, then `FALLBACK_DATA`, with no automatic BWiki or other third-party request.
+  - Replaced the main online update control with import, export, clear-local-data, and maintenance controls.
+  - Added an in-page maintenance dialog for monster, skill, passive, and PVP preset CRUD, name-based relationship selection, Chinese validation results, CSV auxiliary import, browser persistence, JSON export, and regenerated single-file HTML export.
+  - Kept BWiki fetching only in the collapsed advanced maintenance section, behind the required confirmation, and made fetched data draft-only until explicitly saved or exported.
+  - Kept the existing simplified HTML deletion untouched and left `克制面查询.html` unchanged.
+- Verification: Added a regression test and confirmed it failed before implementation on the missing embedded bundle, then passed after implementation. Ran all non-live Node tests in `tests`; parsed all executable script blocks in `克制面查询_无图低风险版.html` with `new Function`; validated the embedded JSON counts and confirmed it contains no HTTP URL, third-party domain, or image path; confirmed no `patchwiki.biligame.com`, `rocomwiki.app`, `<img>`, element icon path, PNG, SVG, or WebP reference is rendered. Browser-tested offline startup, the 494-monster maintenance count, search, editing `迪莫`, name-based skill association, adding a skill, and data validation with no console errors. Ran scoped `git diff --check`, which exited 0 with Git's LF-to-CRLF warning only.
+- Status: Complete.
