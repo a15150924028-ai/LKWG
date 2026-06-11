@@ -197,6 +197,28 @@
       font-size: 12px;
     }
 
+    .admin-data-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: -4px 0 18px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(17, 100, 102, 0.36);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .admin-data-panel[hidden] {
+      display: none;
+    }
+
+    .admin-data-panel strong {
+      color: var(--ink);
+    }
+
     .main-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(380px, 0.92fr);
@@ -1741,6 +1763,13 @@
     </header>
 
     <div class="statusbar" id="dataStatus">数据初始化中...</div>
+    <div class="admin-data-panel" id="adminDataPanel" hidden>
+      <strong>数据维护测试</strong>
+      <span>仅 #admin / #data-admin 模式使用，导入内容只保存到本机浏览器。</span>
+      <button class="button ghost" id="adminImportDataBtn" type="button">导入测试数据</button>
+      <button class="button ghost" id="adminClearDataBtn" type="button">清除测试数据</button>
+      <input id="adminDataFile" type="file" accept=".json,application/json" hidden>
+    </div>
 
     <div class="main-grid">
       <section class="section" aria-labelledby="inputTitle">
@@ -2840,6 +2869,7 @@
 </script>
   <script>
     const LOCAL_BUNDLE_URL = "data/local-bundle.json";
+    const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";
     const STORAGE_KEY = "roco-world-type-tool-v3";
 
     const TYPES = [
@@ -3129,9 +3159,7 @@
         { id: "fallback-sun", name: "放晴", icon: "", type: "light", category: "status", power: null, description: "强化光系技能。", aliases: [] },
         { id: "fallback-stone", name: "石锁", icon: "", type: "ground", category: "physical", power: 50, description: "造成物伤，限制换宠。", aliases: [] },
         { id: "fallback-guard", name: "硬化", icon: "", type: "ground", category: "defense", power: null, description: "防御技能。", aliases: [] }
-      ],
-      bloodlines: BLOODLINES,
-      pvpPresets: []
+      ]
     };
 
     const teamGrid = document.getElementById("teamGrid");
@@ -3143,6 +3171,10 @@
     const undoRollerBtn = document.getElementById("undoRollerBtn");
     const clearBtn = document.getElementById("clearBtn");
     const dataStatus = document.getElementById("dataStatus");
+    const adminDataPanel = document.getElementById("adminDataPanel");
+    const adminImportDataBtn = document.getElementById("adminImportDataBtn");
+    const adminClearDataBtn = document.getElementById("adminClearDataBtn");
+    const adminDataFile = document.getElementById("adminDataFile");
     const pvpSimState = {
       ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
       enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
@@ -6636,6 +6668,40 @@
       return { generatedAt: source.generatedAt || "local-bundle", currentSeason: source.currentSeason || "本地数据包", seasons: [], sourceCommit: LOCAL_BUNDLE_URL, monsters, passives, bloodlines: BLOODLINES, skills };
     }
 
+    function isDataAdminMode() {
+      const hash = String(window.location.hash || "").toLowerCase();
+      return hash === "#admin" || hash === "#data-admin";
+    }
+
+    function rejectMutableDataFields(bundle) {
+      const fields = [];
+      if (Object.prototype.hasOwnProperty.call(bundle || {}, "bloodlines")) fields.push("bloodlines");
+      if (Object.prototype.hasOwnProperty.call(bundle || {}, "pvpPresets")) fields.push("pvpPresets");
+      if (fields.length) {
+        throw new Error("数据包不能包含 " + fields.join("、") + " 字段；血脉和 PVP 默认配置由 HTML 固定维护。");
+      }
+    }
+
+    function validateLocalBundleShape(bundle) {
+      if (!bundle || typeof bundle !== "object") throw new Error("数据包不是有效 JSON 对象。");
+      if (!Array.isArray(bundle.monsters) || bundle.monsters.length === 0) throw new Error("数据包缺少 monsters 精灵数组。");
+      if (!Array.isArray(bundle.skills) || bundle.skills.length === 0) throw new Error("数据包缺少 skills 技能数组。");
+      if (!Array.isArray(bundle.passives)) throw new Error("数据包缺少 passives 特性数组。");
+    }
+
+    function applyLoadedBundle(bundle) {
+      rejectMutableDataFields(bundle);
+      validateLocalBundleShape(bundle);
+      applyDexData(normalizeLocalBundle(bundle));
+      return bundle;
+    }
+
+    async function fetchLocalBundle() {
+      const response = await fetch(LOCAL_BUNDLE_URL, { cache: "no-cache" });
+      if (!response.ok) throw new Error("本地数据包读取失败：HTTP " + response.status);
+      return response.json();
+    }
+
     function applyDexData(data) {
       dexSourceData = normalizeLocalBundle(data);
       const nextData = { ...dexSourceData, monsters: withBossForms(dexSourceData.monsters || []), skills: dexSourceData.skills || [], bloodlines: BLOODLINES };
@@ -6652,12 +6718,24 @@
     }
 
     async function loadDexData() {
+      if (isDataAdminMode()) {
+        try {
+          const stored = localStorage.getItem(ADMIN_DATA_STORAGE_KEY);
+          if (stored) {
+            const bundle = JSON.parse(stored);
+            applyLoadedBundle(bundle);
+            dataStatus.textContent = "admin 测试模式：已使用浏览器本地导入数据。";
+            return;
+          }
+        } catch (error) {
+          console.warn(error);
+          localStorage.removeItem(ADMIN_DATA_STORAGE_KEY);
+          dataStatus.textContent = "admin 本地测试数据无效，已改读 data/local-bundle.json：" + error.message;
+        }
+      }
       try {
-        const response = await fetch(LOCAL_BUNDLE_URL, { cache: "no-store" });
-        if (!response.ok) throw new Error("本地数据包读取失败：HTTP " + response.status);
-        const bundle = await response.json();
-        if (!bundle?.monsters?.length || !bundle?.skills?.length) throw new Error("本地数据包缺少 monsters 或 skills。");
-        applyDexData(normalizeLocalBundle(bundle));
+        const bundle = await fetchLocalBundle();
+        applyLoadedBundle(bundle);
         return;
       } catch (error) {
         console.warn(error);
@@ -6683,6 +6761,57 @@
       });
     }
 
+    function refreshCurrentViewAfterDataChange() {
+      renderTeam(sanitizeTeamForDex(loadTeam()));
+      renderMatrix();
+      renderResults();
+    }
+
+    async function importAdminBundleFile(file) {
+      if (!file) return null;
+      let bundle;
+      try {
+        bundle = JSON.parse(await file.text());
+      } catch (error) {
+        throw new Error("JSON 文件解析失败：" + error.message);
+      }
+      rejectMutableDataFields(bundle);
+      validateLocalBundleShape(bundle);
+      localStorage.setItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(bundle));
+      applyLoadedBundle(bundle);
+      refreshCurrentViewAfterDataChange();
+      dataStatus.textContent = `已导入数据包：${bundle.monsters.length} 只精灵，${bundle.skills.length} 个技能，${bundle.passives.length} 个特性。`;
+      return bundle;
+    }
+
+    function setupAdminDataPanel() {
+      if (!adminDataPanel) return;
+      if (!isDataAdminMode()) {
+        adminDataPanel.hidden = true;
+        return;
+      }
+      adminDataPanel.hidden = false;
+      adminImportDataBtn?.addEventListener("click", () => adminDataFile?.click());
+      adminDataFile?.addEventListener("change", async () => {
+        const file = adminDataFile.files?.[0];
+        adminDataFile.value = "";
+        if (!file) return;
+        try {
+          await importAdminBundleFile(file);
+        } catch (error) {
+          console.warn(error);
+          dataStatus.textContent = "导入测试数据失败：" + error.message;
+          alert("导入测试数据失败：" + error.message);
+        }
+      });
+      adminClearDataBtn?.addEventListener("click", async () => {
+        localStorage.removeItem(ADMIN_DATA_STORAGE_KEY);
+        await loadDexData();
+        refreshCurrentViewAfterDataChange();
+        dataStatus.textContent = "已清除 admin 本地测试数据，重新读取 data/local-bundle.json。";
+      });
+    }
+
     teamGrid.addEventListener("change", (event) => { saveTeam(); renderResults(); });
     document.addEventListener("mousedown", closeCombos);
     calculateBtn.addEventListener("click", renderResults);
@@ -6690,6 +6819,7 @@
     undoRollerBtn.addEventListener("click", undoRoller);
     clearBtn.addEventListener("click", () => { localStorage.removeItem(STORAGE_KEY); rollerHistory.length = 0; renderTeam(defaultTeam()); renderResults(); });
     async function startApp() {
+      setupAdminDataPanel();
       await loadDexData();
       renderTeam(sanitizeTeamForDex(loadTeam()));
       renderMatrix();

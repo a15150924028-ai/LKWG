@@ -852,3 +852,20 @@ Use this entry format:
   - Strengthened the external bundle static test to require complete skill fields (`type`, `category`, `mode`, `power`, `pp`, `energyCost`, `accuracy`, `priority`, `description`, `raw`) and complete passive fields (`description`, `raw`).
 - Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data rebuild on missing skill `raw`, then pass after the rebuild. Ran all non-live Node tests in `tests`; ran a local HTTP check confirming `index.html` reads `data/local-bundle.json`, the bundle returns 200 with schema version 1, 494 monsters, 499 skills, 184 passives, complete skill/passive records, and no source/image markers; ran `git diff --check`, which exited 0 with Git LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-11 14:20 +08:00 - Codex
+
+- Request: Keep bloodlines fixed in HTML, remove/ignore `pvpPresets`, and implement B-plan normal/admin data loading where only admin hash mode can prioritize browser-imported test data.
+- Files changed:
+  - `index.html`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed `bloodlines` and `pvpPresets` from `FALLBACK_DATA`; runtime PVP bloodline selection continues to use the fixed HTML `BLOODLINES` constant.
+  - Changed normal startup to request `data/local-bundle.json` with `cache: "no-cache"` and use the tiny fallback only when that request or validation fails.
+  - Added `#admin` / `#data-admin` mode, where imported test data is read from a separate localStorage key before the external JSON; normal mode does not read that key.
+  - Added a small admin-only import/clear panel. Imported JSON is validated, saved only to localStorage, and rejected if it contains `bloodlines` or `pvpPresets`.
+  - Kept the requested import success message limited to monster, skill, and passive counts.
+  - Left PVP nature/talent defaults, battle calculations, type relations, skill pools, roller behavior, and team storage logic unchanged.
+- Verification: Watched `node tests/local-bundle-external-static.test.js` fail before implementation on the missing admin-only storage key, then pass after implementation. Ran all 21 non-live Node tests in `tests`; parsed executable scripts in both HTML files with `new Function`; confirmed through a local HTTP server that `index.html` and `data/local-bundle.json` return 200 and the JSON contains schema version 1, 494 monsters, 499 skills, 184 passives, no `bloodlines`, and no `pvpPresets`; scanned for third-party URL/image fields and found none. Browser interaction verification was attempted, but the in-app browser security policy blocked both localhost and file URLs.
+- Status: Complete.

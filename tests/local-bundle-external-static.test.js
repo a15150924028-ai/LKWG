@@ -33,6 +33,21 @@ function functionBody(html, name) {
   throw new Error(`Could not parse function ${name}.`);
 }
 
+function constObjectBody(html, name) {
+  const start = html.indexOf(`const ${name} = {`);
+  assert(start >= 0, `Missing const object ${name}.`);
+  const open = html.indexOf("{", start);
+  let depth = 0;
+  for (let index = open; index < html.length; index += 1) {
+    if (html[index] === "{") depth += 1;
+    if (html[index] === "}") {
+      depth -= 1;
+      if (depth === 0) return html.slice(start, index + 1);
+    }
+  }
+  throw new Error(`Could not parse const object ${name}.`);
+}
+
 assert(fs.existsSync(indexPath), "B-plan build must create index.html.");
 assert(fs.existsSync(bundlePath), "B-plan build must create data/local-bundle.json.");
 
@@ -96,6 +111,7 @@ bundle.passives.forEach((passive) => {
 });
 
 assertIncludes(html, 'const LOCAL_BUNDLE_URL = "data/local-bundle.json";', "index.html must load data/local-bundle.json.");
+assertIncludes(html, 'const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";', "index.html must keep admin-only imported data under a separate storage key.");
 assertIncludes(html, "const BLOODLINES = [", "index.html must keep fixed BLOODLINES.");
 assertIncludes(html, "const FALLBACK_DATA = {", "index.html must keep a tiny FALLBACK_DATA.");
 assertIncludes(html, "function applyDexData", "index.html must keep the core data application path.");
@@ -108,14 +124,39 @@ assertIncludes(html, "const REAL_BOSS_FORM_NAMES = new Set([", "index.html must 
 });
 
 const loadBody = functionBody(html, "loadDexData");
-assert(loadBody.includes("fetch(LOCAL_BUNDLE_URL"), "loadDexData must fetch the external local bundle.");
-assert(loadBody.includes("applyDexData(normalizeLocalBundle(bundle))"), "loadDexData must apply the normalized local bundle.");
+const fetchBody = functionBody(html, "fetchLocalBundle");
+assert(fetchBody.includes("fetch(LOCAL_BUNDLE_URL"), "fetchLocalBundle must fetch the external local bundle.");
+assert(fetchBody.includes('{ cache: "no-cache" }'), "fetchLocalBundle must request data/local-bundle.json with cache: no-cache.");
+assert(loadBody.includes("fetchLocalBundle()"), "loadDexData must fetch through the external local bundle helper.");
+assert(loadBody.includes("isDataAdminMode()"), "loadDexData must branch for admin-only localStorage data.");
+assert(loadBody.includes("localStorage.getItem(ADMIN_DATA_STORAGE_KEY)"), "Admin mode must read imported test data from localStorage.");
+assert(loadBody.indexOf("if (isDataAdminMode())") >= 0, "Admin localStorage branch must be explicit.");
+assert(
+  loadBody.indexOf("localStorage.getItem(ADMIN_DATA_STORAGE_KEY)") > loadBody.indexOf("if (isDataAdminMode())"),
+  "Admin localStorage reads must only happen inside the admin-mode branch."
+);
+assert(loadBody.includes("applyLoadedBundle(bundle)"), "loadDexData must apply a validated local bundle.");
 assert(loadBody.includes("applyDexData(FALLBACK_DATA)"), "loadDexData must fall back to the tiny built-in data.");
 assert(!loadBody.includes("localStorage.getItem(DATA_STORAGE_KEY)"), "Startup must not use old browser data-cache storage.");
 assert(!loadBody.includes("readEmbeddedBundle"), "Startup must not read embedded large data.");
 
+const applyLoadedBody = functionBody(html, "applyLoadedBundle");
+assert(applyLoadedBody.includes("rejectMutableDataFields(bundle)"), "Loaded bundles must reject mutable bloodlines/pvpPresets fields.");
+assert(applyLoadedBody.includes("applyDexData(normalizeLocalBundle(bundle))"), "Validated bundles must still use the normal applyDexData path.");
+
+const rejectMutableBody = functionBody(html, "rejectMutableDataFields");
+assert(rejectMutableBody.includes('"bloodlines"'), "Imported bundles with bloodlines must be rejected or ignored before application.");
+assert(rejectMutableBody.includes('"pvpPresets"'), "Imported bundles with pvpPresets must be rejected or ignored before application.");
+
+const importAdminBody = functionBody(html, "importAdminBundleFile");
+assert(importAdminBody.includes("localStorage.setItem(ADMIN_DATA_STORAGE_KEY"), "Admin imports must save only to localStorage.");
+assert(importAdminBody.includes("已导入数据包："), "Admin import success must use the requested Chinese success copy.");
+assert(importAdminBody.includes("只精灵") && importAdminBody.includes("个技能") && importAdminBody.includes("个特性"), "Admin import success must report monsters, skills, and passives only.");
+assert(!importAdminBody.includes("血脉"), "Admin import success must not report imported bloodlines.");
+
 const startupBody = functionBody(html, "startApp");
 assert(startupBody.includes("await loadDexData()"), "Startup must wait for local-bundle.json before rendering.");
+assert(startupBody.includes("setupAdminDataPanel()"), "Startup must expose the maintenance-only import panel in admin hash mode.");
 
 const applyBody = functionBody(html, "applyDexData");
 assert(applyBody.includes("monsters: withBossForms("), "applyDexData must still generate fixed boss forms at runtime.");
@@ -137,7 +178,7 @@ assert(bossBody.includes("createGeneratedBossForm"), "withBossForms must create 
   "BWiki",
   "bwiki",
   "maintenance",
-  "DATA_STORAGE_KEY",
+  "const DATA_STORAGE_KEY",
   "saveDexDataToStorage",
   "updateDexData",
   "importDataBtn",
@@ -146,6 +187,9 @@ assert(bossBody.includes("createGeneratedBossForm"), "withBossForms must create 
   "maintenanceBtn",
 ].forEach((needle) => assertNotIncludes(html, needle, `index.html must not contain old single-file or maintenance chain: ${needle}`));
 
+const fallbackBody = constObjectBody(html, "FALLBACK_DATA");
+assertNotIncludes(fallbackBody, "pvpPresets", "FALLBACK_DATA must not carry pvpPresets.");
+assertNotIncludes(fallbackBody, "bloodlines", "FALLBACK_DATA must not carry bloodlines; fixed BLOODLINES should be applied by runtime.");
 assertNotIncludes(html, "patchwiki.biligame.com", "index.html must not request patchwiki assets.");
 assertNotIncludes(html, "rocomwiki.app", "index.html must not request rocomwiki assets.");
 assertNotIncludes(html, "<img", "index.html must not render third-party images.");
