@@ -929,3 +929,20 @@ Use this entry format:
   - Added regression assertions so the external bundle season and fallback sample names stay explicit.
 - Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data/content change on the placeholder `currentSeason`, then pass after the change. Ran all 12 retained Node tests and scanned `index.html` plus `data/local-bundle.json` for old BWiki/remote/image/update-chain markers with no matches.
 - Status: Complete.
+
+### 2026-06-11 17:55 +08:00 - Codex
+
+- Request: Add the provided roller image locally, crop it as needed, and use it on the `使用过山车` button without introducing third-party image dependencies.
+- Files changed:
+  - `assets/roller-skill.png`
+  - `index.html`
+  - `tests/roller-runtime-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Cropped and resized the provided 132 by 132 PNG into a local 96 by 96 project asset at `assets/roller-skill.png`.
+  - Changed the roller button from a generated text badge to a local `<img>` using that project asset.
+  - Updated the roller icon refresh path so data loading keeps the local PNG instead of replacing it with a text badge.
+  - Updated tests to allow exactly this one local image while continuing to reject third-party image/request markers.
+- Verification: Watched `node tests/roller-runtime-static.test.js` fail before implementation on the missing local roller icon path, then pass after implementation. Ran all 12 retained Node tests. Verified `index.html` has exactly one `<img>` tag pointing to `assets/roller-skill.png`, verified the asset has a PNG signature, and scanned `index.html` plus `data/local-bundle.json` for old BWiki/remote/image/update-chain markers with no matches. Browser verification of the `file://` page was blocked by the Browser Use URL policy, so no workaround browser path was used.
+- Status: Complete.

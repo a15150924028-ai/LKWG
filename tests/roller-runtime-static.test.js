@@ -5,6 +5,7 @@ const vm = require("vm");
 const root = path.join(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const bundle = JSON.parse(fs.readFileSync(path.join(root, "data", "local-bundle.json"), "utf8"));
+const rollerIconPath = path.join(root, "assets", "roller-skill.png");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -28,6 +29,8 @@ function extractFunction(name) {
 [
   'id="rollerBtn"',
   'id="undoRollerBtn"',
+  'src="assets/roller-skill.png"',
+  'class="button-icon roller-icon"',
   "使用过山车",
   "撤回过山车",
   "function rotateSkillsDown",
@@ -35,6 +38,12 @@ function extractFunction(name) {
   "monster.skillIds.map((id) => skillById.get(id)).filter(Boolean)",
   "skillById.get(pet.rollerSkillId)",
 ].forEach((needle) => assert(html.includes(needle), `Roller runtime must keep: ${needle}`));
+assert(fs.existsSync(rollerIconPath), "Roller button icon must be stored as a local project asset.");
+const pngHeader = fs.readFileSync(rollerIconPath).subarray(0, 8).toString("hex");
+assert(pngHeader === "89504e470d0a1a0a", "Roller button icon must be a PNG file.");
+const updateIconBody = extractFunction("updateRollerButtonIcon");
+assert(updateIconBody.includes('image.src = "assets/roller-skill.png"'), "Roller icon refresh must keep the local PNG asset.");
+assert(!updateIconBody.includes("typeBadgeLabel"), "Roller icon refresh must not replace the local PNG with a text badge.");
 
 const roller = bundle.skills.find((skill) => skill.name === "过山车");
 assert(roller, "The formal skill pool must contain 过山车.");
