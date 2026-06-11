@@ -70,10 +70,29 @@ bundle.monsters.forEach((monster) => {
 bundle.skills.forEach((skill) => {
   assert(skill.kind === "skill", `Skill ${skill.name || skill.id} must have kind=skill.`);
   assert(/^skill-/.test(skill.id), `Skill ${skill.name || skill.id} id must use the skill- prefix.`);
+  ["name", "aliases", "type", "category", "mode", "power", "pp", "energyCost", "accuracy", "priority", "description", "raw"].forEach((key) => {
+    assert(Object.prototype.hasOwnProperty.call(skill, key), `Skill ${skill.name || skill.id} is missing ${key}.`);
+  });
+  assert(Array.isArray(skill.aliases), `Skill ${skill.name || skill.id} aliases must be an array.`);
+  assert(typeof skill.type === "string", `Skill ${skill.name || skill.id} type must be a string.`);
+  assert(typeof skill.category === "string", `Skill ${skill.name || skill.id} category must be a string.`);
+  assert(typeof skill.mode === "string", `Skill ${skill.name || skill.id} mode must be a string.`);
+  ["power", "pp", "energyCost", "accuracy"].forEach((key) => {
+    assert(skill[key] === null || Number.isFinite(Number(skill[key])), `Skill ${skill.name || skill.id} ${key} must be numeric or null.`);
+  });
+  assert(Number.isFinite(Number(skill.priority)), `Skill ${skill.name || skill.id} priority must be numeric.`);
+  assert(typeof skill.description === "string", `Skill ${skill.name || skill.id} description must be a string.`);
+  assert(skill.raw && typeof skill.raw === "object" && !Array.isArray(skill.raw), `Skill ${skill.name || skill.id} raw must be an object.`);
 });
 bundle.passives.forEach((passive) => {
   assert(passive.kind === "passive", `Passive ${passive.name || passive.id} must have kind=passive.`);
   assert(/^passive-/.test(passive.id), `Passive ${passive.name || passive.id} id must use the passive- prefix.`);
+  ["name", "aliases", "description", "raw"].forEach((key) => {
+    assert(Object.prototype.hasOwnProperty.call(passive, key), `Passive ${passive.name || passive.id} is missing ${key}.`);
+  });
+  assert(Array.isArray(passive.aliases), `Passive ${passive.name || passive.id} aliases must be an array.`);
+  assert(typeof passive.description === "string", `Passive ${passive.name || passive.id} description must be a string.`);
+  assert(passive.raw && typeof passive.raw === "object" && !Array.isArray(passive.raw), `Passive ${passive.name || passive.id} raw must be an object.`);
 });
 
 assertIncludes(html, 'const LOCAL_BUNDLE_URL = "data/local-bundle.json";', "index.html must load data/local-bundle.json.");

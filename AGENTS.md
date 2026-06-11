@@ -838,3 +838,17 @@ Use this entry format:
   - Strengthened the B-plan static test so the external bundle rejects missing schema fields, missing stats, broken skill/passive references, BWiki/source markers, URL/image fields, `bloodlines`, and `pvpPresets`.
 - Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data rebuild on the missing schema fields, then pass after the rebuild. Ran all non-live Node tests in `tests`; ran a local HTTP check confirming `index.html` references `data/local-bundle.json`, the bundle returns 200 with schema version 1, 494 monsters, 499 skills, 184 passives, top-level stats, and no source/image markers; ran `git diff --check`, which exited 0 with Git LF-to-CRLF warnings only.
 - Status: Complete.
+
+### 2026-06-11 13:16 +08:00 - Codex
+
+- Request: Ensure the `skills` pool keeps complete PVP skill fields and the `passives` pool keeps complete passive records, with `monster.skillIds` and `monster.passiveIds` remaining reference-only.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `raw: {}` to every skill and passive record in `data/local-bundle.json`.
+  - Normalized missing skill numeric fields such as `power`, `energyCost`, and `accuracy` to `null`, while preserving numeric `pp` and `priority`.
+  - Strengthened the external bundle static test to require complete skill fields (`type`, `category`, `mode`, `power`, `pp`, `energyCost`, `accuracy`, `priority`, `description`, `raw`) and complete passive fields (`description`, `raw`).
+- Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data rebuild on missing skill `raw`, then pass after the rebuild. Ran all non-live Node tests in `tests`; ran a local HTTP check confirming `index.html` reads `data/local-bundle.json`, the bundle returns 200 with schema version 1, 494 monsters, 499 skills, 184 passives, complete skill/passive records, and no source/image markers; ran `git diff --check`, which exited 0 with Git LF-to-CRLF warnings only.
+- Status: Complete.
