@@ -1008,3 +1008,17 @@ Use this entry format:
   - Did not invent missing trait names for monsters whose data package and PVP rules have no confirmable trait source.
 - Verification: Watched `node tests/team-passive-display-static.test.js` fail before implementation on the missing renderer helper, then pass after implementation. Checked real package data: 244 monsters have empty `passiveIds`; 22 can be filled from existing PVP trait rules, and 222 still have no confirmable local source. Ran all 14 retained Node tests and `git diff --check`.
 - Status: Complete.
+
+### 2026-06-11 20:03 +08:00 - Codex
+
+- Request: Read missing monster traits from rendered BWiki monster pages and fill the confirmed trait references into the local JSON data package.
+- Files changed:
+  - `data/local-bundle.json`
+  - `AGENTS.md`
+- Changes:
+  - Added confirmed passive references for 阿米亚特、阿米樱、矮脚爬爬、暗影灵面（睁眼的样子）、白发懒人 and 白金独角兽.
+  - Reused the existing 石头大餐、振奋虫心、惊吓、慢热型 and 目空 passive records; no duplicate passive records were created.
+  - Kept third-party URLs, image fields, and source metadata out of the formal local data package.
+  - Left 238 monsters with empty `passiveIds` unchanged because bulk rendered-page requests were blocked with HTTP 567 and no reliable local backup data was available.
+- Verification: Confirmed rendered-page trait text for the updated records; ran all 14 Node tests; validated all passive references with zero broken IDs; scanned `data/local-bundle.json` for third-party/source/image strings with no matches; ran `git diff --check`.
+- Status: Partial. All currently confirmed records are filled; unresolved records require accessible rendered pages or user-provided screenshots rather than guessed data.

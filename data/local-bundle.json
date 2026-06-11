@@ -62,7 +62,9 @@
         "skill-鼓劲",
         "skill-假冒"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-石头大餐"
+      ],
       "stats": {
         "hp": 64,
         "atk": 95,
@@ -138,7 +140,9 @@
         "skill-防御",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-石头大餐"
+      ],
       "stats": {
         "hp": 86,
         "atk": 127,
@@ -213,7 +217,9 @@
         "skill-蛰针",
         "skill-跌落"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-振奋虫心"
+      ],
       "stats": {
         "hp": 80,
         "atk": 117,
@@ -370,7 +376,9 @@
         "skill-黑手",
         "skill-易燃物质"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-惊吓"
+      ],
       "stats": {
         "hp": 74,
         "atk": 40,
@@ -447,7 +455,9 @@
         "skill-连续爪击",
         "skill-雪球"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-慢热型"
+      ],
       "stats": {
         "hp": 86,
         "atk": 94,
@@ -607,7 +617,9 @@
         "skill-麻痹",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-目空"
+      ],
       "stats": {
         "hp": 99,
         "atk": 61,
