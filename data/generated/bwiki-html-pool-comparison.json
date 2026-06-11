@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "pool": "comparison",
+    "generatedAt": "2026-06-11T01:37:02.702Z",
+    "currentSeason": "BWiki 洛克王国世界",
+    "sourceCommit": "https://wiki.biligame.com/rocom/%E9%A6%96%E9%A1%B5",
+    "generatedBy": "tools/bwiki-data-pool-exporter.mjs"
+  },
+  "comparedAt": "2026-06-11T01:37:02.767Z",
+  "summary": {
+    "monsterPoolItems": 494,
+    "monsterSkillPoolItems": 494,
+    "monsterStatsItems": 494,
+    "skillPoolItems": 499,
+    "totalMismatches": 0,
+    "mismatchesByPool": {
+      "monsterPool": 0,
+      "monsterSkillPool": 0,
+      "monsterStats": 0,
+      "skillPool": 0
+    }
+  },
+  "mismatches": []
+}

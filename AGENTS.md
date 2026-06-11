@@ -760,3 +760,25 @@ Use this entry format:
   - Preserved PVP calculation, type relation, damage simulation, skill pool, roller, local team storage, update, clear, and result-rendering logic outside the image-rendering path.
 - Verification: Watched an inline no-image static check fail before implementation on `normalizeBundle` still using image URLs, then reran it after the change and it passed. Confirmed `rg` finds no `patchwiki.biligame.com`, `rocomwiki.app`, `/icons/elements/`, `<img`, `src=`, `.png`, `.svg`, or `.webp` in `克制面查询_无图低风险版.html`; confirmed remaining `image_url` matches are data fields only. Ran `node tests/default-build-static.test.js`; parsed inline scripts in `克制面查询.html` and `克制面查询_无图低风险版.html` with `new Function`; ran `git diff --check`. Browser screenshot verification was not run because no Browser control tool was exposed in this turn.
 - Status: Complete.
+
+### 2026-06-11 09:38 +08:00 - Codex
+
+- Request: Use separate agents/workstreams to generate independent BWiki monster/evolution/image, per-monster skill, rendered monster stat, and total skill pool files, then compare those files with the corresponding normalized pools in `克制面查询.html`.
+- Files changed:
+  - `tools/bwiki-data-pool-exporter.mjs`
+  - `tests/bwiki-data-pool-exports-static.test.js`
+  - `data/generated/bwiki-monster-pool.json`
+  - `data/generated/bwiki-monster-skill-pool.json`
+  - `data/generated/bwiki-monster-stats.json`
+  - `data/generated/bwiki-skill-pool.json`
+  - `data/generated/bwiki-html-pool-comparison.json`
+  - `AGENTS.md`
+- Changes:
+  - Added a Node exporter that reuses the HTML application's BWiki parsing and normalization functions, with a curl-backed transport for this environment.
+  - Generated separate files containing 494 monster/evolution/image records, 494 per-monster learnable skill pools, 494 monster stat records, and 499 complete skill records.
+  - Added a disk-based comparison report that detects missing, extra, and changed records; the generated files currently have 0 mismatches against the normalized HTML pools from the same BWiki run.
+  - Added per-record stat provenance. BWiki rendered pages were confirmed for 322 monster stat records; 172 records retain the HTML updater's normalized wikitext fallback because BWiki rejected those rendered-page requests.
+  - Added regression coverage for file names, evolution chains, images, skill-only pools, stat provenance, full skill fields, order drift, changed records, and extra records.
+  - Left unrelated workspace changes, including the existing deletion of `克制面查询-简洁版.html`, untouched and unstaged.
+- Verification: Watched `node tests/bwiki-data-pool-exports-static.test.js` fail before the exporter existed, fail again on skill order, rendered-stat provenance, and extra-record detection, then pass after each implementation fix. Ran the live exporter successfully; validated all five JSON files; confirmed 494 monster records, 499 skill records, all 494 stat records contain six stats, and the comparison report contains 0 mismatches. Ran the 20 scoped non-live Node tests (the tracked suite plus the exporter test); parsed executable inline scripts with `new Function`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which confirmed `机幕方舟` includes `过山车`; ran scoped `git diff --check`. The unrelated untracked `tests/local-bundle-maintenance-static.test.js` was excluded from this task's verification and remains unstaged.
+- Status: Complete with documented BWiki rendered-page coverage limitation.
