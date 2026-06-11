@@ -6518,9 +6518,14 @@
       hydratePvpDamageSimulation(team);
     }
 
+    function updateRollerUndoButton() {
+      undoRollerBtn.disabled = rollerHistory.length === 0;
+    }
+
     function rotateSkillsDown() {
       const team = readTeam();
       rollerHistory.push(JSON.parse(JSON.stringify(team)));
+      updateRollerUndoButton();
       const slots = team.flatMap((pet, petIndex) => pet.skills.map((skill, skillIndex) => ({
         petIndex,
         skillIndex,
@@ -6539,6 +6544,7 @@
 
     function undoRoller() {
       const previousTeam = rollerHistory.pop();
+      updateRollerUndoButton();
       if (!previousTeam) return;
       renderTeam(previousTeam);
       saveSpecificTeam(previousTeam);
@@ -6965,7 +6971,7 @@
     calculateBtn.addEventListener("click", renderResults);
     rollerBtn.addEventListener("click", rotateSkillsDown);
     undoRollerBtn.addEventListener("click", undoRoller);
-    clearBtn.addEventListener("click", () => { localStorage.removeItem(STORAGE_KEY); rollerHistory.length = 0; renderTeam(defaultTeam()); renderResults(); });
+    clearBtn.addEventListener("click", () => { localStorage.removeItem(STORAGE_KEY); rollerHistory.length = 0; updateRollerUndoButton(); renderTeam(defaultTeam()); renderResults(); });
     async function startApp() {
       setupAdminDataPanel();
       await loadDexData();

@@ -897,3 +897,19 @@ Use this entry format:
   - Retargeted retained regression tests to `index.html` and preserved default build, boss-form generation, cute layers, Super Candy, trait, selected-skill damage, support/defense, roller, fixed bloodlines, and all four lookup Maps.
 - Verification: Watched the focused release test fail before implementation on the missing admin-mode contract, then pass after implementation. A behavioral import test caught and verified the fix for `null` monster stats being accepted. Ran all retained tests; validated the formal 494-monster, 499-skill, 184-passive package through the same import validator; parsed all executable scripts; scanned `index.html` and `data/local-bundle.json` for removed network/source/image markers; confirmed neutral IDs and zero broken references; and confirmed both files return HTTP 200 from a local server with the expected controls and footer. Browser interaction was not retried because the in-app browser policy blocks local URLs in this environment.
 - Status: Complete.
+
+### 2026-06-11 15:16 +08:00 - Codex
+
+- Request: Recheck the B-plan release in the requested 12-step order, back it up, verify data loading/admin separation/core rules/no third-party requests, and test the published page end to end.
+- Files changed:
+  - `index.html`
+  - `tests/roller-runtime-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Created and verified the external backup `C:\codex-work\backups\codex-lkwg-battle-before-12-step-audit-20260611-150006.zip`; SHA-256 is `91408EE0747D06C325501D235BFDB6C296288271FD21309DA7DD7C93AD6BBCDD7`.
+  - Confirmed the formal package has only the six allowed top-level fields, 494 monsters, 499 skills, 184 passives, neutral IDs, complete stat fields, and no broken skill/passive references.
+  - Found through browser testing that the existing roller history changed correctly but the disabled state of the undo button was never synchronized.
+  - Added a minimal roller undo-button state update after use, undo, and clear without changing the skill rotation or history logic.
+  - Extended the roller regression test to execute the real roller/undo functions and verify button enable/disable behavior.
+- Verification: Watched `node tests/roller-runtime-static.test.js` fail before the fix because `updateRollerUndoButton` was missing, then pass after the fix. Ran all 12 retained Node tests. Browser-tested normal JSON loading, fallback loading on HTTP 404, normal/admin toolbar separation, monster search, monster skill pool, passive/stat display, PVP default build and damage output, manual cute-layer controls on a valid monster, roller rotation and undo, and confirmed an empty error/warning console on the normal page. The browser asset inventory contained only the same-origin `data/local-bundle.json` request and no image/font/stylesheet/script assets.
+- Status: Complete.
