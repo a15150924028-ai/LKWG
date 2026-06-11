@@ -1055,3 +1055,17 @@ Use this entry format:
   - Added a focused regression test covering the changed stats, stat totals, passive descriptions, skill fields, and learner references.
 - Verification: Watched `node tests/s2-screenshot-data-static.test.js` fail on the old 皇家狮鹫 stats, then pass after the data update. Ran all 15 Node tests; confirmed 494 monsters, 500 skills, 188 passives, zero broken skill/passive references, and zero forbidden third-party/image fields; audited the baseline diff to confirm only screenshot-related records changed; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-11 21:50 +08:00 - Codex
+
+- Request: Remove the large monster image/letter preview blocks from both sides of the PVP damage simulation while keeping damage results and calculations.
+- Files changed:
+  - `index.html`
+  - `tests/no-pvp-monster-preview-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the single `renderMonsterPreview(monster)` call from the PVP side form.
+  - Kept `renderPvpDamageResult(side)` and its refresh path unchanged, so skill selection and damage output continue to use the existing calculation logic.
+  - Added a regression test that rejects PVP preview rendering and requires both the damage-result renderer and update nodes to remain present.
+- Verification: Watched `node tests/no-pvp-monster-preview-static.test.js` fail before the HTML change because `renderPvpSide()` still called `renderMonsterPreview()`, then pass after the call was removed. Ran all 16 Node tests; parsed all 3 inline script blocks with `new Function`; ran `git diff --check`. In-app browser reload verification was blocked by the browser security policy for the local `file://` URL and was not bypassed.
+- Status: Complete.
