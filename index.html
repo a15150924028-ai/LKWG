@@ -3358,19 +3358,13 @@
 
         const monsterCombo = card.querySelector('[data-combo="monster"]');
         const selectedMonster = monsterById.get(pet.monsterId);
-        const passiveItems = getMonsterPassives(selectedMonster);
         const skillItems = getMonsterSkills(selectedMonster);
         const statsText = card.querySelector('[data-field="statsText"]');
         statsText.innerHTML = renderMonsterStats(selectedMonster);
         const pvpText = card.querySelector('[data-field="pvpText"]');
         pvpText.innerHTML = renderPvpRecommendation(selectedMonster);
         const passiveText = card.querySelector('[data-field="passiveText"]');
-        passiveText.innerHTML = passiveItems.length
-          ? `
-            <div class="readonly-tags">${passiveItems.map((passive) => `<span class="tag">${escapeHtml(passive.name)}</span>`).join("")}</div>
-            <div class="readonly-desc">${passiveItems.map((passive) => `${escapeHtml(passive.name)}：${escapeHtml(passiveDescription(passive))}`).join("；")}</div>
-          `
-          : '<span class="tag empty">未选择精灵</span>';
+        passiveText.innerHTML = renderMonsterPassiveSummary(selectedMonster);
         createCombo(monsterCombo, {
           items: visibleMonsterOptions(dexData.monsters),
           value: pet.monsterId || "",
@@ -4081,6 +4075,25 @@
       const prefixes = [`${name}：`, `${name}:`];
       const matchedPrefix = prefixes.find((prefix) => text.startsWith(prefix));
       return matchedPrefix ? text.slice(matchedPrefix.length).trim() || fallback : description;
+    }
+
+    function renderMonsterPassiveSummary(monster) {
+      if (!monster) return '<span class="tag empty">未选择精灵</span>';
+      const passives = getMonsterPassives(monster);
+      if (passives.length) {
+        return `
+          <div class="readonly-tags">${passives.map((passive) => `<span class="tag">${escapeHtml(passive.name)}</span>`).join("")}</div>
+          <div class="readonly-desc">${passives.map((passive) => `${escapeHtml(passive.name)}：${escapeHtml(passiveDescription(passive))}`).join("；")}</div>
+        `;
+      }
+      const traitName = window.LKWG_PVP_TRAIT_RULES?.traitName?.(monster);
+      if (traitName) {
+        return `
+          <div class="readonly-tags"><span class="tag">${escapeHtml(traitName)}</span></div>
+          <div class="readonly-desc">${escapeHtml(traitName)}：PVP 规则识别特性</div>
+        `;
+      }
+      return '<span class="tag empty">暂无特性数据</span>';
     }
 
     function readTeam() {

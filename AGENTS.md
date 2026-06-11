@@ -993,3 +993,18 @@ Use this entry format:
   - Extended the boss-form regression test to verify generated boss duplicates and direct `（首领）` duplicates are hidden while normal and direct boss records remain available.
 - Verification: Watched `node tests/pvp-boss-forms-static.test.js` fail before implementation on the missing visible option helper, then fail again for direct suffixed duplicates until the filter was extended. Confirmed against real package data that `伊兰龙` remains visible while internal `伊兰龙（首领）` is hidden from visible options, with 25 generated boss forms filtered from 519 internal records to 494 visible records. Ran all 13 retained Node tests and `git diff --check`.
 - Status: Complete.
+
+### 2026-06-11 19:37 +08:00 - Codex
+
+- Request: Fix monsters whose trait display incorrectly shows `未选择精灵` and fill what can be inferred safely.
+- Files changed:
+  - `index.html`
+  - `tests/team-passive-display-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `renderMonsterPassiveSummary()` so the team card trait row distinguishes between no selected monster, formal passive data, PVP-rule-known traits, and missing trait data.
+  - Changed selected monsters with empty `passiveIds` to show either an existing PVP rule trait name or `暂无特性数据` instead of `未选择精灵`.
+  - Kept formal `monster.passiveIds` rendering unchanged when package data already provides a passive and description.
+  - Did not invent missing trait names for monsters whose data package and PVP rules have no confirmable trait source.
+- Verification: Watched `node tests/team-passive-display-static.test.js` fail before implementation on the missing renderer helper, then pass after implementation. Checked real package data: 244 monsters have empty `passiveIds`; 22 can be filled from existing PVP trait rules, and 222 still have no confirmable local source. Ran all 14 retained Node tests and `git diff --check`.
+- Status: Complete.
