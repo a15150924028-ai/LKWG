@@ -2,9 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-const htmlFile = fs.readdirSync(path.join(__dirname, ".."))
-  .find((name) => name === "\u514b\u5236\u9762\u67e5\u8be2.html");
-const html = fs.readFileSync(path.join(__dirname, "..", htmlFile), "utf8");
+const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 
 function extractFunction(name) {
   const start = html.indexOf(`function ${name}(`);
@@ -67,8 +65,8 @@ const monsters = [
 ];
 
 const bossNames = sandbox.bossFormNamesFromMonsters(monsters);
-assert(bossNames.includes("\u52a8\u6001\u5f62\u6001\u6e90"), "Boss-capable forms parsed from BWiki data should be added to the boss form name pool.");
-assert(bossNames.includes("\u540d\u5355\u5f62\u6001\u6e90"), "Rendered BWiki boss form name lists should be added to the boss form name pool.");
+assert(bossNames.includes("\u52a8\u6001\u5f62\u6001\u6e90"), "Boss-capable forms from local package data should be added to the boss form name pool.");
+assert(bossNames.includes("\u540d\u5355\u5f62\u6001\u6e90"), "Local boss form name lists should be added to the boss form name pool.");
 
 const withBoss = sandbox.withBossForms(monsters);
 assert(withBoss.some((monster) => monster.id === "storm"), "Normal final forms should remain in the PVP monster pool.");
@@ -81,14 +79,14 @@ assert(stormBoss.aliases.includes("\u98ce\u66b4\u6218\u72ac"), "Generated boss f
 assert(sandbox.isBossVariant(stormBoss), "Generated boss forms should count as boss variants.");
 
 const directRainbowBoss = withBoss.find((monster) => monster.id === "rainbow-boss");
-assert(sandbox.isBossVariant(directRainbowBoss), "BWiki monster pages whose form field is boss form should count directly as boss variants.");
+assert(sandbox.isBossVariant(directRainbowBoss), "Local monsters whose form field is boss form should count directly as boss variants.");
 assert(
   !withBoss.some((monster) => monster.name === "\u5f69\u8679\u72ec\u89d2\u517d\uff08\u9996\u9886\uff09"),
-  "Direct BWiki boss monster pages should not generate duplicate suffixed boss forms."
+  "Direct boss monsters should not generate duplicate suffixed boss forms."
 );
 assert(
   !withBoss.some((monster) => monster.name === "\u9ed1\u732b\u5bc6\u63a2\uff08\u9996\u9886\uff09"),
-  "Direct BWiki boss pages should not generate duplicate suffixed boss forms even when a trait-rule family source exists."
+  "Direct boss records should not generate duplicate suffixed boss forms even when a trait-rule family source exists."
 );
 
 const dimoBoss = withBoss.find((monster) => monster.name === "\u5723\u5149\u8fea\u83ab\uff08\u9996\u9886\uff09");
@@ -97,7 +95,7 @@ assert(dimoBoss.raw.baseMonsterId === "dimo", "Missing boss forms should use the
 assert(dimoBoss.types.includes("light"), "Generated missing boss forms should preserve source typing.");
 
 const dynamicBoss = withBoss.find((monster) => monster.name === "\u52a8\u6001\u5f62\u6001\u6e90\uff08\u9996\u9886\uff09");
-assert(dynamicBoss, "PVP monster pool should generate boss forms discovered from BWiki rendered monster data.");
+assert(dynamicBoss, "PVP monster pool should generate boss forms discovered from local monster data.");
 assert(dynamicBoss.raw.baseMonsterId === "new-boss-source", "Dynamic boss forms should preserve their discovered source monster.");
 
 const generatedAgain = sandbox.withBossForms(withBoss);
@@ -106,6 +104,6 @@ assert(
   "Boss form generation should be idempotent and not duplicate generated forms."
 );
 
-assert(html.includes("monsters: withBossForms(data.monsters || [])"), "Applied dex data should include generated boss forms.");
+assert(html.includes("monsters: withBossForms(dexSourceData.monsters || [])"), "Applied dex data should include generated boss forms.");
 
 console.log("PVP boss form static checks passed.");

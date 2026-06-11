@@ -1,9 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const htmlFile = fs.readdirSync(path.join(__dirname, ".."))
-  .find((name) => name === "\u514b\u5236\u9762\u67e5\u8be2.html");
-const html = fs.readFileSync(path.join(__dirname, "..", htmlFile), "utf8");
+const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 
 function assertIncludes(needle, message) {
   if (!html.includes(needle)) throw new Error(message);
@@ -35,7 +33,7 @@ assertExcludes(
 );
 assertIncludes(
   "dexData = nextData;",
-  "applyDexData should apply normalized BWiki/cache data directly."
+  "applyDexData should apply normalized local package data directly."
 );
 
 console.log("No local skill-pool rollback static checks passed.");

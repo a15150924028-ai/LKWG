@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-const htmlFile = "\u514b\u5236\u9762\u67e5\u8be2.html";
+const htmlFile = "index.html";
 const html = fs.readFileSync(path.join(__dirname, "..", htmlFile), "utf8");
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
 
@@ -12,7 +12,7 @@ function assert(condition, message) {
 
 const sandbox = { console, module: { exports: {} }, globalThis: {} };
 sandbox.window = sandbox.globalThis;
-vm.runInNewContext(scripts[2], sandbox);
+vm.runInNewContext(scripts.find((script) => script.includes("LKWG_PVP_TRAIT_RULES") && script.includes("module.exports = api")), sandbox);
 const traitRules = sandbox.module.exports;
 
 const expectedTraits = new Map([
@@ -41,13 +41,13 @@ assert(
 const passiveOnlyMonster = { name: "\u672a\u5efa\u7acb\u94feID\u7684\u7cbe\u7075", raw: { "\u7279\u6027": "\u6d04\u6e38" } };
 assert(
   traitRules.traitName(passiveOnlyMonster) === "\u6d04\u6e38",
-  "PVP hero trait should match generic BWiki passive names when chain id is missing."
+  "PVP hero trait should match generic passive names when chain id is missing."
 );
 
 const nestedPassiveOnlyMonster = { name: "\u65e7\u7f13\u5b58\u7cbe\u7075", raw: { raw: { "\u7279\u6027": "\u56e4\u79ef" } } };
 assert(
   traitRules.traitName(nestedPassiveOnlyMonster) === "\u56e4\u79ef",
-  "PVP hero trait should match nested cached BWiki passive names when chain id is missing."
+  "PVP hero trait should match nested cached passive names when chain id is missing."
 );
 
 const dimoEffects = traitRules.resolveTraitEffects({ name: "\u8fea\u83ab", raw: {} }, 1);

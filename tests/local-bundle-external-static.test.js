@@ -116,7 +116,12 @@ assertIncludes(html, "const BLOODLINES = [", "index.html must keep fixed BLOODLI
 assertIncludes(html, "const FALLBACK_DATA = {", "index.html must keep a tiny FALLBACK_DATA.");
 assertIncludes(html, "function applyDexData", "index.html must keep the core data application path.");
 assertIncludes(html, "rotateSkillsDown", "index.html must keep roller logic.");
+assertIncludes(html, "undoRoller", "index.html must keep roller undo logic.");
 assertIncludes(html, "actionCuteLayers", "index.html must keep manual cute-layer state.");
+assertIncludes(html, "cuteLayerDelta", "index.html must keep cute-layer skill effects.");
+assertIncludes(html, "cuteTotal", "index.html must keep cute-layer damage context.");
+assertIncludes(html, "超级糖果", "index.html must keep the Super Candy PVP rule.");
+assertIncludes(html, "萌化+1", "index.html must keep cute +1 rules.");
 assertIncludes(html, "const REAL_BOSS_FORM_NAMES = new Set([", "index.html must keep the fixed boss-form name list.");
 ["黑猫密探", "幻影荆棘", "祭礼巨像"].forEach((name) => {
   assertIncludes(html, `"${name}"`, `index.html must keep fixed boss-form source name: ${name}.`);
@@ -128,11 +133,11 @@ const fetchBody = functionBody(html, "fetchLocalBundle");
 assert(fetchBody.includes("fetch(LOCAL_BUNDLE_URL"), "fetchLocalBundle must fetch the external local bundle.");
 assert(fetchBody.includes('{ cache: "no-cache" }'), "fetchLocalBundle must request data/local-bundle.json with cache: no-cache.");
 assert(loadBody.includes("fetchLocalBundle()"), "loadDexData must fetch through the external local bundle helper.");
-assert(loadBody.includes("isDataAdminMode()"), "loadDexData must branch for admin-only localStorage data.");
+assert(loadBody.includes("isAdminMode()"), "loadDexData must branch for admin-only localStorage data.");
 assert(loadBody.includes("localStorage.getItem(ADMIN_DATA_STORAGE_KEY)"), "Admin mode must read imported test data from localStorage.");
-assert(loadBody.indexOf("if (isDataAdminMode())") >= 0, "Admin localStorage branch must be explicit.");
+assert(loadBody.indexOf("if (isAdminMode())") >= 0, "Admin localStorage branch must be explicit.");
 assert(
-  loadBody.indexOf("localStorage.getItem(ADMIN_DATA_STORAGE_KEY)") > loadBody.indexOf("if (isDataAdminMode())"),
+  loadBody.indexOf("localStorage.getItem(ADMIN_DATA_STORAGE_KEY)") > loadBody.indexOf("if (isAdminMode())"),
   "Admin localStorage reads must only happen inside the admin-mode branch."
 );
 assert(loadBody.includes("applyLoadedBundle(bundle)"), "loadDexData must apply a validated local bundle.");
@@ -142,11 +147,30 @@ assert(!loadBody.includes("readEmbeddedBundle"), "Startup must not read embedded
 
 const applyLoadedBody = functionBody(html, "applyLoadedBundle");
 assert(applyLoadedBody.includes("rejectMutableDataFields(bundle)"), "Loaded bundles must reject mutable bloodlines/pvpPresets fields.");
-assert(applyLoadedBody.includes("applyDexData(normalizeLocalBundle(bundle))"), "Validated bundles must still use the normal applyDexData path.");
+assert(applyLoadedBody.includes("activeLocalBundle = releaseBundleCopy(bundle)"), "Validated bundles must become the active exportable package.");
+assert(applyLoadedBody.includes("applyDexData(normalizeLocalBundle(activeLocalBundle))"), "Validated bundles must still use the normal applyDexData path.");
 
 const rejectMutableBody = functionBody(html, "rejectMutableDataFields");
 assert(rejectMutableBody.includes('"bloodlines"'), "Imported bundles with bloodlines must be rejected or ignored before application.");
 assert(rejectMutableBody.includes('"pvpPresets"'), "Imported bundles with pvpPresets must be rejected or ignored before application.");
+
+const validateBody = functionBody(html, "validateLocalBundleShape");
+[
+  "schemaVersion",
+  "monsters",
+  "skills",
+  "passives",
+  "monster.stats",
+  "monster.skillIds",
+  "monster.passiveIds",
+  "skill.category",
+  "skill.mode",
+  "skill.power",
+  "skill.pp",
+  "skill.energyCost",
+  "skill.description",
+].forEach((needle) => assertIncludes(validateBody, needle, `Import validation must check ${needle}.`));
+assertIncludes(html, "function rejectForbiddenBundleContent", "Admin imports must reject source, URL, image, and metadata traces.");
 
 const importAdminBody = functionBody(html, "importAdminBundleFile");
 assert(importAdminBody.includes("localStorage.setItem(ADMIN_DATA_STORAGE_KEY"), "Admin imports must save only to localStorage.");
@@ -154,12 +178,35 @@ assert(importAdminBody.includes("已导入数据包："), "Admin import success 
 assert(importAdminBody.includes("只精灵") && importAdminBody.includes("个技能") && importAdminBody.includes("个特性"), "Admin import success must report monsters, skills, and passives only.");
 assert(!importAdminBody.includes("血脉"), "Admin import success must not report imported bloodlines.");
 
+const exportAdminBody = functionBody(html, "exportAdminBundle");
+assertIncludes(exportAdminBody, 'new Blob(', "Admin export must create a local JSON file.");
+assertIncludes(exportAdminBody, '"local-bundle.json"', "Admin export filename must be local-bundle.json.");
+assertIncludes(exportAdminBody, "activeLocalBundle", "Admin export must use the currently active validated bundle.");
+
+const renderAdminBody = functionBody(html, "renderAdminBar");
+assertIncludes(renderAdminBody, "isAdminMode()", "Admin toolbar rendering must use the current hash mode.");
+assertIncludes(html, 'window.addEventListener("hashchange"', "Hash changes must immediately update admin mode and data loading.");
+assertIncludes(html, 'id="adminImportDataBtn" type="button">导入数据</button>', "Admin mode must expose 导入数据.");
+assertIncludes(html, 'id="adminExportDataBtn" type="button">导出数据</button>', "Admin mode must expose 导出数据.");
+assertIncludes(html, 'id="adminClearDataBtn" type="button">清除导入数据</button>', "Admin mode must expose 清除导入数据.");
+
+const topActionsMatch = html.match(/<div class="actions">([\s\S]*?)<\/div>/);
+assert(topActionsMatch, "Main top action bar is missing.");
+const topActionIds = [...topActionsMatch[1].matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
+assert(
+  JSON.stringify(topActionIds) === JSON.stringify(["calculateBtn", "rollerBtn", "undoRollerBtn", "clearBtn"]),
+  `Normal users must see only the four main action buttons, found: ${topActionIds.join(", ")}.`
+);
+
 const startupBody = functionBody(html, "startApp");
 assert(startupBody.includes("await loadDexData()"), "Startup must wait for local-bundle.json before rendering.");
 assert(startupBody.includes("setupAdminDataPanel()"), "Startup must expose the maintenance-only import panel in admin hash mode.");
 
 const applyBody = functionBody(html, "applyDexData");
 assert(applyBody.includes("monsters: withBossForms("), "applyDexData must still generate fixed boss forms at runtime.");
+["monsterById", "skillById", "passiveById", "bloodlineById"].forEach((mapName) => {
+  assertIncludes(applyBody, `${mapName} = new Map(`, `applyDexData must rebuild ${mapName}.`);
+});
 const bossBody = functionBody(html, "withBossForms");
 assert(bossBody.includes("bossFormNamesFromMonsters(baseMonsters)"), "withBossForms must use fixed boss-form names.");
 assert(bossBody.includes("createGeneratedBossForm"), "withBossForms must create boss-form monsters from base monsters.");
@@ -192,7 +239,13 @@ assertNotIncludes(fallbackBody, "pvpPresets", "FALLBACK_DATA must not carry pvpP
 assertNotIncludes(fallbackBody, "bloodlines", "FALLBACK_DATA must not carry bloodlines; fixed BLOODLINES should be applied by runtime.");
 assertNotIncludes(html, "patchwiki.biligame.com", "index.html must not request patchwiki assets.");
 assertNotIncludes(html, "rocomwiki.app", "index.html must not request rocomwiki assets.");
+assertNotIncludes(html, "sourceCommit", "index.html must not keep source metadata fields.");
 assertNotIncludes(html, "<img", "index.html must not render third-party images.");
+assertIncludes(
+  html,
+  "页面默认读取线上数据包；如数据包不可用，将使用内置兜底数据。本工具为非官方阵容与伤害计算辅助工具。",
+  "Footer must use the neutral release copy."
+);
 
 const scripts = [...html.matchAll(/<script(?![^>]*type="application\/json")[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
 scripts.forEach((script, index) => {

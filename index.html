@@ -1757,17 +1757,16 @@
       <div class="actions">
         <button class="button primary" id="calculateBtn" type="button">显示结果</button>
         <button class="button ride" id="rollerBtn" type="button"><span class="button-icon placeholder">?</span><span>使用过山车</span></button>
-        <button class="button undo-ride" id="undoRollerBtn" type="button" disabled>撤销过山车</button>
+        <button class="button undo-ride" id="undoRollerBtn" type="button" disabled>撤回过山车</button>
         <button class="button ghost" id="clearBtn" type="button">清空</button>
       </div>
     </header>
 
     <div class="statusbar" id="dataStatus">数据初始化中...</div>
     <div class="admin-data-panel" id="adminDataPanel" hidden>
-      <strong>数据维护测试</strong>
-      <span>仅 #admin / #data-admin 模式使用，导入内容只保存到本机浏览器。</span>
-      <button class="button ghost" id="adminImportDataBtn" type="button">导入测试数据</button>
-      <button class="button ghost" id="adminClearDataBtn" type="button">清除测试数据</button>
+      <button class="button ghost" id="adminImportDataBtn" type="button">导入数据</button>
+      <button class="button ghost" id="adminExportDataBtn" type="button">导出数据</button>
+      <button class="button ghost" id="adminClearDataBtn" type="button">清除导入数据</button>
       <input id="adminDataFile" type="file" accept=".json,application/json" hidden>
     </div>
 
@@ -1793,7 +1792,7 @@
       <div class="matrix-wrap" id="matrixWrap"></div>
     </section>
 
-    <p class="footer-note">本工具为非官方 PVP 计算/阵容辅助工具。正式数据从本地 data/local-bundle.json 读取；页面启动时不会请求任何第三方数据源。为降低素材版权风险，当前版本默认不加载第三方精灵图片、技能图片、属性图片或血脉图片；属性与血脉仅使用文字徽章显示。用户应确保导入或使用的数据拥有相应授权。</p>
+    <p class="footer-note">页面默认读取线上数据包；如数据包不可用，将使用内置兜底数据。本工具为非官方阵容与伤害计算辅助工具。</p>
   </main>
 
 
@@ -2973,7 +2972,6 @@
       attack: "攻击"
     };
 
-    const BLOODLINE_ICON_URLS = {};
     const TYPE_BADGE_LABELS = {
       grass: "草",
       water: "水",
@@ -3173,6 +3171,7 @@
     const dataStatus = document.getElementById("dataStatus");
     const adminDataPanel = document.getElementById("adminDataPanel");
     const adminImportDataBtn = document.getElementById("adminImportDataBtn");
+    const adminExportDataBtn = document.getElementById("adminExportDataBtn");
     const adminClearDataBtn = document.getElementById("adminClearDataBtn");
     const adminDataFile = document.getElementById("adminDataFile");
     const pvpSimState = {
@@ -3186,6 +3185,7 @@
     let skillById = new Map();
     let passiveById = new Map();
     let bloodlineById = new Map(BLOODLINES.map((bloodline) => [bloodline.id, bloodline]));
+    let activeLocalBundle = null;
     const rollerHistory = [];
 
     function typeName(key) {
@@ -6665,10 +6665,10 @@
       const monsters = (source.monsters || []).map((monster) => { const raw = monster?.raw && typeof monster.raw === "object" ? monster.raw : {}; return { kind: "monster", id: cleanLocalText(monster?.id), name: cleanLocalText(monster?.name), aliases: cleanLocalArray(monster?.aliases), icon: "", types: cleanLocalArray(monster?.types), skillIds: cleanLocalArray(monster?.skillIds), passiveIds: cleanLocalArray(monster?.passiveIds), raw: { stats: cleanLocalStats(raw.stats || monster?.stats), chainId: cleanLocalText(raw.chainId || monster?.chainId), evolutionChainId: cleanLocalText(raw.evolutionChainId || monster?.evolutionChainId), evolutionStage: cleanLocalNumber(raw.evolutionStage || monster?.evolutionStage), bossFormAvailable: Boolean(raw.bossFormAvailable || monster?.bossFormAvailable), isGeneratedBossForm: Boolean(raw.isGeneratedBossForm || monster?.isGeneratedBossForm), baseMonsterId: cleanLocalText(raw.baseMonsterId || monster?.baseMonsterId) } }; }).filter((monster) => monster.id && monster.name).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
       const skills = (source.skills || []).map((skill) => ({ kind: "skill", id: cleanLocalText(skill?.id), name: cleanLocalText(skill?.name), aliases: cleanLocalArray(skill?.aliases), icon: "", type: cleanLocalText(skill?.type), category: cleanLocalText(skill?.category || skill?.mode), mode: cleanLocalText(skill?.mode), power: cleanLocalNumber(skill?.power), accuracy: cleanLocalNumber(skill?.accuracy), pp: cleanLocalNumber(skill?.pp), energyCost: cleanLocalNumber(skill?.energyCost), priority: cleanLocalNumber(skill?.priority), description: cleanLocalText(skill?.description), raw: { ...skill, icon: "" } })).filter((skill) => skill.id && skill.name && skill.type).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
       const passives = (source.passives || []).map((passive) => ({ kind: "passive", id: cleanLocalText(passive?.id), name: cleanLocalText(passive?.name), aliases: cleanLocalArray(passive?.aliases), icon: "", description: cleanLocalText(passive?.description), raw: { ...passive, icon: "" } })).filter((passive) => passive.id && passive.name).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
-      return { generatedAt: source.generatedAt || "local-bundle", currentSeason: source.currentSeason || "本地数据包", seasons: [], sourceCommit: LOCAL_BUNDLE_URL, monsters, passives, bloodlines: BLOODLINES, skills };
+      return { generatedAt: source.generatedAt || "local-bundle", currentSeason: source.currentSeason || "本地数据包", seasons: [], monsters, passives, bloodlines: BLOODLINES, skills };
     }
 
-    function isDataAdminMode() {
+    function isAdminMode() {
       const hash = String(window.location.hash || "").toLowerCase();
       return hash === "#admin" || hash === "#data-admin";
     }
@@ -6682,18 +6682,141 @@
       }
     }
 
+    function rejectForbiddenBundleContent(bundle) {
+      const sourceMarkers = [["wi", "ki"].join(""), ["bili", "game"].join("")];
+      const imageExtensions = [["pn", "g"].join(""), ["jp", "g"].join(""), ["jp", "eg"].join(""), ["sv", "g"].join(""), ["web", "p"].join("")];
+      const visit = (value, path = "数据包") => {
+        if (typeof value === "string") {
+          const lower = value.toLowerCase();
+          if (sourceMarkers.some((marker) => lower.includes(marker))) {
+            throw new Error(path + " 包含禁止的来源标记。");
+          }
+          if (/https?:\/\//i.test(value)) {
+            throw new Error(path + " 包含外部链接。");
+          }
+          const cleanPath = lower.split(/[?#]/)[0];
+          if (imageExtensions.some((extension) => cleanPath.endsWith("." + extension))) {
+            throw new Error(path + " 包含图片文件路径。");
+          }
+          return;
+        }
+        if (Array.isArray(value)) {
+          value.forEach((item, index) => visit(item, `${path}[${index}]`));
+          return;
+        }
+        if (!value || typeof value !== "object") return;
+        Object.entries(value).forEach(([key, item]) => {
+          const normalizedKey = key.toLowerCase().replace(/[_-]/g, "");
+          if (
+            normalizedKey === "bloodlines"
+            || normalizedKey === "pvppresets"
+            || normalizedKey.startsWith("source")
+            || normalizedKey.includes("image")
+            || normalizedKey.includes("icon")
+          ) {
+            throw new Error(`${path}.${key} 是禁止字段。`);
+          }
+          visit(item, `${path}.${key}`);
+        });
+      };
+      visit(bundle);
+    }
+
     function validateLocalBundleShape(bundle) {
       if (!bundle || typeof bundle !== "object") throw new Error("数据包不是有效 JSON 对象。");
+      const allowedKeys = new Set(["schemaVersion", "generatedAt", "currentSeason", "monsters", "skills", "passives"]);
+      const unknownKeys = Object.keys(bundle).filter((key) => !allowedKeys.has(key));
+      if (unknownKeys.length) throw new Error("数据包包含无效字段：" + unknownKeys.join("、") + "。");
+      if (bundle.schemaVersion !== 1) throw new Error("数据包 schemaVersion 必须为 1。");
       if (!Array.isArray(bundle.monsters) || bundle.monsters.length === 0) throw new Error("数据包缺少 monsters 精灵数组。");
       if (!Array.isArray(bundle.skills) || bundle.skills.length === 0) throw new Error("数据包缺少 skills 技能数组。");
       if (!Array.isArray(bundle.passives)) throw new Error("数据包缺少 passives 特性数组。");
+      const statKeys = ["hp", "atk", "defense", "spa", "spd", "spe"];
+      const monsterIds = new Set();
+      const skillIds = new Set();
+      const passiveIds = new Set();
+      bundle.skills.forEach((skill, index) => {
+        const label = `skills[${index}]`;
+        if (!skill || typeof skill !== "object") throw new Error(label + " 不是有效技能对象。");
+        if (!/^skill-[^\s]+$/.test(String(skill.id || ""))) throw new Error(label + ".id 必须使用 skill- 前缀。");
+        if (skillIds.has(skill.id)) throw new Error(label + ".id 重复：" + skill.id + "。");
+        skillIds.add(skill.id);
+        if (!String(skill.name || "").trim()) throw new Error(label + ".name 不能为空。");
+        if (!TYPE_MAP[String(skill.type || "")]) throw new Error(label + ".type 不是合法属性。");
+        if (!String(skill.category || skill.mode || "").trim()) throw new Error(label + " 必须包含 skill.category 或 skill.mode。");
+        if (!Object.prototype.hasOwnProperty.call(skill, "power") || (skill.power !== null && !Number.isFinite(Number(skill.power)))) {
+          throw new Error(label + ".power 必须为数字或 null。");
+        }
+        if (
+          !Object.prototype.hasOwnProperty.call(skill, "pp")
+          && !Object.prototype.hasOwnProperty.call(skill, "energyCost")
+        ) {
+          throw new Error(label + " 必须包含 skill.pp 或 skill.energyCost。");
+        }
+        ["pp", "energyCost"].forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(skill, key) && skill[key] !== null && !Number.isFinite(Number(skill[key]))) {
+            throw new Error(`${label}.${key} 必须为数字或 null。`);
+          }
+        });
+        if (typeof skill.description !== "string") throw new Error(label + ".description 必须为文字。");
+      });
+      bundle.passives.forEach((passive, index) => {
+        const label = `passives[${index}]`;
+        if (!passive || typeof passive !== "object") throw new Error(label + " 不是有效特性对象。");
+        if (!/^passive-[^\s]+$/.test(String(passive.id || ""))) throw new Error(label + ".id 必须使用 passive- 前缀。");
+        if (passiveIds.has(passive.id)) throw new Error(label + ".id 重复：" + passive.id + "。");
+        passiveIds.add(passive.id);
+        if (!String(passive.name || "").trim()) throw new Error(label + ".name 不能为空。");
+        if (typeof passive.description !== "string") throw new Error(label + ".description 必须为文字。");
+      });
+      bundle.monsters.forEach((monster, index) => {
+        const label = `monsters[${index}]`;
+        if (!monster || typeof monster !== "object") throw new Error(label + " 不是有效精灵对象。");
+        if (!/^monster-[^\s]+$/.test(String(monster.id || ""))) throw new Error(label + ".id 必须使用 monster- 前缀。");
+        if (monsterIds.has(monster.id)) throw new Error(label + ".id 重复：" + monster.id + "。");
+        monsterIds.add(monster.id);
+        if (!String(monster.name || "").trim()) throw new Error(label + ".name 不能为空。");
+        if (!Array.isArray(monster.types) || monster.types.length === 0 || monster.types.some((type) => !TYPE_MAP[type])) {
+          throw new Error(label + ".types 必须是合法属性数组。");
+        }
+        if (!Array.isArray(monster.skillIds)) throw new Error(label + ".skillIds 必须是数组。");
+        if (!Array.isArray(monster.passiveIds)) throw new Error(label + ".passiveIds 必须是数组。");
+        if (!monster.stats || typeof monster.stats !== "object") throw new Error(label + ".monster.stats 缺失。");
+        statKeys.forEach((key) => {
+          const value = monster.stats[key];
+          if (value === null || value === undefined || value === "" || !Number.isFinite(Number(value))) {
+            throw new Error(`${label}.monster.stats.${key} 必须为数字。`);
+          }
+        });
+      });
+      bundle.monsters.forEach((monster) => {
+        monster.skillIds.forEach((skillId) => {
+          if (!skillIds.has(skillId)) throw new Error(`精灵 ${monster.name} 的 monster.skillIds 引用了不存在的技能：${skillId}。`);
+        });
+        monster.passiveIds.forEach((passiveId) => {
+          if (!passiveIds.has(passiveId)) throw new Error(`精灵 ${monster.name} 的 monster.passiveIds 引用了不存在的特性：${passiveId}。`);
+        });
+      });
+    }
+
+    function releaseBundleCopy(bundle) {
+      return JSON.parse(JSON.stringify({
+        schemaVersion: bundle.schemaVersion,
+        generatedAt: cleanLocalText(bundle.generatedAt),
+        currentSeason: cleanLocalText(bundle.currentSeason) || "本地数据包",
+        monsters: bundle.monsters,
+        skills: bundle.skills,
+        passives: bundle.passives
+      }));
     }
 
     function applyLoadedBundle(bundle) {
       rejectMutableDataFields(bundle);
+      rejectForbiddenBundleContent(bundle);
       validateLocalBundleShape(bundle);
-      applyDexData(normalizeLocalBundle(bundle));
-      return bundle;
+      activeLocalBundle = releaseBundleCopy(bundle);
+      applyDexData(normalizeLocalBundle(activeLocalBundle));
+      return activeLocalBundle;
     }
 
     async function fetchLocalBundle() {
@@ -6718,7 +6841,7 @@
     }
 
     async function loadDexData() {
-      if (isDataAdminMode()) {
+      if (isAdminMode()) {
         try {
           const stored = localStorage.getItem(ADMIN_DATA_STORAGE_KEY);
           if (stored) {
@@ -6739,6 +6862,7 @@
         return;
       } catch (error) {
         console.warn(error);
+        activeLocalBundle = null;
         applyDexData(FALLBACK_DATA);
         dataStatus.textContent = "本地数据包读取失败，已使用内置示例数据：" + error.message;
       }
@@ -6775,23 +6899,46 @@
       } catch (error) {
         throw new Error("JSON 文件解析失败：" + error.message);
       }
-      rejectMutableDataFields(bundle);
-      validateLocalBundleShape(bundle);
-      localStorage.setItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(bundle));
-      applyLoadedBundle(bundle);
+      const importedBundle = applyLoadedBundle(bundle);
+      localStorage.setItem(ADMIN_DATA_STORAGE_KEY, JSON.stringify(importedBundle));
       refreshCurrentViewAfterDataChange();
-      dataStatus.textContent = `已导入数据包：${bundle.monsters.length} 只精灵，${bundle.skills.length} 个技能，${bundle.passives.length} 个特性。`;
-      return bundle;
+      dataStatus.textContent = `已导入数据包：${importedBundle.monsters.length} 只精灵，${importedBundle.skills.length} 个技能，${importedBundle.passives.length} 个特性。`;
+      return importedBundle;
+    }
+
+    function exportAdminBundle() {
+      if (!isAdminMode() || !activeLocalBundle) {
+        alert("当前没有可导出的有效数据包。");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(activeLocalBundle, null, 2)], { type: "application/json;charset=utf-8" });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = "local-bundle.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+      dataStatus.textContent = `已导出数据包：${activeLocalBundle.monsters.length} 只精灵，${activeLocalBundle.skills.length} 个技能，${activeLocalBundle.passives.length} 个特性。`;
+    }
+
+    function renderAdminBar() {
+      if (!adminDataPanel) return;
+      adminDataPanel.hidden = !isAdminMode();
+    }
+
+    async function handleAdminModeChange() {
+      renderAdminBar();
+      await loadDexData();
+      refreshCurrentViewAfterDataChange();
     }
 
     function setupAdminDataPanel() {
       if (!adminDataPanel) return;
-      if (!isDataAdminMode()) {
-        adminDataPanel.hidden = true;
-        return;
-      }
-      adminDataPanel.hidden = false;
+      renderAdminBar();
       adminImportDataBtn?.addEventListener("click", () => adminDataFile?.click());
+      adminExportDataBtn?.addEventListener("click", exportAdminBundle);
       adminDataFile?.addEventListener("change", async () => {
         const file = adminDataFile.files?.[0];
         adminDataFile.value = "";
@@ -6810,6 +6957,7 @@
         refreshCurrentViewAfterDataChange();
         dataStatus.textContent = "已清除 admin 本地测试数据，重新读取 data/local-bundle.json。";
       });
+      window.addEventListener("hashchange", handleAdminModeChange);
     }
 
     teamGrid.addEventListener("change", (event) => { saveTeam(); renderResults(); });

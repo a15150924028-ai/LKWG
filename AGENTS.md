@@ -869,3 +869,31 @@ Use this entry format:
   - Left PVP nature/talent defaults, battle calculations, type relations, skill pools, roller behavior, and team storage logic unchanged.
 - Verification: Watched `node tests/local-bundle-external-static.test.js` fail before implementation on the missing admin-only storage key, then pass after implementation. Ran all 21 non-live Node tests in `tests`; parsed executable scripts in both HTML files with `new Function`; confirmed through a local HTTP server that `index.html` and `data/local-bundle.json` return 200 and the JSON contains schema version 1, 494 monsters, 499 skills, 184 passives, no `bloodlines`, and no `pvpPresets`; scanned for third-party URL/image fields and found none. Browser interaction verification was attempted, but the in-app browser security policy blocked both localhost and file URLs.
 - Status: Complete.
+
+### 2026-06-11 14:52 +08:00 - Codex
+
+- Request: Back up the repository, remove the legacy third-party ingestion/update system and generated source snapshots, separate normal/admin UI, strengthen imported package validation, and preserve all core PVP, cute-layer, bloodline, damage, and roller behavior.
+- Files changed:
+  - `index.html`
+  - `tests/admin-mode-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `tests/local-bundle-import-validation.test.js`
+  - `tests/default-build-static.test.js`
+  - `tests/no-local-skill-pool-rollback-static.test.js`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `tests/roller-runtime-static.test.js`
+  - Removed the legacy application, source-ingestion exporter, generated source snapshots, source-only tests, and the obsolete remote-image test.
+  - `AGENTS.md`
+- Changes:
+  - Created and verified the external backup `C:\codex-work\backups\codex-lkwg-battle-before-source-cleanup-20260611.zip` before deletion; SHA-256 is `D1D7C3C453D175931E7CB1B6226967A737C3DDF412CC162B4F818AED642F4B07`.
+  - Kept the normal top bar limited to 显示结果、使用过山车、撤回过山车、清空. Added an admin-only toolbar for 导入数据、导出数据、清除导入数据 under `#admin` and `#data-admin`, including hash-change reload behavior.
+  - Added active-package JSON export as `local-bundle.json` and strict import checks for schema, neutral IDs, arrays, six monster stats, skill fields, references, forbidden source metadata, external URLs, and image paths.
+  - Removed runtime source metadata and changed the footer to neutral local-package/fallback wording.
+  - Retargeted retained regression tests to `index.html` and preserved default build, boss-form generation, cute layers, Super Candy, trait, selected-skill damage, support/defense, roller, fixed bloodlines, and all four lookup Maps.
+- Verification: Watched the focused release test fail before implementation on the missing admin-mode contract, then pass after implementation. A behavioral import test caught and verified the fix for `null` monster stats being accepted. Ran all retained tests; validated the formal 494-monster, 499-skill, 184-passive package through the same import validator; parsed all executable scripts; scanned `index.html` and `data/local-bundle.json` for removed network/source/image markers; confirmed neutral IDs and zero broken references; and confirmed both files return HTTP 200 from a local server with the expected controls and footer. Browser interaction was not retried because the in-app browser policy blocks local URLs in this environment.
+- Status: Complete.
