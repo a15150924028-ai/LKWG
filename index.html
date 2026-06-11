@@ -3143,20 +3143,18 @@
 
     const FALLBACK_DATA = {
       generatedAt: "内置示例",
-      currentSeason: "",
+      currentSeason: "内置示例",
       monsters: [
-        { id: "fallback-dimo", name: "迪莫", icon: "", types: ["light"], aliases: [], skillIds: ["fallback-flash", "fallback-sun"], passiveIds: ["fallback-partner"] },
-        { id: "fallback-wangxi", name: "王蜥", icon: "", types: ["ground"], aliases: [], skillIds: ["fallback-stone", "fallback-guard"], passiveIds: ["fallback-stoneblood"] }
+        { id: "fallback-monster-a", name: "示例精灵A", icon: "", types: ["light"], aliases: [], skillIds: ["fallback-skill-a"], passiveIds: ["fallback-passive-a"], stats: { hp: 80, atk: 70, defense: 70, spa: 80, spd: 70, spe: 60 } },
+        { id: "fallback-monster-b", name: "示例精灵B", icon: "", types: ["ground"], aliases: [], skillIds: ["fallback-skill-b"], passiveIds: ["fallback-passive-b"], stats: { hp: 90, atk: 80, defense: 80, spa: 60, spd: 70, spe: 50 } }
       ],
       passives: [
-        { id: "fallback-partner", name: "最好的伙伴", icon: "", description: "造成克制伤害后，获得攻防速提升并回复能量。", aliases: [] },
-        { id: "fallback-stoneblood", name: "防守反击", icon: "", description: "受到攻击后获得反击收益。", aliases: [] }
+        { id: "fallback-passive-a", name: "示例特性A", icon: "", description: "内置兜底示例特性。", aliases: [] },
+        { id: "fallback-passive-b", name: "示例特性B", icon: "", description: "内置兜底示例特性。", aliases: [] }
       ],
       skills: [
-        { id: "fallback-flash", name: "闪光", icon: "", type: "light", category: "special", power: 60, description: "造成魔伤。", aliases: [] },
-        { id: "fallback-sun", name: "放晴", icon: "", type: "light", category: "status", power: null, description: "强化光系技能。", aliases: [] },
-        { id: "fallback-stone", name: "石锁", icon: "", type: "ground", category: "physical", power: 50, description: "造成物伤，限制换宠。", aliases: [] },
-        { id: "fallback-guard", name: "硬化", icon: "", type: "ground", category: "defense", power: null, description: "防御技能。", aliases: [] }
+        { id: "fallback-skill-a", name: "示例技能A", icon: "", type: "light", category: "special", power: 60, description: "内置兜底示例技能。", aliases: [] },
+        { id: "fallback-skill-b", name: "示例技能B", icon: "", type: "ground", category: "physical", power: 50, description: "内置兜底示例技能。", aliases: [] }
       ]
     };
 

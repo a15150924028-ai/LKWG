@@ -61,6 +61,7 @@ assert(
 assert(bundle.schemaVersion === 1, "External bundle schemaVersion must be 1.");
 assert(typeof bundle.generatedAt === "string", "External bundle generatedAt must be a string.");
 assert(typeof bundle.currentSeason === "string", "External bundle currentSeason must be a string.");
+assert(bundle.currentSeason === "本地数据包", "External bundle currentSeason must be 本地数据包.");
 assert(bundle.monsters.length >= 400, "External bundle must contain the full monster pool.");
 assert(bundle.skills.length >= 450, "External bundle must contain the skill pool.");
 assert(bundle.passives.length >= 150, "External bundle must contain passive records.");
@@ -237,6 +238,22 @@ assert(bossBody.includes("createGeneratedBossForm"), "withBossForms must create 
 const fallbackBody = constObjectBody(html, "FALLBACK_DATA");
 assertNotIncludes(fallbackBody, "pvpPresets", "FALLBACK_DATA must not carry pvpPresets.");
 assertNotIncludes(fallbackBody, "bloodlines", "FALLBACK_DATA must not carry bloodlines; fixed BLOODLINES should be applied by runtime.");
+[
+  "示例精灵A",
+  "示例精灵B",
+  "示例技能A",
+  "示例技能B",
+  "示例特性A",
+  "示例特性B",
+].forEach((name) => assertIncludes(fallbackBody, name, `FALLBACK_DATA must clearly use built-in sample name ${name}.`));
+[
+  "迪莫",
+  "王蜥",
+  "闪光",
+  "放晴",
+  "最好的伙伴",
+  "防守反击",
+].forEach((name) => assertNotIncludes(fallbackBody, name, `FALLBACK_DATA must not look like formal data: ${name}.`));
 assertNotIncludes(html, "patchwiki.biligame.com", "index.html must not request patchwiki assets.");
 assertNotIncludes(html, "rocomwiki.app", "index.html must not request rocomwiki assets.");
 assertNotIncludes(html, "sourceCommit", "index.html must not keep source metadata fields.");

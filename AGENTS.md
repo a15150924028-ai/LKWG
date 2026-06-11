@@ -913,3 +913,19 @@ Use this entry format:
   - Extended the roller regression test to execute the real roller/undo functions and verify button enable/disable behavior.
 - Verification: Watched `node tests/roller-runtime-static.test.js` fail before the fix because `updateRollerUndoButton` was missing, then pass after the fix. Ran all 12 retained Node tests. Browser-tested normal JSON loading, fallback loading on HTTP 404, normal/admin toolbar separation, monster search, monster skill pool, passive/stat display, PVP default build and damage output, manual cute-layer controls on a valid monster, roller rotation and undo, and confirmed an empty error/warning console on the normal page. The browser asset inventory contained only the same-origin `data/local-bundle.json` request and no image/font/stylesheet/script assets.
 - Status: Complete.
+
+### 2026-06-11 17:31 +08:00 - Codex
+
+- Request: Make two small B-plan cleanup changes only: set `data/local-bundle.json` `currentSeason` to `本地数据包` and replace `FALLBACK_DATA` with obvious built-in sample records.
+- Files changed:
+  - `data/local-bundle.json`
+  - `index.html`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the formal local bundle `currentSeason` from placeholder question marks to `本地数据包`.
+  - Replaced fallback-only records with `示例精灵A`, `示例精灵B`, `示例技能A`, `示例技能B`, `示例特性A`, and `示例特性B`.
+  - Kept `FALLBACK_DATA` tiny and left the B-plan external bundle startup path unchanged.
+  - Added regression assertions so the external bundle season and fallback sample names stay explicit.
+- Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data/content change on the placeholder `currentSeason`, then pass after the change. Ran all 12 retained Node tests and scanned `index.html` plus `data/local-bundle.json` for old BWiki/remote/image/update-chain markers with no matches.
+- Status: Complete.
