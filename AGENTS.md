@@ -978,3 +978,18 @@ Use this entry format:
   - Updated regression tests to require an embedded PNG data URI and reject the removed asset path.
 - Verification: Watched `node tests/roller-runtime-static.test.js` and `node tests/local-bundle-external-static.test.js` fail before implementation on the missing embedded data URI and old asset path, then pass after embedding. Ran all 13 retained Node tests. Parsed all inline scripts with `new Function` and verified `index.html` has one embedded PNG image, no `assets/roller-skill.png` reference, and no separate roller PNG file.
 - Status: Complete.
+
+### 2026-06-11 18:28 +08:00 - Codex
+
+- Request: Hide duplicate boss-form monsters in the monster dropdowns, keeping only the upper/base option visible.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `visibleMonsterOptions()` to keep generated boss forms and direct suffixed boss duplicates out of monster selection lists without deleting them from `dexData.monsters`.
+  - Updated the main team monster picker and PVP ally/enemy monster pickers to use the visible de-duplicated monster option list.
+  - Kept generated boss-form records available internally for PVP/boss rules and existing state resolution.
+  - Extended the boss-form regression test to verify generated boss duplicates and direct `（首领）` duplicates are hidden while normal and direct boss records remain available.
+- Verification: Watched `node tests/pvp-boss-forms-static.test.js` fail before implementation on the missing visible option helper, then fail again for direct suffixed duplicates until the filter was extended. Confirmed against real package data that `伊兰龙` remains visible while internal `伊兰龙（首领）` is hidden from visible options, with 25 generated boss forms filtered from 519 internal records to 494 visible records. Ran all 13 retained Node tests and `git diff --check`.
+- Status: Complete.

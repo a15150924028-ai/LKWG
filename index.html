@@ -3372,11 +3372,12 @@
           `
           : '<span class="tag empty">未选择精灵</span>';
         createCombo(monsterCombo, {
-          items: dexData.monsters,
+          items: visibleMonsterOptions(dexData.monsters),
           value: pet.monsterId || "",
+          selectedItem: selectedMonster || null,
           placeholder: "搜索精灵名称",
           emptyText: "未选择精灵",
-          itemsForQuery: (query) => fuzzyMonsterItems(query, dexData.monsters),
+          itemsForQuery: (query) => fuzzyMonsterItems(query, visibleMonsterOptions(dexData.monsters)),
           skipDefaultFilter: true,
           onSelect: (item) => {
             const current = readTeam();
@@ -5296,6 +5297,23 @@
       return Boolean(monster?.isGeneratedBossForm || monster?.raw?.isGeneratedBossForm || String(monster?.id || "").endsWith(BOSS_FORM_SUFFIX));
     }
 
+    function bossOptionBaseName(name) {
+      return String(name || "").replace(/[（(]\s*首领\s*[）)]\s*$/, "").trim();
+    }
+
+    function visibleMonsterOptions(monsters = dexData.monsters) {
+      const baseNameKeys = new Set((monsters || [])
+        .filter((monster) => !isGeneratedBossForm(monster) && bossOptionBaseName(monster?.name) === String(monster?.name || "").trim())
+        .map((monster) => compactMonsterName(monster.name))
+        .filter(Boolean));
+      return (monsters || []).filter((monster) => {
+        if (isGeneratedBossForm(monster)) return false;
+        const name = String(monster?.name || "").trim();
+        const baseName = bossOptionBaseName(name);
+        return baseName === name || !baseNameKeys.has(compactMonsterName(baseName));
+      });
+    }
+
     function evolutionGroupKey(monster) {
       return monster?.raw?.chainId
         || monster?.raw?.evolutionChainId
@@ -5792,21 +5810,22 @@
 
     function prioritizedAllyMonsters(team) {
       const selected = selectedTeamMonsters(team);
-      if (!selected.length) return dexData.monsters;
+      const visible = visibleMonsterOptions(dexData.monsters);
+      if (!selected.length) return visible;
       const selectedIds = new Set(selected.map((monster) => monster.id));
-      return [...selected, ...dexData.monsters.filter((monster) => !selectedIds.has(monster.id))];
+      return [...selected, ...visible.filter((monster) => !selectedIds.has(monster.id))];
     }
 
     function allyMonsterItemsForQuery(team, query) {
       const selected = selectedTeamMonsters(team);
-      if (!selected.length) return query.trim() ? fuzzyMonsterItems(query, dexData.monsters) : dexData.monsters;
+      if (!selected.length) return query.trim() ? fuzzyMonsterItems(query, visibleMonsterOptions(dexData.monsters)) : visibleMonsterOptions(dexData.monsters);
       return query.trim()
         ? fuzzyMonsterItems(query, prioritizedAllyMonsters(team))
         : selected;
     }
 
     function enemyMonsterItemsForQuery(query) {
-      return query.trim() ? fuzzyMonsterItems(query, dexData.monsters) : dexData.monsters;
+      return query.trim() ? fuzzyMonsterItems(query, visibleMonsterOptions(dexData.monsters)) : visibleMonsterOptions(dexData.monsters);
     }
 
     function teamPetForMonster(team, monsterId) {
@@ -6205,7 +6224,7 @@
         const state = pvpSideState(side);
         const isAlly = side === "ally";
         const selectedMonster = monsterById.get(state.monsterId);
-        const monsterItems = isAlly ? prioritizedAllyMonsters(team) : dexData.monsters;
+        const monsterItems = isAlly ? prioritizedAllyMonsters(team) : visibleMonsterOptions(dexData.monsters);
         const selectedTeam = selectedTeamMonsters(team);
 
         createCombo(root.querySelector(`[data-pvp-combo="${side}-monster"]`), {

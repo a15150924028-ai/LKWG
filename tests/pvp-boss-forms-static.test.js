@@ -41,6 +41,8 @@ vm.runInNewContext(`
   ${extractFunction("pvpMonsterNameKeys")}
   ${extractFunction("isBossVariant")}
   ${extractFunction("isGeneratedBossForm")}
+  ${extractFunction("bossOptionBaseName")}
+  ${extractFunction("visibleMonsterOptions")}
   ${extractFunction("bossFormNamesFromMonsters")}
   ${extractFunction("bossFormDisplayName")}
   ${extractFunction("bossFormSourceMonster")}
@@ -50,6 +52,7 @@ vm.runInNewContext(`
   this.withBossForms = withBossForms;
   this.isBossVariant = isBossVariant;
   this.isGeneratedBossForm = isGeneratedBossForm;
+  this.visibleMonsterOptions = visibleMonsterOptions;
 `, sandbox);
 
 const monsters = [
@@ -61,7 +64,9 @@ const monsters = [
   { id: "black-cat-base", name: "\u5c0f\u9ed1\u732b", aliases: [], icon: "black-base.png", types: ["normal"], skillIds: ["s8"], raw: { chainId: "chain-black-cat", evolutionStage: 1 } },
   { id: "black-cat-boss", name: "\u9ed1\u732b\u5bc6\u63a2", aliases: [], icon: "black-boss.png", types: ["normal"], skillIds: ["s9"], raw: { "\u7cbe\u7075\u5f62\u6001": "\u9996\u9886\u5f62\u6001" } },
   { id: "new-boss-source", name: "\u52a8\u6001\u5f62\u6001\u6e90", aliases: [], icon: "new.png", types: ["water"], skillIds: ["s5"], raw: { bossFormAvailable: true } },
-  { id: "listed-boss-source", name: "\u540d\u5355\u5f62\u6001\u6e90", aliases: [], icon: "listed.png", types: ["fire"], skillIds: ["s6"], raw: { bossFormNames: ["\u540d\u5355\u5f62\u6001\u6e90"] } }
+  { id: "listed-boss-source", name: "\u540d\u5355\u5f62\u6001\u6e90", aliases: [], icon: "listed.png", types: ["fire"], skillIds: ["s6"], raw: { bossFormNames: ["\u540d\u5355\u5f62\u6001\u6e90"] } },
+  { id: "direct-suffix-base", name: "\u4f0a\u5170\u9f99", aliases: [], icon: "yilan.png", types: ["dragon"], skillIds: ["s10"], raw: {} },
+  { id: "direct-suffix-boss", name: "\u4f0a\u5170\u9f99\uff08\u9996\u9886\uff09", aliases: [], icon: "yilan-boss.png", types: ["dragon"], skillIds: ["s11"], raw: {} }
 ];
 
 const bossNames = sandbox.bossFormNamesFromMonsters(monsters);
@@ -77,9 +82,30 @@ assert(stormBoss.raw.baseMonsterId === "storm", "Generated boss forms should kee
 assert(stormBoss.skillIds.includes("s4"), "Generated boss forms should preserve source skills.");
 assert(stormBoss.aliases.includes("\u98ce\u66b4\u6218\u72ac"), "Generated boss forms should remain searchable by the base boss name.");
 assert(sandbox.isBossVariant(stormBoss), "Generated boss forms should count as boss variants.");
+const visibleBossOptions = sandbox.visibleMonsterOptions(withBoss);
+assert(
+  visibleBossOptions.some((monster) => monster.id === "storm"),
+  "Normal source monsters should remain visible in monster dropdowns."
+);
+assert(
+  !visibleBossOptions.some((monster) => monster.id === stormBoss.id),
+  "Generated suffixed boss forms should be hidden from monster dropdowns to avoid duplicate choices."
+);
+assert(
+  visibleBossOptions.some((monster) => monster.id === "direct-suffix-base"),
+  "The normal record should remain visible when a direct suffixed boss duplicate exists."
+);
+assert(
+  !visibleBossOptions.some((monster) => monster.id === "direct-suffix-boss"),
+  "Direct suffixed boss duplicates should be hidden when their normal record exists."
+);
 
 const directRainbowBoss = withBoss.find((monster) => monster.id === "rainbow-boss");
 assert(sandbox.isBossVariant(directRainbowBoss), "Local monsters whose form field is boss form should count directly as boss variants.");
+assert(
+  visibleBossOptions.some((monster) => monster.id === "rainbow-boss"),
+  "Direct boss records from the data package should remain visible instead of being removed."
+);
 assert(
   !withBoss.some((monster) => monster.name === "\u5f69\u8679\u72ec\u89d2\u517d\uff08\u9996\u9886\uff09"),
   "Direct boss monsters should not generate duplicate suffixed boss forms."
@@ -105,5 +131,7 @@ assert(
 );
 
 assert(html.includes("monsters: withBossForms(dexSourceData.monsters || [])"), "Applied dex data should include generated boss forms.");
+assert(html.includes("items: visibleMonsterOptions(dexData.monsters)"), "Team monster dropdowns should hide generated duplicate boss forms.");
+assert(html.includes("fuzzyMonsterItems(query, visibleMonsterOptions(dexData.monsters))"), "Monster search should query the visible de-duplicated monster list.");
 
 console.log("PVP boss form static checks passed.");
