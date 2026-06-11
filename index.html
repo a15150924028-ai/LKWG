@@ -647,17 +647,6 @@
       padding: 14px;
     }
 
-    .input-pet-results {
-      border-top: 1px solid var(--line);
-    }
-
-    .mobile-pet-results {
-      display: none;
-      gap: 12px;
-      padding: 0;
-    }
-
-    .result-card,
     .analysis-card {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -665,7 +654,6 @@
       padding: 10px;
     }
 
-    .result-card h3,
     .analysis-card h3 {
       display: flex;
       gap: 8px;
@@ -1527,14 +1515,6 @@
         grid-template-columns: 1fr;
       }
 
-      .input-pet-results {
-        display: none;
-      }
-
-      .mobile-pet-results {
-        display: grid;
-      }
-
       .team-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
@@ -1782,7 +1762,6 @@
           <h2 id="inputTitle">选择你的精灵</h2>
         </div>
         <div class="team-grid" id="teamGrid"></div>
-        <div class="results input-pet-results" id="inputPetResults"></div>
       </section>
 
       <section class="section">
@@ -3165,7 +3144,6 @@
     };
 
     const teamGrid = document.getElementById("teamGrid");
-    const inputPetResultsEl = document.getElementById("inputPetResults");
     const resultsEl = document.getElementById("results");
     const matrixWrap = document.getElementById("matrixWrap");
     const calculateBtn = document.getElementById("calculateBtn");
@@ -6447,82 +6425,9 @@
       saveTeam();
       updateRollerButton(team);
 
-      const petHtml = team.map((pet, petIndex) => {
-        const monster = monsterById.get(pet.monsterId);
-        const bloodline = bloodlineById.get(pet.bloodlineId);
-        const passives = getMonsterPassives(monster);
-        const petTypes = unique(monster?.types || []);
-        const passiveNames = passives.length ? passives.map((passive) => passive.name).join("、") : "无特性";
-        const innateStrong = strongTargetsForAttackTypes(petTypes);
-        const innateResisted = resistedTargetsForAttackTypes(petTypes);
-        const weakBy = weakAttackersAgainst(petTypes);
-        const resistFrom = resistingAttackersAgainst(petTypes);
-        const skillRows = pet.skills.map((skillRef, skillIndex) => {
-          const skill = skillById.get(skillRef.skillId);
-          if (!skill) {
-            return `
-              <div class="skill-chip">
-                <span class="combo-icon placeholder">?</span>
-                <div><strong>技能${skillIndex + 1} 未选择</strong><div class="line">未计入克制面</div></div>
-              </div>
-            `;
-          }
-          if (!isAttackSkill(skill)) {
-            return `
-              <div class="skill-chip">
-                ${iconHtml(skill, "combo-icon")}
-                <div>
-                  <strong>技能${skillIndex + 1} ${escapeHtml(skill.name)}</strong>
-                  <div class="line">${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}，不计入克制</div>
-                </div>
-              </div>
-            `;
-          }
-          const strong = RELATION[skill.type]?.strong || [];
-          return `
-            <div class="skill-chip">
-              ${iconHtml(skill, "combo-icon")}
-              <div>
-                <strong>技能${skillIndex + 1} ${escapeHtml(skill.name)}</strong>
-                <div class="line">${CATEGORY_NAMES[skill.category] || skill.category} / ${typeName(skill.type)}；克制 ${strong.length ? strong.map(typeName).join("、") : "无"}</div>
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        return `
-          <article class="result-card">
-            <div class="result-head">
-              <h3>${iconHtml(monster, "title-icon")}<span>${petIndex + 1}. ${escapeHtml(pet.name || `精灵${petIndex + 1}`)}</span></h3>
-              <div class="result-badges">${chips(petTypes)}<span class="tag info">${escapeHtml(bloodline?.name || "未选血脉")}</span></div>
-            </div>
-            <div class="line">特性：${escapeHtml(passiveNames)}</div>
-            <div class="coverage-row">
-              <span class="coverage-label">克制</span>
-              <div class="meta-line">${chips(innateStrong, "good")}</div>
-            </div>
-            <div class="coverage-row">
-              <span class="coverage-label">被抵抗</span>
-              <div class="meta-line">${chips(innateResisted, "info")}</div>
-            </div>
-            <div class="coverage-row">
-              <span class="coverage-label">被克制</span>
-              <div class="meta-line">${chips(weakBy, "bad")}</div>
-            </div>
-            <div class="coverage-row">
-              <span class="coverage-label">抵抗</span>
-              <div class="meta-line">${chips(resistFrom, "good")}</div>
-            </div>
-            <div class="skill-list">${skillRows}</div>
-          </article>
-        `;
-      }).join("");
-
-      inputPetResultsEl.innerHTML = petHtml;
       resultsEl.innerHTML = renderRollerSuperModule(team)
         + renderAnalysis(team)
-        + renderPvpDamageSimulation(team)
-        + `<div class="mobile-pet-results">${petHtml}</div>`;
+        + renderPvpDamageSimulation(team);
       hydrateRollerSkillPickers(team);
       hydratePvpDamageSimulation(team);
     }

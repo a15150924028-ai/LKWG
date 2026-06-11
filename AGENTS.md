@@ -946,3 +946,18 @@ Use this entry format:
   - Updated tests to allow exactly this one local image while continuing to reject third-party image/request markers.
 - Verification: Watched `node tests/roller-runtime-static.test.js` fail before implementation on the missing local roller icon path, then pass after implementation. Ran all 12 retained Node tests. Verified `index.html` has exactly one `<img>` tag pointing to `assets/roller-skill.png`, verified the asset has a PNG signature, and scanned `index.html` plus `data/local-bundle.json` for old BWiki/remote/image/update-chain markers with no matches. Browser verification of the `file://` page was blocked by the Browser Use URL policy, so no workaround browser path was used.
 - Status: Complete.
+
+### 2026-06-11 18:01 +08:00 - Codex
+
+- Request: Remove the selected per-pet result card module under the results area because it is not useful.
+- Files changed:
+  - `index.html`
+  - `tests/no-pet-result-cards-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the desktop `inputPetResults` container and the mobile `.mobile-pet-results` copy of the per-pet coverage cards.
+  - Removed the related `result-card` rendering block from `renderResults()` while keeping roller, analysis, and PVP damage output intact.
+  - Removed obsolete CSS for the deleted card module.
+  - Added a static regression test that rejects reintroducing the deleted pet-result-card module markers.
+- Verification: Watched `node tests/no-pet-result-cards-static.test.js` fail before implementation on the existing `inputPetResults` marker, then pass after removing the module. Parsed all inline scripts with `new Function`. Ran all 13 retained Node tests.
+- Status: Complete.
