@@ -1022,3 +1022,20 @@ Use this entry format:
   - Left 238 monsters with empty `passiveIds` unchanged because bulk rendered-page requests were blocked with HTTP 567 and no reliable local backup data was available.
 - Verification: Confirmed rendered-page trait text for the updated records; ran all 14 Node tests; validated all passive references with zero broken IDs; scanned `data/local-bundle.json` for third-party/source/image strings with no matches; ran `git diff --check`.
 - Status: Partial. All currently confirmed records are filled; unresolved records require accessible rendered pages or user-provided screenshots rather than guessed data.
+
+### 2026-06-11 20:34 +08:00 - Codex
+
+- Request: Count the remaining monsters without traits and complete all missing trait references from rendered BWiki data.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Parsed the rendered 精灵筛选 table, which contained 494 monster rows and matched all 238 monsters whose `passiveIds` were empty.
+  - Filled all 238 missing monster trait references, reducing monsters with empty `passiveIds` from 238 to 0.
+  - Added four missing passive records: 奔波命、守护者、结晶水 and 挺起胸脯, increasing the passive pool from 184 to 188.
+  - Resolved combined old/current trait labels against individual rendered pages: 花魁蜂后 uses 虫群突袭, while 雪豆丁、雪蛮人 and 雪巨人 use 结晶水.
+  - Added a release regression assertion requiring every formal monster to reference at least one passive.
+  - Kept URLs, image fields, and source metadata out of the formal JSON package and did not modify HTML or calculation logic.
+- Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data update on 斑斑's empty passive list, then pass after the update. Ran all 14 Node tests; confirmed 494 monsters, 188 passives, zero empty passive lists, zero broken passive references, and zero duplicate passive names; scanned the JSON for third-party/source/image markers with no matches; ran `git diff --check`.
+- Status: Complete.

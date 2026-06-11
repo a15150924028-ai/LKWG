@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-11T04:51:32.135Z",
+  "generatedAt": "2026-06-11T12:32:23.768Z",
   "currentSeason": "本地数据包",
   "monsters": [
     {
@@ -698,7 +698,9 @@
         "skill-迫害",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-逐魂鸟"
+      ],
       "stats": {
         "hp": 71,
         "atk": 90,
@@ -777,7 +779,9 @@
         "skill-迫害",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-逐魂鸟"
+      ],
       "stats": {
         "hp": 89,
         "atk": 112,
@@ -851,7 +855,9 @@
         "skill-防御反击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-缩壳"
+      ],
       "stats": {
         "hp": 67,
         "atk": 28,
@@ -1005,7 +1011,9 @@
         "skill-锐利眼神",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-囤积"
+      ],
       "stats": {
         "hp": 92,
         "atk": 67,
@@ -1467,7 +1475,9 @@
         "skill-食腐",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-奔波命"
+      ],
       "stats": {
         "hp": 72,
         "atk": 37,
@@ -1543,7 +1553,9 @@
         "skill-透射",
         "skill-震击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蓄电池"
+      ],
       "stats": {
         "hp": 73,
         "atk": 79,
@@ -1793,7 +1805,9 @@
         "skill-许愿星",
         "skill-预备势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-生物碱"
+      ],
       "stats": {
         "hp": 80,
         "atk": 85,
@@ -2210,7 +2224,9 @@
         "skill-许愿星",
         "skill-预备势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-生物碱"
+      ],
       "stats": {
         "hp": 100,
         "atk": 107,
@@ -2544,7 +2560,9 @@
         "skill-许愿星",
         "skill-预备势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-生物碱"
+      ],
       "stats": {
         "hp": 60,
         "atk": 64,
@@ -2706,7 +2724,9 @@
         "skill-锐利眼神",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-囤积"
+      ],
       "stats": {
         "hp": 114,
         "atk": 84,
@@ -2787,7 +2807,9 @@
         "skill-精神扰乱",
         "skill-落雨"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-起飞加速"
+      ],
       "stats": {
         "hp": 77,
         "atk": 79,
@@ -2867,7 +2889,9 @@
         "skill-粒子对撞",
         "skill-诡刺"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰封"
+      ],
       "stats": {
         "hp": 75,
         "atk": 90,
@@ -2942,7 +2966,9 @@
         "skill-连续爪击",
         "skill-迫害"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰钻"
+      ],
       "stats": {
         "hp": 73,
         "atk": 101,
@@ -3015,7 +3041,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-浸润"
+      ],
       "stats": {
         "hp": 100,
         "atk": 46,
@@ -3094,7 +3122,9 @@
         "skill-遁地",
         "skill-金属噪音"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-消波块"
+      ],
       "stats": {
         "hp": 67,
         "atk": 59,
@@ -3250,7 +3280,9 @@
         "skill-重击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-定向精炼"
+      ],
       "stats": {
         "hp": 106,
         "atk": 122,
@@ -3558,7 +3590,9 @@
         "skill-遁地",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-地脉"
+      ],
       "stats": {
         "hp": 120,
         "atk": 135,
@@ -3633,7 +3667,9 @@
         "skill-连续爪击",
         "skill-迫害"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰钻"
+      ],
       "stats": {
         "hp": 44,
         "atk": 60,
@@ -3708,7 +3744,9 @@
         "skill-遁地",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-地脉"
+      ],
       "stats": {
         "hp": 72,
         "atk": 81,
@@ -3783,7 +3821,9 @@
         "skill-遁地",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-地脉"
+      ],
       "stats": {
         "hp": 96,
         "atk": 108,
@@ -3861,7 +3901,9 @@
         "skill-酶浓度调整",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-吸积盘"
+      ],
       "stats": {
         "hp": 124,
         "atk": 63,
@@ -3939,7 +3981,9 @@
         "skill-酶浓度调整",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-吸积盘"
+      ],
       "stats": {
         "hp": 99,
         "atk": 50,
@@ -4014,7 +4058,9 @@
         "skill-防御",
         "skill-风起"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-水翼推进"
+      ],
       "stats": {
         "hp": 90,
         "atk": 77,
@@ -4171,7 +4217,9 @@
         "skill-连续爪击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-得寸进尺"
+      ],
       "stats": {
         "hp": 92,
         "atk": 79,
@@ -4251,7 +4299,9 @@
         "skill-虫鸣",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-花精灵"
+      ],
       "stats": {
         "hp": 97,
         "atk": 53,
@@ -4406,7 +4456,9 @@
         "skill-钧势",
         "skill-鸣沙陷阱"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-散热"
+      ],
       "stats": {
         "hp": 133,
         "atk": 130,
@@ -4483,7 +4535,9 @@
         "skill-阻断",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-圣火骑士"
+      ],
       "stats": {
         "hp": 137,
         "atk": 51,
@@ -4560,7 +4614,9 @@
         "skill-阻断",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-圣火骑士"
+      ],
       "stats": {
         "hp": 110,
         "atk": 41,
@@ -4641,7 +4697,9 @@
         "skill-防御",
         "skill-清洗"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-快锤"
+      ],
       "stats": {
         "hp": 128,
         "atk": 77,
@@ -4965,7 +5023,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-防过载保护"
+      ],
       "stats": {
         "hp": 85,
         "atk": 65,
@@ -5041,7 +5101,9 @@
         "skill-精神扰乱",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-溶解扩散"
+      ],
       "stats": {
         "hp": 94,
         "atk": 33,
@@ -5369,7 +5431,9 @@
         "skill-超级糖果",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-加个雪球"
+      ],
       "stats": {
         "hp": 72,
         "atk": 67,
@@ -5450,7 +5514,9 @@
         "skill-无畏之心",
         "skill-水弹"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洁癖"
+      ],
       "stats": {
         "hp": 125,
         "atk": 95,
@@ -5531,7 +5597,9 @@
         "skill-赤子之心",
         "skill-霜天"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-捉迷藏"
+      ],
       "stats": {
         "hp": 78,
         "atk": 62,
@@ -5686,7 +5754,9 @@
         "skill-龙之利爪",
         "skill-龙吟"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-营养液泡"
+      ],
       "stats": {
         "hp": 52,
         "atk": 60,
@@ -5765,7 +5835,9 @@
         "skill-追打",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-生物电"
+      ],
       "stats": {
         "hp": 68,
         "atk": 92,
@@ -6006,7 +6078,9 @@
         "skill-跺地",
         "skill-闪燃"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-最好的伙伴"
+      ],
       "stats": {
         "hp": 120,
         "atk": 80,
@@ -6082,7 +6156,9 @@
         "skill-透射",
         "skill-震击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蓄电池"
+      ],
       "stats": {
         "hp": 55,
         "atk": 59,
@@ -6160,7 +6236,9 @@
         "skill-魔能爆",
         "skill-加大功率"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-快充"
+      ],
       "stats": {
         "hp": 47,
         "atk": 49,
@@ -6235,7 +6313,9 @@
         "skill-音爆",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-超负荷"
+      ],
       "stats": {
         "hp": 94,
         "atk": 56,
@@ -6313,7 +6393,9 @@
         "skill-魔能爆",
         "skill-加大功率"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-快充"
+      ],
       "stats": {
         "hp": 78,
         "atk": 82,
@@ -6388,7 +6470,9 @@
         "skill-连续毒针",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-渴求"
+      ],
       "stats": {
         "hp": 117,
         "atk": 125,
@@ -6463,7 +6547,9 @@
         "skill-连续爪击",
         "skill-魔爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-诈死"
+      ],
       "stats": {
         "hp": 44,
         "atk": 45,
@@ -6730,7 +6816,9 @@
         "skill-蓄水",
         "skill-速冻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-顺风"
+      ],
       "stats": {
         "hp": 72,
         "atk": 103,
@@ -7045,7 +7133,9 @@
         "skill-连续爪击",
         "skill-雪球"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-慢热型"
+      ],
       "stats": {
         "hp": 115,
         "atk": 125,
@@ -7127,7 +7217,9 @@
         "skill-守护咒",
         "skill-隼鳞"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洄游"
+      ],
       "stats": {
         "hp": 53,
         "atk": 62,
@@ -7282,7 +7374,9 @@
         "skill-精神扰乱",
         "skill-轴承支撑"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-复方汤剂"
+      ],
       "stats": {
         "hp": 110,
         "atk": 29,
@@ -7357,7 +7451,9 @@
         "skill-精神扰乱",
         "skill-轴承支撑"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-复方汤剂"
+      ],
       "stats": {
         "hp": 137,
         "atk": 36,
@@ -7831,7 +7927,9 @@
         "skill-鞭打",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒牙"
+      ],
       "stats": {
         "hp": 47,
         "atk": 53,
@@ -7911,7 +8009,9 @@
         "skill-钧势",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-多人宿舍"
+      ],
       "stats": {
         "hp": 119,
         "atk": 81,
@@ -7991,7 +8091,9 @@
         "skill-鞭打",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒牙"
+      ],
       "stats": {
         "hp": 63,
         "atk": 70,
@@ -8065,7 +8167,9 @@
         "skill-重击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-定向精炼"
+      ],
       "stats": {
         "hp": 64,
         "atk": 73,
@@ -8140,7 +8244,9 @@
         "skill-连续毒针",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-渴求"
+      ],
       "stats": {
         "hp": 90,
         "atk": 100,
@@ -8216,7 +8322,9 @@
         "skill-蛰针",
         "skill-跌落"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-振奋虫心"
+      ],
       "stats": {
         "hp": 100,
         "atk": 147,
@@ -8292,7 +8400,9 @@
         "skill-闪燃",
         "skill-龙之利爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-悲悯"
+      ],
       "stats": {
         "hp": 115,
         "atk": 114,
@@ -8606,7 +8716,9 @@
         "skill-防御",
         "skill-飞吻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-扩散侵蚀"
+      ],
       "stats": {
         "hp": 108,
         "atk": 30,
@@ -8837,7 +8949,9 @@
         "skill-魔能爆",
         "skill-加大功率"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-快充"
+      ],
       "stats": {
         "hp": 62,
         "atk": 66,
@@ -9057,7 +9171,9 @@
         "skill-阻断",
         "skill-飞断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-共鸣"
+      ],
       "stats": {
         "hp": 93,
         "atk": 24,
@@ -9210,7 +9326,9 @@
         "skill-防御",
         "skill-风起"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-水翼推进"
+      ],
       "stats": {
         "hp": 54,
         "atk": 46,
@@ -9285,7 +9403,9 @@
         "skill-飞断",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-壮胆"
+      ],
       "stats": {
         "hp": 95,
         "atk": 56,
@@ -9366,7 +9486,9 @@
         "skill-精神扰乱",
         "skill-落雨"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-起飞加速"
+      ],
       "stats": {
         "hp": 94,
         "atk": 63,
@@ -9672,7 +9794,9 @@
         "skill-退化",
         "skill-龙之利爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-衡量"
+      ],
       "stats": {
         "hp": 113,
         "atk": 93,
@@ -9906,7 +10030,9 @@
         "skill-钧势",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-多人宿舍"
+      ],
       "stats": {
         "hp": 89,
         "atk": 61,
@@ -10155,7 +10281,9 @@
         "skill-鞭打",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒牙"
+      ],
       "stats": {
         "hp": 79,
         "atk": 88,
@@ -10239,7 +10367,9 @@
         "skill-鸩毒",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-拨浪鼓"
+      ],
       "stats": {
         "hp": 85,
         "atk": 63,
@@ -10393,7 +10523,9 @@
         "skill-聒噪",
         "skill-血气"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洁癖"
+      ],
       "stats": {
         "hp": 75,
         "atk": 57,
@@ -10618,7 +10750,9 @@
         "skill-防御",
         "skill-雪替身"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-身经百练"
+      ],
       "stats": {
         "hp": 90,
         "atk": 113,
@@ -10697,7 +10831,9 @@
         "skill-防御",
         "skill-雪替身"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-身经百练"
+      ],
       "stats": {
         "hp": 72,
         "atk": 91,
@@ -10773,7 +10909,9 @@
         "skill-精神扰乱",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-溶解扩散"
+      ],
       "stats": {
         "hp": 71,
         "atk": 25,
@@ -10929,7 +11067,9 @@
         "skill-追打",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-珊瑚骨"
+      ],
       "stats": {
         "hp": 78,
         "atk": 58,
@@ -11259,7 +11399,9 @@
         "skill-鸩毒",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-拨浪鼓"
+      ],
       "stats": {
         "hp": 106,
         "atk": 79,
@@ -11419,7 +11561,9 @@
         "skill-精神扰乱",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-泛音列"
+      ],
       "stats": {
         "hp": 109,
         "atk": 27,
@@ -11569,7 +11713,9 @@
         "skill-风起",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-预警"
+      ],
       "stats": {
         "hp": 152,
         "atk": 91,
@@ -11651,7 +11797,9 @@
         "skill-羽化加速",
         "skill-无畏之心"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-孤傲"
+      ],
       "stats": {
         "hp": 132,
         "atk": 93,
@@ -11959,7 +12107,9 @@
         "skill-超级糖果",
         "skill-钧势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冻土"
+      ],
       "stats": {
         "hp": 98,
         "atk": 95,
@@ -12040,7 +12190,9 @@
         "skill-鸩毒",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-下黑手"
+      ],
       "stats": {
         "hp": 78,
         "atk": 87,
@@ -12114,7 +12266,9 @@
         "skill-闪光冲击",
         "skill-麻痹"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-专注力"
+      ],
       "stats": {
         "hp": 68,
         "atk": 103,
@@ -12196,7 +12350,9 @@
         "skill-防御",
         "skill-鸩毒"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-虫群突袭"
+      ],
       "stats": {
         "hp": 145,
         "atk": 54,
@@ -12276,7 +12432,9 @@
         "skill-虫鸣",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-花精灵"
+      ],
       "stats": {
         "hp": 122,
         "atk": 67,
@@ -12351,7 +12509,9 @@
         "skill-防御",
         "skill-隐藏条款"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-碰瓷"
+      ],
       "stats": {
         "hp": 112,
         "atk": 111,
@@ -12596,7 +12756,9 @@
         "skill-闪击",
         "skill-鸣叫"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-化茧"
+      ],
       "stats": {
         "hp": 53,
         "atk": 46,
@@ -13169,7 +13331,9 @@
         "skill-连续毒针",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒蘑菇"
+      ],
       "stats": {
         "hp": 89,
         "atk": 79,
@@ -13331,7 +13495,9 @@
         "skill-连续毒针",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒蘑菇"
+      ],
       "stats": {
         "hp": 111,
         "atk": 98,
@@ -13485,7 +13651,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-乘风连击"
+      ],
       "stats": {
         "hp": 102,
         "atk": 116,
@@ -13567,7 +13735,9 @@
         "skill-防御",
         "skill-鸩毒"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-虫群鼓舞"
+      ],
       "stats": {
         "hp": 116,
         "atk": 43,
@@ -13882,7 +14052,9 @@
         "skill-龙之利爪",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-助燃"
+      ],
       "stats": {
         "hp": 70,
         "atk": 84,
@@ -13956,7 +14128,9 @@
         "skill-龙之利爪",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-助燃"
+      ],
       "stats": {
         "hp": 117,
         "atk": 139,
@@ -14031,7 +14205,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蒸汽膨胀"
+      ],
       "stats": {
         "hp": 63,
         "atk": 70,
@@ -14106,7 +14282,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蒸汽膨胀"
+      ],
       "stats": {
         "hp": 84,
         "atk": 94,
@@ -14184,7 +14362,9 @@
         "skill-钧势",
         "skill-鸣沙陷阱"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-散热"
+      ],
       "stats": {
         "hp": 167,
         "atk": 162,
@@ -14495,7 +14675,9 @@
         "skill-音爆",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-不移"
+      ],
       "stats": {
         "hp": 112,
         "atk": 108,
@@ -14894,7 +15076,9 @@
         "skill-连续爪击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒腺"
+      ],
       "stats": {
         "hp": 74,
         "atk": 49,
@@ -14975,7 +15159,9 @@
         "skill-高温回火",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-灵魂灼伤"
+      ],
       "stats": {
         "hp": 115,
         "atk": 87,
@@ -15056,7 +15242,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-防过载保护"
+      ],
       "stats": {
         "hp": 106,
         "atk": 81,
@@ -15469,7 +15657,9 @@
         "skill-防御",
         "skill-震击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-偏振"
+      ],
       "stats": {
         "hp": 99,
         "atk": 96,
@@ -15633,7 +15823,9 @@
         "skill-高温回火",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-灵魂灼伤"
+      ],
       "stats": {
         "hp": 92,
         "atk": 70,
@@ -15713,7 +15905,9 @@
         "skill-钧势",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-多人宿舍"
+      ],
       "stats": {
         "hp": 149,
         "atk": 102,
@@ -15788,7 +15982,9 @@
         "skill-藤绞",
         "skill-追打"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-无忧无虑"
+      ],
       "stats": {
         "hp": 106,
         "atk": 49,
@@ -15944,7 +16140,9 @@
         "skill-降灵",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-石天平"
+      ],
       "stats": {
         "hp": 95,
         "atk": 99,
@@ -16019,7 +16217,9 @@
         "skill-飞断",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-壮胆"
+      ],
       "stats": {
         "hp": 158,
         "atk": 93,
@@ -16098,7 +16298,9 @@
         "skill-震击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-保守派"
+      ],
       "stats": {
         "hp": 121,
         "atk": 96,
@@ -16175,7 +16377,9 @@
         "skill-连续爪击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-得寸进尺"
+      ],
       "stats": {
         "hp": 116,
         "atk": 98,
@@ -16251,7 +16455,9 @@
         "skill-透射",
         "skill-震击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蓄电池"
+      ],
       "stats": {
         "hp": 92,
         "atk": 99,
@@ -16325,7 +16531,9 @@
         "skill-防御反击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-缩壳"
+      ],
       "stats": {
         "hp": 90,
         "atk": 37,
@@ -16481,7 +16689,9 @@
         "skill-飞吻",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-咔咔冲刺"
+      ],
       "stats": {
         "hp": 97,
         "atk": 114,
@@ -16561,7 +16771,9 @@
         "skill-飞吻",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-咔咔冲刺"
+      ],
       "stats": {
         "hp": 78,
         "atk": 91,
@@ -16641,7 +16853,9 @@
         "skill-飞吻",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-咔咔冲刺"
+      ],
       "stats": {
         "hp": 58,
         "atk": 68,
@@ -16716,7 +16930,9 @@
         "skill-连续爪击",
         "skill-魔爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-诈死"
+      ],
       "stats": {
         "hp": 59,
         "atk": 60,
@@ -16986,7 +17202,9 @@
         "skill-防御",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-守护者"
+      ],
       "stats": {
         "hp": 114,
         "atk": 102,
@@ -17061,7 +17279,9 @@
         "skill-连续爪击",
         "skill-魔爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-诈死"
+      ],
       "stats": {
         "hp": 74,
         "atk": 75,
@@ -17405,7 +17625,9 @@
         "skill-连续爪击",
         "skill-雪球"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-慢热型"
+      ],
       "stats": {
         "hp": 144,
         "atk": 157,
@@ -17485,7 +17707,9 @@
         "skill-防御",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-守护者"
+      ],
       "stats": {
         "hp": 91,
         "atk": 81,
@@ -17563,7 +17787,9 @@
         "skill-钧势",
         "skill-鸣沙陷阱"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-散热"
+      ],
       "stats": {
         "hp": 100,
         "atk": 97,
@@ -17790,7 +18016,9 @@
         "skill-酶浓度调整",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-吸积盘"
+      ],
       "stats": {
         "hp": 74,
         "atk": 38,
@@ -17864,7 +18092,9 @@
         "skill-重击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-定向精炼"
+      ],
       "stats": {
         "hp": 85,
         "atk": 98,
@@ -17943,7 +18173,9 @@
         "skill-超级糖果",
         "skill-追打"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-噼啪"
+      ],
       "stats": {
         "hp": 83,
         "atk": 100,
@@ -18025,7 +18257,9 @@
         "skill-守护咒",
         "skill-隼鳞"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洄游"
+      ],
       "stats": {
         "hp": 71,
         "atk": 82,
@@ -18100,7 +18334,9 @@
         "skill-防御",
         "skill-震击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-偏振"
+      ],
       "stats": {
         "hp": 79,
         "atk": 77,
@@ -18258,7 +18494,9 @@
         "skill-蓄水",
         "skill-速冻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-顺风"
+      ],
       "stats": {
         "hp": 90,
         "atk": 128,
@@ -18570,7 +18808,9 @@
         "skill-防御",
         "skill-风起"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-水翼推进"
+      ],
       "stats": {
         "hp": 72,
         "atk": 61,
@@ -18638,7 +18878,9 @@
         "skill-聒噪",
         "skill-血气"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洁癖"
+      ],
       "stats": {
         "hp": 100,
         "atk": 76,
@@ -18720,7 +18962,9 @@
         "skill-龙吼",
         "skill-龙炮"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-飓风"
+      ],
       "stats": {
         "hp": 79,
         "atk": 65,
@@ -18800,7 +19044,9 @@
         "skill-降灵",
         "skill-风起"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-吟游之弦"
+      ],
       "stats": {
         "hp": 118,
         "atk": 82,
@@ -19184,7 +19430,9 @@
         "skill-超级糖果",
         "skill-钧势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冻土"
+      ],
       "stats": {
         "hp": 123,
         "atk": 119,
@@ -19259,7 +19507,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蒸汽膨胀"
+      ],
       "stats": {
         "hp": 105,
         "atk": 117,
@@ -19416,7 +19666,9 @@
         "skill-高温回火",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-灵魂灼伤"
+      ],
       "stats": {
         "hp": 69,
         "atk": 52,
@@ -19498,7 +19750,9 @@
         "skill-龙吼",
         "skill-龙炮"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-飓风"
+      ],
       "stats": {
         "hp": 105,
         "atk": 87,
@@ -19572,7 +19826,9 @@
         "skill-防御",
         "skill-隐藏条款"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-碰瓷"
+      ],
       "stats": {
         "hp": 89,
         "atk": 89,
@@ -19645,7 +19901,9 @@
         "skill-食腐",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-奔波命"
+      ],
       "stats": {
         "hp": 90,
         "atk": 46,
@@ -19719,7 +19977,9 @@
         "skill-防御",
         "skill-飞吻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-扩散侵蚀"
+      ],
       "stats": {
         "hp": 134,
         "atk": 37,
@@ -19880,7 +20140,9 @@
         "skill-守护咒",
         "skill-隼鳞"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-洄游"
+      ],
       "stats": {
         "hp": 89,
         "atk": 103,
@@ -19956,7 +20218,9 @@
         "skill-芳香诱引",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-木桶戏法"
+      ],
       "stats": {
         "hp": 79,
         "atk": 35,
@@ -20034,7 +20298,9 @@
         "skill-锐利眼神",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-囤积"
+      ],
       "stats": {
         "hp": 69,
         "atk": 50,
@@ -20110,7 +20376,9 @@
         "skill-连续爪击",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-自由飘"
+      ],
       "stats": {
         "hp": 52,
         "atk": 68,
@@ -20187,7 +20455,9 @@
         "skill-防御",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-石头大餐"
+      ],
       "stats": {
         "hp": 107,
         "atk": 159,
@@ -20585,7 +20855,9 @@
         "skill-闪击",
         "skill-鸣叫"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-化茧"
+      ],
       "stats": {
         "hp": 32,
         "atk": 28,
@@ -20743,7 +21015,9 @@
         "skill-赤子之心",
         "skill-霜天"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-捉迷藏"
+      ],
       "stats": {
         "hp": 104,
         "atk": 83,
@@ -20898,7 +21172,9 @@
         "skill-阻断",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-做噩梦"
+      ],
       "stats": {
         "hp": 113,
         "atk": 65,
@@ -21051,7 +21327,9 @@
         "skill-阻断",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-做噩梦"
+      ],
       "stats": {
         "hp": 90,
         "atk": 52,
@@ -21209,7 +21487,9 @@
         "skill-震击",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-虚假宝箱"
+      ],
       "stats": {
         "hp": 138,
         "atk": 129,
@@ -21526,7 +21806,9 @@
         "skill-透射",
         "skill-重击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-氧循环"
+      ],
       "stats": {
         "hp": 65,
         "atk": 66,
@@ -21606,7 +21888,9 @@
         "skill-透射",
         "skill-重击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-氧循环"
+      ],
       "stats": {
         "hp": 86,
         "atk": 87,
@@ -21682,7 +21966,9 @@
         "skill-芳香诱引",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-木桶戏法"
+      ],
       "stats": {
         "hp": 99,
         "atk": 43,
@@ -21758,7 +22044,9 @@
         "skill-连续爪击",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-自由飘"
+      ],
       "stats": {
         "hp": 87,
         "atk": 113,
@@ -21838,7 +22126,9 @@
         "skill-透射",
         "skill-重击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-氧循环"
+      ],
       "stats": {
         "hp": 108,
         "atk": 109,
@@ -21914,7 +22204,9 @@
         "skill-连续爪击",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-自由飘"
+      ],
       "stats": {
         "hp": 70,
         "atk": 91,
@@ -22302,7 +22594,9 @@
         "skill-震击",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-威慑"
+      ],
       "stats": {
         "hp": 92,
         "atk": 132,
@@ -22549,7 +22843,9 @@
         "skill-闪击",
         "skill-鸣叫"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-化茧"
+      ],
       "stats": {
         "hp": 42,
         "atk": 37,
@@ -22781,7 +23077,9 @@
         "skill-阻断",
         "skill-飞断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-共鸣"
+      ],
       "stats": {
         "hp": 74,
         "atk": 19,
@@ -23097,7 +23395,9 @@
         "skill-魔法增效",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-勇敢"
+      ],
       "stats": {
         "hp": 89,
         "atk": 99,
@@ -23177,7 +23477,9 @@
         "skill-魔法增效",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-勇敢"
+      ],
       "stats": {
         "hp": 111,
         "atk": 123,
@@ -23257,7 +23559,9 @@
         "skill-钧势",
         "skill-闪光"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-养分重吸收"
+      ],
       "stats": {
         "hp": 67,
         "atk": 69,
@@ -23419,7 +23723,9 @@
         "skill-钧势",
         "skill-闪光"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-养分重吸收"
+      ],
       "stats": {
         "hp": 112,
         "atk": 115,
@@ -23499,7 +23805,9 @@
         "skill-钧势",
         "skill-闪光"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-养分重吸收"
+      ],
       "stats": {
         "hp": 90,
         "atk": 92,
@@ -23661,7 +23969,9 @@
         "skill-镜像反射",
         "skill-防御反击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-保卫"
+      ],
       "stats": {
         "hp": 89,
         "atk": 94,
@@ -23832,7 +24142,9 @@
         "skill-防御反击",
         "skill-预备势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-好象坏象"
+      ],
       "stats": {
         "hp": 126,
         "atk": 87,
@@ -24005,7 +24317,9 @@
         "skill-迫近攻击",
         "skill-透射"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-腾挪"
+      ],
       "stats": {
         "hp": 90,
         "atk": 126,
@@ -24159,7 +24473,9 @@
         "skill-触底强击",
         "skill-迫近攻击"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-腾挪"
+      ],
       "stats": {
         "hp": 72,
         "atk": 100,
@@ -24314,7 +24630,9 @@
         "skill-预备势",
         "skill-鸣沙陷阱"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-渗透"
+      ],
       "stats": {
         "hp": 93,
         "atk": 84,
@@ -24750,7 +25068,9 @@
         "skill-精神扰乱",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-溶解扩散"
+      ],
       "stats": {
         "hp": 118,
         "atk": 41,
@@ -25069,7 +25389,9 @@
         "skill-阻断",
         "skill-魔爪"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-蚀刻"
+      ],
       "stats": {
         "hp": 73,
         "atk": 93,
@@ -25311,7 +25633,9 @@
         "skill-钢钻",
         "skill-雪球"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-机械变式"
+      ],
       "stats": {
         "hp": 82,
         "atk": 84,
@@ -25391,7 +25715,9 @@
         "skill-钢钻",
         "skill-雪球"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-机械变式"
+      ],
       "stats": {
         "hp": 103,
         "atk": 105,
@@ -25873,7 +26199,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-防过载保护"
+      ],
       "stats": {
         "hp": 64,
         "atk": 49,
@@ -25952,7 +26280,9 @@
         "skill-追打",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-生物电"
+      ],
       "stats": {
         "hp": 85,
         "atk": 115,
@@ -26343,7 +26673,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-乘风连击"
+      ],
       "stats": {
         "hp": 82,
         "atk": 92,
@@ -26497,7 +26829,9 @@
         "skill-震击",
         "skill-飞踢"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-向心力"
+      ],
       "stats": {
         "hp": 92,
         "atk": 124,
@@ -27731,7 +28065,9 @@
         "skill-龙吼",
         "skill-龙炮"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-飓风"
+      ],
       "stats": {
         "hp": 132,
         "atk": 109,
@@ -27809,7 +28145,9 @@
         "skill-腐化",
         "skill-腐蚀酸液"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-刺肤"
+      ],
       "stats": {
         "hp": 92,
         "atk": 72,
@@ -27967,7 +28305,9 @@
         "skill-腐化",
         "skill-腐蚀酸液"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-刺肤"
+      ],
       "stats": {
         "hp": 69,
         "atk": 54,
@@ -28125,7 +28465,9 @@
         "skill-腐化",
         "skill-腐蚀酸液"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-刺肤"
+      ],
       "stats": {
         "hp": 115,
         "atk": 89,
@@ -28284,7 +28626,9 @@
         "skill-降灵",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-石天平"
+      ],
       "stats": {
         "hp": 76,
         "atk": 79,
@@ -28440,7 +28784,9 @@
         "skill-遁地",
         "skill-金属噪音"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-消波块"
+      ],
       "stats": {
         "hp": 112,
         "atk": 98,
@@ -28688,7 +29034,9 @@
         "skill-防御",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-稀兽花宝"
+      ],
       "stats": {
         "hp": 70,
         "atk": 79,
@@ -29149,7 +29497,9 @@
         "skill-魔法增效",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-思维之盾"
+      ],
       "stats": {
         "hp": 63,
         "atk": 66,
@@ -29222,7 +29572,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-浸润"
+      ],
       "stats": {
         "hp": 75,
         "atk": 35,
@@ -29295,7 +29647,9 @@
         "skill-速冻",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-浸润"
+      ],
       "stats": {
         "hp": 125,
         "atk": 58,
@@ -29369,7 +29723,9 @@
         "skill-防御反击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-缩壳"
+      ],
       "stats": {
         "hp": 112,
         "atk": 46,
@@ -29525,7 +29881,9 @@
         "skill-魔法增效",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-思维之盾"
+      ],
       "stats": {
         "hp": 84,
         "atk": 88,
@@ -29604,7 +29962,9 @@
         "skill-缠丝劲",
         "skill-飞吻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-嫁祸"
+      ],
       "stats": {
         "hp": 100,
         "atk": 115,
@@ -29681,7 +30041,9 @@
         "skill-落石",
         "skill-钧势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-野性感官"
+      ],
       "stats": {
         "hp": 84,
         "atk": 111,
@@ -29758,7 +30120,9 @@
         "skill-落石",
         "skill-钧势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-野性感官"
+      ],
       "stats": {
         "hp": 63,
         "atk": 83,
@@ -29833,7 +30197,9 @@
         "skill-飞断",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-壮胆"
+      ],
       "stats": {
         "hp": 126,
         "atk": 74,
@@ -29909,7 +30275,9 @@
         "skill-震击",
         "skill-飞踢"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-向心力"
+      ],
       "stats": {
         "hp": 73,
         "atk": 99,
@@ -29989,7 +30357,9 @@
         "skill-防御",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-守护者"
+      ],
       "stats": {
         "hp": 68,
         "atk": 61,
@@ -30784,7 +31154,9 @@
         "skill-超级糖果",
         "skill-阻断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-加个雪球"
+      ],
       "stats": {
         "hp": 96,
         "atk": 90,
@@ -31029,7 +31401,9 @@
         "skill-遁地",
         "skill-金属噪音"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-消波块"
+      ],
       "stats": {
         "hp": 89,
         "atk": 78,
@@ -31191,7 +31565,9 @@
         "skill-虫鸣",
         "skill-食腐"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-花精灵"
+      ],
       "stats": {
         "hp": 73,
         "atk": 40,
@@ -31509,7 +31885,9 @@
         "skill-音爆",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-超负荷"
+      ],
       "stats": {
         "hp": 75,
         "atk": 45,
@@ -31588,7 +31966,9 @@
         "skill-麻痹",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-目空"
+      ],
       "stats": {
         "hp": 79,
         "atk": 48,
@@ -31738,7 +32118,9 @@
         "skill-风起",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-预警"
+      ],
       "stats": {
         "hp": 121,
         "atk": 72,
@@ -31893,7 +32275,9 @@
         "skill-连续毒针",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒蘑菇"
+      ],
       "stats": {
         "hp": 67,
         "atk": 59,
@@ -31969,7 +32353,9 @@
         "skill-黑手",
         "skill-易燃物质"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-惊吓"
+      ],
       "stats": {
         "hp": 55,
         "atk": 30,
@@ -32362,7 +32748,9 @@
         "skill-连续爪击",
         "skill-锐利眼神"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-乘风连击"
+      ],
       "stats": {
         "hp": 61,
         "atk": 69,
@@ -32441,7 +32829,9 @@
         "skill-震击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-保守派"
+      ],
       "stats": {
         "hp": 73,
         "atk": 57,
@@ -32521,7 +32911,9 @@
         "skill-震击",
         "skill-顶端优势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-威慑"
+      ],
       "stats": {
         "hp": 74,
         "atk": 106,
@@ -32684,7 +33076,9 @@
         "skill-震击",
         "skill-音爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-虚假宝箱"
+      ],
       "stats": {
         "hp": 111,
         "atk": 103,
@@ -32764,7 +33158,9 @@
         "skill-麻痹",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-电流刺激"
+      ],
       "stats": {
         "hp": 60,
         "atk": 81,
@@ -33004,7 +33400,9 @@
         "skill-缠丝劲",
         "skill-飞吻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-嫁祸"
+      ],
       "stats": {
         "hp": 60,
         "atk": 69,
@@ -33079,7 +33477,9 @@
         "skill-爆冲",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-暴食"
+      ],
       "stats": {
         "hp": 66,
         "atk": 91,
@@ -33156,7 +33556,9 @@
         "skill-阻断",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-圣火骑士"
+      ],
       "stats": {
         "hp": 82,
         "atk": 31,
@@ -33237,7 +33639,9 @@
         "skill-精神扰乱",
         "skill-落雨"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-起飞加速"
+      ],
       "stats": {
         "hp": 56,
         "atk": 38,
@@ -33398,7 +33802,9 @@
         "skill-麻痹",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-电流刺激"
+      ],
       "stats": {
         "hp": 75,
         "atk": 101,
@@ -33557,7 +33963,9 @@
         "skill-阻断",
         "skill-飞断"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-共鸣"
+      ],
       "stats": {
         "hp": 56,
         "atk": 15,
@@ -34064,7 +34472,9 @@
         "skill-连续爪击",
         "skill-迫害"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰钻"
+      ],
       "stats": {
         "hp": 58,
         "atk": 81,
@@ -34137,7 +34547,9 @@
         "skill-防御反击",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-结晶水"
+      ],
       "stats": {
         "hp": 97,
         "atk": 104,
@@ -34288,7 +34700,9 @@
         "skill-防御反击",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-结晶水"
+      ],
       "stats": {
         "hp": 162,
         "atk": 174,
@@ -34368,7 +34782,9 @@
         "skill-粒子对撞",
         "skill-诡刺"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰封"
+      ],
       "stats": {
         "hp": 94,
         "atk": 112,
@@ -34441,7 +34857,9 @@
         "skill-防御反击",
         "skill-降灵"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-结晶水"
+      ],
       "stats": {
         "hp": 130,
         "atk": 139,
@@ -34518,7 +34936,9 @@
         "skill-蓄水",
         "skill-速冻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-顺风"
+      ],
       "stats": {
         "hp": 54,
         "atk": 77,
@@ -34835,7 +35255,9 @@
         "skill-粒子对撞",
         "skill-诡刺"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-冰封"
+      ],
       "stats": {
         "hp": 56,
         "atk": 67,
@@ -34999,7 +35421,9 @@
         "skill-赤子之心",
         "skill-霜天"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-捉迷藏"
+      ],
       "stats": {
         "hp": 130,
         "atk": 103,
@@ -35075,7 +35499,9 @@
         "skill-翼击",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 137,
         "atk": 35,
@@ -35150,7 +35576,9 @@
         "skill-风矢",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 130,
         "atk": 95,
@@ -35226,7 +35654,9 @@
         "skill-翼击",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 136,
         "atk": 35,
@@ -35301,7 +35731,9 @@
         "skill-风矢",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 136,
         "atk": 95,
@@ -35377,7 +35809,9 @@
         "skill-气波",
         "skill-摇篮曲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 107,
         "atk": 53,
@@ -35452,7 +35886,9 @@
         "skill-风矢",
         "skill-飞羽"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-挺起胸脯"
+      ],
       "stats": {
         "hp": 108,
         "atk": 89,
@@ -35829,7 +36265,9 @@
         "skill-龙之利爪",
         "skill-龙卷风"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-助燃"
+      ],
       "stats": {
         "hp": 93,
         "atk": 111,
@@ -35908,7 +36346,9 @@
         "skill-震击",
         "skill-魔能爆"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-保守派"
+      ],
       "stats": {
         "hp": 97,
         "atk": 77,
@@ -36385,7 +36825,9 @@
         "skill-防御",
         "skill-鸩毒"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-虫群鼓舞"
+      ],
       "stats": {
         "hp": 87,
         "atk": 32,
@@ -36464,7 +36906,9 @@
         "skill-音爆",
         "skill-富养化"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-腐植循环"
+      ],
       "stats": {
         "hp": 85,
         "atk": 73,
@@ -36543,7 +36987,9 @@
         "skill-音爆",
         "skill-富养化"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-腐植循环"
+      ],
       "stats": {
         "hp": 106,
         "atk": 91,
@@ -36855,7 +37301,9 @@
         "skill-防御",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-观星"
+      ],
       "stats": {
         "hp": 64,
         "atk": 54,
@@ -36936,7 +37384,9 @@
         "skill-防御",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-观星"
+      ],
       "stats": {
         "hp": 106,
         "atk": 90,
@@ -37017,7 +37467,9 @@
         "skill-防御",
         "skill-鼓劲"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-观星"
+      ],
       "stats": {
         "hp": 85,
         "atk": 72,
@@ -37092,7 +37544,9 @@
         "skill-爆冲",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-暴食"
+      ],
       "stats": {
         "hp": 83,
         "atk": 114,
@@ -37242,7 +37696,9 @@
         "skill-闪光冲击",
         "skill-麻痹"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-专注力"
+      ],
       "stats": {
         "hp": 85,
         "atk": 128,
@@ -37323,7 +37779,9 @@
         "skill-鸩毒",
         "skill-黑手"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-下黑手"
+      ],
       "stats": {
         "hp": 97,
         "atk": 109,
@@ -37557,7 +38015,9 @@
         "skill-黑手",
         "skill-易燃物质"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-惊吓"
+      ],
       "stats": {
         "hp": 92,
         "atk": 50,
@@ -37713,7 +38173,9 @@
         "skill-酶浓度调整",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-小偷小摸"
+      ],
       "stats": {
         "hp": 111,
         "atk": 96,
@@ -37875,7 +38337,9 @@
         "skill-连续爪击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒腺"
+      ],
       "stats": {
         "hp": 92,
         "atk": 61,
@@ -37949,7 +38413,9 @@
         "skill-精神扰乱",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-泛音列"
+      ],
       "stats": {
         "hp": 136,
         "atk": 34,
@@ -38028,7 +38494,9 @@
         "skill-连续爪击",
         "skill-防御"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-毒腺"
+      ],
       "stats": {
         "hp": 55,
         "atk": 37,
@@ -38503,7 +38971,9 @@
         "skill-落石",
         "skill-钧势"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-野性感官"
+      ],
       "stats": {
         "hp": 105,
         "atk": 139,
@@ -38579,7 +39049,9 @@
         "skill-除厄",
         "skill-魔法增效"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-仁心"
+      ],
       "stats": {
         "hp": 67,
         "atk": 28,
@@ -38734,7 +39206,9 @@
         "skill-防御",
         "skill-隐藏条款"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-碰瓷"
+      ],
       "stats": {
         "hp": 67,
         "atk": 66,
@@ -38894,7 +39368,9 @@
         "skill-缠丝劲",
         "skill-飞吻"
       ],
-      "passiveIds": [],
+      "passiveIds": [
+        "passive-嫁祸"
+      ],
       "stats": {
         "hp": 80,
         "atk": 92,
@@ -48452,6 +48928,38 @@
       "name": "做噩梦",
       "aliases": [],
       "description": "敌方精灵离场后，更换入场的精灵失去3能量。",
+      "raw": {}
+    },
+    {
+      "kind": "passive",
+      "id": "passive-奔波命",
+      "name": "奔波命",
+      "aliases": [],
+      "description": "使用防御技能后，回合结束时脱离。",
+      "raw": {}
+    },
+    {
+      "kind": "passive",
+      "id": "passive-守护者",
+      "name": "守护者",
+      "aliases": [],
+      "description": "己方其他精灵每有1层萌化，自己入场时全技能能耗-1。",
+      "raw": {}
+    },
+    {
+      "kind": "passive",
+      "id": "passive-结晶水",
+      "name": "结晶水",
+      "aliases": [],
+      "description": "初始能量为0，入场前己方精灵每放1次冰系技能，回复3能量。",
+      "raw": {}
+    },
+    {
+      "kind": "passive",
+      "id": "passive-挺起胸脯",
+      "name": "挺起胸脯",
+      "aliases": [],
+      "description": "携带的能耗为1的技能，威力+50%。",
       "raw": {}
     }
   ]

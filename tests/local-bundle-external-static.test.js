@@ -75,6 +75,7 @@ bundle.monsters.forEach((monster) => {
   assert(Array.isArray(monster.types), `Monster ${monster.name || monster.id} must have types.`);
   assert(Array.isArray(monster.skillIds), `Monster ${monster.name || monster.id} must have skillIds.`);
   assert(Array.isArray(monster.passiveIds), `Monster ${monster.name || monster.id} must have passiveIds.`);
+  assert(monster.passiveIds.length > 0, `Monster ${monster.name || monster.id} must reference at least one passive.`);
   assert(monster.stats && typeof monster.stats === "object", `Monster ${monster.name || monster.id} must have top-level stats.`);
   requiredStatKeys.forEach((key) => {
     assert(Object.prototype.hasOwnProperty.call(monster.stats, key), `Monster ${monster.name || monster.id} is missing stats.${key}.`);
