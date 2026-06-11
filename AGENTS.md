@@ -1039,3 +1039,19 @@ Use this entry format:
   - Kept URLs, image fields, and source metadata out of the formal JSON package and did not modify HTML or calculation logic.
 - Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data update on 斑斑's empty passive list, then pass after the update. Ran all 14 Node tests; confirmed 494 monsters, 188 passives, zero empty passive lists, zero broken passive references, and zero duplicate passive names; scanned the JSON for third-party/source/image markers with no matches; ran `git diff --check`.
 - Status: Complete.
+
+### 2026-06-11 21:19 +08:00 - Codex
+
+- Request: Compare eight S2 update screenshots with the formal JSON package and make screenshot-confirmed monster stats, traits, skills, and learner relationships authoritative.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/s2-screenshot-data-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated screenshot-confirmed stat fields for 13 monsters and corrected the swapped physical attack/defense values for both 皇家狮鹫 forms so their totals are 604 and 596.
+  - Updated five passive descriptions: 观星、毒牙、洄游、蓄电池 and 陨落.
+  - Updated 20 existing skill records with the screenshot-confirmed power, energy cost, category, or description values.
+  - Added the missing neutral `防反` skill record and added eight screenshot-confirmed learner relationships across 速冻、水环、加大功率、冰墙、血气、恶意逃离 and 防反.
+  - Added a focused regression test covering the changed stats, stat totals, passive descriptions, skill fields, and learner references.
+- Verification: Watched `node tests/s2-screenshot-data-static.test.js` fail on the old 皇家狮鹫 stats, then pass after the data update. Ran all 15 Node tests; confirmed 494 monsters, 500 skills, 188 passives, zero broken skill/passive references, and zero forbidden third-party/image fields; audited the baseline diff to confirm only screenshot-related records changed; ran `git diff --check`.
+- Status: Complete.

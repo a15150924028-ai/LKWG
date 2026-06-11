@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-06-11T12:32:23.768Z",
+  "generatedAt": "2026-06-11T13:11:32.028Z",
   "currentSeason": "本地数据包",
   "monsters": [
     {
@@ -4056,16 +4056,17 @@
         "skill-贮藏",
         "skill-追打",
         "skill-防御",
-        "skill-风起"
+        "skill-风起",
+        "skill-血气"
       ],
       "passiveIds": [
         "passive-水翼推进"
       ],
       "stats": {
         "hp": 90,
-        "atk": 77,
+        "atk": 98,
         "defense": 105,
-        "spa": 77,
+        "spa": 98,
         "spd": 105,
         "spe": 125
       },
@@ -7534,11 +7535,11 @@
         "passive-警惕"
       ],
       "stats": {
-        "hp": 99,
+        "hp": 112,
         "atk": 118,
-        "defense": 102,
-        "spa": 38,
-        "spd": 96,
+        "defense": 85,
+        "spa": 23,
+        "spd": 131,
         "spe": 100
       },
       "raw": {
@@ -9169,7 +9170,8 @@
         "skill-翅刃",
         "skill-花香",
         "skill-阻断",
-        "skill-飞断"
+        "skill-飞断",
+        "skill-防反"
       ],
       "passiveIds": [
         "passive-共鸣"
@@ -9247,7 +9249,8 @@
         "skill-翅刃",
         "skill-花香",
         "skill-阻断",
-        "skill-飞断"
+        "skill-飞断",
+        "skill-防反"
       ],
       "passiveIds": [
         "passive-共鸣"
@@ -9490,10 +9493,10 @@
         "passive-起飞加速"
       ],
       "stats": {
-        "hp": 94,
-        "atk": 63,
+        "hp": 96,
+        "atk": 98,
         "defense": 112,
-        "spa": 63,
+        "spa": 98,
         "spd": 87,
         "spe": 115
       },
@@ -10285,11 +10288,11 @@
         "passive-毒牙"
       ],
       "stats": {
-        "hp": 79,
+        "hp": 85,
         "atk": 88,
-        "defense": 136,
+        "defense": 134,
         "spa": 88,
-        "spd": 110,
+        "spd": 74,
         "spe": 90
       },
       "raw": {
@@ -11065,7 +11068,8 @@
         "skill-精神扰乱",
         "skill-落雨",
         "skill-追打",
-        "skill-防御"
+        "skill-防御",
+        "skill-速冻"
       ],
       "passiveIds": [
         "passive-珊瑚骨"
@@ -11404,9 +11408,9 @@
       ],
       "stats": {
         "hp": 106,
-        "atk": 79,
+        "atk": 87,
         "defense": 80,
-        "spa": 79,
+        "spa": 87,
         "spd": 114,
         "spe": 100
       },
@@ -11717,11 +11721,11 @@
         "passive-预警"
       ],
       "stats": {
-        "hp": 152,
-        "atk": 91,
-        "defense": 67,
-        "spa": 163,
-        "spd": 119,
+        "hp": 149,
+        "atk": 53,
+        "defense": 90,
+        "spa": 124,
+        "spd": 129,
         "spe": 70
       },
       "raw": {
@@ -13578,8 +13582,8 @@
       ],
       "stats": {
         "hp": 109,
-        "atk": 110,
-        "defense": 123,
+        "atk": 123,
+        "defense": 110,
         "spa": 59,
         "spd": 70,
         "spe": 125
@@ -13655,11 +13659,11 @@
         "passive-乘风连击"
       ],
       "stats": {
-        "hp": 102,
-        "atk": 116,
-        "defense": 107,
-        "spa": 64,
-        "spd": 55,
+        "hp": 107,
+        "atk": 127,
+        "defense": 116,
+        "spa": 69,
+        "spd": 65,
         "spe": 120
       },
       "raw": {
@@ -15910,10 +15914,10 @@
       ],
       "stats": {
         "hp": 149,
-        "atk": 102,
-        "defense": 116,
-        "spa": 95,
-        "spd": 95,
+        "atk": 110,
+        "defense": 125,
+        "spa": 103,
+        "spd": 103,
         "spe": 70
       },
       "raw": {
@@ -16375,7 +16379,8 @@
         "skill-蓄水",
         "skill-见招拆招",
         "skill-连续爪击",
-        "skill-防御"
+        "skill-防御",
+        "skill-水环"
       ],
       "passiveIds": [
         "passive-得寸进尺"
@@ -16453,16 +16458,17 @@
         "skill-裂石",
         "skill-贪婪",
         "skill-透射",
-        "skill-震击"
+        "skill-震击",
+        "skill-恶意逃离"
       ],
       "passiveIds": [
         "passive-蓄电池"
       ],
       "stats": {
         "hp": 92,
-        "atk": 99,
+        "atk": 77,
         "defense": 108,
-        "spa": 34,
+        "spa": 20,
         "spd": 79,
         "spe": 120
       },
@@ -19428,7 +19434,8 @@
         "skill-聒噪",
         "skill-诡刺",
         "skill-超级糖果",
-        "skill-钧势"
+        "skill-钧势",
+        "skill-冰墙"
       ],
       "passiveIds": [
         "passive-冻土"
@@ -19899,7 +19906,8 @@
         "skill-血气",
         "skill-超导加速",
         "skill-食腐",
-        "skill-鼓劲"
+        "skill-鼓劲",
+        "skill-加大功率"
       ],
       "passiveIds": [
         "passive-奔波命"
@@ -26445,7 +26453,7 @@
         "passive-指挥家"
       ],
       "stats": {
-        "hp": 112,
+        "hp": 107,
         "atk": 120,
         "defense": 102,
         "spa": 120,
@@ -37389,9 +37397,9 @@
       ],
       "stats": {
         "hp": 106,
-        "atk": 90,
+        "atk": 84,
         "defense": 115,
-        "spa": 95,
+        "spa": 89,
         "spd": 119,
         "spe": 85
       },
@@ -38417,8 +38425,8 @@
         "passive-泛音列"
       ],
       "stats": {
-        "hp": 136,
-        "atk": 34,
+        "hp": 113,
+        "atk": 31,
         "defense": 95,
         "spa": 95,
         "spd": 110,
@@ -40461,7 +40469,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成物伤，2连击。己方队伍获得1次奉献：获得连击数+1。",
       "raw": {}
     },
     {
@@ -40541,7 +40549,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成魔伤，使用后若能量耗尽，本次技能威力+120。",
       "raw": {}
     },
     {
@@ -41821,7 +41829,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成魔伤，若击败敌方则将中毒转化为中毒印记。",
       "raw": {}
     },
     {
@@ -42093,7 +42101,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "敌方所有攻击技能能耗+2，持续3回合。",
       "raw": {}
     },
     {
@@ -42877,7 +42885,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成物伤，应对状态：额外造成打断，回复该技能能耗的能量。",
       "raw": {}
     },
     {
@@ -43005,7 +43013,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "2连击，每次连击自己回复8%生命，使用后本技能连击数永久+1。",
+      "description": "2连击，每次连击自己回复8%生命，使用后本技能连击数永久+1（不再恢复能量）。",
       "raw": {}
     },
     {
@@ -43517,7 +43525,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "蓄力，自身获得双攻+150%和速度+80。",
       "raw": {}
     },
     {
@@ -43613,7 +43621,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成魔伤，每次入场，本技能威力永久+40。",
       "raw": {}
     },
     {
@@ -43661,7 +43669,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "将天气改为雨天，持续8回合。",
+      "description": "将天气改为雨天，持续8回合。天气「雨天」：双方水系技能威力+75%。",
       "raw": {}
     },
     {
@@ -43789,7 +43797,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "若自己上回合未攻击敌方并造成伤害，本技能每回合永久+20威力。",
       "raw": {}
     },
     {
@@ -43821,7 +43829,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "造成物伤，物防比敌方越高，本次技能威力越高。",
+      "description": "造成物伤，物防低于或等于对手时威力为60；物防高于对手271及以上时，威力提升至200。",
       "raw": {}
     },
     {
@@ -44125,7 +44133,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "敌方获得物攻-60%、速度-60。",
       "raw": {}
     },
     {
@@ -44253,7 +44261,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "敌方获得双防-70%，应对防御：额外使被应对技能冷却2回合。",
       "raw": {}
     },
     {
@@ -44813,7 +44821,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "速度低于或等于对手时威力为60；速度高于对手271及以上时，威力提升至200。",
       "raw": {}
     },
     {
@@ -45613,7 +45621,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "自己和敌方获得萌化：回复40%生命和0能量。",
       "raw": {}
     },
     {
@@ -46941,7 +46949,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "减伤70%，应对攻击：自己获得连击数+2。",
       "raw": {}
     },
     {
@@ -47053,7 +47061,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "对自己造成60威力物伤，应对状态：改为对敌方造成180威力物伤。",
       "raw": {}
     },
     {
@@ -47094,14 +47102,14 @@
       "name": "斩断",
       "aliases": [],
       "type": "fighting",
-      "category": "physical",
+      "category": "special",
       "mode": "",
       "power": 70,
       "pp": 2,
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成魔伤，应对状态：额外打断被应对技能。",
       "raw": {}
     },
     {
@@ -47133,7 +47141,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "造成魔伤，携带其他系别技能会给本技能带来不同效果。",
+      "description": "造成魔伤，携带其他系别技能会给本技能带来不同效果：携带电系技能时获得速度+20；携带机械系技能时获得物防+30%；携带光系技能时获得魔攻+30%；携带水系技能时获得物攻+30%；携带普系技能时获得技能威力+10。",
       "raw": {}
     },
     {
@@ -47453,7 +47461,23 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成魔伤，应对状态：额外打断被应对技能。",
+      "raw": {}
+    },
+    {
+      "kind": "skill",
+      "id": "skill-防反",
+      "name": "防反",
+      "aliases": [],
+      "type": "normal",
+      "category": "defense",
+      "mode": "",
+      "power": 0,
+      "pp": 2,
+      "energyCost": null,
+      "accuracy": null,
+      "priority": 0,
+      "description": "减伤70%，应对攻击：自己获得物攻和魔攻+70%。",
       "raw": {}
     }
   ],
@@ -47743,7 +47767,7 @@
       "id": "passive-毒牙",
       "name": "毒牙",
       "aliases": [],
-      "description": "使敌方获得中毒时，也会使其获得魔攻和魔防-40%。",
+      "description": "使敌方获得中毒时，也会使其获得物攻-40%、速度-40。",
       "raw": {}
     },
     {
@@ -47871,7 +47895,7 @@
       "id": "passive-观星",
       "name": "观星",
       "aliases": [],
-      "description": "敌方每有1层星陨印记，自己的地系技能威力+15%。",
+      "description": "敌方每有1层星陨印记，自己的地系技能威力+20%。",
       "raw": {}
     },
     {
@@ -47935,7 +47959,7 @@
       "id": "passive-洄游",
       "name": "洄游",
       "aliases": [],
-      "description": "每次进入蓄力状态，获得全技能能耗永久-1。",
+      "description": "每次进入蓄力状态，获得全技能能耗永久-2。",
       "raw": {}
     },
     {
@@ -48663,7 +48687,7 @@
       "id": "passive-蓄电池",
       "name": "蓄电池",
       "aliases": [],
-      "description": "每入场1次，永久获得双攻+20%。",
+      "description": "每入场1次，永久获得双攻+30%。",
       "raw": {}
     },
     {
@@ -48791,7 +48815,7 @@
       "id": "passive-陨落",
       "name": "陨落",
       "aliases": [],
-      "description": "在场时，双方回合结束时触发的效果，触发次数-1。",
+      "description": "在场时，双方回合结束时的效果不会触发。",
       "raw": {}
     },
     {
