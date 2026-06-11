@@ -799,3 +799,27 @@ Use this entry format:
   - Kept the existing simplified HTML deletion untouched and left `克制面查询.html` unchanged.
 - Verification: Added a regression test and confirmed it failed before implementation on the missing embedded bundle, then passed after implementation. Ran all non-live Node tests in `tests`; parsed all executable script blocks in `克制面查询_无图低风险版.html` with `new Function`; validated the embedded JSON counts and confirmed it contains no HTTP URL, third-party domain, or image path; confirmed no `patchwiki.biligame.com`, `rocomwiki.app`, `<img>`, element icon path, PNG, SVG, or WebP reference is rendered. Browser-tested offline startup, the 494-monster maintenance count, search, editing `迪莫`, name-based skill association, adding a skill, and data validation with no console errors. Ran scoped `git diff --check`, which exited 0 with Git's LF-to-CRLF warning only.
 - Status: Complete.
+### 2026-06-11 12:44 +08:00 - Codex
+
+- Request: Refactor the PVP/克制面/伤害计算 helper from the old single-file data package approach to B plan: `index.html` plus `data/local-bundle.json`, without breaking core calculation logic.
+- Files changed:
+  - `index.html`
+  - `data/local-bundle.json`
+  - `克制面查询_无图低风险版.html`
+  - `tests/local-bundle-maintenance-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Created the new B-plan `index.html` entry that keeps UI, calculation logic, fixed bloodlines, boss-form generation, roller behavior, and tiny fallback data, while reading the formal data pool from `data/local-bundle.json`.
+  - Extracted the formal local data package into `data/local-bundle.json` with only `monsters`, `skills`, and `passives`, and removed URL/image fields from that package.
+  - Removed the old embedded-data maintenance/import/export/BWiki/CSV chain from the new `index.html` startup path; startup now fetches only `data/local-bundle.json` and falls back to `FALLBACK_DATA`.
+  - Deleted the old `克制面查询_无图低风险版.html` single-file big package after the new external bundle path passed static and local HTTP checks.
+  - Replaced the old embedded-maintenance static test with a B-plan external-bundle static test, including checks for no third-party image/request strings and fixed boss-form runtime generation.
+  - Fixed old static tests that selected the shortest HTML file so they continue targeting the legacy `克制面查询.html` rather than the new `index.html`.
+- Verification: Ran all non-live Node static tests in `tests/`; ran `node tests/local-bundle-external-static.test.js`; ran local HTTP checks confirming `index.html` and `data/local-bundle.json` return 200 with 494 monsters, 499 skills, and 184 passives and no URL/image fields; ran `git diff --check`. Browser-level Playwright verification was attempted but could not run because the bundled Playwright package is missing `playwright-core`.
+- Status: Complete.

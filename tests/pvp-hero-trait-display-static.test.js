@@ -2,9 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-const htmlFile = fs.readdirSync(path.join(__dirname, ".."))
-  .filter((name) => name.endsWith(".html"))
-  .sort((a, b) => a.length - b.length)[0];
+const htmlFile = "\u514b\u5236\u9762\u67e5\u8be2.html";
 const html = fs.readFileSync(path.join(__dirname, "..", htmlFile), "utf8");
 const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
 
