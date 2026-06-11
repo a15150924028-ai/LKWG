@@ -40,12 +40,41 @@ const html = fs.readFileSync(indexPath, "utf8");
 const bundle = JSON.parse(fs.readFileSync(bundlePath, "utf8"));
 const keys = Object.keys(bundle).sort();
 assert(
-  JSON.stringify(keys) === JSON.stringify(["monsters", "passives", "skills"]),
-  "data/local-bundle.json must contain only monsters, skills, and passives."
+  JSON.stringify(keys) === JSON.stringify(["currentSeason", "generatedAt", "monsters", "passives", "schemaVersion", "skills"]),
+  "data/local-bundle.json must contain only schemaVersion, generatedAt, currentSeason, monsters, skills, and passives."
 );
+assert(bundle.schemaVersion === 1, "External bundle schemaVersion must be 1.");
+assert(typeof bundle.generatedAt === "string", "External bundle generatedAt must be a string.");
+assert(typeof bundle.currentSeason === "string", "External bundle currentSeason must be a string.");
 assert(bundle.monsters.length >= 400, "External bundle must contain the full monster pool.");
 assert(bundle.skills.length >= 450, "External bundle must contain the skill pool.");
 assert(bundle.passives.length >= 150, "External bundle must contain passive records.");
+
+const requiredStatKeys = ["hp", "atk", "defense", "spa", "spd", "spe"];
+const skillIds = new Set(bundle.skills.map((skill) => skill.id));
+const passiveIds = new Set(bundle.passives.map((passive) => passive.id));
+bundle.monsters.forEach((monster) => {
+  assert(monster.kind === "monster", `Monster ${monster.name || monster.id} must have kind=monster.`);
+  assert(/^monster-/.test(monster.id), `Monster ${monster.name || monster.id} id must use the monster- prefix.`);
+  assert(Array.isArray(monster.types), `Monster ${monster.name || monster.id} must have types.`);
+  assert(Array.isArray(monster.skillIds), `Monster ${monster.name || monster.id} must have skillIds.`);
+  assert(Array.isArray(monster.passiveIds), `Monster ${monster.name || monster.id} must have passiveIds.`);
+  assert(monster.stats && typeof monster.stats === "object", `Monster ${monster.name || monster.id} must have top-level stats.`);
+  requiredStatKeys.forEach((key) => {
+    assert(Object.prototype.hasOwnProperty.call(monster.stats, key), `Monster ${monster.name || monster.id} is missing stats.${key}.`);
+    assert(Number.isFinite(Number(monster.stats[key])), `Monster ${monster.name || monster.id} stats.${key} must be numeric.`);
+  });
+  monster.skillIds.forEach((skillId) => assert(skillIds.has(skillId), `Monster ${monster.name} references missing skill ${skillId}.`));
+  monster.passiveIds.forEach((passiveId) => assert(passiveIds.has(passiveId), `Monster ${monster.name} references missing passive ${passiveId}.`));
+});
+bundle.skills.forEach((skill) => {
+  assert(skill.kind === "skill", `Skill ${skill.name || skill.id} must have kind=skill.`);
+  assert(/^skill-/.test(skill.id), `Skill ${skill.name || skill.id} id must use the skill- prefix.`);
+});
+bundle.passives.forEach((passive) => {
+  assert(passive.kind === "passive", `Passive ${passive.name || passive.id} must have kind=passive.`);
+  assert(/^passive-/.test(passive.id), `Passive ${passive.name || passive.id} id must use the passive- prefix.`);
+});
 
 assertIncludes(html, 'const LOCAL_BUNDLE_URL = "data/local-bundle.json";', "index.html must load data/local-bundle.json.");
 assertIncludes(html, "const BLOODLINES = [", "index.html must keep fixed BLOODLINES.");
@@ -128,5 +157,23 @@ function inspect(value, pathName) {
 }
 inspect(bundle, "bundle");
 assert(urlIssues.length === 0, `data/local-bundle.json must not contain URL or image fields:\n${urlIssues.slice(0, 10).join("\n")}`);
+const sourceIssues = [];
+inspectSource(bundle, "bundle");
+function inspectSource(value, pathName) {
+  if (typeof value === "string") {
+    if (/bwiki|BWiki|BWIKI|patchwiki|rocomwiki|biligame|https?:/i.test(value)) {
+      sourceIssues.push(`${pathName}: ${value.slice(0, 120)}`);
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => inspectSource(item, `${pathName}[${index}]`));
+    return;
+  }
+  if (value && typeof value === "object") {
+    Object.entries(value).forEach(([key, item]) => inspectSource(item, `${pathName}.${key}`));
+  }
+}
+assert(sourceIssues.length === 0, `data/local-bundle.json must not contain BWiki/source fields:\n${sourceIssues.slice(0, 10).join("\n")}`);
 
 console.log("External local bundle static checks passed.");

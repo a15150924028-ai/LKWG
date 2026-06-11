@@ -823,3 +823,18 @@ Use this entry format:
   - Fixed old static tests that selected the shortest HTML file so they continue targeting the legacy `克制面查询.html` rather than the new `index.html`.
 - Verification: Ran all non-live Node static tests in `tests/`; ran `node tests/local-bundle-external-static.test.js`; ran local HTTP checks confirming `index.html` and `data/local-bundle.json` return 200 with 494 monsters, 499 skills, and 184 passives and no URL/image fields; ran `git diff --check`. Browser-level Playwright verification was attempted but could not run because the bundled Playwright package is missing `playwright-core`.
 - Status: Complete.
+
+### 2026-06-11 13:05 +08:00 - Codex
+
+- Request: Tighten `data/local-bundle.json` to the requested schema with `schemaVersion`, `generatedAt`, `currentSeason`, `monsters`, `skills`, and `passives`; move monster stats to top-level fields; remove BWiki/source-style IDs and source markers.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Rebuilt `data/local-bundle.json` with schema version 1, current season metadata, 494 monsters, 499 skills, and 184 passives.
+  - Changed formal IDs from `bwiki-*` source-style IDs to `monster-*`, `skill-*`, and `passive-*`, and remapped every monster `skillIds` and `passiveIds` reference.
+  - Moved monster species stats to top-level `stats.hp`, `stats.atk`, `stats.defense`, `stats.spa`, `stats.spd`, and `stats.spe`; retained only local runtime metadata in `raw`.
+  - Strengthened the B-plan static test so the external bundle rejects missing schema fields, missing stats, broken skill/passive references, BWiki/source markers, URL/image fields, `bloodlines`, and `pvpPresets`.
+- Verification: Watched `node tests/local-bundle-external-static.test.js` fail before the data rebuild on the missing schema fields, then pass after the rebuild. Ran all non-live Node tests in `tests`; ran a local HTTP check confirming `index.html` references `data/local-bundle.json`, the bundle returns 200 with schema version 1, 494 monsters, 499 skills, 184 passives, top-level stats, and no source/image markers; ran `git diff --check`, which exited 0 with Git LF-to-CRLF warnings only.
+- Status: Complete.
