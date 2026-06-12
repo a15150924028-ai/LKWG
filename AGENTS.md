@@ -1069,3 +1069,21 @@ Use this entry format:
   - Added a regression test that rejects PVP preview rendering and requires both the damage-result renderer and update nodes to remain present.
 - Verification: Watched `node tests/no-pvp-monster-preview-static.test.js` fail before the HTML change because `renderPvpSide()` still called `renderMonsterPreview()`, then pass after the call was removed. Ran all 16 Node tests; parsed all 3 inline script blocks with `new Function`; ran `git diff --check`. In-app browser reload verification was blocked by the browser security policy for the local `file://` URL and was not bypassed.
 - Status: Complete.
+
+### 2026-06-12 20:48 +08:00 - Codex
+
+- Request: Use the confirmed Apple-style option 2 mockup as the final UI target for `index.html`, including the requested title, compact team layout, embedded roller image, energy label, bloodline placeholder, removed monster initial placeholders, and revised attribute badges.
+- Files changed:
+  - `index.html`
+  - `tests/apple-layout-static.test.js`
+  - `design-qa.md`
+  - `AGENTS.md`
+- Changes:
+  - Renamed the app to `洛克PVP配对模拟器` and added compact segmented navigation for team, analysis, damage, and attribute sections.
+  - Reworked the six team cards into a six-slot overview plus one active editor, while keeping all six original `.pet-card` forms in the DOM so team storage and calculation reads remain unchanged.
+  - Added a battle summary using existing monster stats, speed recommendation, type-relation, and coverage functions.
+  - Removed the monster initial badge from the main monster input, changed the bloodline placeholder to `选择/搜索血脉名称`, and added skill type/category/energy metadata with valid `energyCost` to `pp` fallback.
+  - Restyled the page with a compact system-UI palette, circular colored attribute badges, responsive desktop/mobile layouts, and the existing embedded roller image.
+  - Added a focused UI regression test and a Product Design comparison report with `final result: passed`.
+- Verification: Watched `node tests/apple-layout-static.test.js` fail before implementation, then pass. Ran all 17 Node tests successfully; parsed both executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested the 1440x1024 desktop layout and 390x844 mobile layout, team slot switching, monster and skill selection, energy display, section navigation, six-card DOM preservation, embedded roller image, and confirmed no console warnings/errors or document-level mobile overflow.
+- Status: Complete.
