@@ -1104,6 +1104,21 @@ Use this entry format:
 - Verification: Watched `node tests/stat-icons-static.test.js` fail before the renderer integration, then pass. Ran all 18 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested the team editor and PVP simulator with a physical-attack-boosting nature and matching talent, confirmed embedded data-URI icons render at 25x25 pixels, cleared the temporary team selections, confirmed no horizontal overflow, and found no console warnings or errors.
 - Status: Complete.
 
+### 2026-06-12 22:44 +08:00 - Codex
+
+- Request: Make the `队伍`、`分析`、`伤害` tabs share equal space, make `使用过山车`、`撤回过山车`、`清空` share equal space, and remove the team-slot horizontal scrollbar so portrait shows two rows of three and landscape shows six across.
+- Files changed:
+  - `index.html`
+  - `tests/equal-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the Apple-style top navigation from a four-track auto-sized control to three equal tracks with a usable desktop column width.
+  - Changed the roller action row to a three-column grid with equal-width buttons, plus tighter narrow-screen button spacing.
+  - Removed the mobile team-slot flex scroller and replaced it with responsive grid behavior: three columns in portrait and six columns in landscape/default layouts.
+  - Added a focused static regression test for the equal navigation/action controls and no-scroll team overview layout.
+- Verification: Watched `node tests/equal-layout-static.test.js` fail before the final desktop-width fix, then pass after the CSS update. Ran all 21 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested `http://localhost:8000/` at 1440x1024, 390x844, and 844x390, confirming equal tab/action widths, no team horizontal overflow, portrait 3+3 team slots, landscape six-across team slots, and no console warnings or errors.
+- Status: Complete.
+
 ### 2026-06-12 22:12 +08:00 - Codex
 
 - Request: Remove the UI `显示结果` control without deleting the results display or calculation output.
