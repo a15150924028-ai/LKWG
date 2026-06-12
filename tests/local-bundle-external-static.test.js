@@ -196,8 +196,8 @@ const topActionsMatch = html.match(/<div class="actions">([\s\S]*?)<\/div>/);
 assert(topActionsMatch, "Main top action bar is missing.");
 const topActionIds = [...topActionsMatch[1].matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
 assert(
-  JSON.stringify(topActionIds) === JSON.stringify(["calculateBtn", "rollerBtn", "undoRollerBtn", "clearBtn"]),
-  `Normal users must see only the four main action buttons, found: ${topActionIds.join(", ")}.`
+  JSON.stringify(topActionIds) === JSON.stringify(["rollerBtn", "undoRollerBtn", "clearBtn"]),
+  `Normal users must see only the three main action buttons, found: ${topActionIds.join(", ")}.`
 );
 
 const startupBody = functionBody(html, "startApp");

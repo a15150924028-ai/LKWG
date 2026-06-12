@@ -1103,3 +1103,19 @@ Use this entry format:
   - Added a focused regression test for embedded icon coverage and boosted-stat nature mapping.
 - Verification: Watched `node tests/stat-icons-static.test.js` fail before the renderer integration, then pass. Ran all 18 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested the team editor and PVP simulator with a physical-attack-boosting nature and matching talent, confirmed embedded data-URI icons render at 25x25 pixels, cleared the temporary team selections, confirmed no horizontal overflow, and found no console warnings or errors.
 - Status: Complete.
+
+### 2026-06-12 22:12 +08:00 - Codex
+
+- Request: Remove the UI `显示结果` control without deleting the results display or calculation output.
+- Files changed:
+  - `index.html`
+  - `tests/local-bundle-external-static.test.js`
+  - `tests/no-display-result-button-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the top action-bar `显示结果` button, its `calculateBtn` DOM reference, and its click listener.
+  - Kept automatic result rendering, the results section, roller output, and PVP damage output intact.
+  - Updated the action-bar contract test to expect the remaining three controls and added a regression test that rejects reintroducing the deleted button while requiring the results renderer to remain.
+  - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
+- Verification: Watched `node tests/no-display-result-button-static.test.js` fail before the UI removal and pass after it. Ran all 19 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed `calculateBtn` and the `显示结果` button are absent, the action bar still has `rollerBtn`, `undoRollerBtn`, and `clearBtn`, the results section still renders, PVP damage simulation remains present, and console warnings/errors are empty.
+- Status: Complete.
