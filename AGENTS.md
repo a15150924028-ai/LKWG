@@ -1119,3 +1119,20 @@ Use this entry format:
   - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
 - Verification: Watched `node tests/no-display-result-button-static.test.js` fail before the UI removal and pass after it. Ran all 19 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed `calculateBtn` and the `显示结果` button are absent, the action bar still has `rollerBtn`, `undoRollerBtn`, and `clearBtn`, the results section still renders, PVP damage simulation remains present, and console warnings/errors are empty.
 - Status: Complete.
+
+### 2026-06-12 22:20 +08:00 - Codex
+
+- Request: Remove the `属性` UI as well.
+- Files changed:
+  - `index.html`
+  - `tests/apple-layout-static.test.js`
+  - `tests/no-attribute-matrix-ui-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the top navigation `属性` tab and the `matrixSection` attribute relation table UI.
+  - Removed the stale `matrixWrap` DOM reference, `renderMatrix()` UI renderer, and its startup/data-refresh calls.
+  - Kept attribute/type badges, `relationMultiplier()`, analysis output, and PVP damage logic intact for the remaining UI.
+  - Updated the Apple layout test and added a regression test that rejects reintroducing the deleted attribute matrix UI.
+  - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
+- Verification: Watched `node tests/no-attribute-matrix-ui-static.test.js` fail before the UI removal and pass after it. Ran all 20 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed navigation is now only `队伍`, `分析`, and `伤害`, `matrixSection` and `matrixWrap` are absent, `属性关系表` is not visible, results and PVP damage simulation remain present, and console warnings/errors are empty.
+- Status: Complete.
