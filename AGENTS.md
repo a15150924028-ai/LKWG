@@ -1087,3 +1087,19 @@ Use this entry format:
   - Added a focused UI regression test and a Product Design comparison report with `final result: passed`.
 - Verification: Watched `node tests/apple-layout-static.test.js` fail before implementation, then pass. Ran all 17 Node tests successfully; parsed both executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested the 1440x1024 desktop layout and 390x844 mobile layout, team slot switching, monster and skill selection, energy display, section navigation, six-card DOM preservation, embedded roller image, and confirmed no console warnings/errors or document-level mobile overflow.
 - Status: Complete.
+
+### 2026-06-12 21:56 +08:00 - Codex
+
+- Request: Adopt option 1 by adding local embedded icons to every talent selector and an icon representing the boosted stat to every nature selector.
+- Files changed:
+  - `index.html`
+  - `tests/stat-icons-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added six independent transparent PNG stat icons for HP, physical attack, magic attack, physical defense, magic defense, and speed as base64 data URIs inside `index.html`.
+  - Mapped every nature to its boosted stat and every talent to its matching stat, then reused the generic combo renderer so both the team editor and PVP damage simulator show the local icons in selected controls and dropdown options.
+  - Updated the no-external-assets regression to allow exactly the existing roller image plus the six new embedded stat icons, while retaining the third-party URL checks.
+  - Added a focused regression test for embedded icon coverage and boosted-stat nature mapping.
+- Verification: Watched `node tests/stat-icons-static.test.js` fail before the renderer integration, then pass. Ran all 18 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check`. Browser-tested the team editor and PVP simulator with a physical-attack-boosting nature and matching talent, confirmed embedded data-URI icons render at 25x25 pixels, cleared the temporary team selections, confirmed no horizontal overflow, and found no console warnings or errors.
+- Status: Complete.
