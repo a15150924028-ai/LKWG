@@ -262,7 +262,7 @@ assertNotIncludes(html, "assets/roller-skill.png", "index.html must embed the ro
 assertIncludes(html, 'src="data:image/png;base64,', "index.html must embed the roller button image.");
 assertIncludes(html, "const STAT_ICON_DATA_URIS = {", "index.html must embed the six local stat icons.");
 assertIncludes(html, "const TYPE_ICON_ASSETS = {", "index.html must declare local type icon assets.");
-assertIncludes(html, "assets/type-icons/ghost.svg", "index.html must use local type icon assets for attribute badges.");
+assertIncludes(html, "assets/type-icons/ghost.png", "index.html must use screenshot-cropped local type icon assets for attribute badges.");
 const embeddedPngs = html.match(/data:image\/png;base64,/g) || [];
 assert(embeddedPngs.length === 7, "index.html must contain one roller image and six stat icon PNGs.");
 const imgTags = html.match(/<img\b/gi) || [];

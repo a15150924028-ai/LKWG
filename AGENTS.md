@@ -1221,3 +1221,55 @@ Use this entry format:
   - Tightened the icon regression test so future replacements must keep the reference-orbit style markers, soft depth, local-only paths, and non-text SVG drawings.
 - Verification: Watched `node tests/type-icons-static.test.js` fail on the old icons before regeneration, then pass after the new assets. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Direct SVG visual preview was not available because the current tools lacked a working SVG rasterizer/browser runtime.
 - Status: Complete.
+
+### 2026-06-13 09:17 +08:00 - Codex
+
+- Request: Use the icons directly from the provided reference image instead of generated lookalike icons.
+- Files changed:
+  - `index.html`
+  - `assets/type-icons/bug.png`
+  - `assets/type-icons/cute.png`
+  - `assets/type-icons/demon.png`
+  - `assets/type-icons/dragon.png`
+  - `assets/type-icons/electric.png`
+  - `assets/type-icons/fantasy.png`
+  - `assets/type-icons/fighting.png`
+  - `assets/type-icons/fire.png`
+  - `assets/type-icons/ghost.png`
+  - `assets/type-icons/grass.png`
+  - `assets/type-icons/ground.png`
+  - `assets/type-icons/ice.png`
+  - `assets/type-icons/light.png`
+  - `assets/type-icons/mechanical.png`
+  - `assets/type-icons/normal.png`
+  - `assets/type-icons/poison.png`
+  - `assets/type-icons/water.png`
+  - `assets/type-icons/wing.png`
+  - `assets/type-icons/bug.svg`
+  - `assets/type-icons/cute.svg`
+  - `assets/type-icons/demon.svg`
+  - `assets/type-icons/dragon.svg`
+  - `assets/type-icons/electric.svg`
+  - `assets/type-icons/fantasy.svg`
+  - `assets/type-icons/fighting.svg`
+  - `assets/type-icons/fire.svg`
+  - `assets/type-icons/ghost.svg`
+  - `assets/type-icons/grass.svg`
+  - `assets/type-icons/ground.svg`
+  - `assets/type-icons/ice.svg`
+  - `assets/type-icons/light.svg`
+  - `assets/type-icons/mechanical.svg`
+  - `assets/type-icons/normal.svg`
+  - `assets/type-icons/poison.svg`
+  - `assets/type-icons/water.svg`
+  - `assets/type-icons/wing.svg`
+  - `tests/local-bundle-external-static.test.js`
+  - `tests/type-icons-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Cropped the 18 attribute icons directly from the user's reference screenshot into local 96x96 transparent PNG assets.
+  - Updated the type icon asset map to use the screenshot-cropped PNGs for every attribute icon while keeping `boss` and `any` as local fallback assets because they are not present in the reference image.
+  - Removed the generated SVG lookalike assets for the 18 attributes so they cannot be used accidentally.
+  - Updated static tests to require screenshot-cropped local RGBA PNG assets for attributes and reject stale generated SVG attribute icons.
+- Verification: Watched `node tests/type-icons-static.test.js` and `node tests/local-bundle-external-static.test.js` fail before the PNG extraction and path update, then pass after the change. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Generated and visually inspected a temporary PNG montage of the cropped icons.
+- Status: Complete.

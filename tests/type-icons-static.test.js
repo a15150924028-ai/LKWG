@@ -39,47 +39,43 @@ const requiredIcons = [
   "bug",
   "normal",
   "wing",
-  "ground",
+  "ground"
+];
+
+const fallbackIcons = [
   "boss",
   "any"
 ];
 
-const referenceStyleMarkers = {
-  grass: "leaf-mark",
-  water: "drop-mark",
-  fire: "flame-mark",
-  electric: "bolt-sharp",
-  poison: "poison-bubbles",
-  fantasy: "spiral-mark",
-  ice: "snowflake-mark",
-  fighting: "sigil-star",
-  cute: "heart-spark",
-  light: "spark-star",
-  dragon: "dragon-mask",
-  mechanical: "gear-mark",
-  ghost: "ghost-body",
-  demon: "horned-face",
-  bug: "ladybug-shell",
-  normal: "ring-star",
-  wing: "wing-swirl",
-  ground: "mountain-peaks",
-  boss: "crown-mark",
-  any: "any-star"
-};
+function pngInfo(buffer) {
+  assert(buffer.slice(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), "Invalid PNG signature.");
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20),
+    bitDepth: buffer.readUInt8(24),
+    colorType: buffer.readUInt8(25)
+  };
+}
 
 assert(/const TYPE_ICON_ASSETS = \{/.test(html), "Missing local type icon asset map.");
 
 for (const key of requiredIcons) {
+  const assetPath = path.join(root, "assets", "type-icons", `${key}.png`);
+  const staleSvgPath = path.join(root, "assets", "type-icons", `${key}.svg`);
+  assert(!fs.existsSync(staleSvgPath), `${key}.svg must not remain as the active/generated attribute icon asset.`);
+  assert(fs.existsSync(assetPath), `Missing screenshot-cropped local type icon asset: ${key}.png`);
+  const info = pngInfo(fs.readFileSync(assetPath));
+  assert(info.width === 96 && info.height === 96, `${key}.png must be a 96x96 safe-crop image.`);
+  assert(info.bitDepth === 8 && info.colorType === 6, `${key}.png must be an RGBA PNG with transparency.`);
+  assert(new RegExp(`${key}: "assets/type-icons/${key}\\.png"`).test(html), `TYPE_ICON_ASSETS must reference ${key}.png.`);
+}
+
+for (const key of fallbackIcons) {
   const assetPath = path.join(root, "assets", "type-icons", `${key}.svg`);
-  assert(fs.existsSync(assetPath), `Missing local type icon asset: ${key}.svg`);
+  assert(fs.existsSync(assetPath), `Missing local fallback type icon asset: ${key}.svg`);
   const svg = fs.readFileSync(assetPath, "utf8");
-  assert(/<svg\b/.test(svg), `${key}.svg must be an SVG icon.`);
-  assert(/viewBox="0 0 64 64"/.test(svg), `${key}.svg must use a clean 64x64 viewBox.`);
-  assert(!/<text\b/i.test(svg), `${key}.svg must not use text glyphs as the icon.`);
+  assert(/<svg\b/.test(svg), `${key}.svg must remain a local SVG fallback icon.`);
   assert(!/(?:href|src)=["']https?:\/\//i.test(svg), `${key}.svg must not reference remote assets.`);
-  assert(svg.includes('data-style="reference-orbit-v2"'), `${key}.svg must use the closer reference orbit v2 style.`);
-  assert(svg.includes('filter="url(#soft-shadow)"'), `${key}.svg must include soft icon depth instead of flat placeholder art.`);
-  assert(svg.includes(`data-icon="${referenceStyleMarkers[key]}"`), `${key}.svg must use the reference-style ${referenceStyleMarkers[key]} drawing.`);
   assert(new RegExp(`${key}: "assets/type-icons/${key}\\.svg"`).test(html), `TYPE_ICON_ASSETS must reference ${key}.svg.`);
 }
 
