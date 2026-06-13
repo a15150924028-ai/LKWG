@@ -1,5 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="dragon">
-  <circle cx="32" cy="32" r="31" fill="#ff486d"/>
-  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
-  <g><path d="M17 15c11 3 19 10 25 20 2-8 5-14 11-19 1 15-4 28-16 39-7-10-15-18-25-25 8-1 15 0 22 4-4-8-9-14-17-19z" fill="#fff"/><path d="M38 14h9l-6 7z" fill="#fff"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="dragon" data-style="reference-orbit-v2">
+  <defs>
+    <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.2" flood-color="#000" flood-opacity=".18"/>
+    </filter>
+    <radialGradient id="surface" cx="30%" cy="24%" r="76%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/>
+      <stop offset=".48" stop-color="#fff" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".07"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="24" fill="#e74661" filter="url(#soft-shadow)"/>
+  <circle cx="32" cy="32" r="24" fill="url(#surface)" opacity=".9"/>
+  <g transform="translate(5.44 5.44) scale(.83)">
+  <g data-icon="dragon-mask" fill="#fff">
+      <path d="M12 11 27 24l5-15 5 15 15-13-6 22c-2 11-8 19-14 22-6-3-12-11-14-22z"/>
+      <path d="M21 31 31 36 22 40zM43 31 33 36l9 4z" fill="#e74661" opacity=".82"/>
+      <path d="M28 46h8" stroke="#e74661" stroke-width="4" stroke-linecap="round"/>
+    </g>
+  </g>
 </svg>

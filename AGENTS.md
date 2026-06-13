@@ -1188,3 +1188,36 @@ Use this entry format:
   - Added a focused static regression test requiring every local type icon asset, rejecting text-glyph SVG icons and old text-only type badges.
 - Verification: Watched `node tests/type-icons-static.test.js` fail before adding the icon asset map, then pass after wiring the local icons. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. In-app Browser verification of the current `file://` page was blocked by Browser Use URL policy, so no browser workaround was used.
 - Status: Complete.
+
+### 2026-06-13 09:11 +08:00 - Codex
+
+- Request: Regenerate and replace the local attribute icons so they more closely match the newly provided circular reference image.
+- Files changed:
+  - `assets/type-icons/any.svg`
+  - `assets/type-icons/boss.svg`
+  - `assets/type-icons/bug.svg`
+  - `assets/type-icons/cute.svg`
+  - `assets/type-icons/demon.svg`
+  - `assets/type-icons/dragon.svg`
+  - `assets/type-icons/electric.svg`
+  - `assets/type-icons/fantasy.svg`
+  - `assets/type-icons/fighting.svg`
+  - `assets/type-icons/fire.svg`
+  - `assets/type-icons/ghost.svg`
+  - `assets/type-icons/grass.svg`
+  - `assets/type-icons/ground.svg`
+  - `assets/type-icons/ice.svg`
+  - `assets/type-icons/light.svg`
+  - `assets/type-icons/mechanical.svg`
+  - `assets/type-icons/normal.svg`
+  - `assets/type-icons/poison.svg`
+  - `assets/type-icons/water.svg`
+  - `assets/type-icons/wing.svg`
+  - `tests/type-icons-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Replaced the previous flatter local type icons with a closer reference-style set: colored circular bases, soft depth, subtle surface highlights, and centered white pictograms.
+  - Kept every asset local SVG with a clean 64x64 viewBox and inset marks to avoid crop artifacts.
+  - Tightened the icon regression test so future replacements must keep the reference-orbit style markers, soft depth, local-only paths, and non-text SVG drawings.
+- Verification: Watched `node tests/type-icons-static.test.js` fail on the old icons before regeneration, then pass after the new assets. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Direct SVG visual preview was not available because the current tools lacked a working SVG rasterizer/browser runtime.
+- Status: Complete.

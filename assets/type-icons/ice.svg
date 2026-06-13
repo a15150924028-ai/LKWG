@@ -1,5 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ice">
-  <circle cx="32" cy="32" r="31" fill="#53b8f4"/>
-  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
-  <g><path d="M32 8v48M12 20l40 24M52 20 12 44" stroke="#fff" stroke-width="6" stroke-linecap="round"/><circle cx="32" cy="32" r="6" fill="#fff"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ice" data-style="reference-orbit-v2">
+  <defs>
+    <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.2" flood-color="#000" flood-opacity=".18"/>
+    </filter>
+    <radialGradient id="surface" cx="30%" cy="24%" r="76%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/>
+      <stop offset=".48" stop-color="#fff" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".07"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="24" fill="#68b9e8" filter="url(#soft-shadow)"/>
+  <circle cx="32" cy="32" r="24" fill="url(#surface)" opacity=".9"/>
+  <g transform="translate(5.44 5.44) scale(.83)">
+  <g data-icon="snowflake-mark" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M32 10v44M13 21l38 22M51 21 13 43"/>
+      <path d="m24 16 8 8 8-8M24 48l8-8 8 8M15 32h10l-5-9M49 32H39l5-9M20 41l5-9H15M44 41l-5-9h10" stroke-width="3.5"/>
+    </g>
+  </g>
 </svg>

@@ -1,5 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="bug">
-  <circle cx="32" cy="32" r="31" fill="#98d719"/>
-  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
-  <g><ellipse cx="32" cy="35" rx="12" ry="17" fill="#fff"/><circle cx="32" cy="18" r="8" fill="#fff"/><path d="M17 28h-7M17 40h-7M47 28h7M47 40h7M25 12l-5-6M39 12l5-6" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M32 23v25" stroke="#98d719" stroke-width="4" stroke-linecap="round" opacity=".55"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="bug" data-style="reference-orbit-v2">
+  <defs>
+    <filter id="soft-shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="4" stdDeviation="3.2" flood-color="#000" flood-opacity=".18"/>
+    </filter>
+    <radialGradient id="surface" cx="30%" cy="24%" r="76%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/>
+      <stop offset=".48" stop-color="#fff" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".07"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="24" fill="#9bd817" filter="url(#soft-shadow)"/>
+  <circle cx="32" cy="32" r="24" fill="url(#surface)" opacity=".9"/>
+  <g transform="translate(5.44 5.44) scale(.83)">
+  <g data-icon="ladybug-shell" fill="#fff">
+      <path d="M32 15c12 0 21 9 21 21 0 11-9 20-21 20s-21-9-21-20c0-12 9-21 21-21z"/>
+      <path d="M25 13c1-5 4-8 7-8s6 3 7 8" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M32 18v35" stroke="#9bd817" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="23" cy="34" r="4" fill="#9bd817"/><circle cx="41" cy="34" r="4" fill="#9bd817"/>
+      <circle cx="25" cy="46" r="3" fill="#9bd817"/><circle cx="39" cy="46" r="3" fill="#9bd817"/>
+    </g>
+  </g>
 </svg>

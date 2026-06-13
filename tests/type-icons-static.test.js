@@ -44,6 +44,29 @@ const requiredIcons = [
   "any"
 ];
 
+const referenceStyleMarkers = {
+  grass: "leaf-mark",
+  water: "drop-mark",
+  fire: "flame-mark",
+  electric: "bolt-sharp",
+  poison: "poison-bubbles",
+  fantasy: "spiral-mark",
+  ice: "snowflake-mark",
+  fighting: "sigil-star",
+  cute: "heart-spark",
+  light: "spark-star",
+  dragon: "dragon-mask",
+  mechanical: "gear-mark",
+  ghost: "ghost-body",
+  demon: "horned-face",
+  bug: "ladybug-shell",
+  normal: "ring-star",
+  wing: "wing-swirl",
+  ground: "mountain-peaks",
+  boss: "crown-mark",
+  any: "any-star"
+};
+
 assert(/const TYPE_ICON_ASSETS = \{/.test(html), "Missing local type icon asset map.");
 
 for (const key of requiredIcons) {
@@ -54,6 +77,9 @@ for (const key of requiredIcons) {
   assert(/viewBox="0 0 64 64"/.test(svg), `${key}.svg must use a clean 64x64 viewBox.`);
   assert(!/<text\b/i.test(svg), `${key}.svg must not use text glyphs as the icon.`);
   assert(!/(?:href|src)=["']https?:\/\//i.test(svg), `${key}.svg must not reference remote assets.`);
+  assert(svg.includes('data-style="reference-orbit-v2"'), `${key}.svg must use the closer reference orbit v2 style.`);
+  assert(svg.includes('filter="url(#soft-shadow)"'), `${key}.svg must include soft icon depth instead of flat placeholder art.`);
+  assert(svg.includes(`data-icon="${referenceStyleMarkers[key]}"`), `${key}.svg must use the reference-style ${referenceStyleMarkers[key]} drawing.`);
   assert(new RegExp(`${key}: "assets/type-icons/${key}\\.svg"`).test(html), `TYPE_ICON_ASSETS must reference ${key}.svg.`);
 }
 
