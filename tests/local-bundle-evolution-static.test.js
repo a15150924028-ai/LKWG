@@ -93,6 +93,17 @@ assertFormalLine(["逗逗", "气球猫", "梦想三三", "奇梦咪"]);
 assertBranchLine(["脆筒甜甜", "香草甜甜（杨桃饰品）", "圣代甜甜（杨桃抹茶口味）"]);
 assert(!bundle.monsters.some((entry) => entry.name === "鸭吉吉国王"), "Generic 鸭吉吉国王 must not exist.");
 
+const monsterNames = new Set(bundle.monsters.map((entry) => entry.name));
+bundle.monsters.forEach((entry) => {
+  const lines = [
+    ...(Array.isArray(entry.raw?.evolutionLine) ? [entry.raw.evolutionLine] : []),
+    ...(Array.isArray(entry.raw?.evolutionLines) ? entry.raw.evolutionLines : [])
+  ];
+  lines.forEach((line) => {
+    line.forEach((name) => assert(monsterNames.has(name), `${entry.name} evolution line references missing monster ${name}.`));
+  });
+});
+
 const linkedMonsters = bundle.monsters.filter((entry) => entry.raw?.chainId || entry.raw?.evolutionStage);
 assert(linkedMonsters.length >= 450, "Formal bundle should carry broad evolution metadata after the manual chain fill.");
 assert(!html.includes("pvpLocalInferredEvolutionLine"), "PVP should use formal evolution metadata instead of runtime local inference.");

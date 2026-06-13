@@ -898,6 +898,20 @@ Use this entry format:
 - Verification: Watched the focused release test fail before implementation on the missing admin-mode contract, then pass after implementation. A behavioral import test caught and verified the fix for `null` monster stats being accepted. Ran all retained tests; validated the formal 494-monster, 499-skill, 184-passive package through the same import validator; parsed all executable scripts; scanned `index.html` and `data/local-bundle.json` for removed network/source/image markers; confirmed neutral IDs and zero broken references; and confirmed both files return HTTP 200 from a local server with the expected controls and footer. Browser interaction was not retried because the in-app browser policy blocks local URLs in this environment.
 - Status: Complete.
 
+### 2026-06-13 11:49 +08:00 - Codex
+
+- Request: Remove the 12 confirmed stale `蹦蹦种子` branch references that still ended at the deleted unsuffixed `蹦蹦果`.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-evolution-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the obsolete `evolutionLines` entries from the four form-specific `蹦蹦种子`, `蹦蹦草`, and `蹦蹦花` records.
+  - Preserved the four correct main evolution lines ending at their matching form-specific `蹦蹦果`.
+  - Added a bundle-wide regression assertion that every monster named by `evolutionLine` or `evolutionLines` must exist in the local monster pool.
+- Verification: Watched `node tests/local-bundle-evolution-static.test.js` fail on the stale `蹦蹦果` reference before the data cleanup, then pass afterward. Confirmed 0 broken evolution references. Ran all 23 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files.
+- Status: Complete.
+
 ### 2026-06-11 15:16 +08:00 - Codex
 
 - Request: Recheck the B-plan release in the requested 12-step order, back it up, verify data loading/admin separation/core rules/no third-party requests, and test the published page end to end.
