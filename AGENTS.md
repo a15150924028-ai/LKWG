@@ -1353,3 +1353,18 @@ Use this entry format:
   - Updated the PVP cute-layer test to stop depending on the removed runtime fallback helper.
 - Verification: Watched `node tests/local-bundle-evolution-static.test.js` fail before the data update, then pass after adding formal evolution metadata. Ran all 23 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files.
 - Status: Complete locally; GitHub publish still needs the unrelated pre-existing deletion of `克制面查询-简洁版.html` to be included or excluded explicitly.
+
+### 2026-06-13 12:11 +08:00 - Codex
+
+- Request: In each selected skill metadata row, display skill damage in the first cell and show `-` when the skill has no damage.
+- Files changed:
+  - `index.html`
+  - `tests/skill-meta-power-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Renamed the first selected-skill metadata label from `威力` to `伤害`.
+  - Changed missing, invalid, zero, and negative skill power values to display a single `-`.
+  - Kept positive skill power values displayed as their numeric damage.
+  - Expanded the regression test to execute `skillPowerValue()` for positive, zero, and missing damage cases.
+- Verification: Watched `node tests/skill-meta-power-static.test.js` fail on the old `威力` label, then pass after the update. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings. Automatic in-app Browser reload was blocked by the `file://` URL security policy.
+- Status: Complete.

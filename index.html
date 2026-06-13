@@ -4180,14 +4180,15 @@
 
     function skillPowerValue(skill) {
       const value = skill?.power;
-      return value === "" || value === null || value === undefined || !Number.isFinite(Number(value))
-        ? "--"
-        : Number(value);
+      const power = Number(value);
+      return value === "" || value === null || value === undefined || !Number.isFinite(power) || power <= 0
+        ? "-"
+        : power;
     }
 
     function renderSkillMeta(skill) {
       return `
-        <span class="skill-meta-item"><span class="skill-meta-label">威力</span><strong>${escapeHtml(String(skillPowerValue(skill)))}</strong></span>
+        <span class="skill-meta-item"><span class="skill-meta-label">伤害</span><strong>${escapeHtml(String(skillPowerValue(skill)))}</strong></span>
         <span class="skill-meta-item">${escapeHtml(skill ? (CATEGORY_NAMES[skill.category] || skill.category || "--") : "--")}</span>
         <span class="skill-meta-item"><span class="skill-meta-label">能耗</span><strong>${escapeHtml(String(skillEnergyValue(skill)))}</strong></span>
       `;
