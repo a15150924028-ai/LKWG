@@ -4178,9 +4178,16 @@
       return value === undefined ? "--" : Number(value);
     }
 
+    function skillPowerValue(skill) {
+      const value = skill?.power;
+      return value === "" || value === null || value === undefined || !Number.isFinite(Number(value))
+        ? "--"
+        : Number(value);
+    }
+
     function renderSkillMeta(skill) {
       return `
-        <span class="skill-meta-item">${skill ? typeBadgeHtml(skill.type) : '<span class="type-badge placeholder">?</span>'}<span>${escapeHtml(skill ? typeName(skill.type) : "--")}</span></span>
+        <span class="skill-meta-item"><span class="skill-meta-label">威力</span><strong>${escapeHtml(String(skillPowerValue(skill)))}</strong></span>
         <span class="skill-meta-item">${escapeHtml(skill ? (CATEGORY_NAMES[skill.category] || skill.category || "--") : "--")}</span>
         <span class="skill-meta-item"><span class="skill-meta-label">能耗</span><strong>${escapeHtml(String(skillEnergyValue(skill)))}</strong></span>
       `;

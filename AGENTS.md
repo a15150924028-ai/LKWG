@@ -898,6 +898,21 @@ Use this entry format:
 - Verification: Watched the focused release test fail before implementation on the missing admin-mode contract, then pass after implementation. A behavioral import test caught and verified the fix for `null` monster stats being accepted. Ran all retained tests; validated the formal 494-monster, 499-skill, 184-passive package through the same import validator; parsed all executable scripts; scanned `index.html` and `data/local-bundle.json` for removed network/source/image markers; confirmed neutral IDs and zero broken references; and confirmed both files return HTTP 200 from a local server with the expected controls and footer. Browser interaction was not retried because the in-app browser policy blocks local URLs in this environment.
 - Status: Complete.
 
+### 2026-06-13 12:02 +08:00 - Codex
+
+- Request: Change the selected skill metadata row so its first cell displays skill power instead of repeating the skill attribute.
+- Files changed:
+  - `index.html`
+  - `tests/skill-meta-power-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `skillPowerValue()` to render numeric skill power, including `0`, while using `--` only for missing or invalid values.
+  - Replaced the first skill metadata cell's attribute badge and type name with `威力` and the selected skill's power value.
+  - Kept the existing category and energy-cost cells unchanged.
+  - Added a regression test requiring the power label/value and rejecting type-badge rendering in `renderSkillMeta()`.
+- Verification: Watched `node tests/skill-meta-power-static.test.js` fail before the HTML change, then pass afterward. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only a line-ending normalization warning for `index.html`. In-app Browser refresh verification was blocked by the Browser Use URL policy for the current `file://` page and was not bypassed.
+- Status: Complete.
+
 ### 2026-06-13 11:49 +08:00 - Codex
 
 - Request: Remove the 12 confirmed stale `蹦蹦种子` branch references that still ended at the deleted unsuffixed `蹦蹦果`.
