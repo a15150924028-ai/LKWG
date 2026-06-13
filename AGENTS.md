@@ -1413,3 +1413,21 @@ Use this entry format:
   - Added focused runtime regression coverage for empty, invalid, boss, and valid attribute bloodlines.
 - Verification: Watched `node tests/pvp-force-impact-bloodline-static.test.js` fail on the previous no-bloodline fallback, then pass after the change. Ran all 25 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only a line-ending normalization warning for `index.html`.
 - Status: Complete.
+
+### 2026-06-13 21:07 +08:00 - Codex
+
+- Request: Start the PVP turn-simulator work in small phases by repairing confirmed skill descriptions and deleting confirmed invalid isolated skills before changing the damage formula.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/pvp-skill-data-cleanup-static.test.js`
+  - `docs/superpowers/specs/2026-06-13-pvp-turn-simulator-design.md`
+  - `docs/superpowers/plans/2026-06-13-pvp-skill-data-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Documented the confirmed PVP damage, response, weather, persistence, energy, cooldown, and action-order rules for phased implementation.
+  - Added a focused implementation plan for the first skill-data phase.
+  - Repaired the local descriptions for `偷袭`, `技巧打击`, `有效预防`, and `无畏之心`.
+  - Removed the invalid isolated skill records `水星水`, `冰荆棘`, `冰刺`, and `极速冷冻`.
+  - Added a regression test that verifies the repaired descriptions, deleted records, and absence of stale monster skill-pool references.
+- Verification: Watched `node tests/pvp-skill-data-cleanup-static.test.js` fail before the data change and pass after it. Ran every `tests/*.test.js` script successfully; parsed all 3 inline scripts in `index.html` with `new Function`; ran `git diff --check`; compared the before/after skill maps and confirmed exactly four removed skills and four changed skills.
+- Status: Complete.

@@ -42446,22 +42446,6 @@
     },
     {
       "kind": "skill",
-      "id": "skill-冰刺",
-      "name": "冰刺",
-      "aliases": [],
-      "type": "ice",
-      "category": "physical",
-      "mode": "",
-      "power": 85,
-      "pp": 3,
-      "energyCost": null,
-      "accuracy": null,
-      "priority": 0,
-      "description": "造成物伤，应对状态：敌方2回合无法换宠。",
-      "raw": {}
-    },
-    {
-      "kind": "skill",
       "id": "skill-冰蛋壳",
       "name": "冰蛋壳",
       "aliases": [],
@@ -42522,22 +42506,6 @@
       "accuracy": null,
       "priority": 0,
       "description": "耗能",
-      "raw": {}
-    },
-    {
-      "kind": "skill",
-      "id": "skill-冰荆棘",
-      "name": "冰荆棘",
-      "aliases": [],
-      "type": "ice",
-      "category": "defense",
-      "mode": "",
-      "power": null,
-      "pp": 2,
-      "energyCost": null,
-      "accuracy": null,
-      "priority": 0,
-      "description": "减伤70%，应对攻击：敌方冻结层数翻倍。",
       "raw": {}
     },
     {
@@ -45246,22 +45214,6 @@
     },
     {
       "kind": "skill",
-      "id": "skill-极速冷冻",
-      "name": "极速冷冻",
-      "aliases": [],
-      "type": "ice",
-      "category": "status",
-      "mode": "",
-      "power": null,
-      "pp": 2,
-      "energyCost": null,
-      "accuracy": null,
-      "priority": 0,
-      "description": "本回合敌方释放的技能能耗+2，应对防御：能耗+4。",
-      "raw": {}
-    },
-    {
-      "kind": "skill",
       "id": "skill-极限撕裂",
       "name": "极限撕裂",
       "aliases": [],
@@ -45385,7 +45337,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成物伤，应对状态：本次技能威力变为10倍。",
       "raw": {}
     },
     {
@@ -47998,22 +47950,6 @@
     },
     {
       "kind": "skill",
-      "id": "skill-水星水",
-      "name": "水星水",
-      "aliases": [],
-      "type": "water",
-      "category": "special",
-      "mode": "",
-      "power": 0,
-      "pp": 3,
-      "energyCost": null,
-      "accuracy": null,
-      "priority": 0,
-      "description": "造成魔伤，应对状态：本次伤害不受自身属性减益和敌方属性增益影响",
-      "raw": {}
-    },
-    {
-      "kind": "skill",
       "id": "skill-瞬间零度",
       "name": "瞬间零度",
       "aliases": [],
@@ -48377,7 +48313,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "造成物伤，应对状态：本次技能威力变为3倍。",
       "raw": {}
     },
     {
@@ -48537,7 +48473,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "减伤100%，应对攻击：将减免的伤害转化为等量生命恢复，且本技能能耗永久+2。",
       "raw": {}
     },
     {
@@ -49545,7 +49481,7 @@
       "energyCost": null,
       "accuracy": null,
       "priority": 0,
-      "description": "耗能",
+      "description": "减伤50%，应对攻击：下一次行动获得先手+1。",
       "raw": {}
     },
     {
