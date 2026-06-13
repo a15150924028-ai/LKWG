@@ -822,6 +822,77 @@
       padding: 8px;
     }
 
+    .pvp-weather {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+
+    .pvp-weather-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .pvp-weather-head strong {
+      font-size: 13px;
+    }
+
+    .pvp-weather-head span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .pvp-weather-options {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .pvp-weather-button {
+      display: flex;
+      min-width: 0;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: #fff;
+      color: #30343b;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 8px;
+    }
+
+    .pvp-weather-button:last-child {
+      border-right: 0;
+    }
+
+    .pvp-weather-button:hover {
+      background: #f4f7fa;
+    }
+
+    .pvp-weather-button.active {
+      background: var(--weather-color, #64748b);
+      color: #fff;
+    }
+
+    .pvp-weather-button .type-badge {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+    }
+
+    .pvp-weather-button.active .type-badge {
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+    }
+
     .pvp-side {
       min-width: 0;
       border: 1px solid var(--line);
@@ -2390,6 +2461,18 @@
         grid-template-columns: 1fr;
       }
 
+      .pvp-weather-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pvp-weather-button:nth-child(2) {
+        border-right: 0;
+      }
+
+      .pvp-weather-button:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--line);
+      }
+
       .skill-row {
         grid-template-columns: 32px minmax(0, 1fr);
       }
@@ -3647,6 +3730,69 @@
 
 </script>
   <script>
+(function initPvpWeatherRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_WEATHER_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpWeatherRules() {
+  const WEATHER_TYPES = new Set(["rain", "sandstorm", "blizzard"]);
+  const WEATHER_SKILLS = {
+    "落雨": "rain",
+    "沙涌": "sandstorm",
+    "冬至": "blizzard"
+  };
+  const WEATHER_ELEMENTS = {
+    rain: "water",
+    sandstorm: "ground",
+    blizzard: "ice"
+  };
+
+  function normalizeWeather(value) {
+    const weather = String(value || "");
+    return WEATHER_TYPES.has(weather) ? weather : "";
+  }
+
+  function weatherFromSkill(skill) {
+    const names = [skill?.name, ...(skill?.aliases || [])]
+      .map((value) => String(value || "").replace(/\s+/g, ""))
+      .filter(Boolean);
+    const matchedName = names.find((name) => WEATHER_SKILLS[name]);
+    return matchedName ? WEATHER_SKILLS[matchedName] : "";
+  }
+
+  function weatherElementType(weather) {
+    return WEATHER_ELEMENTS[normalizeWeather(weather)] || "";
+  }
+
+  function weatherPowerMultiplier(weather, action) {
+    return normalizeWeather(weather) === "rain" && action?.type === "water" ? 1.75 : 1;
+  }
+
+  function weatherSkillCostReduction(weather, action) {
+    return normalizeWeather(weather) === "sandstorm" && action?.type === "ground" ? 2 : 0;
+  }
+
+  function weatherStatusLayers(weather, monster) {
+    const iceImmune = Array.isArray(monster?.types) && monster.types.includes("ice");
+    return {
+      freeze: normalizeWeather(weather) === "blizzard" && !iceImmune ? 8 : 0
+    };
+  }
+
+  return {
+    normalizeWeather,
+    weatherFromSkill,
+    weatherElementType,
+    weatherPowerMultiplier,
+    weatherSkillCostReduction,
+    weatherStatusLayers
+  };
+});
+
+</script>
+  <script>
     const LOCAL_BUNDLE_URL = "data/local-bundle.json";
     const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";
     const STORAGE_KEY = "roco-world-type-tool-v3";
@@ -3715,6 +3861,12 @@
       wing: "#6b9bc3",
       ground: "#a67847"
     };
+    const PVP_WEATHER_OPTIONS = [
+      { key: "", name: "无天气", type: "", description: "不启用天气效果" },
+      { key: "rain", name: "雨天", type: "water", description: "双方水系技能威力+75%" },
+      { key: "sandstorm", name: "沙暴", type: "ground", description: "双方地系技能能耗-2" },
+      { key: "blizzard", name: "雪天", type: "ice", description: "双方非冰系按8层冻结计算" }
+    ];
     const BOSS_FORM_SUFFIX = "__boss_form";
     const REAL_BOSS_FORM_NAMES = new Set([
       "圣光迪莫",
@@ -4031,6 +4183,7 @@
     const adminClearDataBtn = document.getElementById("adminClearDataBtn");
     const adminDataFile = document.getElementById("adminDataFile");
     const pvpSimState = {
+      weather: "",
       ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
       enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
@@ -6059,9 +6212,18 @@
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(attacker, attackerState?.traitLayers, battleAction);
       const actionCuteLayers = normalizePvpCuteLayers(useActionSnapshot ? attackerState?.actionCuteLayers : attackerState?.cuteLayers);
       const currentSkillCost = Math.max(0, Number(attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp) || 0);
-      const traitAdjustedSkillCost = Math.max(0, currentSkillCost - traitEffects.skillCostReduction);
+      const weatherSkillCostReduction = window.LKWG_PVP_WEATHER_RULES.weatherSkillCostReduction(pvpSimState.weather, battleAction);
+      const traitAdjustedSkillCost = Math.max(0, currentSkillCost - traitEffects.skillCostReduction - weatherSkillCostReduction);
       const attackerEnergy = Number(attackerState?.energy ?? DEFAULT_PVP_ENERGY);
       const traitAdjustedEnergy = Math.max(0, Math.min(10, (Number.isFinite(attackerEnergy) ? attackerEnergy : DEFAULT_PVP_ENERGY) + traitEffects.energyGain));
+      const weatherStatusLayers = window.LKWG_PVP_WEATHER_RULES.weatherStatusLayers(pvpSimState.weather, defender);
+      const defenderStatusLayers = {
+        ...(defenderState?.statusLayers || {}),
+        freeze: Math.max(
+          Number(defenderState?.statusLayers?.freeze) || 0,
+          weatherStatusLayers.freeze
+        )
+      };
       const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
         ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
             attackerStats,
@@ -6075,12 +6237,12 @@
             skillIndex: battleAction.pvpSkillIndex,
             currentSkillCost: traitAdjustedSkillCost,
             skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
-            statusLayers: defenderState?.statusLayers || {},
+            statusLayers: defenderStatusLayers,
             relatedTypeSkillUseCount: attackerState?.relatedTypeSkillUseCounts?.[battleAction.type] ?? 0,
             entryCount: attackerState?.entryCounts?.[battleAction.id] ?? attackerState?.entryCount ?? 0,
             defenderSwitched: !!defenderState?.switchedThisTurn,
             attackerHasDebuff: !!attackerState?.hasDebuff,
-            weatherType: (typeof state === "object" && state ? state.pvpWeatherType : null),
+            weatherType: window.LKWG_PVP_WEATHER_RULES.weatherElementType(pvpSimState.weather),
             burstActive: !!attackerState?.burstActive,
             burstEffectCount: attackerState?.burstEffectCount ?? 0,
             previousUsedStatusSkill: !!attackerState?.previousUsedStatusSkill,
@@ -6135,6 +6297,7 @@
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
       const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
       const defenseReduction = defenseReductionEffect(pvpActionFromState(defenderState, defender));
+      const weatherMultiplier = window.LKWG_PVP_WEATHER_RULES.weatherPowerMultiplier(pvpSimState.weather, damageAction);
       const flatPowerAdd = traitEffects.flatPower + passiveDamage.powerAdd + manualDamageBonus;
       const powerBuffPercent = (traitEffects.powerMultiplier - 1)
         + (passiveDamage.powerMultiplier - 1)
@@ -6148,7 +6311,7 @@
         powerBuffPercent,
         stabMultiplier,
         typeMultiplier,
-        weatherMultiplier: 1,
+        weatherMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
         skillDamageMultiplier: Number(variableDamage.damageMultiplier) || 1,
         reductionMultiplier: defenseReduction.multiplier,
@@ -6196,6 +6359,9 @@
         defenseReduction: defenseReduction.multiplier,
         abilityLevel,
         powerBuffPercent,
+        weatherMultiplier,
+        weatherSkillCostReduction,
+        weatherStatusLayers,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
         singleEstimate,
         responseSingleEstimate,
@@ -7135,10 +7301,48 @@
       `;
     }
 
+    function renderPvpWeatherControl() {
+      pvpSimState.weather = window.LKWG_PVP_WEATHER_RULES.normalizeWeather(pvpSimState.weather);
+      const selected = PVP_WEATHER_OPTIONS.find((option) => option.key === pvpSimState.weather) || PVP_WEATHER_OPTIONS[0];
+      return `
+        <div class="pvp-weather">
+          <div class="pvp-weather-head">
+            <strong>天气</strong>
+            <span>${escapeHtml(selected.description)}</span>
+          </div>
+          <div class="pvp-weather-options" role="group" aria-label="天气">
+            ${PVP_WEATHER_OPTIONS.map((option) => {
+              const active = option.key === pvpSimState.weather;
+              const icon = option.type ? typeBadgeHtml(option.type) : '<span class="pvp-weather-none" aria-hidden="true">-</span>';
+              const color = option.type ? TYPE_COLORS[option.type] : "#64748b";
+              return `
+                <button
+                  class="pvp-weather-button${active ? " active" : ""}"
+                  type="button"
+                  data-pvp-weather="${option.key}"
+                  aria-pressed="${active ? "true" : "false"}"
+                  style="--weather-color:${color}"
+                  title="${escapeHtml(option.description)}"
+                >${icon}<span>${escapeHtml(option.name)}</span></button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function setPvpWeatherFromSkill(skill) {
+      const weather = window.LKWG_PVP_WEATHER_RULES.weatherFromSkill(skill);
+      if (!weather || weather === pvpSimState.weather) return false;
+      pvpSimState.weather = weather;
+      return true;
+    }
+
     function renderPvpDamageSimulation(team) {
       return `
         <article class="analysis-card pvp-damage-sim" id="pvpDamageSim">
           <h3>PVP对战伤害模拟</h3>
+          ${renderPvpWeatherControl()}
           <div class="pvp-sim-grid">
             ${renderPvpSide("ally", "己方精灵")}
             ${renderPvpSide("enemy", "敌方精灵")}
@@ -7265,6 +7469,15 @@
       const root = document.getElementById("pvpDamageSim");
       if (!root) return;
 
+      root.querySelectorAll("[data-pvp-weather]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const nextWeather = window.LKWG_PVP_WEATHER_RULES.normalizeWeather(button.dataset.pvpWeather);
+          if (nextWeather === pvpSimState.weather) return;
+          pvpSimState.weather = nextWeather;
+          renderResults();
+        });
+      });
+
       ["ally", "enemy"].forEach((side) => {
         const state = pvpSideState(side);
         const isAlly = side === "ally";
@@ -7381,6 +7594,7 @@
             onSelect: (item) => {
               state.skillIds[skillIndex] = item?.id || "";
               let postUseChanged = false;
+              const weatherChanged = setPvpWeatherFromSkill(item);
               if (item) {
                 if (isAttackSkill(item)) {
                   selectPvpSkillAction(state, skillIndex, item);
@@ -7395,7 +7609,7 @@
                 state.actionMonsterId = "";
                 state.forceImpact = false;
               }
-              if (postUseChanged) {
+              if (postUseChanged || weatherChanged) {
                 renderResults();
               } else {
                 refreshPvpDamageOutputs(root);
@@ -7406,13 +7620,14 @@
           skillHost?.addEventListener("click", (event) => {
             if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || !state.skillIds[skillIndex]) return;
             const skill = skillById.get(state.skillIds[skillIndex]);
+            const weatherChanged = setPvpWeatherFromSkill(skill);
             const supportChanged = applyPvpSupportSkill(state, skill);
             if (!supportChanged) {
               selectPvpSkillAction(state, skillIndex, skill);
             }
             const postUseChanged = applyPvpPostUseSkillEffects(state, skill);
-            if (supportChanged || postUseChanged) {
-              if (postUseChanged) {
+            if (supportChanged || postUseChanged || weatherChanged) {
+              if (postUseChanged || weatherChanged) {
                 renderResults();
                 return;
               }

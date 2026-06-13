@@ -1448,3 +1448,20 @@ Use this entry format:
   - Added focused regression coverage for rounding, multi-hit settlement, ability level, additive power buffs, response power, immunity, and calculator integration.
 - Verification: Watched `node tests/pvp-damage-formula-static.test.js` fail before the damage core existed and again before defender skill changes were integrated, then pass after each implementation. Ran all 27 Node tests successfully; parsed all 4 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. Browser verification was attempted, but the in-app browser policy blocked local `file://` navigation and its isolated environment could not reach the host-local temporary server.
 - Status: Complete.
+
+### 2026-06-13 21:36 +08:00 - Codex
+
+- Request: Continue the phased PVP turn simulator by adding the shared weather selector and confirmed rain, sandstorm, and snow effects.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-weather-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-weather-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added one shared weather state and a segmented `无天气 / 雨天 / 沙暴 / 雪天` control above both PVP sides.
+  - Used the local water, ground, and ice icons and the matching type colors for selected weather backgrounds, with four columns on desktop and a 2-by-2 layout on narrow screens.
+  - Added pure weather rules for weather normalization, weather skills, element mapping, rain water-power `+75%`, sandstorm ground-skill cost `-2`, and snow's eight freeze layers with ice-type immunity.
+  - Applied weather to both sides' damage contexts and made `落雨`, `沙涌`, and `冬至` update the shared weather automatically.
+  - Kept weather duration out of the UI and deferred round-by-round weather progression to the later full-turn phase.
+- Verification: Watched `node tests/pvp-weather-static.test.js` fail before the weather module, fail again before UI integration, and fail on the old `暴风雪` label before changing it to `雪天`; each case passed after implementation. Ran all 28 Node tests successfully; parsed all 5 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. In the in-app browser, verified desktop four-column and mobile 2-by-2 weather layouts, no horizontal overflow, local icons, rain selected background `rgb(60, 127, 196)`, the `双方水系技能威力+75%` description, final weather labels, and no console warnings or errors.
+- Status: Complete.
