@@ -1397,3 +1397,19 @@ Use this entry format:
   - Confirmed `彩虹独角兽` formally references `夺目`, whose local description is `额外获得三个未携带的随机技能，且非光系技能威力+25%。`
 - Verification: Watched `node tests/team-passive-display-static.test.js` fail while the description was hidden, then pass after the CSS update. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings.
 - Status: Complete.
+
+### 2026-06-13 16:29 +08:00 - Codex
+
+- Request: Disable Force Impact when no attribute bloodline is selected, and explain the shared `×0.9` damage factor.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-force-impact-bloodline-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed Force Impact locking so no bloodline, an invalid bloodline, and the boss bloodline all disable the action.
+  - Removed the fallback that previously used the monster's first attribute when no attribute bloodline was selected.
+  - Made Force Impact derive its attribute only from a valid selected attribute bloodline.
+  - Updated the action description to state that an attribute bloodline is required.
+  - Added focused runtime regression coverage for empty, invalid, boss, and valid attribute bloodlines.
+- Verification: Watched `node tests/pvp-force-impact-bloodline-static.test.js` fail on the previous no-bloodline fallback, then pass after the change. Ran all 25 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only a line-ending normalization warning for `index.html`.
+- Status: Complete.

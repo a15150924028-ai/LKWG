@@ -3744,7 +3744,8 @@
     }
 
     function forceImpactLocked(state) {
-      return isBossBloodlineId(state?.bloodlineId);
+      const bloodline = bloodlineById.get(state?.bloodlineId);
+      return !bloodline?.type || isBossBloodlineId(bloodline.id);
     }
 
     function forceImpactButtonIcon(state, monster) {
@@ -5726,17 +5727,16 @@
 
     function forceImpactSkill(state, monster) {
       const bloodline = bloodlineById.get(state?.bloodlineId);
-      if (bloodline?.id === "bloodline-boss") return null;
-      const type = bloodline?.type || monster?.types?.[0] || "normal";
+      if (!bloodline?.type || bloodline.id === "bloodline-boss") return null;
       return {
         id: "pvp-force-impact",
         kind: "skill",
         name: "愿力冲击",
         aliases: ["原力冲击"],
-        type,
+        type: bloodline.type,
         category: "attack",
         power: FORCE_IMPACT_POWER,
-        description: "按血脉属性优先估算，没有属性血脉时按精灵第一属性估算；敌方使用状态技能时伤害×2.5。"
+        description: "仅在选择属性血脉后可用，按血脉属性估算；敌方使用状态技能时伤害×2.5。"
       };
     }
 
