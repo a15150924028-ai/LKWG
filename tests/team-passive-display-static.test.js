@@ -8,6 +8,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+assert(
+  !/\.passive-line\s+\.readonly-desc\s*\{[^}]*display\s*:\s*none/i.test(html),
+  "Team passive descriptions must not be hidden by CSS."
+);
+
 function extractFunction(name) {
   const start = html.indexOf(`function ${name}(`);
   if (start < 0) throw new Error(`${name} is missing.`);

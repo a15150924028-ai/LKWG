@@ -1382,3 +1382,18 @@ Use this entry format:
   - Updated the focused regression test to require the `威力` label.
 - Verification: Watched `node tests/skill-meta-power-static.test.js` fail before the label change, then pass afterward. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings.
 - Status: Complete.
+
+### 2026-06-13 12:27 +08:00 - Codex
+
+- Request: Show the textual description for a selected monster's trait instead of displaying only the trait name.
+- Files changed:
+  - `index.html`
+  - `tests/team-passive-display-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the CSS rule that hid `.readonly-desc` inside the team trait row.
+  - Styled the existing trait description as a compact second line below the trait name.
+  - Added a regression assertion preventing team trait descriptions from being hidden again.
+  - Confirmed `彩虹独角兽` formally references `夺目`, whose local description is `额外获得三个未携带的随机技能，且非光系技能威力+25%。`
+- Verification: Watched `node tests/team-passive-display-static.test.js` fail while the description was hidden, then pass after the CSS update. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings.
+- Status: Complete.
