@@ -3569,6 +3569,84 @@
 
 </script>
   <script>
+(function initPvpDamageCore(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_DAMAGE_CORE = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpDamageCore() {
+  const DEFAULT_CORE_FACTOR = 0.9;
+
+  function finiteNumber(value, fallback = 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  function abilityLevelMultiplier(attackerMods, defenderMods, attackKey, defenseKey) {
+    const attackChange = finiteNumber(attackerMods?.[attackKey]);
+    const defenseChange = finiteNumber(defenderMods?.[defenseKey]);
+    const numerator = 1 + Math.max(0, attackChange) + Math.max(0, -defenseChange);
+    const denominator = 1 + Math.max(0, -attackChange) + Math.max(0, defenseChange);
+    return numerator / denominator;
+  }
+
+  function calculateHit(input = {}) {
+    const attack = Math.max(0, finiteNumber(input.attack));
+    const defense = Math.max(1, finiteNumber(input.defense, 1));
+    const skillPower = Math.max(0, finiteNumber(input.skillPower));
+    const responseMultiplier = Math.max(0, finiteNumber(input.responseMultiplier, 1));
+    const flatPowerAdd = finiteNumber(input.flatPowerAdd);
+    const settledPower = Math.max(0, skillPower * responseMultiplier + flatPowerAdd);
+    const powerBuffMultiplier = Math.max(0, 1 + finiteNumber(input.powerBuffPercent));
+    const abilityLevel = Math.max(0, finiteNumber(input.abilityLevel, 1));
+    const multipliers = [
+      finiteNumber(input.coreFactor, DEFAULT_CORE_FACTOR),
+      abilityLevel,
+      powerBuffMultiplier,
+      finiteNumber(input.stabMultiplier, 1),
+      finiteNumber(input.typeMultiplier, 1),
+      finiteNumber(input.weatherMultiplier, 1),
+      finiteNumber(input.passiveDamageMultiplier, 1),
+      finiteNumber(input.skillDamageMultiplier, 1),
+      finiteNumber(input.reductionMultiplier, 1)
+    ];
+    const hasZeroFactor = attack <= 0 || settledPower <= 0 || multipliers.some((value) => value <= 0);
+    const rawDamage = hasZeroFactor
+      ? 0
+      : (attack / defense) * settledPower * multipliers.reduce((total, value) => total * value, 1);
+    const damage = rawDamage > 0 ? Math.max(1, Math.ceil(rawDamage)) : 0;
+    return {
+      damage,
+      rawDamage,
+      settledPower,
+      effectivePower: settledPower * powerBuffMultiplier,
+      powerBuffMultiplier,
+      abilityLevel
+    };
+  }
+
+  function calculateDamage(input = {}) {
+    const hit = calculateHit(input);
+    const hitCount = Math.max(1, Math.round(finiteNumber(input.hitCount, 1)));
+    return {
+      ...hit,
+      hitCount,
+      singleDamage: hit.damage,
+      damage: hit.damage * hitCount
+    };
+  }
+
+  return {
+    DEFAULT_CORE_FACTOR,
+    abilityLevelMultiplier,
+    calculateHit,
+    calculateDamage
+  };
+});
+
+</script>
+  <script>
     const LOCAL_BUNDLE_URL = "data/local-bundle.json";
     const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";
     const STORAGE_KEY = "roco-world-type-tool-v3";
@@ -5961,12 +6039,23 @@
       const attackerSkillMods = normalizeStatMods(attackerState?.skillStatMods);
       const attackerManualMods = normalizeStatMods(attackerState?.manualStatMods);
       const defenderPassiveMods = passiveStatMods(defender, defenderState);
+      const defenderSkillMods = normalizeStatMods(defenderState?.skillStatMods);
       const defenderManualMods = normalizeStatMods(defenderState?.manualStatMods);
-      const attackerStats = finalBattleStats(attacker, attackerState, mergeStatMods(attackerPassiveMods, attackerSkillMods, attackerManualMods));
-      const defenderStats = finalBattleStats(defender, defenderState, mergeStatMods(defenderPassiveMods, defenderManualMods));
-      const mode = damageMode(battleAction, attackerStats, defenderStats);
-      const attackValue = attackerStats[mode.attackKey];
-      const defenseValue = defenderStats[mode.defenseKey];
+      const attackerBattleMods = mergeStatMods(attackerPassiveMods, attackerSkillMods, attackerManualMods);
+      const defenderBattleMods = mergeStatMods(defenderPassiveMods, defenderSkillMods, defenderManualMods);
+      const attackerStats = finalBattleStats(attacker, attackerState, attackerBattleMods);
+      const defenderStats = finalBattleStats(defender, defenderState, defenderBattleMods);
+      const attackerBaseStats = finalBattleStats(attacker, attackerState, blankStatMods(), attackerPassiveMods.__flat);
+      const defenderBaseStats = finalBattleStats(defender, defenderState, blankStatMods(), defenderPassiveMods.__flat);
+      const mode = damageMode(battleAction, attackerBaseStats, defenderBaseStats);
+      const attackValue = attackerBaseStats[mode.attackKey];
+      const defenseValue = defenderBaseStats[mode.defenseKey];
+      const abilityLevel = window.LKWG_PVP_DAMAGE_CORE.abilityLevelMultiplier(
+        attackerBattleMods,
+        defenderBattleMods,
+        mode.attackKey,
+        mode.defenseKey
+      );
       const traitEffects = window.LKWG_PVP_TRAIT_RULES.resolveTraitEffects(attacker, attackerState?.traitLayers, battleAction);
       const actionCuteLayers = normalizePvpCuteLayers(useActionSnapshot ? attackerState?.actionCuteLayers : attackerState?.cuteLayers);
       const currentSkillCost = Math.max(0, Number(attackerState?.skillCostOverrides?.[battleAction.id] ?? battleAction.pp) || 0);
@@ -6027,10 +6116,7 @@
         ? 1
         : typeMultiplier;
       const stabMultiplier = sameTypeAttackBonus(damageAction, attacker);
-      const traitAdjustedPower = (value) => Math.max(1, Math.floor(
-        ((Number(value) || basePower) + traitEffects.flatPower) * traitEffects.powerMultiplier
-      ));
-      const variablePower = traitAdjustedPower(variableDamage.power);
+      const variablePower = Math.max(1, Number(variableDamage.power) || basePower);
       const baseHitCount = Math.max(1, Number(variableDamage.hitCount) || 1);
       const manualHitCountBonus = Math.max(0, Math.round(Number(attackerState?.manualHitCountBonus) || 0));
       const canReceiveHitCountBonus = Boolean(variableDamage.canReceiveHitCountBonus);
@@ -6046,32 +6132,55 @@
         defenderStats,
         typeMultiplier
       });
-      const power = Math.max(1, Math.floor((variablePower + passiveDamage.powerAdd) * passiveDamage.powerMultiplier));
       const manualDamageBonus = Number(attackerState?.manualDamageBonus) || 0;
       const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
-      const manualPowerMultiplier = Math.max(0, 1 + manualPowerPercentBonus);
       const defenseReduction = defenseReductionEffect(pvpActionFromState(defenderState, defender));
-      const settledPower = Math.max(1, Math.floor((power + manualDamageBonus) * manualPowerMultiplier));
-      const rawBase = (attackValue / Math.max(1, defenseValue)) * settledPower * PVP_DAMAGE_CORE_FACTOR;
-      const adjusted = rawBase * typeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * defenseReduction.multiplier;
-      const singleEstimate = Math.max(1, Math.floor(adjusted));
-      const estimate = Math.max(1, singleEstimate * hitCount);
-      const responsePowerSource = variableDamage.responsePower
-        ? traitAdjustedPower(variableDamage.responsePower)
-        : (Number(variableDamage.responseDamageMultiplier) && Number(variableDamage.responseDamageMultiplier) !== 1 ? variablePower : null);
+      const flatPowerAdd = traitEffects.flatPower + passiveDamage.powerAdd + manualDamageBonus;
+      const powerBuffPercent = (traitEffects.powerMultiplier - 1)
+        + (passiveDamage.powerMultiplier - 1)
+        + manualPowerPercentBonus;
+      const damageInput = {
+        attack: attackValue,
+        defense: defenseValue,
+        skillPower: variablePower,
+        flatPowerAdd,
+        abilityLevel,
+        powerBuffPercent,
+        stabMultiplier,
+        typeMultiplier,
+        weatherMultiplier: 1,
+        passiveDamageMultiplier: passiveDamage.damageMultiplier,
+        skillDamageMultiplier: Number(variableDamage.damageMultiplier) || 1,
+        reductionMultiplier: defenseReduction.multiplier,
+        coreFactor: PVP_DAMAGE_CORE_FACTOR,
+        hitCount
+      };
+      const normalDamage = window.LKWG_PVP_DAMAGE_CORE.calculateDamage(damageInput);
+      const power = normalDamage.effectivePower;
+      const singleEstimate = normalDamage.singleDamage;
+      const estimate = normalDamage.damage;
       const responseDamageMultiplier = Number(variableDamage.responseDamageMultiplier) || 1;
-      const responsePower = responsePowerSource
-        ? Math.max(1, Math.floor((responsePowerSource + passiveDamage.powerAdd) * passiveDamage.powerMultiplier))
+      const hasResponseDamage = battleAction.id === "pvp-force-impact"
+        || variableDamage.responsePower != null
+        || responseDamageMultiplier !== 1;
+      const responseSkillPower = variableDamage.responsePower != null
+        ? Math.max(1, Number(variableDamage.responsePower) || variablePower)
+        : variablePower;
+      const responseMultiplier = battleAction.id === "pvp-force-impact"
+        ? FORCE_IMPACT_RESPONSE_MULTIPLIER
+        : 1;
+      const responseDamage = hasResponseDamage
+        ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
+            ...damageInput,
+            skillPower: responseSkillPower,
+            responseMultiplier,
+            typeMultiplier: responseTypeMultiplier,
+            skillDamageMultiplier: (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier
+          })
         : null;
-      const responseSettledPower = responsePower == null
-        ? null
-        : Math.max(1, Math.floor((responsePower + manualDamageBonus) * manualPowerMultiplier));
-      const responseSingleEstimate = responsePower
-        ? Math.max(1, Math.floor((attackValue / Math.max(1, defenseValue)) * responseSettledPower * PVP_DAMAGE_CORE_FACTOR * responseTypeMultiplier * stabMultiplier * passiveDamage.damageMultiplier * (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier * defenseReduction.multiplier))
-        : null;
-      const responseEstimate = battleAction.id === "pvp-force-impact"
-        ? Math.max(1, Math.floor(estimate * FORCE_IMPACT_RESPONSE_MULTIPLIER))
-        : (responseSingleEstimate == null ? null : Math.max(1, responseSingleEstimate * hitCount));
+      const responsePower = responseDamage?.settledPower ?? null;
+      const responseSingleEstimate = responseDamage?.singleDamage ?? null;
+      const responseEstimate = responseDamage?.damage ?? null;
       return {
         attacker,
         defender,
@@ -6085,6 +6194,8 @@
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
         defenseReduction: defenseReduction.multiplier,
+        abilityLevel,
+        powerBuffPercent,
         damageFactor: PVP_DAMAGE_CORE_FACTOR,
         singleEstimate,
         responseSingleEstimate,
@@ -6101,6 +6212,7 @@
         attackerSkillLabels: passiveModLabels(attackerSkillMods),
         attackerManualLabels: passiveModLabels(attackerManualMods),
         defenderPassiveLabels: passiveModLabels(defenderPassiveMods),
+        defenderSkillLabels: passiveModLabels(defenderSkillMods),
         defenderManualLabels: passiveModLabels(defenderManualMods),
         attackerDamageLabels: [...effectiveAction.labels, ...passiveDamage.attackerLabels],
         defenderDamageLabels: [...passiveDamage.defenderLabels, ...defenseReduction.labels],
@@ -6135,6 +6247,7 @@
         ...(damage.manualDamageBonus ? [escapeHtml(`己方手动技能威力${damage.manualDamageBonus > 0 ? "+" : ""}${damage.manualDamageBonus}`)] : []),
         ...(damage.manualPowerPercentBonus ? [escapeHtml(`己方手动技能威力${manualBuffText(damage.manualPowerPercentBonus)}`)] : []),
         ...(damage.manualHitCountBonus ? [escapeHtml(`己方手动连击数+${damage.manualHitCountBonus}`)] : []),
+        ...damage.defenderSkillLabels.map((label) => escapeHtml(`敌方技能${label}`)),
         ...damage.defenderManualLabels.map((label) => escapeHtml(`敌方手动${label}`))
       ].join("，");
       return { bonusText, ruleText, traitText };

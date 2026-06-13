@@ -1431,3 +1431,20 @@ Use this entry format:
   - Added a regression test that verifies the repaired descriptions, deleted records, and absence of stale monster skill-pool references.
 - Verification: Watched `node tests/pvp-skill-data-cleanup-static.test.js` fail before the data change and pass after it. Ran every `tests/*.test.js` script successfully; parsed all 3 inline scripts in `index.html` with `new Function`; ran `git diff --check`; compared the before/after skill maps and confirmed exactly four removed skills and four changed skills.
 - Status: Complete.
+
+### 2026-06-13 21:20 +08:00 - Codex
+
+- Request: Continue the phased PVP turn-simulator work by replacing the current damage estimate with the confirmed PVP damage formula.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-damage-formula-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-damage-formula-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a pure PVP damage core for ability-level calculation, additive power buffs, response power, layered multipliers, per-hit upward rounding, multi-hit totals, and complete immunity.
+  - Changed attack and defense inputs and adaptive physical/special selection to use displayed battle stats without percentage stat changes.
+  - Moved attacker and defender percentage stat changes into the confirmed ability-level formula, including defender skill stat changes.
+  - Changed Force Impact response calculation from final damage multiplication to a `2.5` base-power response multiplier, leaving flat power additions outside that multiplier.
+  - Added focused regression coverage for rounding, multi-hit settlement, ability level, additive power buffs, response power, immunity, and calculator integration.
+- Verification: Watched `node tests/pvp-damage-formula-static.test.js` fail before the damage core existed and again before defender skill changes were integrated, then pass after each implementation. Ran all 27 Node tests successfully; parsed all 4 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. Browser verification was attempted, but the in-app browser policy blocked local `file://` navigation and its isolated environment could not reach the host-local temporary server.
+- Status: Complete.
