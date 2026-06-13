@@ -60,6 +60,7 @@ vm.runInNewContext(`
   ${extractFunction("normalizePvpCuteLayers")}
   ${extractFunction("setPvpAction")}
   ${extractFunction("selectPvpSkillAction")}
+  ${extractFunction("shouldSettleAsTurnAction")}
   ${extractFunction("applyPvpSupportSkill")}
   ${extractFunction("defenseReductionEffect")}
   this.supportSkillEffects = supportSkillEffects;
@@ -85,18 +86,33 @@ assert(
   "Defense skills with response buffs should stay selectable as PVP actions instead of being consumed as support buffs."
 );
 assert(
-  Math.abs(defenderState.skillStatMods.spa - 0.7) < 1e-9,
-  "Defense skills should still apply their own magic-attack support buffs."
+  !defenderState.skillStatMods.spa,
+  "Defense response buffs should not apply before turn settlement."
 );
 assert(
-  /\u9b54\u653b\+70%/.test(defenderState.supportText),
-  "Defense skill support text should show its parsed buff."
+  !defenderState.supportText,
+  "Defense response buffs should not write support text before turn settlement."
 );
 const selectedDefenseState = { action: "skill:0", forceImpact: false };
 sandbox.selectPvpSkillAction(selectedDefenseState, 0, waterShield);
 assert(
   selectedDefenseState.action === "skill:0",
   "Clicking an already selected defense skill should keep it as the active PVP action."
+);
+
+const responseStatus = {
+  name: "\u6ce5\u6d46\u94e0\u7532",
+  category: "status",
+  description: "\u81ea\u5df1\u83b7\u5f97\u7269\u653b\u548c\u7269\u9632+60%\uff0c\u5e94\u5bf9\u9632\u5fa1\uff1a\u989d\u5916\u4f7f\u81ea\u5df1\u7684\u589e\u76ca\u7ffb\u500d\u3002"
+};
+const responseStatusState = { action: "", forceImpact: false, skillStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0 };
+assert(
+  !sandbox.applyPvpSupportSkill(responseStatusState, responseStatus),
+  "Response-capable status skills should stay selectable as turn actions instead of applying immediately."
+);
+assert(
+  !responseStatusState.skillStatMods.atk && !responseStatusState.skillStatMods.defense,
+  "Response-capable status buffs should wait for turn settlement."
 );
 
 const featherBoost = {

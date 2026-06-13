@@ -1482,3 +1482,21 @@ Use this entry format:
   - Added a focused static regression test for the pure rules, UI integration hooks, response-damage gating, and preview wrapping styles.
 - Verification: Watched `node tests/pvp-turn-rules-static.test.js` fail before the turn-rule module existed, fail again before preview integration, and fail once more before preview wrapping styles were added; each case passed after implementation. Ran all 29 Node tests successfully; parsed all 6 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. In-app browser verification was attempted, but the Browser plugin blocked local-page DOM access by URL policy, so no browser DOM or screenshot verification was performed in this phase.
 - Status: Complete.
+
+### 2026-06-13 22:04 +08:00 - Codex
+
+- Request: Continue the phased PVP turn simulator by adding deterministic turn-effect settlement for buffs, debuffs, freeze layers, and next-action priority.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-effects-static.test.js`
+  - `tests/pvp-support-defense-effects-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-turn-effects-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a pure `LKWG_PVP_EFFECT_RULES` module that parses confirmed skill text into self/enemy stat changes, freeze layers, next-action priority, and defense-block labels.
+  - Added deterministic handling for `水泡盾`, `有效预防`, `暴风雪`, `冰点`, `泥浆铠甲`, and `破防`, including mud-armor doubling of current positive buffs after its own buffs are added.
+  - Added a PVP turn-effect preview and a `结算本回合` button that applies settled effects into existing PVP state fields.
+  - Changed response-capable defense and status skills so they remain selected as turn actions instead of immediately writing their response effects into the buff panel.
+  - Added state normalization and display labels for freeze layers, next-action priority, and defense-block turns.
+- Verification: Watched `node tests/pvp-turn-effects-static.test.js` fail before the effect module existed, then pass after the pure module; watched it fail again before panel integration, then pass after adding preview and settlement; watched `node tests/pvp-support-defense-effects-static.test.js` fail on the old immediate defense-buff behavior, then pass after changing response-capable skills to settle as actions. Ran all 30 Node tests successfully; parsed all 7 inline scripts with `new Function`; ran `git diff --check` with only line-ending warnings for touched files. Browser verification was not repeated because the Browser plugin blocked local-page DOM access in the previous phase and no safer browser path was available.
+- Status: Complete.
