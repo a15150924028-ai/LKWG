@@ -1368,3 +1368,17 @@ Use this entry format:
   - Expanded the regression test to execute `skillPowerValue()` for positive, zero, and missing damage cases.
 - Verification: Watched `node tests/skill-meta-power-static.test.js` fail on the old `威力` label, then pass after the update. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings. Automatic in-app Browser reload was blocked by the `file://` URL security policy.
 - Status: Complete.
+
+### 2026-06-13 12:22 +08:00 - Codex
+
+- Request: Rename the selected skill metadata label from `伤害` back to `威力`.
+- Files changed:
+  - `index.html`
+  - `tests/skill-meta-power-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed only the first selected-skill metadata label to `威力`.
+  - Kept the existing numeric value behavior, including displaying `-` for missing, invalid, zero, or negative power.
+  - Updated the focused regression test to require the `威力` label.
+- Verification: Watched `node tests/skill-meta-power-static.test.js` fail before the label change, then pass afterward. Ran all 24 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings.
+- Status: Complete.
