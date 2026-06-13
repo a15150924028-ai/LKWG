@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="grass">
+  <circle cx="32" cy="32" r="31" fill="#45b96b"/>
+  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
+  <g><path d="M15 36C20 17 38 10 51 13c2 15-9 32-29 36 5-9 12-16 22-23-12 5-20 12-29 10z" fill="#fff"/><path d="M22 47c7-12 16-20 28-26" fill="none" stroke="#45b96b" stroke-width="4" stroke-linecap="round" opacity=".55"/></g>
+</svg>

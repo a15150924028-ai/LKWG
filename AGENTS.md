@@ -1151,3 +1151,40 @@ Use this entry format:
   - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
 - Verification: Watched `node tests/no-attribute-matrix-ui-static.test.js` fail before the UI removal and pass after it. Ran all 20 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed navigation is now only `队伍`, `分析`, and `伤害`, `matrixSection` and `matrixWrap` are absent, `属性关系表` is not visible, results and PVP damage simulation remain present, and console warnings/errors are empty.
 - Status: Complete.
+
+### 2026-06-13 08:58 +08:00 - Codex
+
+- Request: Replace every displayed attribute icon, including bloodline icons, with local clean icons matching the provided reference style and without crop artifacts.
+- Files changed:
+  - `index.html`
+  - `assets/type-icons/any.svg`
+  - `assets/type-icons/boss.svg`
+  - `assets/type-icons/bug.svg`
+  - `assets/type-icons/cute.svg`
+  - `assets/type-icons/demon.svg`
+  - `assets/type-icons/dragon.svg`
+  - `assets/type-icons/electric.svg`
+  - `assets/type-icons/fantasy.svg`
+  - `assets/type-icons/fighting.svg`
+  - `assets/type-icons/fire.svg`
+  - `assets/type-icons/ghost.svg`
+  - `assets/type-icons/grass.svg`
+  - `assets/type-icons/ground.svg`
+  - `assets/type-icons/ice.svg`
+  - `assets/type-icons/light.svg`
+  - `assets/type-icons/mechanical.svg`
+  - `assets/type-icons/normal.svg`
+  - `assets/type-icons/poison.svg`
+  - `assets/type-icons/water.svg`
+  - `assets/type-icons/wing.svg`
+  - `tests/local-bundle-external-static.test.js`
+  - `tests/type-icons-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a complete local SVG icon set for all 18 attributes plus `boss` and `any`, using clean 64x64 vector assets instead of cropped screenshot fragments.
+  - Added `TYPE_ICON_ASSETS` and changed `typeBadgeHtml()` to render local image icons, so monster type chips, relation-summary chips, skill type badges, bloodline combo icons, and PVP force-impact bloodline icons share the same local icon path.
+  - Removed the old text-only attribute badge rendering path that produced badges like `幽`.
+  - Updated the no-external-assets regression contract to allow the local type icon template while still rejecting remote assets.
+  - Added a focused static regression test requiring every local type icon asset, rejecting text-glyph SVG icons and old text-only type badges.
+- Verification: Watched `node tests/type-icons-static.test.js` fail before adding the icon asset map, then pass after wiring the local icons. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. In-app Browser verification of the current `file://` page was blocked by Browser Use URL policy, so no browser workaround was used.
+- Status: Complete.

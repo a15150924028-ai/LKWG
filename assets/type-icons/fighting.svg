@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="fighting">
+  <circle cx="32" cy="32" r="31" fill="#f28a28"/>
+  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
+  <g><path d="M18 30h7V17c0-3 2-5 5-5s5 2 5 5v11h4V16c0-3 2-5 5-5s5 2 5 5v20c0 11-8 19-19 19-8 0-16-6-16-15v-5c0-3 1-5 4-5z" fill="#fff"/><path d="M25 30h24" stroke="#f28a28" stroke-width="4" stroke-linecap="round" opacity=".45"/></g>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="demon">
+  <circle cx="32" cy="32" r="31" fill="#e34c83"/>
+  <circle cx="24" cy="20" r="10" fill="#fff" opacity=".18"/>
+  <g><path d="M16 17c5 2 9 5 12 10h8c3-5 7-8 12-10-1 8-4 15-9 20v7c0 7-5 12-7 12s-7-5-7-12v-7c-5-5-8-12-9-20z" fill="#fff"/><circle cx="26" cy="39" r="3" fill="#e34c83"/><circle cx="38" cy="39" r="3" fill="#e34c83"/></g>
+</svg>

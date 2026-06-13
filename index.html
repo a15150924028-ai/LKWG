@@ -540,11 +540,18 @@
     }
 
     .type-badge {
-      border-color: rgba(255, 255, 255, 0.28);
-      background: var(--badge-bg, #64748b);
-      color: #fff;
-      font-size: 11px;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      font-size: 0;
       font-weight: 900;
+    }
+
+    .type-badge-icon {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     .name-badge {
@@ -2292,8 +2299,8 @@
       width: 20px;
       height: 20px;
       min-width: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.85);
-      box-shadow: 0 0 0 1px rgba(31, 41, 55, 0.08);
+      border: 0;
+      box-shadow: none;
       font-size: 10px;
     }
 
@@ -3686,6 +3693,28 @@
       boss: "首领",
       any: "任意"
     };
+    const TYPE_ICON_ASSETS = {
+      grass: "assets/type-icons/grass.svg",
+      water: "assets/type-icons/water.svg",
+      fire: "assets/type-icons/fire.svg",
+      electric: "assets/type-icons/electric.svg",
+      poison: "assets/type-icons/poison.svg",
+      fantasy: "assets/type-icons/fantasy.svg",
+      ice: "assets/type-icons/ice.svg",
+      fighting: "assets/type-icons/fighting.svg",
+      cute: "assets/type-icons/cute.svg",
+      light: "assets/type-icons/light.svg",
+      dragon: "assets/type-icons/dragon.svg",
+      mechanical: "assets/type-icons/mechanical.svg",
+      ghost: "assets/type-icons/ghost.svg",
+      demon: "assets/type-icons/demon.svg",
+      bug: "assets/type-icons/bug.svg",
+      normal: "assets/type-icons/normal.svg",
+      wing: "assets/type-icons/wing.svg",
+      ground: "assets/type-icons/ground.svg",
+      boss: "assets/type-icons/boss.svg",
+      any: "assets/type-icons/any.svg"
+    };
 
     const BLOODLINES = [
       { id: "bloodline-boss", kind: "bloodline", name: "首领血脉", aliases: ["首领"], icon: "", badgeKey: "boss", description: "首领类血脉。" },
@@ -3943,7 +3972,7 @@
     }
 
     function typeIcon(key) {
-      return "";
+      return TYPE_ICON_ASSETS[key] || TYPE_ICON_ASSETS.any;
     }
 
     function firstTextChar(value, fallback = "?") {
@@ -3956,8 +3985,9 @@
 
     function typeBadgeHtml(key, className = "type-badge") {
       const badgeKey = key && TYPE_BADGE_LABELS[key] ? key : "any";
-      const color = TYPE_COLORS[badgeKey] || (badgeKey === "boss" ? "#5357c9" : "#64748b");
-      return `<span class="${escapeHtml(className)} text-icon type-badge type-${escapeHtml(safeClassToken(badgeKey))}" style="--badge-bg:${escapeHtml(color)}">${escapeHtml(typeBadgeLabel(badgeKey))}</span>`;
+      const iconSrc = typeIcon(badgeKey);
+      const label = typeBadgeLabel(badgeKey);
+      return `<span class="${escapeHtml(className)} type-badge type-${escapeHtml(safeClassToken(badgeKey))}" title="${escapeHtml(label)}"><img class="type-badge-icon" src="${escapeHtml(iconSrc)}" alt="${escapeHtml(label)}" width="64" height="64"></span>`;
     }
 
     function nameBadgeHtml(value, className = "combo-icon") {
