@@ -1500,3 +1500,20 @@ Use this entry format:
   - Added state normalization and display labels for freeze layers, next-action priority, and defense-block turns.
 - Verification: Watched `node tests/pvp-turn-effects-static.test.js` fail before the effect module existed, then pass after the pure module; watched it fail again before panel integration, then pass after adding preview and settlement; watched `node tests/pvp-support-defense-effects-static.test.js` fail on the old immediate defense-buff behavior, then pass after changing response-capable skills to settle as actions. Ran all 30 Node tests successfully; parsed all 7 inline scripts with `new Function`; ran `git diff --check` with only line-ending warnings for touched files. Browser verification was not repeated because the Browser plugin blocked local-page DOM access in the previous phase and no safer browser path was available.
 - Status: Complete.
+
+### 2026-06-13 22:13 +08:00 - Codex
+
+- Request: Continue the phased PVP turn simulator by adding deterministic energy-cost settlement and permanent per-skill energy-cost changes.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-energy-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-energy-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a pure `LKWG_PVP_ENERGY_RULES` module for base cost, current overridden cost, effective cost, permanent cost deltas, single-action energy settlement, and two-side turn energy settlement.
+  - Applied current-release cost before permanent cost changes, so `水刃` response `本技能能耗永久-3` and `无畏之心` response `本技能能耗永久+2` affect the next release.
+  - Reused weather and trait cost reductions when calculating effective turn costs, including sandstorm's ground-skill cost reduction.
+  - Added visible PVP energy controls to each side's buff panel and included energy changes in the turn-effect preview.
+  - Made `结算本回合` apply energy loss and per-skill `skillCostOverrides` alongside the already implemented buff/debuff settlement.
+- Verification: Watched `node tests/pvp-energy-static.test.js` fail before the energy module existed, then pass the pure rules and fail on missing panel integration; after integration, the focused test passed. Ran adjacent PVP regressions for turn effects, weather, and damage formula successfully. Ran all 31 Node tests successfully; parsed all 8 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. Browser verification was not repeated because local-page browser access remained blocked by the Browser plugin policy in prior phases.
+- Status: Complete.
