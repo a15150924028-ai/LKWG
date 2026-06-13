@@ -6359,9 +6359,9 @@
           || monsterNoValue(a) - monsterNoValue(b)
           || a.name.localeCompare(b.name, "zh-CN")
         ));
-      if (structuredLine.length > 1) return structuredLine;
       const rawLine = pvpRawEvolutionLine(sourceMonster);
       if (rawLine.length > 1) return rawLine;
+      if (structuredLine.length > 1) return structuredLine;
       const fallbackLine = pvpTraitFallbackEvolutionLine(sourceMonster);
       return fallbackLine.length > 1 ? fallbackLine : structuredLine;
     }

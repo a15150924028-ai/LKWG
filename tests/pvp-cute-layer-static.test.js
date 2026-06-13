@@ -49,6 +49,10 @@ vm.runInNewContext(`
       { id: "storm-dog-boss", name: "\u98ce\u66b4\u6218\u72ac\uff08\u9996\u9886\uff09", aliases: ["\u98ce\u66b4\u6218\u72ac"], raw: { isGeneratedBossForm: true, baseMonsterId: "storm-dog", chainId: "dog-boss", evolutionStage: 3 } },
       { id: "cheer-anemone", name: "\u52a0\u6cb9\u6d77\u8475", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
       { id: "cheer-crab", name: "\u52a0\u6cb9\u87f9", aliases: [], raw: { evolutionLine: ["\u52a0\u6cb9\u6d77\u8475", "\u52a0\u6cb9\u87f9"] } },
+      { id: "branch-seed", name: "\u5206\u652f\u5e7c\u4f53", aliases: [], raw: { chainId: "branch-a", evolutionStage: 1 } },
+      { id: "branch-middle", name: "\u5206\u652f\u4e2d\u4f53", aliases: [], raw: { chainId: "branch-a", evolutionStage: 2 } },
+      { id: "branch-final-a", name: "\u5206\u652f\u7ec8\u4f53A", aliases: [], raw: { chainId: "branch-a", evolutionStage: 3 } },
+      { id: "branch-final-b", name: "\u5206\u652f\u7ec8\u4f53B", aliases: [], raw: { chainId: "branch-a", evolutionStage: 3, evolutionLine: ["\u5206\u652f\u5e7c\u4f53", "\u5206\u652f\u4e2d\u4f53", "\u5206\u652f\u7ec8\u4f53B"] } },
       { id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: { chainId: "dimo", evolutionStage: 1 } },
       { id: "chrysanthemum-pear", name: "\u83ca\u82b1\u68a8", aliases: ["\u83ca\u82b1\u91cc"], raw: {} }
     ]
@@ -58,7 +62,10 @@ vm.runInNewContext(`
   const REAL_BOSS_FORM_NAMES = new Set(["\\u98ce\\u66b4\\u6218\\u72ac"]);
   ${extractFunction("isBossVariant")}
   ${extractFunction("isGeneratedBossForm")}
-  function monsterStatTotal() { return 0; }
+  function monsterStatTotal(monster) {
+    const stats = monster?.raw?.stats || {};
+    return ["hp", "atk", "defense", "spa", "spd", "spe"].reduce((total, key) => total + (Number(stats[key]) || 0), 0);
+  }
   function monsterNoValue(monster) { return Number(monster?.raw?.evolutionStage) || 0; }
   const unique = (values) => [...new Set(values.filter(Boolean))];
   function blankStatMods() {
@@ -124,6 +131,7 @@ const guardDog = sandbox.monsterById.get("guard-dog");
 const stormDogBoss = sandbox.monsterById.get("storm-dog-boss");
 const dimo = sandbox.monsterById.get("dimo");
 const chrysanthemumPear = sandbox.monsterById.get("chrysanthemum-pear");
+const branchFinalB = sandbox.monsterById.get("branch-final-b");
 
 assert(
   sandbox.pvpEvolutionLine(stormDog).map((monster) => monster.name).join(">") === "\u62a4\u4e3b\u72ac>\u97f3\u901f\u72ac>\u98ce\u66b4\u6218\u72ac",
@@ -156,6 +164,14 @@ assert(
 assert(
   sandbox.pvpCuteAdjacentMonster(cheerCrab, 1)?.id === "cheer-anemone",
   "Cheer Crab should gain cute +1 into Cheer Anemone from raw evolution-line data."
+);
+assert(
+  sandbox.pvpEvolutionLine(branchFinalB).map((monster) => monster.name).join(">") === "\u5206\u652f\u5e7c\u4f53>\u5206\u652f\u4e2d\u4f53>\u5206\u652f\u7ec8\u4f53B",
+  "Raw evolution lines should take precedence when formal chain ids cannot express a branch."
+);
+assert(
+  sandbox.pvpCuteAdjacentMonster(branchFinalB, 1)?.id === "branch-middle",
+  "Manual cute +1 should follow the selected branch's raw evolution line."
 );
 
 const state = { monsterId: "storm-dog", cuteLayers: 0, natureId: "nature", talentIds: ["a", "b", "c"], skillIds: ["s1", "s2", "", ""] };

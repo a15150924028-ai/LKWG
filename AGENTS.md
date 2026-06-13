@@ -1273,3 +1273,54 @@ Use this entry format:
   - Updated static tests to require screenshot-cropped local RGBA PNG assets for attributes and reject stale generated SVG attribute icons.
 - Verification: Watched `node tests/type-icons-static.test.js` and `node tests/local-bundle-external-static.test.js` fail before the PNG extraction and path update, then pass after the change. Ran all 22 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Generated and visually inspected a temporary PNG montage of the cropped icons.
 - Status: Complete.
+
+### 2026-06-13 09:31 +08:00 - Codex
+
+- Request: Fix the PVP module bug where manually clicking `萌化` had no effect for some monsters.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a conservative local evolution-line fallback for PVP cute-layer changes when the loaded monster data has no `chainId`, `evolutionStage`, or raw rendered evolution line.
+  - The fallback groups only non-generated monsters with the same attribute set, same passive set, and same form suffix, then sorts by total stats to find the adjacent lower or upper form.
+  - Kept the existing structured evolution chain, raw rendered evolution line, and PVP trait-rule fallback paths ahead of the new local inference.
+  - Added a regression case for local-bundle-style monsters such as `爆焰仔` / `爆焰喷喷`, where manual `萌化+1` previously could not find the lower form.
+- Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before the helper implementation, then pass after the fix. Ran all 22 Node tests successfully; parsed all 3 inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. In-app Browser verification of the current `file://` page was blocked by Browser Use URL policy and was not bypassed.
+- Status: Complete locally; GitHub publish still needs the unrelated pre-existing deletion of `克制面查询-简洁版.html` to be included or excluded explicitly.
+
+### 2026-06-13 11:26 +08:00 - Codex
+
+- Request: Complete the formal local evolution-chain data for PVP manual cute-layer changes, including clarified branch forms, BWiki-derived missing monster records, and removal of the nonexistent generic `鸭吉吉国王`.
+- Files changed:
+  - `data/local-bundle.json`
+  - `index.html`
+  - `tests/local-bundle-evolution-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Replaced runtime-adjacent-form guessing with formal local `chainId`, `evolutionStage`, and explicit `evolutionLine` / `evolutionLines` data for the user-provided evolution routes.
+  - Added distinct records for four `蹦蹦果` forms, three seasonal `霜翼领主` forms, six suffixed `鸭吉吉国王` forms, `棋棋（白子）`, `棋棋（黑子）`, and `深渊罗隐`.
+  - Added `深渊罗隐` with its rendered BWiki stats, complete 47-skill pool, and `盛宴` passive without storing source URLs in the local bundle.
+  - Added the clarified `逗逗 > 气球猫 > 梦想三三 > 奇梦咪` chain and the `脆筒甜甜 > 香草甜甜（杨桃饰品） > 圣代甜甜（杨桃抹茶口味）` branch.
+  - Removed the nonexistent unsuffixed `鸭吉吉国王` record and confirmed every remaining monster has formal or explicit evolution metadata.
+  - Made PVP prefer explicit raw evolution lines before structured chain grouping so branch-specific manual cute-layer changes follow the selected form.
+- Verification: Watched `node tests/local-bundle-evolution-static.test.js` fail for the three final clarified requirements before updating the bundle, then pass after the data change. Ran all 23 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; confirmed 0 remaining unlinked monsters and no generic `鸭吉吉国王`; ran `git diff --check` with only line-ending normalization warnings for touched files.
+- Status: Complete.
+
+### 2026-06-13 09:36 +08:00 - Codex
+
+- Request: Replace the runtime local PVP evolution fallback with formal `chainId` / `evolutionStage` metadata in the data package.
+- Files changed:
+  - `data/local-bundle.json`
+  - `index.html`
+  - `tests/local-bundle-evolution-static.test.js`
+  - `tests/pvp-cute-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the previously added runtime local evolution inference from `index.html`, so PVP no longer guesses adjacent forms during interaction.
+  - Added formal evolution metadata to `data/local-bundle.json` for 156 local evolution lines covering 393 monsters; 237 higher or middle forms can now resolve `萌化+1` through existing structured-chain logic.
+  - Added a regression test requiring representative chains such as `爆焰仔 > 爆焰喷喷`, `贝瑟 > 贝加尔 > 贝古斯`, `波波螺 > 消波螺 > 嗜波螺`, and `呆小路 > 舞动路路 > 白发路路` to carry shared `chainId` and ordered `evolutionStage`.
+  - Updated the PVP cute-layer test to stop depending on the removed runtime fallback helper.
+- Verification: Watched `node tests/local-bundle-evolution-static.test.js` fail before the data update, then pass after adding formal evolution metadata. Ran all 23 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files.
+- Status: Complete locally; GitHub publish still needs the unrelated pre-existing deletion of `克制面查询-简洁版.html` to be included or excluded explicitly.
