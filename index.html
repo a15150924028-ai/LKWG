@@ -893,6 +893,34 @@
       filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
     }
 
+    .pvp-turn-preview {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 8px;
+      border: 1px solid #d9e3ee;
+      border-radius: 6px;
+      background: #f8fbff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 8px 10px;
+    }
+
+    .pvp-turn-preview strong,
+    .pvp-turn-preview span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .pvp-turn-preview span {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
     .pvp-side {
       min-width: 0;
       border: 1px solid var(--line);
@@ -3793,6 +3821,109 @@
 
 </script>
   <script>
+(function initPvpTurnRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_TURN_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpTurnRules() {
+  function compactTurnText(value) {
+    return String(value || "").replace(/\s+/g, "");
+  }
+
+  function actionCategory(action) {
+    if (!action) return "";
+    if (action.id === "pvp-force-impact") return "attack";
+    if (action.category === "physical" || action.category === "special" || action.category === "attack") return "attack";
+    if (action.category === "defense") return "defense";
+    if (action.category === "status") return "status";
+    return String(action.category || "");
+  }
+
+  function actionText(action) {
+    return compactTurnText(`${action?.name || ""} ${action?.description || ""} ${action?.effect || ""} ${(action?.effects || []).join(" ")}`);
+  }
+
+  function canRespondToAction(action, targetAction) {
+    const category = actionCategory(action);
+    const targetCategory = actionCategory(targetAction);
+    const text = actionText(action);
+    if (!action || !targetAction) return { success: false, type: "", reason: "" };
+    if (action?.id === "pvp-force-impact" && targetCategory === "status") {
+      return { success: true, type: "attack-status", reason: "应对状态" };
+    }
+    if (category === "attack" && targetCategory === "status" && /应对状态/.test(text)) {
+      return { success: true, type: "attack-status", reason: "应对状态" };
+    }
+    if (category === "defense" && targetCategory === "attack") {
+      return { success: true, type: "defense-attack", reason: "应对攻击" };
+    }
+    if (category === "status" && targetCategory === "defense" && /应对防御/.test(text)) {
+      return { success: true, type: "status-defense", reason: "应对防御" };
+    }
+    return { success: false, type: "", reason: "" };
+  }
+
+  function priorityValue(action, state) {
+    const actionPriority = Number(action?.priority ?? action?.priorityLevel ?? 0);
+    const statePriority = Number(state?.priority ?? state?.priorityLevel ?? state?.nextPriority ?? 0);
+    return (Number.isFinite(actionPriority) ? actionPriority : 0)
+      + (Number.isFinite(statePriority) ? statePriority : 0);
+  }
+
+  function resolveTurnOrder(input = {}) {
+    const allyAction = input.allyAction;
+    const enemyAction = input.enemyAction;
+    if (!allyAction || !enemyAction) {
+      return { first: "", reason: "missing-action", allyResponse: { success: false }, enemyResponse: { success: false } };
+    }
+    const allyResponse = canRespondToAction(allyAction, enemyAction);
+    const enemyResponse = canRespondToAction(enemyAction, allyAction);
+    if (allyResponse.type === "attack-status") {
+      return { first: "ally", reason: "ally-response-status", allyResponse, enemyResponse, simultaneous: true };
+    }
+    if (enemyResponse.type === "attack-status") {
+      return { first: "enemy", reason: "enemy-response-status", allyResponse, enemyResponse, simultaneous: true };
+    }
+    if (allyResponse.type === "status-defense") {
+      return { first: "ally", reason: "ally-response-defense", allyResponse, enemyResponse, simultaneous: true };
+    }
+    if (enemyResponse.type === "status-defense") {
+      return { first: "enemy", reason: "enemy-response-defense", allyResponse, enemyResponse, simultaneous: true };
+    }
+    if (allyResponse.type === "defense-attack" || enemyResponse.type === "defense-attack") {
+      return {
+        first: allyResponse.type === "defense-attack" ? "enemy" : "ally",
+        reason: "defense-response",
+        allyResponse,
+        enemyResponse,
+        defenseSide: allyResponse.type === "defense-attack" ? "ally" : "enemy"
+      };
+    }
+    const allyPriority = priorityValue(allyAction, input.allyState);
+    const enemyPriority = priorityValue(enemyAction, input.enemyState);
+    if (allyPriority !== enemyPriority) {
+      return { first: allyPriority > enemyPriority ? "ally" : "enemy", reason: "priority", allyPriority, enemyPriority, allyResponse, enemyResponse };
+    }
+    const allySpeed = Number(input.allySpeed) || 0;
+    const enemySpeed = Number(input.enemySpeed) || 0;
+    if (allySpeed !== enemySpeed) {
+      return { first: allySpeed > enemySpeed ? "ally" : "enemy", reason: "speed", allyPriority, enemyPriority, allySpeed, enemySpeed, allyResponse, enemyResponse };
+    }
+    return { first: "random", reason: "tie", allyPriority, enemyPriority, allySpeed, enemySpeed, allyResponse, enemyResponse };
+  }
+
+  return {
+    actionCategory,
+    canRespondToAction,
+    priorityValue,
+    resolveTurnOrder
+  };
+});
+
+</script>
+  <script>
     const LOCAL_BUNDLE_URL = "data/local-bundle.json";
     const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";
     const STORAGE_KEY = "roco-world-type-tool-v3";
@@ -6298,6 +6429,8 @@
       const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
       const defenseReduction = defenseReductionEffect(pvpActionFromState(defenderState, defender));
       const weatherMultiplier = window.LKWG_PVP_WEATHER_RULES.weatherPowerMultiplier(pvpSimState.weather, damageAction);
+      const defenderAction = pvpActionFromState(defenderState, defender);
+      const responseStatus = window.LKWG_PVP_TURN_RULES.canRespondToAction(damageAction, defenderAction);
       const flatPowerAdd = traitEffects.flatPower + passiveDamage.powerAdd + manualDamageBonus;
       const powerBuffPercent = (traitEffects.powerMultiplier - 1)
         + (passiveDamage.powerMultiplier - 1)
@@ -6326,21 +6459,20 @@
       const hasResponseDamage = battleAction.id === "pvp-force-impact"
         || variableDamage.responsePower != null
         || responseDamageMultiplier !== 1;
+      const responseTriggered = hasResponseDamage && responseStatus.type === "attack-status";
       const responseSkillPower = variableDamage.responsePower != null
         ? Math.max(1, Number(variableDamage.responsePower) || variablePower)
         : variablePower;
       const responseMultiplier = battleAction.id === "pvp-force-impact"
         ? FORCE_IMPACT_RESPONSE_MULTIPLIER
         : 1;
-      const responseDamage = hasResponseDamage
-        ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
+      const responseDamage = responseTriggered ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
             ...damageInput,
             skillPower: responseSkillPower,
             responseMultiplier,
             typeMultiplier: responseTypeMultiplier,
             skillDamageMultiplier: (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier
-          })
-        : null;
+          }) : null;
       const responsePower = responseDamage?.settledPower ?? null;
       const responseSingleEstimate = responseDamage?.singleDamage ?? null;
       const responseEstimate = responseDamage?.damage ?? null;
@@ -6368,6 +6500,8 @@
         hitCount,
         estimate,
         responseEstimate,
+        responseTriggered,
+        responseReason: responseStatus.reason || "",
         defenderHp: defenderStats.hp,
         percent: Math.round((estimate / Math.max(1, defenderStats.hp)) * 100),
         responsePercent: responseEstimate == null ? null : Math.round((responseEstimate / Math.max(1, defenderStats.hp)) * 100),
@@ -7338,11 +7472,58 @@
       return true;
     }
 
+    function pvpActionName(action) {
+      return action?.name || "未选择行动";
+    }
+
+    function pvpSideCurrentSpeed(side) {
+      const sideState = pvpSideState(side);
+      const monster = monsterById.get(sideState.monsterId);
+      if (!monster) return 0;
+      const mods = mergeStatMods(passiveStatMods(monster, sideState), sideState.skillStatMods, sideState.manualStatMods);
+      return finalBattleStats(monster, sideState, mods).spe;
+    }
+
+    function pvpTurnPreviewText(order, allyAction, enemyAction) {
+      if (order.reason === "missing-action") return "选择双方行动后显示行动顺序";
+      if (order.reason === "ally-response-status") return `己方${pvpActionName(allyAction)}应对状态成功：先结算己方伤害`;
+      if (order.reason === "enemy-response-status") return `敌方${pvpActionName(enemyAction)}应对状态成功：先结算敌方伤害`;
+      if (order.reason === "ally-response-defense") return `己方${pvpActionName(allyAction)}应对防御成功：先结算己方状态`;
+      if (order.reason === "enemy-response-defense") return `敌方${pvpActionName(enemyAction)}应对防御成功：先结算敌方状态`;
+      if (order.reason === "defense-response") return `${order.defenseSide === "ally" ? "己方" : "敌方"}防御应对攻击生效：攻击伤害结算时套用防御效果`;
+      if (order.reason === "priority") return `${order.first === "ally" ? "己方" : "敌方"}先手等级更高，先结算`;
+      if (order.reason === "speed") return `${order.first === "ally" ? "己方" : "敌方"}速度更高，先结算`;
+      if (order.reason === "tie") return "双方先手等级和速度相同：随机先手";
+      return "选择双方行动后显示行动顺序";
+    }
+
+    function renderPvpTurnPreview() {
+      const ally = pvpSideState("ally");
+      const enemy = pvpSideState("enemy");
+      const allyMonster = monsterById.get(ally.monsterId);
+      const enemyMonster = monsterById.get(enemy.monsterId);
+      const allyAction = pvpActionFromState(ally, allyMonster);
+      const enemyAction = pvpActionFromState(enemy, enemyMonster);
+      const order = window.LKWG_PVP_TURN_RULES.resolveTurnOrder({
+        allyAction,
+        enemyAction,
+        allyState: ally,
+        enemyState: enemy,
+        allySpeed: pvpSideCurrentSpeed("ally"),
+        enemySpeed: pvpSideCurrentSpeed("enemy")
+      });
+      const detail = allyAction && enemyAction
+        ? `己方：${pvpActionName(allyAction)} / 敌方：${pvpActionName(enemyAction)}`
+        : "等待双方选择行动";
+      return `<div class="pvp-turn-preview" data-pvp-turn-preview><strong>${escapeHtml(pvpTurnPreviewText(order, allyAction, enemyAction))}</strong><span>${escapeHtml(detail)}</span></div>`;
+    }
+
     function renderPvpDamageSimulation(team) {
       return `
         <article class="analysis-card pvp-damage-sim" id="pvpDamageSim">
           <h3>PVP对战伤害模拟</h3>
           ${renderPvpWeatherControl()}
+          ${renderPvpTurnPreview()}
           <div class="pvp-sim-grid">
             ${renderPvpSide("ally", "己方精灵")}
             ${renderPvpSide("enemy", "敌方精灵")}
@@ -7378,6 +7559,8 @@
     }
 
     function refreshPvpDamageOutputs(root) {
+      const turnPreviewEl = root.querySelector("[data-pvp-turn-preview]");
+      if (turnPreviewEl) turnPreviewEl.outerHTML = renderPvpTurnPreview();
       ["ally", "enemy"].forEach((side) => {
         const state = pvpSideState(side);
         const monster = monsterById.get(state.monsterId);

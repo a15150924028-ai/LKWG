@@ -1465,3 +1465,20 @@ Use this entry format:
   - Kept weather duration out of the UI and deferred round-by-round weather progression to the later full-turn phase.
 - Verification: Watched `node tests/pvp-weather-static.test.js` fail before the weather module, fail again before UI integration, and fail on the old `暴风雪` label before changing it to `雪天`; each case passed after implementation. Ran all 28 Node tests successfully; parsed all 5 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. In the in-app browser, verified desktop four-column and mobile 2-by-2 weather layouts, no horizontal overflow, local icons, rain selected background `rgb(60, 127, 196)`, the `双方水系技能威力+75%` description, final weather labels, and no console warnings or errors.
 - Status: Complete.
+
+### 2026-06-13 21:51 +08:00 - Codex
+
+- Request: Continue the phased PVP turn simulator by adding response-success and action-order preview behavior.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-rules-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-action-order-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a pure `LKWG_PVP_TURN_RULES` module for action category detection, response-success detection, priority comparison, speed comparison, and exact-tie handling.
+  - Added a PVP action-order preview under the weather selector, including response-state, response-defense, defense-response, priority, speed, and random-tie labels.
+  - Gated response damage so response power only appears when the opponent's selected action actually triggers `attack-status` response.
+  - Added mobile-safe wrapping for the preview row so long action-order text does not force horizontal overflow.
+  - Added a focused static regression test for the pure rules, UI integration hooks, response-damage gating, and preview wrapping styles.
+- Verification: Watched `node tests/pvp-turn-rules-static.test.js` fail before the turn-rule module existed, fail again before preview integration, and fail once more before preview wrapping styles were added; each case passed after implementation. Ran all 29 Node tests successfully; parsed all 6 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. In-app browser verification was attempted, but the Browser plugin blocked local-page DOM access by URL policy, so no browser DOM or screenshot verification was performed in this phase.
+- Status: Complete.
