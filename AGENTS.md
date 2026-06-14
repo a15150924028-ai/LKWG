@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 22:11 +08:00 - Codex
+
+- Request: Improve only the mobile PVP layout from the supplied phone screenshots by reducing wasted vertical space and showing buff controls two per row.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Kept the mobile PVP simulator as a single-column ally/enemy stack.
+  - Changed phone-width PVP build rows so nature stacks above talents instead of stretching beside a taller talent field.
+  - Kept the three talent controls in one compact row on phone widths.
+  - Changed PVP buff controls to two items per row on phone and very narrow phone widths.
+  - Added static regression coverage for the phone-only build-row, talent-row, and buff-grid rules.
+- Verification: Watched `node tests/pvp-compact-side-layout-static.test.js` fail before the CSS change, then pass after implementation. Ran `node tests/equal-layout-static.test.js`; parsed all 12 inline scripts; ran all 40 Node static tests. Verified in the in-app Browser at 393x852 against `http://localhost:8765/index.html`: build row was one column, nature was 52px high, talents were 56px high with three columns, and buff controls rendered as two columns.
+- Status: Complete.
+
 ### 2026-06-14 21:53 +08:00 - Codex
 
 - Request: Assess and fix the PVP simulator portrait/mobile layout shown in the screenshot.

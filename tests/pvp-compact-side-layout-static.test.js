@@ -38,6 +38,7 @@ function mediaBlock(query) {
 
 const sideSource = extractFunction("renderPvpSide");
 const phoneBlock = mediaBlock("(max-width: 760px)");
+const narrowPhoneBlock = mediaBlock("(max-width: 430px)");
 
 assert(
   sideSource.includes('class="pvp-compact-row pvp-identity-row"'),
@@ -73,6 +74,22 @@ assert(
 assert(
   /\.pvp-sim-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr;/.test(phoneBlock),
   "Phone-width PVP simulator must stack ally and enemy panels into one column."
+);
+assert(
+  /\.pvp-build-row\s*\{[\s\S]*?grid-template-columns:\s*1fr;[\s\S]*?align-items:\s*start;/.test(phoneBlock),
+  "Phone-width PVP build rows must stack nature above talents to avoid stretched empty fields."
+);
+assert(
+  /\.pvp-side-form\s+\.pvp-build-row\s+\.talent-picks\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/.test(phoneBlock),
+  "Phone-width PVP talent picks must stay in one compact three-column row."
+);
+assert(
+  /\.pvp-buff-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/.test(phoneBlock),
+  "Phone-width PVP buff controls must show two items per row."
+);
+assert(
+  /\.pvp-buff-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/.test(narrowPhoneBlock),
+  "Very narrow PVP buff controls must still keep two items per row."
 );
 
 console.log("PVP compact side layout static checks passed.");
