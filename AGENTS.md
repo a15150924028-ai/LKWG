@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 19:31 +08:00 - Codex
+
+- Request: Fix the team skill dropdown covering the following skill rows.
+- Files changed:
+  - `index.html`
+  - `tests/compact-team-editor-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Scoped team skill dropdowns to participate in the skill-row grid while open, so the active row expands and later rows move below the menu instead of being covered.
+  - Kept the slot number, combo control, and skill metadata top-aligned while the open row is expanded.
+  - Left non-team combo dropdown positioning unchanged.
+- Verification: Reproduced the issue in the in-app Browser and measured the absolute menu overlapping rows 3 and 4. Watched the focused test fail before each layout rule and pass after implementation. Browser-tested the final open second-skill menu: its bottom was about 740px, row 3 started about 745px, `overlap` was false, and the slot, control, and metadata shared the same top position. Ran all 38 Node static tests successfully; parsed all 12 inline scripts; ran `git diff --check`.
+- Status: Complete.
+
 ### 2026-06-14 18:41 +08:00 - Codex
 
 - Request: Use a background-removed version of the supplied image for the boss bloodline icon, compact the team editor fields and vertical spacing, keep monster and bloodline side by side, and remove the battle summary.

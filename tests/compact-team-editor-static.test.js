@@ -59,6 +59,18 @@ assert(
   /@media \(max-width:\s*760px\)[\s\S]*?\.pet-editor\s+\.skill-row[\s\S]*?grid-template-columns:\s*28px\s+minmax\(0,\s*1fr\)\s+minmax\(180px,\s*0\.72fr\)/.test(html),
   "Ordinary mobile widths should keep skill metadata on the same row."
 );
+assert(
+  /\.pet-editor\s+\.skill-row\s+\.combo\.open\s+\.combo-menu\s*\{[^}]*position:\s*static;[^}]*width:\s*100%;[^}]*min-width:\s*0;/s.test(html),
+  "Open team skill menus must participate in layout so they push later skill rows down instead of covering them."
+);
+assert(
+  /\.pet-editor\s+\.skill-meta\s*\{[^}]*align-self:\s*start;/s.test(html),
+  "Skill metadata must stay compact when an open menu increases its grid row height."
+);
+assert(
+  /\.pet-editor\s+\.skill-row\s*\{[^}]*align-items:\s*start;/s.test(html),
+  "Skill row controls and slot numbers must remain top-aligned when a menu expands the row."
+);
 assert(!html.includes("function renderPetBattleSummary"), "The removed battle summary renderer must not remain.");
 assert(!html.includes("${renderPetBattleSummary(selectedMonster, pet)}"), "Team cards must not render battle summaries.");
 assert(!/class="pet-summary"/.test(html), "Team card markup must not contain the battle summary panel.");

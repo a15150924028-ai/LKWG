@@ -2381,6 +2381,14 @@
       box-shadow: 0 18px 40px rgba(30, 38, 50, 0.16);
     }
 
+    .pet-editor .skill-row .combo.open .combo-menu {
+      position: static;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      margin-top: 4px;
+    }
+
     .pet-editor .skills {
       display: grid;
       grid-template-columns: 1fr;
@@ -2391,6 +2399,7 @@
     .pet-editor .skill-row {
       grid-template-columns: 28px minmax(180px, 1fr) minmax(190px, 0.72fr);
       gap: 5px;
+      align-items: start;
     }
 
     .pet-editor .slot {
@@ -2401,6 +2410,7 @@
 
     .pet-editor .skill-meta {
       display: grid;
+      align-self: start;
       grid-template-columns: minmax(72px, 1fr) minmax(54px, 0.75fr) minmax(74px, 0.85fr);
       min-height: 34px;
       overflow: hidden;
