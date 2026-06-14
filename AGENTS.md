@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 21:53 +08:00 - Codex
+
+- Request: Assess and fix the PVP simulator portrait/mobile layout shown in the screenshot.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed the screenshot reflects the existing responsive rule: ally and enemy PVP side panels stayed in two columns until 430px, so ordinary phone portrait widths around 599px were cramped and clipped.
+  - Changed the `max-width: 760px` layout so `.pvp-sim-grid` stacks ally and enemy panels into one column with a slightly larger gap.
+  - Added a static regression assertion that phone-width PVP simulator layouts must use a single column.
+- Verification: Watched `node tests/pvp-compact-side-layout-static.test.js` fail before the CSS change, then pass after implementation. Ran `node tests/equal-layout-static.test.js`; parsed all 12 inline scripts; ran all 40 Node static tests; ran `git diff --check` with only LF-to-CRLF warnings. In-app Browser verification could not complete: the current `file://` tab was blocked by Browser URL policy, and a new `localhost:8765` tab navigation timed out.
+- Status: Complete.
+
 ### 2026-06-14 21:46 +08:00 - Codex
 
 - Request: Fix PVP defense and status skill result cards so they show skill descriptions.

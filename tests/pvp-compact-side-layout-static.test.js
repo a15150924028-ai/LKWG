@@ -22,7 +22,22 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function mediaBlock(query) {
+  const marker = `@media ${query} {`;
+  const start = html.indexOf(marker);
+  assert(start !== -1, `Missing media query: ${query}`);
+  const bodyStart = start + marker.length;
+  let depth = 1;
+  for (let index = bodyStart; index < html.length; index += 1) {
+    if (html[index] === "{") depth += 1;
+    if (html[index] === "}") depth -= 1;
+    if (depth === 0) return html.slice(bodyStart, index);
+  }
+  throw new Error(`Unclosed media query: ${query}`);
+}
+
 const sideSource = extractFunction("renderPvpSide");
+const phoneBlock = mediaBlock("(max-width: 760px)");
 
 assert(
   sideSource.includes('class="pvp-compact-row pvp-identity-row"'),
@@ -54,6 +69,10 @@ assert(
 assert(
   /\.pvp-side-form\s+\.pvp-compact-field\s*>\s*label\s*\{[^}]*position:\s*absolute;/s.test(html),
   "PVP compact labels must be inset into their field borders."
+);
+assert(
+  /\.pvp-sim-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr;/.test(phoneBlock),
+  "Phone-width PVP simulator must stack ally and enemy panels into one column."
 );
 
 console.log("PVP compact side layout static checks passed.");
