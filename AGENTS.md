@@ -1517,3 +1517,19 @@ Use this entry format:
   - Made `结算本回合` apply energy loss and per-skill `skillCostOverrides` alongside the already implemented buff/debuff settlement.
 - Verification: Watched `node tests/pvp-energy-static.test.js` fail before the energy module existed, then pass the pure rules and fail on missing panel integration; after integration, the focused test passed. Ran adjacent PVP regressions for turn effects, weather, and damage formula successfully. Ran all 31 Node tests successfully; parsed all 8 inline scripts with `new Function`; ran `git diff --check` with only the existing line-ending warning for `index.html`. Browser verification was not repeated because local-page browser access remained blocked by the Browser plugin policy in prior phases.
 - Status: Complete.
+
+### 2026-06-13 22:27 +08:00 - Codex
+
+- Request: Continue PVP round simulation by adding defense skill cooldown and defense-disable settlement.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-defense-cooldown-static.test.js`
+  - `docs/superpowers/plans/2026-06-13-pvp-defense-cooldown-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added `LKWG_PVP_COOLDOWN_RULES` to calculate shared defense cooldown/disable counters, including default defense cooldown, `壁垒` response cooldown reduction, `破防` two-turn defense disable, and per-settlement counter decay.
+  - Wired PVP action selection and rendering so defense skills are blocked while `defenseBlockTurns` is active and show visible lock text.
+  - Added cooldown preview and settlement into the existing `结算本回合` flow without adding automatic pet switching or full turn history.
+  - Added a static regression test for pure cooldown rules and PVP integration hooks.
+- Verification: Ran `node tests/pvp-defense-cooldown-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. In-app browser verification was attempted, but Browser policy blocked direct `file://` navigation to the local HTML file.
+- Status: Complete.

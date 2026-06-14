@@ -1015,6 +1015,18 @@
       min-width: 0;
     }
 
+    .pvp-skill-slot.locked {
+      opacity: 0.72;
+    }
+
+    .pvp-skill-lock {
+      margin-top: 4px;
+      color: #b45309;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
     .pvp-skill-index {
       display: inline-flex;
       align-items: center;
@@ -3985,6 +3997,79 @@
 
 </script>
   <script>
+(function initPvpCooldownRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_COOLDOWN_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpCooldownRules() {
+  function compactText(value) {
+    return String(value || "").replace(/[\s\u200b\u200c\u200d]+/g, "");
+  }
+
+  function actionText(action) {
+    return compactText(`${action?.name || ""} ${action?.description || ""} ${action?.effect || ""} ${(action?.effects || []).join(" ")}`);
+  }
+
+  function isDefenseAction(action) {
+    return action?.category === "defense";
+  }
+
+  function baseDefenseCooldown(action, responseType = "") {
+    if (!isDefenseAction(action)) return 0;
+    let turns = 1;
+    if (responseType === "defense-attack") {
+      for (const match of actionText(action).matchAll(/防御技能冷却-(\d+)/g)) {
+        turns -= Number(match[1]) || 0;
+      }
+    }
+    return Math.max(0, turns);
+  }
+
+  function decayedDefenseTurns(state) {
+    return Math.max(0, Math.round(Number(state?.defenseBlockTurns) || 0) - 1);
+  }
+
+  function settleDefenseCounter(state, action, responseType, incomingBlockTurns = 0) {
+    return Math.max(
+      decayedDefenseTurns(state),
+      baseDefenseCooldown(action, responseType),
+      Math.max(0, Math.round(Number(incomingBlockTurns) || 0))
+    );
+  }
+
+  function resolveTurnCooldowns(input = {}) {
+    return {
+      ally: {
+        defenseBlockTurns: settleDefenseCounter(
+          input.allyState,
+          input.allyAction,
+          input.order?.allyResponse?.type || "",
+          input.effects?.ally?.defenseBlockTurns
+        )
+      },
+      enemy: {
+        defenseBlockTurns: settleDefenseCounter(
+          input.enemyState,
+          input.enemyAction,
+          input.order?.enemyResponse?.type || "",
+          input.effects?.enemy?.defenseBlockTurns
+        )
+      }
+    };
+  }
+
+  return {
+    isDefenseAction,
+    baseDefenseCooldown,
+    settleDefenseCounter,
+    resolveTurnCooldowns
+  };
+});
+
+</script>
+  <script>
 (function initPvpTurnRules(root, factory) {
   const api = factory();
   if (typeof module === "object" && module.exports) {
@@ -6515,7 +6600,18 @@
       if (!match) return null;
       const skillIndex = Number(match[1]);
       const skill = skillById.get(state.skillIds?.[skillIndex]);
+      if (defenseSkillLocked(state, skill)) return null;
       return skill ? { ...skill, pvpSkillIndex: skillIndex } : null;
+    }
+
+    function defenseSkillLocked(state, skill) {
+      if (!window.LKWG_PVP_COOLDOWN_RULES.isDefenseAction(skill)) return false;
+      return Math.max(0, Math.round(Number(state?.defenseBlockTurns) || 0)) > 0;
+    }
+
+    function defenseLockText(state) {
+      const turns = Math.max(0, Math.round(Number(state?.defenseBlockTurns) || 0));
+      return turns ? `防御禁用${turns}回合` : "";
     }
 
     function defenseReductionEffect(action) {
@@ -7851,11 +7947,16 @@
             <div class="field field-wide">
               <label>技能</label>
               <div class="pvp-skill-picks">
-                ${[0, 1, 2, 3].map((skillIndex) => `
-                  <div class="pvp-skill-slot${state.action === `skill:${skillIndex}` ? " active" : ""}" data-pvp-skill-slot="${side}-${skillIndex}">
-                    <div data-pvp-combo="${side}-skill-${skillIndex}"></div>
-                  </div>
-                `).join("")}
+                ${[0, 1, 2, 3].map((skillIndex) => {
+                  const skill = skillById.get(state.skillIds?.[skillIndex]);
+                  const locked = defenseSkillLocked(state, skill);
+                  return `
+                    <div class="pvp-skill-slot${state.action === `skill:${skillIndex}` ? " active" : ""}${locked ? " locked" : ""}" data-pvp-skill-slot="${side}-${skillIndex}">
+                      <div data-pvp-combo="${side}-skill-${skillIndex}"></div>
+                      ${locked ? `<div class="pvp-skill-lock" data-pvp-defense-lock="${side}-${skillIndex}">${escapeHtml(defenseLockText(state))}</div>` : ""}
+                    </div>
+                  `;
+                }).join("")}
               </div>
               <div class="pvp-force-row">
                 <button class="pvp-force-button${state.forceImpact && !forceImpactLocked(state) ? " active" : ""}" type="button" data-pvp-force="${side}" aria-pressed="${state.forceImpact && !forceImpactLocked(state) ? "true" : "false"}" ${forceImpactLocked(state) ? "disabled" : ""}>
@@ -8010,10 +8111,27 @@
       });
     }
 
+    function currentPvpTurnCooldowns(context = currentPvpTurnEffects()) {
+      return window.LKWG_PVP_COOLDOWN_RULES.resolveTurnCooldowns({
+        allyAction: context.allyAction,
+        enemyAction: context.enemyAction,
+        order: context.order,
+        allyState: context.ally,
+        enemyState: context.enemy,
+        effects: context.effects
+      });
+    }
+
+    function pvpCooldownLabel(sideName, cooldown) {
+      const turns = Math.max(0, Math.round(Number(cooldown?.defenseBlockTurns) || 0));
+      return turns ? `${sideName}防御禁用${turns}回合` : `${sideName}防御可用`;
+    }
+
     function renderPvpTurnEffectPreview() {
       const context = currentPvpTurnEffects();
       const { allyAction, enemyAction, effects } = context;
       const energy = currentPvpTurnEnergy(context);
+      const cooldowns = currentPvpTurnCooldowns(context);
       const ready = Boolean(allyAction || enemyAction);
       const summary = ready
         ? `${pvpTurnEffectLabel("己方", effects.ally)}；${pvpTurnEffectLabel("敌方", effects.enemy)}；${pvpTurnEnergyLabel("己方", energy.ally)}；${pvpTurnEnergyLabel("敌方", energy.enemy)}`
@@ -8021,6 +8139,7 @@
       return `
         <div class="pvp-turn-effects" data-pvp-turn-effects>
           <strong>${escapeHtml(summary)}</strong>
+          ${ready ? `<span>${escapeHtml(`${pvpCooldownLabel("己方", cooldowns.ally)} / ${pvpCooldownLabel("敌方", cooldowns.enemy)}`)}</span>` : ""}
           <button class="pvp-settle-button" type="button" data-pvp-settle-turn ${ready ? "" : "disabled"}>结算本回合</button>
         </div>
       `;
@@ -8087,13 +8206,33 @@
       return allyChanged || enemyChanged;
     }
 
+    function applyPvpTurnCooldowns(context = currentPvpTurnEffects()) {
+      const cooldowns = currentPvpTurnCooldowns(context);
+      let changed = false;
+      ["ally", "enemy"].forEach((side) => {
+        const state = context[side];
+        const nextTurns = Math.max(0, Math.round(Number(cooldowns?.[side]?.defenseBlockTurns) || 0));
+        const currentTurns = Math.max(0, Math.round(Number(state.defenseBlockTurns) || 0));
+        if (nextTurns !== currentTurns) {
+          state.defenseBlockTurns = nextTurns;
+          changed = true;
+        }
+        if (nextTurns) {
+          const text = `本回合防御：防御禁用${nextTurns}回合`;
+          state.supportText = state.supportText ? `${state.supportText} / ${text}` : text;
+        }
+      });
+      return changed;
+    }
+
     function applyPvpTurnEffects() {
       const context = currentPvpTurnEffects();
       const { ally, enemy, allyAction, enemyAction, effects } = context;
       const allyChanged = applyPvpSideTurnEffects(ally, effects.ally, Boolean(allyAction));
       const enemyChanged = applyPvpSideTurnEffects(enemy, effects.enemy, Boolean(enemyAction));
       const energyChanged = applyPvpTurnEnergy(context);
-      return allyChanged || enemyChanged || energyChanged;
+      const cooldownChanged = applyPvpTurnCooldowns(context);
+      return allyChanged || enemyChanged || energyChanged || cooldownChanged;
     }
 
     function renderPvpDamageSimulation(team) {
@@ -8118,11 +8257,19 @@
       state.skillIds.forEach((skillId, skillIndex) => {
         const host = root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`);
         if (!host) return;
+        const skill = skillById.get(skillId);
+        const defenseLocked = defenseSkillLocked(state, skill);
+        if (defenseLocked && state.action === `skill:${skillIndex}`) {
+          state.action = "";
+        }
         host.classList.toggle("pvp-action-combo", Boolean(skillId));
         host.classList.toggle("active", state.action === `skill:${skillIndex}`);
         const slot = root.querySelector(`[data-pvp-skill-slot="${side}-${skillIndex}"]`);
         if (slot) {
           slot.classList.toggle("active", state.action === `skill:${skillIndex}`);
+          slot.classList.toggle("locked", defenseLocked);
+          const lockEl = slot.querySelector("[data-pvp-defense-lock]");
+          if (lockEl) lockEl.textContent = defenseLocked ? defenseLockText(state) : "";
         }
       });
       const forceButton = root.querySelector(`[data-pvp-force="${side}"]`);
@@ -8166,6 +8313,9 @@
     }
 
     function selectPvpSkillAction(state, skillIndex, skill) {
+      if (typeof defenseSkillLocked === "function") {
+        if (defenseSkillLocked(state, skill)) return;
+      }
       const action = `skill:${skillIndex}`;
       if (skill?.category === "defense" || hasPvpSpecialPowerRule(skill)) {
         state.action = action;
