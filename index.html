@@ -7414,7 +7414,13 @@
       }
       const damage = calcPvpDamage(state, opponentState, action);
       if (damage?.error) {
-        return `<div class="pvp-damage-result bad" data-pvp-damage-result="${side}">${escapeHtml(damage.error)}</div>`;
+        const errorDescriptionText = pvpSkillDescriptionText(action);
+        return `
+          <div class="pvp-damage-result bad" data-pvp-damage-result="${side}">
+            <div>${escapeHtml(damage.error)}</div>
+            <div class="pvp-skill-description">技能描述：${escapeHtml(errorDescriptionText)}</div>
+          </div>
+        `;
       }
       if (!damage) {
         return `<div class="pvp-damage-result warn" data-pvp-damage-result="${side}">伤害数据不足</div>`;

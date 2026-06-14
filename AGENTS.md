@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 21:46 +08:00 - Codex
+
+- Request: Fix PVP defense and status skill result cards so they show skill descriptions.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed non-attack PVP skills return through the `damage.error` render branch before the shared skill-description block.
+  - Added skill-description rendering to that error branch, preserving the existing red warning result while showing the selected skill's description underneath.
+  - Updated the PVP selected-skill damage regression test to require descriptions for normal, response, and non-damage skill results.
+- Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the fix because the error branch lacked a description, then pass after implementation. Ran `node tests/pvp-damage-formula-static.test.js`; all 40 Node static tests; parsed all 12 inline scripts; ran `git diff --check` with only LF-to-CRLF warnings. In-app Browser verification against the current `file://` page was blocked by Browser URL policy.
+- Status: Complete.
+
 ### 2026-06-14 21:32 +08:00 - Codex
 
 - Request: Fill local skill descriptions missing from `data/local-bundle.json` using BWiki 技能图鉴.

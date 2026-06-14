@@ -94,8 +94,12 @@ assert(
   "PVP damage results must resolve a sanitized description for the selected skill."
 );
 assert(
-  (damageResultSource.match(/class="pvp-skill-description"/g) || []).length === 2,
-  "Normal and response damage results must both show the skill description at the bottom."
+  (damageResultSource.match(/class="pvp-skill-description"/g) || []).length === 3,
+  "Normal, response, and non-damage skill results must show the skill description at the bottom."
+);
+assert(
+  /if \(damage\?\.error\) \{[\s\S]*pvpSkillDescriptionText\(action\)[\s\S]*class="pvp-skill-description"/.test(damageResultSource),
+  "Defense and status skill error results must still show the selected skill description."
 );
 
 console.log("PVP selected skill damage static checks passed.");
