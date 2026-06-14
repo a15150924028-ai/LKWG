@@ -1584,3 +1584,18 @@ Use this entry format:
   - Kept this phase scoped to manual workflow polish without automatic pet switching or full battle automation.
 - Verification: Watched `node tests/pvp-turn-history-static.test.js` fail first on missing `LKWG_PVP_HISTORY_RULES`, then pass after implementation. Ran adjacent PVP tests for turn cleanup, HP settlement, energy, and turn effects. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. Browser verification was not repeated because local `file://` access is blocked by Browser policy in this environment.
 - Status: Complete.
+
+### 2026-06-14 09:10 +08:00 - Codex
+
+- Request: Clarify remaining PVP gaps, confirm skill-description completion status, and make exact priority/speed ties choose a random first mover.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed exact action-order ties from returning the placeholder `random` first mover to resolving immediately to either ally or enemy using `Math.random()`.
+  - Kept deterministic testability by allowing an injected `random` function in the turn-order rule input.
+  - Updated the PVP turn preview to show the randomized side chosen for the current exact tie.
+  - Added regression coverage for low and high random rolls.
+- Verification: Watched `node tests/pvp-turn-rules-static.test.js` fail before the implementation and pass after it. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only CRLF line-ending warnings for touched files.
+- Status: Complete.

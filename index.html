@@ -4378,7 +4378,21 @@
     if (allySpeed !== enemySpeed) {
       return { first: allySpeed > enemySpeed ? "ally" : "enemy", reason: "speed", allyPriority, enemyPriority, allySpeed, enemySpeed, allyResponse, enemyResponse };
     }
-    return { first: "random", reason: "tie", allyPriority, enemyPriority, allySpeed, enemySpeed, allyResponse, enemyResponse };
+    const randomFn = typeof input.random === "function" ? input.random : Math.random;
+    const roll = Number(randomFn());
+    const normalizedRoll = Number.isFinite(roll) ? Math.max(0, Math.min(0.999999, roll)) : 0;
+    return {
+      first: normalizedRoll < 0.5 ? "ally" : "enemy",
+      reason: "tie",
+      random: true,
+      roll: normalizedRoll,
+      allyPriority,
+      enemyPriority,
+      allySpeed,
+      enemySpeed,
+      allyResponse,
+      enemyResponse
+    };
   }
 
   return {
@@ -8300,7 +8314,7 @@
       if (order.reason === "defense-response") return `${order.defenseSide === "ally" ? "己方" : "敌方"}防御应对攻击生效：攻击伤害结算时套用防御效果`;
       if (order.reason === "priority") return `${order.first === "ally" ? "己方" : "敌方"}先手等级更高，先结算`;
       if (order.reason === "speed") return `${order.first === "ally" ? "己方" : "敌方"}速度更高，先结算`;
-      if (order.reason === "tie") return "双方先手等级和速度相同：随机先手";
+      if (order.reason === "tie") return `双方先手等级和速度相同：随机结果为${order.first === "ally" ? "己方" : "敌方"}先手`;
       return "选择双方行动后显示行动顺序";
     }
 

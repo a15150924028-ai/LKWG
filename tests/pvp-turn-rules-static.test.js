@@ -61,10 +61,22 @@ const tieOrder = turnRules.resolveTurnOrder({
   allyAction: attack,
   enemyAction: attack,
   allySpeed: 200,
-  enemySpeed: 200
+  enemySpeed: 200,
+  random: () => 0.25
 });
-assert(tieOrder.first === "random", "Exact priority and speed ties must be random.");
+assert(tieOrder.first === "ally", "Exact priority and speed ties must resolve to a random side.");
 assert(tieOrder.reason === "tie", "Exact ties must expose tie reason.");
+assert(tieOrder.random === true, "Exact ties must expose that the result was randomized.");
+assert(tieOrder.roll === 0.25, "Exact ties must expose the random roll for history/debug output.");
+
+const enemyTieOrder = turnRules.resolveTurnOrder({
+  allyAction: attack,
+  enemyAction: attack,
+  allySpeed: 200,
+  enemySpeed: 200,
+  random: () => 0.75
+});
+assert(enemyTieOrder.first === "enemy", "A high tie roll must resolve to enemy first.");
 
 assert(html.includes("function renderPvpTurnPreview()"), "PVP panel must render a turn-order preview.");
 assert(html.includes('data-pvp-turn-preview'), "Turn preview must have a stable data attribute for UI verification.");
