@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 21:32 +08:00 - Codex
+
+- Request: Fill local skill descriptions missing from `data/local-bundle.json` using BWiki 技能图鉴.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-skill-descriptions-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Parsed the BWiki 技能图鉴 list page, which contains 496 skill cards.
+  - Replaced 291 empty or stale energy-placeholder descriptions (`耗能`/`能耗`/`能量`/PP-only) with matching BWiki descriptions by skill name.
+  - Preserved existing real local descriptions.
+  - Added a regression test requiring zero empty/placeholder skill descriptions and asserting representative BWiki-filled descriptions.
+- Verification: Watched `node tests/local-bundle-skill-descriptions-static.test.js` fail on 291 stale descriptions before the fill, then pass after updating the bundle. Verified BWiki parsing matched all 291 needed descriptions. Ran `node tests/s2-screenshot-data-static.test.js`; `node tests/local-bundle-external-static.test.js`; all 40 Node static tests; parsed all 12 inline scripts; ran `git diff --check` with only an LF-to-CRLF warning for `data/local-bundle.json`. In-app Browser automation could not run because the Browser control object was unavailable in the current REPL session.
+- Status: Complete.
+
 ### 2026-06-14 21:17 +08:00 - Codex
 
 - Request: Correct the `斩断` skill description to `造成物伤，应对状态：额外打断被应对技能。`.
