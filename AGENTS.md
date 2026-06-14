@@ -56,6 +56,17 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 19:20 +08:00 - Codex
+
+- Request: Execute the approved plan for splitting 棋契陛下 into eight independent final forms with separate skill pools and evolution chains.
+- Files changed:
+  - `docs/superpowers/plans/2026-06-14-chess-emperor-variants.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a test-first implementation plan covering the eight-form data migration, evolution metadata, PVP 渗透 rule, verification, and publication.
+- Verification: Reviewed the approved design specification, current branch, recent commits, and pending worktree changes.
+- Status: Complete.
+
 ### 2026-06-08 17:53 +08:00 - Codex
 
 - Request: Create or edit the agent markdown file so future agents use it as a work log and read it for context before doing new work.
