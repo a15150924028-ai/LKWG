@@ -263,10 +263,11 @@ assertIncludes(html, 'src="data:image/png;base64,', "index.html must embed the r
 assertIncludes(html, "const STAT_ICON_DATA_URIS = {", "index.html must embed the six local stat icons.");
 assertIncludes(html, "const TYPE_ICON_ASSETS = {", "index.html must declare local type icon assets.");
 assertIncludes(html, "assets/type-icons/ghost.png", "index.html must use screenshot-cropped local type icon assets for attribute badges.");
+assertIncludes(html, "assets/bloodline-icons/boss.png", "index.html must use the supplied local boss bloodline image.");
 const embeddedPngs = html.match(/data:image\/png;base64,/g) || [];
 assert(embeddedPngs.length === 7, "index.html must contain one roller image and six stat icon PNGs.");
 const imgTags = html.match(/<img\b/gi) || [];
-assert(imgTags.length === 3, "index.html must render images only through the roller icon, local stat icon template, and local type icon template.");
+assert(imgTags.length === 4, "index.html must render images only through roller, stat, type, and local bloodline icon templates.");
 assertIncludes(
   html,
   "页面默认读取线上数据包；如数据包不可用，将使用内置兜底数据。本工具为非官方阵容与伤害计算辅助工具。",

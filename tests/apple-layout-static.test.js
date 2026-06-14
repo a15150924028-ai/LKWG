@@ -9,6 +9,12 @@ function expect(pattern, message) {
   }
 }
 
+function expectAbsent(pattern, message) {
+  if (pattern.test(html)) {
+    throw new Error(message);
+  }
+}
+
 expect(/<title>洛克PVP配对模拟器<\/title>/, "页面标题必须改为洛克PVP配对模拟器");
 expect(/<h1>洛克PVP配对模拟器<\/h1>/, "页头标题必须改为洛克PVP配对模拟器");
 expect(/data-scroll-target="teamSection"[^>]*>队伍</, "缺少队伍导航");
@@ -16,8 +22,8 @@ expect(/data-scroll-target="resultsSection"[^>]*>分析</, "缺少分析导航")
 expect(/data-scroll-target="pvpDamageSim"[^>]*>伤害</, "缺少伤害导航");
 expect(/class="team-overview"/, "缺少六席队伍概览");
 expect(/class="team-overview-slot/, "缺少队伍席位按钮");
-expect(/class="pet-card-layout"/, "缺少单席编辑与战斗摘要布局");
-expect(/class="pet-summary"/, "缺少战斗摘要面板");
+expect(/class="pet-card-layout"/, "缺少单席紧凑编辑布局");
+expectAbsent(/class="pet-summary"/, "队伍编辑区不应继续显示战斗摘要面板");
 expect(/placeholder: "选择\/搜索血脉名称"/, "血脉占位文案不正确");
 expect(/<span class="skill-meta-label">能耗<\/span>/, "技能信息必须显示能耗");
 expect(/hideIcon: true/, "精灵输入框必须隐藏首字占位图标");

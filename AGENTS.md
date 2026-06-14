@@ -56,6 +56,28 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 18:41 +08:00 - Codex
+
+- Request: Use a background-removed version of the supplied image for the boss bloodline icon, compact the team editor fields and vertical spacing, keep monster and bloodline side by side, and remove the battle summary.
+- Files changed:
+  - `assets/bloodline-icons/boss.png`
+  - `index.html`
+  - `tests/compact-team-editor-static.test.js`
+  - `tests/apple-layout-static.test.js`
+  - `tests/local-bundle-external-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-compact-team-editor.md`
+  - `design-qa.md`
+  - `AGENTS.md`
+- Changes:
+  - Removed the scenic background from the supplied 247x253 boss bloodline image while preserving the original crown pixels and antialiased white outline, then saved it as a local transparent PNG.
+  - Rendered the boss icon with `object-fit: contain` and no replacement background.
+  - Removed the complete team battle-summary render path and its unused CSS.
+  - Converted team editor headings into inset labels, kept monster and bloodline in equal columns, and tightened field, talent, skill, and metadata spacing.
+  - Kept skill selectors and metadata on one row at ordinary mobile widths, with a very-narrow fallback below 430px.
+  - Updated static coverage for the new local image template and removed summary requirement.
+- Verification: Watched `tests/compact-team-editor-static.test.js` fail before the asset and layout existed, then pass after implementation; also watched its approved transparent-asset fingerprint assertion fail before replacing the opaque PNG and pass afterward. Verified the PNG has alpha range 0-255 with 34,639 fully transparent pixels and 3,359 antialiased edge pixels. Ran all 38 Node static tests successfully and parsed all 12 inline scripts. In the in-app Browser, verified 804x1258 and 599x898 layouts, transparent local boss image rendering at natural size 247x253 with `object-fit: contain`, no battle summary, no horizontal overflow at 599px, equal monster/bloodline columns, single-row skill metadata, and an editor height of about 474px. Product Design QA passed in `design-qa.md`.
+- Status: Complete.
+
 ### 2026-06-14 18:20 +08:00 - Codex
 
 - Request: Add completion feedback to each team overview card when its monster, bloodline, nature, three talents, and four skills are all selected, without making the roller-coaster target skill required.

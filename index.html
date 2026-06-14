@@ -529,6 +529,13 @@
       background: #eef1f5;
     }
 
+    .combo-icon.bloodline-image-icon {
+      display: block;
+      object-fit: contain;
+      padding: 0;
+      background: transparent;
+    }
+
     .text-icon {
       display: inline-flex;
       align-items: center;
@@ -2257,7 +2264,7 @@
     }
 
     .pet-card-head {
-      padding: 0 2px 10px;
+      padding: 0 2px 8px;
       margin: 0;
     }
 
@@ -2267,243 +2274,160 @@
 
     .pet-card-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(430px, 0.95fr);
-      gap: 16px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
       align-items: stretch;
     }
 
-    .pet-editor,
-    .pet-summary {
+    .pet-editor {
       min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fff;
-      padding: 14px;
-    }
-
-    .pet-editor {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       align-content: start;
+      padding: 10px;
     }
 
-    .form-row {
-      gap: 10px;
+    .pet-editor .form-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       margin: 0;
     }
 
-    .field label {
-      margin-bottom: 5px;
+    .pet-editor .compact-field {
+      position: relative;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px 7px 7px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .pet-editor .compact-field:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    }
+
+    .pet-editor .compact-field > label {
+      position: absolute;
+      z-index: 2;
+      top: -7px;
+      left: 9px;
+      margin: 0;
+      background: #fff;
       color: #4b5565;
-      font-size: 12px;
+      padding: 0 5px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 14px;
+    }
+
+    .pet-editor .compact-field-single > .combo > .combo-control {
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .pet-editor .compact-field-single > .combo > .combo-control input {
+      min-height: 32px;
     }
 
     .readonly-line {
-      min-height: 40px;
-      padding: 7px 9px;
+      min-height: 36px;
+      padding: 6px 8px;
       background: var(--panel-soft);
     }
 
     .passive-line .readonly-desc {
-      margin-top: 5px;
+      margin-top: 4px;
       color: #667085;
-      font-size: 12px;
-      line-height: 1.5;
+      font-size: 11px;
+      line-height: 1.4;
     }
 
-    .talent-picks {
-      gap: 8px;
+    .pet-editor .talent-picks {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
     }
 
-    .combo-control,
-    select,
-    input {
-      min-height: 40px;
+    .pet-editor .combo-control {
+      min-height: 34px;
       border-radius: 7px;
     }
 
-    .combo-control {
-      grid-template-columns: 34px minmax(0, 1fr) 28px;
+    .pet-editor .combo-control {
+      grid-template-columns: 30px minmax(0, 1fr) 25px;
     }
 
-    .combo.no-control-icon .combo-control {
-      grid-template-columns: minmax(0, 1fr) 28px;
+    .pet-editor .combo.no-control-icon .combo-control {
+      grid-template-columns: minmax(0, 1fr) 25px;
     }
 
-    .combo.no-control-icon .combo-control input {
-      padding-left: 10px;
+    .pet-editor .combo.no-control-icon .combo-control input {
+      padding-left: 8px;
     }
 
-    .combo-control input {
-      min-height: 38px;
+    .pet-editor .combo-control input {
+      min-height: 32px;
+      font-size: 13px;
     }
 
-    .combo-menu {
+    .pet-editor .combo-menu {
       border-radius: 8px;
       box-shadow: 0 18px 40px rgba(30, 38, 50, 0.16);
     }
 
-    .skills {
+    .pet-editor .skills {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 7px;
+      gap: 5px;
       margin-top: 0;
     }
 
-    .skill-row {
-      grid-template-columns: 32px minmax(180px, 1fr) minmax(210px, 0.72fr);
-      gap: 7px;
+    .pet-editor .skill-row {
+      grid-template-columns: 28px minmax(180px, 1fr) minmax(190px, 0.72fr);
+      gap: 5px;
     }
 
-    .slot {
-      height: 40px;
+    .pet-editor .slot {
+      height: 34px;
       border-radius: 7px;
+      font-size: 12px;
     }
 
-    .skill-meta {
+    .pet-editor .skill-meta {
       display: grid;
       grid-template-columns: minmax(72px, 1fr) minmax(54px, 0.75fr) minmax(74px, 0.85fr);
-      min-height: 40px;
+      min-height: 34px;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 7px;
       background: var(--panel-soft);
     }
 
-    .skill-meta-item {
+    .pet-editor .skill-meta-item {
       display: flex;
       min-width: 0;
       align-items: center;
       justify-content: center;
       gap: 5px;
       border-right: 1px solid var(--line);
-      padding: 4px 7px;
+      padding: 3px 5px;
       color: #4b5565;
       font-size: 11px;
       white-space: nowrap;
     }
 
-    .skill-meta-item:last-child {
+    .pet-editor .skill-meta-item:last-child {
       border-right: 0;
     }
 
-    .skill-meta-label {
+    .pet-editor .skill-meta-label {
       color: var(--muted);
-    }
-
-    .pet-summary {
-      display: grid;
-      gap: 10px;
-      align-content: start;
-      background: #fbfcfe;
-    }
-
-    .summary-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .summary-eyebrow {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .summary-head h3 {
-      margin: 2px 0 0;
-      font-size: 18px;
-    }
-
-    .summary-types {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 5px;
-    }
-
-    .summary-block {
-      border: 1px solid #e2e5ea;
-      border-radius: 8px;
-      background: #fff;
-      padding: 10px;
-    }
-
-    .summary-block h4 {
-      margin: 0 0 7px;
-      color: #344054;
-      font-size: 12px;
-    }
-
-    .summary-split {
-      display: grid;
-      grid-template-columns: 0.8fr 1.2fr;
-      gap: 9px;
-    }
-
-    .speed-range {
-      color: var(--good);
-      font-size: 20px;
-      letter-spacing: 0;
-    }
-
-    .relation-summary {
-      display: grid;
-      gap: 7px;
-    }
-
-    .relation-summary > div {
-      display: grid;
-      grid-template-columns: 56px minmax(0, 1fr);
-      align-items: start;
-      gap: 8px;
-    }
-
-    .relation-summary > div > span {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .completion-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .completion-ring {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 58px;
-      height: 58px;
-      flex: 0 0 auto;
-      border: 7px solid #dce9f8;
-      border-top-color: var(--primary);
-      border-radius: 999px;
-      color: var(--ink);
-      font-size: 13px;
-    }
-
-    .completion-block > div:last-child {
-      display: grid;
-      gap: 2px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .summary-empty {
-      display: flex;
-      min-height: 260px;
-      align-items: center;
-      justify-content: center;
-      border: 1px dashed #cfd5dd;
-      border-radius: 8px;
-      color: var(--muted);
-      padding: 24px;
-      text-align: center;
     }
 
     .results-section {
@@ -2561,9 +2485,6 @@
         grid-column: 1 / -1;
       }
 
-      .pet-card-layout {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 1220px) and (orientation: portrait) {
@@ -2619,15 +2540,19 @@
         min-height: 118px;
       }
 
-      .pet-editor,
-      .pet-summary {
-        padding: 11px;
+      .pet-editor {
+        gap: 7px;
+        padding: 9px;
       }
 
-      .form-row,
-      .talent-picks,
-      .summary-split {
-        grid-template-columns: 1fr;
+      .pet-editor .form-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .pet-editor .talent-picks {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
       }
 
       .pvp-weather-options {
@@ -2642,12 +2567,13 @@
         border-bottom: 1px solid var(--line);
       }
 
-      .skill-row {
-        grid-template-columns: 32px minmax(0, 1fr);
+      .pet-editor .skill-row {
+        grid-template-columns: 28px minmax(0, 1fr) minmax(180px, 0.72fr);
+        gap: 4px;
       }
 
-      .skill-meta {
-        grid-column: 2;
+      .pet-editor .skill-meta {
+        grid-column: auto;
       }
 
       .results {
@@ -2692,18 +2618,19 @@
         padding: 10px;
       }
 
-      .skill-meta {
+      .pet-editor .skill-row {
+        grid-template-columns: 28px minmax(0, 1fr);
+      }
+
+      .pet-editor .skill-meta {
+        grid-column: 2;
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .skill-meta-item {
+      .pet-editor .skill-meta-item {
         padding: 3px;
       }
 
-      .relation-summary > div {
-        grid-template-columns: 1fr;
-        gap: 3px;
-      }
     }
 
   </style>
@@ -4877,7 +4804,7 @@
     };
 
     const BLOODLINES = [
-      { id: "bloodline-boss", kind: "bloodline", name: "首领血脉", aliases: ["首领"], icon: "", badgeKey: "boss", description: "首领类血脉。" },
+      { id: "bloodline-boss", kind: "bloodline", name: "首领血脉", aliases: ["首领"], icon: "assets/bloodline-icons/boss.png", badgeKey: "boss", description: "首领类血脉。" },
       ...TYPES.map((type) => ({
         id: `bloodline-${type.key}`,
         kind: "bloodline",
@@ -5333,70 +5260,6 @@
       pendingTeamCompletionAnimations.clear();
     }
 
-    function renderPetBattleSummary(monster, pet) {
-      if (!monster) {
-        return `
-          <aside class="pet-summary">
-            <div class="summary-head">
-              <div>
-                <span class="summary-eyebrow">战斗摘要</span>
-                <h3>选择精灵后生成</h3>
-              </div>
-            </div>
-            <div class="summary-empty">种族值、速度区间、推荐天分和属性关系会显示在这里。</div>
-          </aside>
-        `;
-      }
-      const selectedSkills = pet.skills.map((skillRef) => skillById.get(skillRef.skillId)).filter(Boolean);
-      const selectedAttackTypes = selectedSkills.filter(isAttackSkill).map((skill) => skill.type).filter(Boolean);
-      const speedRange = calcSpeedRange(monster);
-      const build = choosePvpBuild(monster);
-      const strong = strongTargetsForAttackTypes(monster.types || []);
-      const weak = weakAttackersAgainst(monster.types || []);
-      const resist = resistingAttackersAgainst(monster.types || []);
-      const coverage = coverageOfTypes(selectedAttackTypes);
-      const completion = Math.round(selectedSkills.length / 4 * 100);
-      return `
-        <aside class="pet-summary">
-          <div class="summary-head">
-            <div>
-              <span class="summary-eyebrow">战斗摘要</span>
-              <h3>${escapeHtml(monster.name)}</h3>
-            </div>
-            <div class="summary-types">${chips(monster.types || [])}</div>
-          </div>
-          <div class="summary-block">
-            <h4>种族值</h4>
-            ${renderMonsterStats(monster)}
-          </div>
-          <div class="summary-split">
-            <div class="summary-block">
-              <h4>速度区间</h4>
-              <strong class="speed-range">${speedRange ? `${speedRange.min} - ${speedRange.max}` : "暂无"}</strong>
-            </div>
-            <div class="summary-block">
-              <h4>推荐天分</h4>
-              <span>${escapeHtml(build ? formatTalentText(build.talent) : "暂无")}</span>
-            </div>
-          </div>
-          <div class="summary-block relation-summary">
-            <h4>属性关系</h4>
-            <div><span>克制</span><div>${chips(strong, "good")}</div></div>
-            <div><span>被克制</span><div>${chips(weak, "bad")}</div></div>
-            <div><span>抵抗</span><div>${chips(resist, "info")}</div></div>
-          </div>
-          <div class="summary-block completion-block">
-            <div class="completion-ring" style="--completion:${completion * 3.6}deg"><strong>${completion}%</strong></div>
-            <div>
-              <h4>技能配置完成度</h4>
-              <span>已选择 ${selectedSkills.length} / 4 个技能</span>
-              <span>当前覆盖 ${coverage.length} 个可克制属性</span>
-            </div>
-          </div>
-        </aside>
-      `;
-    }
-
     function skillEnergyValue(skill) {
       const value = [skill?.energyCost, skill?.pp].find((item) => (
         item !== "" && item !== null && item !== undefined && Number.isFinite(Number(item))
@@ -5442,34 +5305,34 @@
           <div class="pet-card-layout">
             <div class="pet-editor">
               <div class="form-row">
-                <div class="field">
+                <div class="field compact-field compact-field-single">
                   <label>精灵</label>
                   <div data-combo="monster" data-field="monsterId"></div>
                 </div>
-                <div class="field">
+                <div class="field compact-field compact-field-single">
                   <label>血脉</label>
                   <div data-combo="bloodline" data-field="bloodlineId"></div>
                 </div>
               </div>
-              <div class="field">
+              <div class="field compact-field compact-field-group">
                 <label>特性</label>
                 <div class="readonly-line passive-line" data-field="passiveText">未选择精灵</div>
               </div>
-              <div class="field">
+              <div class="field compact-field compact-field-single">
                 <label>性格</label>
                 <div data-combo="nature" data-field="natureId"></div>
               </div>
-              <div class="field">
+              <div class="field compact-field compact-field-group">
                 <label>天分</label>
                 <div class="talent-picks">
                   ${[0, 1, 2].map((talentIndex) => `<div data-talent="${talentIndex}" data-combo="talent"></div>`).join("")}
                 </div>
               </div>
-              <div class="field team-roller-skill-field">
+              <div class="field compact-field compact-field-single team-roller-skill-field">
                 <label>过山车目标技能</label>
                 <div data-combo="rollerSkill" data-field="rollerSkillId"></div>
               </div>
-              <div class="field">
+              <div class="field compact-field compact-field-group">
                 <label>技能</label>
                 <div class="skills">
                   ${pet.skills.map((skill, skillIndex) => `
@@ -5482,7 +5345,6 @@
                 </div>
               </div>
             </div>
-            ${renderPetBattleSummary(selectedMonster, pet)}
           </div>
         `;
         editors.appendChild(card);
@@ -5730,6 +5592,9 @@
     function iconHtml(item, className) {
       if (item?.iconDataUri) {
         return `<img class="${escapeHtml(className)} stat-image-icon" src="${escapeHtml(item.iconDataUri)}" alt="" width="26" height="26">`;
+      }
+      if (item?.kind === "bloodline" && item?.icon) {
+        return `<img class="${escapeHtml(className)} bloodline-image-icon" src="${escapeHtml(item.icon)}" alt="" width="26" height="26">`;
       }
       if (item?.kind === "bloodline") {
         return typeBadgeHtml(item.badgeKey || item.type || "boss", className);
