@@ -1533,3 +1533,20 @@ Use this entry format:
   - Added a static regression test for pure cooldown rules and PVP integration hooks.
 - Verification: Ran `node tests/pvp-defense-cooldown-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. In-app browser verification was attempted, but Browser policy blocked direct `file://` navigation to the local HTML file.
 - Status: Complete.
+
+### 2026-06-14 08:42 +08:00 - Codex
+
+- Request: Continue the phased PVP round simulation with current HP, damage settlement, and `无畏之心` healing.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-hp-settlement-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-pvp-hp-settlement-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added `LKWG_PVP_HP_RULES` for HP clamping, incoming damage settlement, and `无畏之心` converting prevented final damage into healing while taking zero actual damage.
+  - Added `currentHp` state and visible current-HP controls to both PVP sides, defaulting to the selected monster's battle HP and clamping to max HP.
+  - Exposed pre-skill-reduction damage from `calcPvpDamage` so `无畏之心` can heal from the damage before its own 100% skill reduction while preserving existing passive and stat calculations.
+  - Added HP change preview and applied HP settlement through the existing `结算本回合` flow before ordinary effects, energy, and cooldown writes.
+  - Added a static regression test covering pure HP rules and PVP panel integration hooks.
+- Verification: Watched `node tests/pvp-hp-settlement-static.test.js` fail first on missing `LKWG_PVP_HP_RULES`, then pass after implementation. Ran adjacent PVP tests for damage formula, turn effects, energy, and defense cooldown. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 10 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. In-app browser verification was not repeated because local `file://` access has been blocked by Browser policy in the current environment.
+- Status: Complete.

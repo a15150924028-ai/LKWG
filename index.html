@@ -4070,6 +4070,83 @@
 
 </script>
   <script>
+(function initPvpHpRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_HP_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpHpRules() {
+  function compactText(value) {
+    return String(value || "").replace(/[\s\u200b\u200c\u200d]+/g, "");
+  }
+
+  function clampHp(value, maxHp) {
+    const max = Math.max(1, Math.round(Number(maxHp) || 1));
+    return Math.max(0, Math.min(max, Math.round(Number(value) || 0)));
+  }
+
+  function actionHasFearlessHeart(action) {
+    const text = compactText(`${action?.name || ""} ${action?.description || ""} ${action?.effect || ""} ${(action?.effects || []).join(" ")}`);
+    return /无畏之心/.test(text) || (/减伤100%/.test(text) && /伤害转化为等量生命恢复/.test(text));
+  }
+
+  function settleIncomingDamage(input = {}) {
+    const maxHp = Math.max(1, Math.round(Number(input.maxHp) || 1));
+    const currentHp = clampHp(input.state?.currentHp ?? maxHp, maxHp);
+    const incomingDamage = Math.max(0, Math.round(Number(input.incomingDamage) || 0));
+    const preventedDamage = Math.max(0, Math.round(Number(input.preventedDamage ?? incomingDamage) || 0));
+    const fearless = input.responseType === "defense-attack" && actionHasFearlessHeart(input.defenderAction);
+    if (fearless) {
+      const nextHp = clampHp(currentHp + preventedDamage, maxHp);
+      return {
+        nextHp,
+        damageTaken: 0,
+        heal: nextHp - currentHp,
+        preventedDamage,
+        labels: preventedDamage ? [`无畏之心回复${nextHp - currentHp}`] : []
+      };
+    }
+    const nextHp = clampHp(currentHp - incomingDamage, maxHp);
+    return {
+      nextHp,
+      damageTaken: currentHp - nextHp,
+      heal: 0,
+      preventedDamage: 0,
+      labels: incomingDamage ? [`受到伤害${currentHp - nextHp}`] : []
+    };
+  }
+
+  function resolveTurnHp(input = {}) {
+    const ally = settleIncomingDamage({
+      state: input.allyState,
+      maxHp: input.allyMaxHp,
+      incomingDamage: input.enemyOutgoingDamage,
+      preventedDamage: input.enemyPreventedDamage,
+      defenderAction: input.allyAction,
+      responseType: input.order?.allyResponse?.type || ""
+    });
+    const enemy = settleIncomingDamage({
+      state: input.enemyState,
+      maxHp: input.enemyMaxHp,
+      incomingDamage: input.allyOutgoingDamage,
+      preventedDamage: input.allyPreventedDamage,
+      defenderAction: input.enemyAction,
+      responseType: input.order?.enemyResponse?.type || ""
+    });
+    return { ally, enemy };
+  }
+
+  return {
+    clampHp,
+    actionHasFearlessHeart,
+    settleIncomingDamage,
+    resolveTurnHp
+  };
+});
+
+</script>
+  <script>
 (function initPvpTurnRules(root, factory) {
   const api = factory();
   if (typeof module === "object" && module.exports) {
@@ -4800,8 +4877,8 @@
     const adminDataFile = document.getElementById("adminDataFile");
     const pvpSimState = {
       weather: "",
-      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexSourceData = FALLBACK_DATA;
@@ -6955,6 +7032,9 @@
         hitCount
       };
       const normalDamage = window.LKWG_PVP_DAMAGE_CORE.calculateDamage(damageInput);
+      const preSkillReductionDamage = defenseReduction.multiplier === 1
+        ? normalDamage
+        : window.LKWG_PVP_DAMAGE_CORE.calculateDamage({ ...damageInput, reductionMultiplier: 1 });
       const power = normalDamage.effectivePower;
       const singleEstimate = normalDamage.singleDamage;
       const estimate = normalDamage.damage;
@@ -6975,6 +7055,14 @@
             responseMultiplier,
             typeMultiplier: responseTypeMultiplier,
             skillDamageMultiplier: (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier
+          }) : null;
+      const responsePreSkillReductionDamage = responseTriggered ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
+            ...damageInput,
+            skillPower: responseSkillPower,
+            responseMultiplier,
+            typeMultiplier: responseTypeMultiplier,
+            skillDamageMultiplier: (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier,
+            reductionMultiplier: 1
           }) : null;
       const responsePower = responseDamage?.settledPower ?? null;
       const responseSingleEstimate = responseDamage?.singleDamage ?? null;
@@ -7002,7 +7090,9 @@
         responseSingleEstimate,
         hitCount,
         estimate,
+        preSkillReductionEstimate: preSkillReductionDamage.damage,
         responseEstimate,
+        responsePreSkillReductionEstimate: responsePreSkillReductionDamage?.damage ?? null,
         responseTriggered,
         responseReason: responseStatus.reason || "",
         defenderHp: defenderStats.hp,
@@ -7653,7 +7743,23 @@
         .map(([skillId, value]) => [skillId, Math.max(0, Math.round(Number(value)))]));
       state.traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state.traitLayers);
       state.cuteLayers = normalizePvpCuteLayers(state.cuteLayers);
+      const monster = monsterById.get(state.monsterId);
+      const maxHp = monster ? pvpSideMaxHp(state, monster) : 0;
+      if (!monster) {
+        state.currentHp = 0;
+        state.currentHpMonsterId = "";
+      } else if (state.currentHpMonsterId !== state.monsterId || !Number.isFinite(Number(state.currentHp))) {
+        state.currentHp = maxHp;
+        state.currentHpMonsterId = state.monsterId;
+      } else {
+        state.currentHp = window.LKWG_PVP_HP_RULES.clampHp(state.currentHp, maxHp);
+      }
       return state;
+    }
+
+    function pvpSideMaxHp(state, monster = monsterById.get(state?.monsterId)) {
+      if (!monster) return 0;
+      return finalBattleStats(monster, state, blankStatMods()).hp;
     }
 
     function selectedTeamMonsters(team) {
@@ -7716,6 +7822,8 @@
       state.defenseBlockTurns = 0;
       state.skillCostOverrides = {};
       resetPvpManualBuffs(state);
+      state.currentHp = 0;
+      state.currentHpMonsterId = "";
       state.energy = DEFAULT_PVP_ENERGY;
       state.traitLayers = 0;
       state.cuteLayers = 0;
@@ -7842,11 +7950,21 @@
       const traitName = window.LKWG_PVP_TRAIT_RULES.traitName(monster);
       const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
       const cuteLayers = normalizePvpCuteLayers(state?.cuteLayers);
+      const maxHp = pvpSideMaxHp(state, monster);
+      const currentHp = monster ? window.LKWG_PVP_HP_RULES.clampHp(state?.currentHp ?? maxHp, maxHp) : 0;
       const energy = Math.max(0, Math.round(Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
       return `
         <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
           <div class="pvp-buff-title">增益状态</div>
           <div class="pvp-buff-grid">
+            <div class="pvp-buff-item" data-pvp-buff-stat="currentHp">
+              <div class="pvp-buff-label">生命</div>
+              <div class="pvp-buff-controls">
+                <button class="pvp-buff-button" type="button" data-pvp-current-hp="${side}" data-delta="-10">-</button>
+                <span class="pvp-buff-value" data-pvp-current-hp-value="${side}">${currentHp}/${maxHp}</span>
+                <button class="pvp-buff-button" type="button" data-pvp-current-hp="${side}" data-delta="10">+</button>
+              </div>
+            </div>
             ${PVP_MANUAL_BUFF_STATS.map((stat) => `
               <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
                 <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
@@ -7908,6 +8026,12 @@
       const cuteLayerValueEl = root.querySelector(`[data-pvp-cute-layer-value="${side}"]`);
       if (cuteLayerValueEl) {
         cuteLayerValueEl.textContent = normalizePvpCuteLayers(state.cuteLayers);
+      }
+      const hpValueEl = root.querySelector(`[data-pvp-current-hp-value="${side}"]`);
+      if (hpValueEl) {
+        const monster = monsterById.get(state.monsterId);
+        const maxHp = pvpSideMaxHp(state, monster);
+        hpValueEl.textContent = `${window.LKWG_PVP_HP_RULES.clampHp(state.currentHp, maxHp)}/${maxHp}`;
       }
       const energyValueEl = root.querySelector(`[data-pvp-energy-value="${side}"]`);
       if (energyValueEl) {
@@ -8127,14 +8251,52 @@
       return turns ? `${sideName}防御禁用${turns}回合` : `${sideName}防御可用`;
     }
 
+    function pvpTurnOutgoingDamage(attackerState, defenderState, action) {
+      if (!action || !isAttackSkill(action)) return { damage: 0, preventedDamage: 0, labels: [] };
+      const damage = calcPvpDamage(attackerState, defenderState, action);
+      if (!damage || damage.error) return { damage: 0, preventedDamage: 0, labels: [] };
+      const useResponse = damage.responseTriggered && damage.responseEstimate != null;
+      const amount = Math.max(0, Math.round(Number(useResponse ? damage.responseEstimate : damage.estimate) || 0));
+      const preventedDamage = Math.max(0, Math.round(Number(useResponse ? damage.responsePreSkillReductionEstimate : damage.preSkillReductionEstimate) || amount));
+      return {
+        damage: amount,
+        preventedDamage,
+        labels: amount ? [`${damage.action?.name || "攻击"}造成${amount}`] : []
+      };
+    }
+
+    function currentPvpTurnHp(context = currentPvpTurnEffects()) {
+      const allyDamage = pvpTurnOutgoingDamage(context.ally, context.enemy, context.allyAction);
+      const enemyDamage = pvpTurnOutgoingDamage(context.enemy, context.ally, context.enemyAction);
+      return window.LKWG_PVP_HP_RULES.resolveTurnHp({
+        allyState: context.ally,
+        enemyState: context.enemy,
+        allyMaxHp: pvpSideMaxHp(context.ally),
+        enemyMaxHp: pvpSideMaxHp(context.enemy),
+        allyOutgoingDamage: allyDamage.damage,
+        enemyOutgoingDamage: enemyDamage.damage,
+        allyPreventedDamage: allyDamage.preventedDamage,
+        enemyPreventedDamage: enemyDamage.preventedDamage,
+        allyAction: context.allyAction,
+        enemyAction: context.enemyAction,
+        order: context.order
+      });
+    }
+
+    function pvpHpLabel(sideName, hp) {
+      const labels = hp?.labels || [];
+      return labels.length ? `${sideName}生命：${labels.join(" / ")}` : `${sideName}生命：无变化`;
+    }
+
     function renderPvpTurnEffectPreview() {
       const context = currentPvpTurnEffects();
       const { allyAction, enemyAction, effects } = context;
       const energy = currentPvpTurnEnergy(context);
       const cooldowns = currentPvpTurnCooldowns(context);
+      const hp = currentPvpTurnHp(context);
       const ready = Boolean(allyAction || enemyAction);
       const summary = ready
-        ? `${pvpTurnEffectLabel("己方", effects.ally)}；${pvpTurnEffectLabel("敌方", effects.enemy)}；${pvpTurnEnergyLabel("己方", energy.ally)}；${pvpTurnEnergyLabel("敌方", energy.enemy)}`
+        ? `${pvpTurnEffectLabel("己方", effects.ally)}；${pvpTurnEffectLabel("敌方", effects.enemy)}；${pvpTurnEnergyLabel("己方", energy.ally)}；${pvpTurnEnergyLabel("敌方", energy.enemy)}；${pvpHpLabel("己方", hp.ally)}；${pvpHpLabel("敌方", hp.enemy)}`
         : "选择行动后显示本回合会写入的状态";
       return `
         <div class="pvp-turn-effects" data-pvp-turn-effects>
@@ -8225,14 +8387,34 @@
       return changed;
     }
 
+    function applyPvpTurnHp(context = currentPvpTurnEffects()) {
+      const hp = currentPvpTurnHp(context);
+      let changed = false;
+      ["ally", "enemy"].forEach((side) => {
+        const state = context[side];
+        const nextHp = Math.max(0, Math.round(Number(hp?.[side]?.nextHp) || 0));
+        const currentHp = Math.max(0, Math.round(Number(state.currentHp) || 0));
+        if (nextHp !== currentHp) {
+          state.currentHp = nextHp;
+          changed = true;
+        }
+        if (hp?.[side]?.labels?.length) {
+          const text = `本回合生命：${hp[side].labels.join(" / ")}`;
+          state.supportText = state.supportText ? `${state.supportText} / ${text}` : text;
+        }
+      });
+      return changed;
+    }
+
     function applyPvpTurnEffects() {
       const context = currentPvpTurnEffects();
       const { ally, enemy, allyAction, enemyAction, effects } = context;
+      const hpChanged = applyPvpTurnHp(context);
       const allyChanged = applyPvpSideTurnEffects(ally, effects.ally, Boolean(allyAction));
       const enemyChanged = applyPvpSideTurnEffects(enemy, effects.enemy, Boolean(enemyAction));
       const energyChanged = applyPvpTurnEnergy(context);
       const cooldownChanged = applyPvpTurnCooldowns(context);
-      return allyChanged || enemyChanged || energyChanged || cooldownChanged;
+      return hpChanged || allyChanged || enemyChanged || energyChanged || cooldownChanged;
     }
 
     function renderPvpDamageSimulation(team) {
@@ -8437,6 +8619,8 @@
             state.forceImpact = false;
             state.cuteLayers = 0;
             resetPvpManualBuffs(state);
+            state.currentHp = pvpSideMaxHp(state, item);
+            state.currentHpMonsterId = item.id;
             state.energy = DEFAULT_PVP_ENERGY;
             if (isAlly) {
               const teamPet = teamPetForMonster(team, item.id);
@@ -8451,6 +8635,8 @@
                 state.actionCuteLayers = 0;
                 state.cuteLayers = 0;
                 resetPvpManualBuffs(state);
+                state.currentHp = pvpSideMaxHp(state, item);
+                state.currentHpMonsterId = item.id;
                 state.energy = DEFAULT_PVP_ENERGY;
               }
             }
@@ -8629,6 +8815,15 @@
           button.addEventListener("click", () => {
             const delta = Number(button.dataset.delta) || 0;
             state.energy = Math.max(0, Math.round(Number(state.energy) || 0) + delta);
+            refreshPvpManualBuffPanel(root, side);
+            refreshPvpDamageOutputs(root);
+          });
+        });
+        root.querySelectorAll(`[data-pvp-current-hp="${side}"]`).forEach((button) => {
+          button.addEventListener("click", () => {
+            const delta = Number(button.dataset.delta) || 0;
+            const maxHp = pvpSideMaxHp(state);
+            state.currentHp = window.LKWG_PVP_HP_RULES.clampHp((Number(state.currentHp) || 0) + delta, maxHp);
             refreshPvpManualBuffPanel(root, side);
             refreshPvpDamageOutputs(root);
           });
