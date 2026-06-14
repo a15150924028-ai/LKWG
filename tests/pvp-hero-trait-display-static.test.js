@@ -133,12 +133,6 @@ const expectedLayerEffects = [
     stats: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
   },
   {
-    name: "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9a91\u58eb\u767d\u5b50\uff09",
-    trait: "\u5fa1\u9a7e\u4eb2\u5f81",
-    layers: 1,
-    stats: { atk: 0.1, defense: 0.1, spa: 0.1, spd: 0.1 }
-  },
-  {
     name: "\u6b66\u8005\u9e21",
     trait: "\u6597\u6280",
     layers: 1,
@@ -176,6 +170,23 @@ for (const expected of expectedLayerEffects) {
   if (expected.persists) {
     assert(traitRules.traitPersistsOnSwitch(monster), `${expected.trait} layers should persist when switching monsters.`);
   }
+}
+
+const chessEmperorFormsWithoutLayerBuff = [
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9a91\u58eb\u767d\u5b50\uff09",
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9a91\u58eb\u9ed1\u5b50\uff09",
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9f50\u5792\u767d\u5b50\uff09",
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9f50\u5792\u9ed1\u5b50\uff09",
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u7948\u7763\u767d\u5b50\uff09",
+  "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u7948\u7763\u9ed1\u5b50\uff09"
+];
+
+for (const name of chessEmperorFormsWithoutLayerBuff) {
+  const effects = traitRules.resolveTraitEffects({ name, raw: {} }, 1);
+  assert(effects.rule === null, `${name} must not expose a trait-layer buff.`);
+  ["atk", "defense", "spa", "spd", "spe"].forEach((statKey) => {
+    assert(effects.statMods[statKey] === 0, `${name} must not gain ${statKey} from trait layers.`);
+  });
 }
 
 const warningEffects = traitRules.resolveTraitEffects({ name: "\u5c0f\u9ed1\u732b", raw: {} }, 2);

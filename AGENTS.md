@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 20:12 +08:00 - Codex
+
+- Request: Correct the 棋契陛下 PVP trait rule so only the two 棋绮后 final forms have 渗透 layers and the other six forms have no trait-layer buff.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-chess-emperor-variants.md`
+  - `AGENTS.md`
+- Changes:
+  - Removed the incorrect 10% per-layer rule for the six 棋骑士、棋齐垒、棋祈督 final forms.
+  - Kept the two 棋绮后 final forms at 5% per layer for 物攻、魔攻、物防、魔防.
+  - Added regression assertions that the other six forms resolve no trait-layer rule and gain no stats from layers.
+  - Corrected the implementation plan wording to match the clarified behavior.
+- Verification: Watched the focused PVP trait test fail on the incorrect 棋骑士 10% rule before the fix, then pass after removing the rule. Ran all 36 Node static tests successfully; parsed all 12 inline scripts in `index.html`; ran `git diff --check`.
+- Status: Complete.
+
 ### 2026-06-14 19:48 +08:00 - Codex
 
 - Request: Split 棋契陛下 into eight independent final forms, keep separate skill pools and evolution chains, and let only the two 棋绮后 final forms use the PVP 渗透 layer effect.
