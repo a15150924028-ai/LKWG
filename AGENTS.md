@@ -1599,3 +1599,18 @@ Use this entry format:
   - Added regression coverage for low and high random rolls.
 - Verification: Watched `node tests/pvp-turn-rules-static.test.js` fail before the implementation and pass after it. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only CRLF line-ending warnings for touched files.
 - Status: Complete.
+
+### 2026-06-14 11:08 +08:00 - Codex
+
+- Request: Update PVP trait-layer values, add switch-back persistence for specified traits, keep Dimo's trait at 20%, and report how many local `棋契陛下` records exist.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated PVP trait-layer values for 蓄电池, 超级电池, 鼓气, 三鼓作气, 先知, 虫群鼓舞, 虫群突袭, 合拍, 渗透, 斗技, and 指挥家.
+  - Added per-monster trait-layer memory for traits that persist when switching, so layers are restored when switching back to that same monster rather than transferred to another monster.
+  - Kept 迪莫/圣光迪莫 `最好的伙伴` at 20% per layer as clarified.
+  - Confirmed local data contains one `棋契陛下` record.
+- Verification: Watched `node tests/pvp-hero-trait-display-static.test.js` fail on the old 蓄电池 value, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only CRLF line-ending warnings for touched files.
+- Status: Complete.

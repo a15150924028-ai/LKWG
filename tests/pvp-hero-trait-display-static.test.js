@@ -62,9 +62,119 @@ assert(
   );
 });
 
+const expectedLayerEffects = [
+  {
+    name: "\u7535\u52a8\u957f\u9888\u9e7f",
+    trait: "\u84c4\u7535\u6c60",
+    layers: 1,
+    stats: { atk: 0.3, spa: 0.3 }
+  },
+  {
+    name: "\u6ce2\u666e\u9e7f",
+    trait: "\u8d85\u7ea7\u7535\u6c60",
+    layers: 1,
+    stats: { atk: 0.4, spa: 0.4 }
+  },
+  {
+    name: "\u68a6\u60f3\u4e09\u4e09",
+    trait: "\u9f13\u6c14",
+    layers: 1,
+    stats: { atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2 }
+  },
+  {
+    name: "\u5947\u68a6\u54aa",
+    trait: "\u4e09\u9f13\u4f5c\u6c14",
+    layers: 1,
+    stats: { atk: 0.2, defense: 0.2, spa: 0.2, spd: 0.2 },
+    persists: true
+  },
+  {
+    name: "\u9ed1\u732b\u5bc6\u63a2",
+    trait: "\u5148\u77e5",
+    layers: 1,
+    stats: { atk: 0.5, spa: 0.5 },
+    flatStats: { spe: 50 }
+  },
+  {
+    name: "\u9ec4\u8702\u540e",
+    trait: "\u866b\u7fa4\u9f13\u821e",
+    layers: 1,
+    stats: { atk: 0.1, defense: 0.1, spa: 0.1, spd: 0.1, spe: 0.1 }
+  },
+  {
+    name: "\u82b1\u9b41\u8702\u540e",
+    trait: "\u866b\u7fa4\u7a81\u88ad",
+    layers: 1,
+    stats: { atk: 0.15, defense: 0.15, spa: 0.15, spd: 0.15, spe: 0.15 }
+  },
+  {
+    name: "\u5c0f\u9f13\u8c61",
+    trait: "\u5408\u62cd",
+    layers: 1,
+    stats: { atk: 0.2, defense: 0.2 },
+    persists: true
+  },
+  {
+    name: "\u68cb\u7eee\u540e\uff08\u767d\u5b50\uff09",
+    trait: "\u6e17\u900f",
+    layers: 1,
+    stats: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
+  },
+  {
+    name: "\u6b66\u8005\u9e21",
+    trait: "\u6597\u6280",
+    layers: 1,
+    flatPower: 30,
+    persists: true
+  },
+  {
+    name: "\u7ec5\u58eb\u9e21",
+    trait: "\u6307\u6325\u5bb6",
+    layers: 1,
+    stats: { atk: 0.3, spa: 0.3 },
+    persists: true
+  }
+];
+
+for (const expected of expectedLayerEffects) {
+  const monster = { name: expected.name, raw: {} };
+  const effects = traitRules.resolveTraitEffects(monster, expected.layers);
+  assert(effects.traitName === expected.trait, `${expected.name} should resolve ${expected.trait}.`);
+  for (const [statKey, value] of Object.entries(expected.stats || {})) {
+    assert(
+      Math.abs(effects.statMods[statKey] - value) < 1e-9,
+      `${expected.trait} should add ${value * 100}% ${statKey} per layer.`
+    );
+  }
+  for (const [statKey, value] of Object.entries(expected.flatStats || {})) {
+    assert(
+      effects.statFlatMods[statKey] === value,
+      `${expected.trait} should add ${value} flat ${statKey} per layer.`
+    );
+  }
+  if (expected.flatPower != null) {
+    assert(effects.flatPower === expected.flatPower, `${expected.trait} should add ${expected.flatPower} flat power per layer.`);
+  }
+  if (expected.persists) {
+    assert(traitRules.traitPersistsOnSwitch(monster), `${expected.trait} layers should persist when switching monsters.`);
+  }
+}
+
+const warningEffects = traitRules.resolveTraitEffects({ name: "\u5c0f\u9ed1\u732b", raw: {} }, 2);
+assert(warningEffects.statFlatMods.spe === 100, "预警 should add 50 speed per layer.");
+assert(
+  !html.includes("预警") || !html.includes("data-pvp-buff-stat=\"spe\""),
+  "预警 speed should not be rendered as a normal buff-state row."
+);
+
 assert(
   html.includes("${traitRule ? `"),
   "PVP trait layer row should still be gated by resolved trait rules."
+);
+
+assert(
+  html.includes("traitPersistsOnSwitch"),
+  "PVP monster switching must consult trait persistence rules before resetting trait layers."
 );
 
 console.log("PVP hero trait display static checks passed.");
