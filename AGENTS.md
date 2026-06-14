@@ -1567,3 +1567,20 @@ Use this entry format:
   - Added a static regression test for pure cleanup behavior and PVP integration hooks.
 - Verification: Watched `node tests/pvp-turn-cleanup-static.test.js` fail first on missing `LKWG_PVP_CLEANUP_RULES`, then pass after implementation. Ran adjacent PVP tests for HP settlement, energy, defense cooldown, and turn effects. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 11 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. Browser verification was not repeated because local `file://` access is blocked by Browser policy in this environment.
 - Status: Complete.
+
+### 2026-06-14 08:59 +08:00 - Codex
+
+- Request: Continue the final PVP round simulator polish with visible turn results, undo, and history clearing.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-history-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-pvp-turn-history-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added `LKWG_PVP_HISTORY_RULES` for deep-cloned snapshots, bounded turn-log insertion, and log clearing.
+  - Added `turnLog`, `undoSnapshot`, and `turnNumber` to PVP simulation state.
+  - Rendered a compact PVP turn-history panel with latest settlement summaries, `撤回上回合`, and `清空记录` controls.
+  - Recorded a pre-settlement snapshot before `结算本回合`, appended a concise result summary after successful settlement, and restored the snapshot on undo.
+  - Kept this phase scoped to manual workflow polish without automatic pet switching or full battle automation.
+- Verification: Watched `node tests/pvp-turn-history-static.test.js` fail first on missing `LKWG_PVP_HISTORY_RULES`, then pass after implementation. Ran adjacent PVP tests for turn cleanup, HP settlement, energy, and turn effects. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. Browser verification was not repeated because local `file://` access is blocked by Browser policy in this environment.
+- Status: Complete.

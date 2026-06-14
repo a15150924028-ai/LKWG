@@ -958,6 +958,48 @@
       white-space: nowrap;
     }
 
+    .pvp-settle-button.danger {
+      border-color: #fecaca;
+      background: #fff1f2;
+      color: #b91c1c;
+    }
+
+    .pvp-turn-history {
+      display: grid;
+      gap: 6px;
+      margin: 0 0 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #f8fafc;
+      padding: 8px 10px;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pvp-turn-history-head,
+    .pvp-turn-history-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pvp-turn-history-list {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pvp-turn-history-list li {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
     .pvp-side {
       min-width: 0;
       border: 1px solid var(--line);
@@ -4216,6 +4258,36 @@
 
 </script>
   <script>
+(function initPvpHistoryRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_HISTORY_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpHistoryRules() {
+  function cloneState(value) {
+    return JSON.parse(JSON.stringify(value || {}));
+  }
+
+  function appendTurnLog(log, entry, limit = 5) {
+    const source = Array.isArray(log) ? log : [];
+    const nextEntry = { ...(entry || {}) };
+    return [nextEntry, ...source].slice(0, Math.max(1, Math.round(Number(limit) || 5)));
+  }
+
+  function clearTurnLog() {
+    return [];
+  }
+
+  return {
+    cloneState,
+    appendTurnLog,
+    clearTurnLog
+  };
+});
+
+</script>
+  <script>
 (function initPvpTurnRules(root, factory) {
   const api = factory();
   if (typeof module === "object" && module.exports) {
@@ -4946,6 +5018,9 @@
     const adminDataFile = document.getElementById("adminDataFile");
     const pvpSimState = {
       weather: "",
+      turnLog: [],
+      undoSnapshot: null,
+      turnNumber: 0,
       ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
       enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
@@ -8376,6 +8451,66 @@
       `;
     }
 
+    function renderPvpTurnHistory() {
+      const log = Array.isArray(pvpSimState.turnLog) ? pvpSimState.turnLog : [];
+      const hasUndo = Boolean(pvpSimState.undoSnapshot);
+      return `
+        <div class="pvp-turn-history" data-pvp-turn-history>
+          <div class="pvp-turn-history-head">
+            <strong>回合记录</strong>
+            <div class="pvp-turn-history-actions">
+              <button class="pvp-settle-button" type="button" data-pvp-undo-turn ${hasUndo ? "" : "disabled"}>撤回上回合</button>
+              <button class="pvp-settle-button danger" type="button" data-pvp-clear-history ${log.length || hasUndo ? "" : "disabled"}>清空记录</button>
+            </div>
+          </div>
+          ${log.length
+            ? `<ul class="pvp-turn-history-list">${log.map((entry) => `<li><span>第${escapeHtml(entry.turn)}回合：</span>${escapeHtml(entry.summary || "")}</li>`).join("")}</ul>`
+            : `<span>暂无结算记录</span>`}
+        </div>
+      `;
+    }
+
+    function pvpTurnSettlementSummary(context) {
+      const hp = currentPvpTurnHp(context);
+      const energy = currentPvpTurnEnergy(context);
+      const cooldowns = currentPvpTurnCooldowns(context);
+      return [
+        `己方${pvpActionName(context.allyAction)}`,
+        `敌方${pvpActionName(context.enemyAction)}`,
+        pvpHpLabel("己方", hp.ally),
+        pvpHpLabel("敌方", hp.enemy),
+        pvpTurnEnergyLabel("己方", energy.ally),
+        pvpTurnEnergyLabel("敌方", energy.enemy),
+        pvpCooldownLabel("己方", cooldowns.ally),
+        pvpCooldownLabel("敌方", cooldowns.enemy)
+      ].join("；");
+    }
+
+    function recordPvpTurnSettlement(snapshot, context) {
+      pvpSimState.undoSnapshot = snapshot;
+      pvpSimState.turnNumber = Math.max(0, Math.round(Number(pvpSimState.turnNumber) || 0)) + 1;
+      pvpSimState.turnLog = window.LKWG_PVP_HISTORY_RULES.appendTurnLog(
+        pvpSimState.turnLog,
+        { turn: pvpSimState.turnNumber, summary: pvpTurnSettlementSummary(context) },
+        5
+      );
+    }
+
+    function undoPvpTurnSettlement() {
+      if (!pvpSimState.undoSnapshot) return false;
+      const snapshot = window.LKWG_PVP_HISTORY_RULES.cloneState(pvpSimState.undoSnapshot);
+      Object.keys(pvpSimState).forEach((key) => { delete pvpSimState[key]; });
+      Object.assign(pvpSimState, snapshot);
+      pvpSimState.undoSnapshot = null;
+      return true;
+    }
+
+    function clearPvpTurnHistory() {
+      pvpSimState.turnLog = window.LKWG_PVP_HISTORY_RULES.clearTurnLog();
+      pvpSimState.undoSnapshot = null;
+      return true;
+    }
+
     function applyPvpSideTurnEffects(state, effects, consumedAction) {
       let changed = false;
       if (consumedAction && Math.max(0, Math.round(Number(state.nextPriority) || 0))) {
@@ -8510,6 +8645,7 @@
           ${renderPvpWeatherControl()}
           ${renderPvpTurnPreview()}
           ${renderPvpTurnEffectPreview()}
+          ${renderPvpTurnHistory()}
           <div class="pvp-sim-grid">
             ${renderPvpSide("ally", "己方精灵")}
             ${renderPvpSide("enemy", "敌方精灵")}
@@ -8668,11 +8804,26 @@
       });
 
       root.querySelector("[data-pvp-settle-turn]")?.addEventListener("click", () => {
+        const snapshot = window.LKWG_PVP_HISTORY_RULES.cloneState(pvpSimState);
+        const context = currentPvpTurnEffects();
         if (applyPvpTurnEffects()) {
+          recordPvpTurnSettlement(snapshot, context);
           renderResults();
           return;
         }
         refreshPvpDamageOutputs(root);
+      });
+
+      root.querySelector("[data-pvp-undo-turn]")?.addEventListener("click", () => {
+        if (undoPvpTurnSettlement()) {
+          renderResults();
+        }
+      });
+
+      root.querySelector("[data-pvp-clear-history]")?.addEventListener("click", () => {
+        if (clearPvpTurnHistory()) {
+          renderResults();
+        }
       });
 
       ["ally", "enemy"].forEach((side) => {
