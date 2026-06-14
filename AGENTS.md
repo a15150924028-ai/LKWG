@@ -1550,3 +1550,20 @@ Use this entry format:
   - Added a static regression test covering pure HP rules and PVP panel integration hooks.
 - Verification: Watched `node tests/pvp-hp-settlement-static.test.js` fail first on missing `LKWG_PVP_HP_RULES`, then pass after implementation. Ran adjacent PVP tests for damage formula, turn effects, energy, and defense cooldown. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 10 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. In-app browser verification was not repeated because local `file://` access has been blocked by Browser policy in the current environment.
 - Status: Complete.
+
+### 2026-06-14 08:50 +08:00 - Codex
+
+- Request: Continue the phased PVP round simulation with turn-end cleanup and state progression.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-cleanup-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-pvp-turn-cleanup-phase.md`
+  - `AGENTS.md`
+- Changes:
+  - Added `LKWG_PVP_CLEANUP_RULES` for post-turn cleanup after a settled PVP turn.
+  - Cleared selected actions, action snapshots, Force Impact selected state, and one-shot next-attack bonuses after `结算本回合` completes.
+  - Preserved persistent state during cleanup, including current HP, energy, freeze layers, defense locks, permanent skill-cost overrides, and settled skill stat buffs.
+  - Integrated cleanup at the end of the existing settlement flow after HP, effects, energy, and cooldown are applied.
+  - Added a static regression test for pure cleanup behavior and PVP integration hooks.
+- Verification: Watched `node tests/pvp-turn-cleanup-static.test.js` fail first on missing `LKWG_PVP_CLEANUP_RULES`, then pass after implementation. Ran adjacent PVP tests for HP settlement, energy, defense cooldown, and turn effects. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 11 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing CRLF warning for `index.html`. Browser verification was not repeated because local `file://` access is blocked by Browser policy in this environment.
+- Status: Complete.

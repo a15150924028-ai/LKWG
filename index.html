@@ -4147,6 +4147,75 @@
 
 </script>
   <script>
+(function initPvpCleanupRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_CLEANUP_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpCleanupRules() {
+  function clearAction(state) {
+    let changed = false;
+    if (state.action) {
+      state.action = "";
+      changed = true;
+    }
+    if (state.actionMonsterId) {
+      state.actionMonsterId = "";
+      changed = true;
+    }
+    if (Math.max(0, Math.round(Number(state.actionCuteLayers) || 0))) {
+      state.actionCuteLayers = 0;
+      changed = true;
+    }
+    if (state.forceImpact) {
+      state.forceImpact = false;
+      changed = true;
+    }
+    return changed;
+  }
+
+  function clearOneShotAttackBonuses(state) {
+    let changed = false;
+    ["manualDamageBonus", "manualPowerPercentBonus", "manualHitCountBonus"].forEach((key) => {
+      if (Math.abs(Number(state[key]) || 0) > 0.0001) {
+        state[key] = 0;
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  function cleanupSideAfterTurn(state, options = {}) {
+    if (!state || typeof state !== "object") return { changed: false, labels: [] };
+    const labels = [];
+    let changed = false;
+    if (options.consumedAction && clearAction(state)) {
+      labels.push("行动已结算");
+      changed = true;
+    }
+    if (clearOneShotAttackBonuses(state)) {
+      labels.push("下次攻击增益已清除");
+      changed = true;
+    }
+    return { changed, labels };
+  }
+
+  function cleanupTurn(input = {}) {
+    return {
+      ally: cleanupSideAfterTurn(input.allyState, { consumedAction: input.allyConsumedAction }),
+      enemy: cleanupSideAfterTurn(input.enemyState, { consumedAction: input.enemyConsumedAction })
+    };
+  }
+
+  return {
+    cleanupSideAfterTurn,
+    cleanupTurn
+  };
+});
+
+</script>
+  <script>
 (function initPvpTurnRules(root, factory) {
   const api = factory();
   if (typeof module === "object" && module.exports) {
@@ -8406,6 +8475,22 @@
       return changed;
     }
 
+    function applyPvpTurnCleanup(context = currentPvpTurnEffects()) {
+      const cleanup = window.LKWG_PVP_CLEANUP_RULES.cleanupTurn({
+        allyState: context.ally,
+        enemyState: context.enemy,
+        allyConsumedAction: Boolean(context.allyAction),
+        enemyConsumedAction: Boolean(context.enemyAction)
+      });
+      ["ally", "enemy"].forEach((side) => {
+        if (!cleanup?.[side]?.labels?.length) return;
+        const state = context[side];
+        const text = `回合结束：${cleanup[side].labels.join(" / ")}`;
+        state.supportText = state.supportText ? `${state.supportText} / ${text}` : text;
+      });
+      return Boolean(cleanup.ally.changed || cleanup.enemy.changed);
+    }
+
     function applyPvpTurnEffects() {
       const context = currentPvpTurnEffects();
       const { ally, enemy, allyAction, enemyAction, effects } = context;
@@ -8414,7 +8499,8 @@
       const enemyChanged = applyPvpSideTurnEffects(enemy, effects.enemy, Boolean(enemyAction));
       const energyChanged = applyPvpTurnEnergy(context);
       const cooldownChanged = applyPvpTurnCooldowns(context);
-      return hpChanged || allyChanged || enemyChanged || energyChanged || cooldownChanged;
+      const cleanupChanged = applyPvpTurnCleanup(context);
+      return hpChanged || allyChanged || enemyChanged || energyChanged || cooldownChanged || cleanupChanged;
     }
 
     function renderPvpDamageSimulation(team) {
