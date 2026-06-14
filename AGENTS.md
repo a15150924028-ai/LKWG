@@ -1614,3 +1614,16 @@ Use this entry format:
   - Confirmed local data contains one `棋契陛下` record.
 - Verification: Watched `node tests/pvp-hero-trait-display-static.test.js` fail on the old 蓄电池 value, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; parsed all 12 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only CRLF line-ending warnings for touched files.
 - Status: Complete.
+
+### 2026-06-14 11:25 +08:00 - Codex
+
+- Request: Design the split of the merged `棋契陛下` record into eight independent variants with separate skill pools and evolution chains, including 渗透 PVP behavior for the two 棋绮后 variants.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-14-chess-emperor-variants-design.md`
+  - `AGENTS.md`
+- Changes:
+  - Documented the eight final-form names, confirmed race stats, independent skill-pool requirement, eight evolution chains, migration behavior, and regression checks.
+  - Specified that the second through fourth white/black pairs temporarily copy equal skill contents while remaining independent records.
+  - Specified that only the two 棋绮后 final variants receive 渗透's PVP layer effect.
+- Verification: Reviewed the specification for placeholders, conflicting names, merged skill-pool assumptions, evolution-chain color mismatches, and ambiguous PVP trait scope; ran `git diff --check`.
+- Status: Complete; awaiting user review before implementation planning.
