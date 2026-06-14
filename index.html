@@ -1022,7 +1022,7 @@
 
     .pvp-side-form {
       display: grid;
-      grid-template-columns: minmax(92px, 92px) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 4px;
     }
 
@@ -1032,6 +1032,61 @@
 
     .pvp-side-form .field-wide {
       grid-column: 1 / -1;
+    }
+
+    .pvp-compact-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .pvp-side-form .pvp-compact-field {
+      position: relative;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px 6px 6px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .pvp-side-form .pvp-compact-field:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+    }
+
+    .pvp-side-form .pvp-compact-field > label {
+      position: absolute;
+      z-index: 2;
+      top: -7px;
+      left: 8px;
+      margin: 0;
+      background: #fff;
+      color: #4b5565;
+      padding: 0 5px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 14px;
+    }
+
+    .pvp-side-form .pvp-compact-field-single > .combo > .combo-control {
+      min-height: 34px;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .pvp-side-form .pvp-compact-field-single > .combo > .combo-control input {
+      min-height: 32px;
+    }
+
+    .pvp-side-form .pvp-compact-field-group .talent-picks {
+      gap: 4px;
+    }
+
+    .pvp-side-form .pvp-compact-field-group .pvp-panel-stats {
+      min-height: 36px;
     }
 
     .talent-picks {
@@ -8221,25 +8276,29 @@
         <div class="pvp-side" data-pvp-side="${side}">
           <h4>${escapeHtml(title)}</h4>
           <div class="pvp-side-form">
-            <div class="field field-wide">
-              <label>精灵</label>
-              <div data-pvp-combo="${side}-monster"></div>
-            </div>
-            <div class="field">
-              <label>血脉</label>
-              <div data-pvp-combo="${side}-bloodline"></div>
-            </div>
-            <div class="field">
-              <label>性格</label>
-              <div data-pvp-combo="${side}-nature"></div>
-            </div>
-            <div class="field field-wide">
-              <label>天分</label>
-              <div class="talent-picks">
-                ${[0, 1, 2].map((talentIndex) => `<div data-pvp-combo="${side}-talent-${talentIndex}"></div>`).join("")}
+            <div class="pvp-compact-row pvp-identity-row">
+              <div class="field pvp-compact-field pvp-compact-field-single">
+                <label>精灵</label>
+                <div data-pvp-combo="${side}-monster"></div>
+              </div>
+              <div class="field pvp-compact-field pvp-compact-field-single">
+                <label>血脉</label>
+                <div data-pvp-combo="${side}-bloodline"></div>
               </div>
             </div>
-            <div class="field field-wide">
+            <div class="pvp-compact-row pvp-build-row">
+              <div class="field pvp-compact-field pvp-compact-field-single">
+                <label>性格</label>
+                <div data-pvp-combo="${side}-nature"></div>
+              </div>
+              <div class="field pvp-compact-field pvp-compact-field-group">
+                <label>天分</label>
+                <div class="talent-picks">
+                  ${[0, 1, 2].map((talentIndex) => `<div data-pvp-combo="${side}-talent-${talentIndex}"></div>`).join("")}
+                </div>
+              </div>
+            </div>
+            <div class="field pvp-compact-field pvp-compact-field-group">
               <label>种族值</label>
               ${renderPvpPanelStats(monster, state, side)}
             </div>

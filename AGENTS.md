@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 20:24 +08:00 - Codex
+
+- Request: Rework the PVP side panel so bloodline sits beside monster in one row, and monster, nature, bloodline, talents, and base stats use compact inset fields like the upper editor.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed each PVP side form to a compact single-column stack with two-column identity and build rows.
+  - Placed `精灵` and `血脉` beside each other, placed `性格` and `天分` beside each other, and kept `种族值` inside a compact inset field.
+  - Added PVP-specific compact field CSS so labels sit inside the field borders without increasing vertical spacing.
+  - Added a static regression test for the compact PVP side layout contract.
+- Verification: Watched `node tests/pvp-compact-side-layout-static.test.js` fail before the layout change, then pass after implementation. Ran all 39 Node static tests successfully; parsed all 12 inline scripts in `index.html`; ran `git diff --check` with only the existing LF-to-CRLF warning for `index.html`; verified the PVP panel in the in-app browser at a portrait viewport and saved `C:/Users/david/AppData/Local/Temp/pvp-side-compact-fields-viewport.png`.
+- Status: Complete.
+
 ### 2026-06-14 19:47 +08:00 - Codex
 
 - Request: Remove only the current-HP selector UI from PVP buff status, then add the selected skill description to the bottom of the PVP damage result card.
