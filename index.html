@@ -1383,6 +1383,15 @@
       line-height: 1.25;
     }
 
+    .pvp-skill-description {
+      width: 100%;
+      margin-top: 2px;
+      border-top: 1px solid rgba(99, 102, 241, 0.18);
+      padding-top: 5px;
+      color: #4b5680;
+      line-height: 1.4;
+    }
+
     .pvp-damage-result.warn {
       border-color: #f0d39a;
       background: #fff8e8;
@@ -7351,6 +7360,7 @@
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
       const ruleTextPart = ruleText ? ` / 规则：${ruleText}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
+      const descriptionText = damage.action.description || "暂无技能描述";
       if (damage.responseEstimate != null) {
         const responseReason = damage.action.id === "pvp-force-impact"
           ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
@@ -7367,6 +7377,7 @@
                 <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate)}（扣除${damage.responsePercent}%生命，应对状态）</strong>
                 <span>${responseReason}</span>
               </div>
+              <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
             </div>
           </div>
         `;
@@ -7376,6 +7387,7 @@
           <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage)}（扣除${damage.percent}%生命）</strong>
           <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
           ${traitText ? `<span class="pvp-damage-trait-line">特性：${traitText}</span>` : ""}
+          <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
         </div>
       `;
     }
@@ -8129,21 +8141,11 @@
       const traitName = window.LKWG_PVP_TRAIT_RULES.traitName(monster);
       const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
       const cuteLayers = normalizePvpCuteLayers(state?.cuteLayers);
-      const maxHp = pvpSideMaxHp(state, monster);
-      const currentHp = monster ? window.LKWG_PVP_HP_RULES.clampHp(state?.currentHp ?? maxHp, maxHp) : 0;
       const energy = Math.max(0, Math.round(Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
       return `
         <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
           <div class="pvp-buff-title">增益状态</div>
           <div class="pvp-buff-grid">
-            <div class="pvp-buff-item" data-pvp-buff-stat="currentHp">
-              <div class="pvp-buff-label">生命</div>
-              <div class="pvp-buff-controls">
-                <button class="pvp-buff-button" type="button" data-pvp-current-hp="${side}" data-delta="-10">-</button>
-                <span class="pvp-buff-value" data-pvp-current-hp-value="${side}">${currentHp}/${maxHp}</span>
-                <button class="pvp-buff-button" type="button" data-pvp-current-hp="${side}" data-delta="10">+</button>
-              </div>
-            </div>
             ${PVP_MANUAL_BUFF_STATS.map((stat) => `
               <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
                 <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
@@ -8205,12 +8207,6 @@
       const cuteLayerValueEl = root.querySelector(`[data-pvp-cute-layer-value="${side}"]`);
       if (cuteLayerValueEl) {
         cuteLayerValueEl.textContent = normalizePvpCuteLayers(state.cuteLayers);
-      }
-      const hpValueEl = root.querySelector(`[data-pvp-current-hp-value="${side}"]`);
-      if (hpValueEl) {
-        const monster = monsterById.get(state.monsterId);
-        const maxHp = pvpSideMaxHp(state, monster);
-        hpValueEl.textContent = `${window.LKWG_PVP_HP_RULES.clampHp(state.currentHp, maxHp)}/${maxHp}`;
       }
       const energyValueEl = root.querySelector(`[data-pvp-energy-value="${side}"]`);
       if (energyValueEl) {
@@ -9089,15 +9085,6 @@
           button.addEventListener("click", () => {
             const delta = Number(button.dataset.delta) || 0;
             state.energy = Math.max(0, Math.round(Number(state.energy) || 0) + delta);
-            refreshPvpManualBuffPanel(root, side);
-            refreshPvpDamageOutputs(root);
-          });
-        });
-        root.querySelectorAll(`[data-pvp-current-hp="${side}"]`).forEach((button) => {
-          button.addEventListener("click", () => {
-            const delta = Number(button.dataset.delta) || 0;
-            const maxHp = pvpSideMaxHp(state);
-            state.currentHp = window.LKWG_PVP_HP_RULES.clampHp((Number(state.currentHp) || 0) + delta, maxHp);
             refreshPvpManualBuffPanel(root, side);
             refreshPvpDamageOutputs(root);
           });

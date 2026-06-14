@@ -73,5 +73,14 @@ assert(
   html.includes("const skill = skillById.get(state.skillIds?.[skillIndex]);"),
   "PVP damage must resolve the selected skill through skillById."
 );
+const damageResultSource = extractFunction("renderPvpDamageResult");
+assert(
+  damageResultSource.includes('const descriptionText = damage.action.description || "暂无技能描述";'),
+  "PVP damage results must resolve a description for the selected skill."
+);
+assert(
+  (damageResultSource.match(/class="pvp-skill-description"/g) || []).length === 2,
+  "Normal and response damage results must both show the skill description at the bottom."
+);
 
 console.log("PVP selected skill damage static checks passed.");

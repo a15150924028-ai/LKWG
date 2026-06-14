@@ -73,7 +73,10 @@ assert(turnHp.enemy.nextHp === 60, "Ally outgoing damage should subtract enemy H
 assert(html.includes("currentHp"), "PVP side state must store current HP.");
 assert(html.includes("function currentPvpTurnHp("), "PVP panel must compute turn HP settlement.");
 assert(html.includes("function applyPvpTurnHp("), "PVP panel must apply turn HP settlement.");
-assert(html.includes("data-pvp-current-hp"), "PVP panel must render current HP controls.");
+assert(
+  !html.includes("data-pvp-current-hp"),
+  "The buff panel must not contain current HP controls or their UI event bindings."
+);
 assert(html.includes("window.LKWG_PVP_HP_RULES.resolveTurnHp"), "PVP panel must use centralized HP settlement.");
 assert(html.includes("applyPvpTurnHp(context)"), "The settle-turn flow must apply HP changes.");
 

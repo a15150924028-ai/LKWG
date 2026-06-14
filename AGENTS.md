@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 19:47 +08:00 - Codex
+
+- Request: Remove only the current-HP selector UI from PVP buff status, then add the selected skill description to the bottom of the PVP damage result card.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-hp-settlement-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the visible current-HP item and its UI-only refresh/click bindings from the PVP buff panel.
+  - Preserved `currentHp`, HP clamping, damage settlement, healing, turn previews, and turn settlement logic.
+  - Added an escaped `技能描述` line at the bottom of normal and response-state damage results, with a fallback when description data is empty.
+  - Did not implement the previously discussed portrait energy-column adjustment because the user replaced that request.
+- Verification: Watched the HP UI removal test fail while the controls and bindings remained, then pass after deletion. Watched the skill-description test fail before both result paths rendered descriptions, then pass after implementation. In the in-app Browser, confirmed both buff panels contain zero current-HP controls and the remaining buff controls render normally. Ran all 38 Node static tests successfully; parsed all 12 inline scripts; ran `git diff --check`.
+- Status: Complete.
+
 ### 2026-06-14 19:31 +08:00 - Codex
 
 - Request: Fix the team skill dropdown covering the following skill rows.
