@@ -25388,8 +25388,8 @@
         "spe": 75
       },
       "raw": {
-        "chainId": "manual-evolution-054",
-        "evolutionChainId": "manual-evolution-054",
+        "chainId": "chess-emperor-fort-white",
+        "evolutionChainId": "chess-emperor-fort-white",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -25397,12 +25397,13 @@
         "evolutionLine": [
           "棋棋（白子）",
           "棋齐垒（白子）",
-          "棋契陛下"
+          "棋契陛下（棋齐垒白子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（白子）",
             "棋齐垒（白子）",
-            "棋契陛下"
+            "棋契陛下（棋齐垒白子）"
           ]
         ]
       }
@@ -25484,8 +25485,8 @@
         "spe": 75
       },
       "raw": {
-        "chainId": "manual-evolution-055",
-        "evolutionChainId": "manual-evolution-055",
+        "chainId": "chess-emperor-fort-black",
+        "evolutionChainId": "chess-emperor-fort-black",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -25493,12 +25494,13 @@
         "evolutionLine": [
           "棋棋（黑子）",
           "棋齐垒（黑子）",
-          "棋契陛下"
+          "棋契陛下（棋齐垒黑子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（黑子）",
             "棋齐垒（黑子）",
-            "棋契陛下"
+            "棋契陛下（棋齐垒黑子）"
           ]
         ]
       }
@@ -25583,8 +25585,8 @@
         "spe": 85
       },
       "raw": {
-        "chainId": "manual-evolution-056",
-        "evolutionChainId": "manual-evolution-056",
+        "chainId": "chess-emperor-bishop-white",
+        "evolutionChainId": "chess-emperor-bishop-white",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -25592,12 +25594,13 @@
         "evolutionLine": [
           "棋棋（白子）",
           "棋祈督（白子）",
-          "棋契陛下"
+          "棋契陛下（棋祈督白子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（白子）",
             "棋祈督（白子）",
-            "棋契陛下"
+            "棋契陛下（棋祈督白子）"
           ]
         ]
       }
@@ -25683,8 +25686,8 @@
         "spe": 85
       },
       "raw": {
-        "chainId": "manual-evolution-057",
-        "evolutionChainId": "manual-evolution-057",
+        "chainId": "chess-emperor-bishop-black",
+        "evolutionChainId": "chess-emperor-bishop-black",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -25692,12 +25695,13 @@
         "evolutionLine": [
           "棋棋（黑子）",
           "棋祈督（黑子）",
-          "棋契陛下"
+          "棋契陛下（棋祈督黑子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（黑子）",
             "棋祈督（黑子）",
-            "棋契陛下"
+            "棋契陛下（棋祈督黑子）"
           ]
         ]
       }
@@ -25780,12 +25784,24 @@
         "spe": 125
       },
       "raw": {
-        "chainId": "local-evolution-094",
-        "evolutionChainId": "local-evolution-094",
+        "chainId": "chess-emperor-knight-white",
+        "evolutionChainId": "chess-emperor-knight-white",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
-        "baseMonsterId": ""
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（白子）",
+          "棋骑士（白子）",
+          "棋契陛下（棋骑士白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋骑士（白子）",
+            "棋契陛下（棋骑士白子）"
+          ]
+        ]
       }
     },
     {
@@ -25868,12 +25884,24 @@
         "spe": 125
       },
       "raw": {
-        "chainId": "local-evolution-095",
-        "evolutionChainId": "local-evolution-095",
+        "chainId": "chess-emperor-knight-black",
+        "evolutionChainId": "chess-emperor-knight-black",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
-        "baseMonsterId": ""
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（黑子）",
+          "棋骑士（黑子）",
+          "棋契陛下（棋骑士黑子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（黑子）",
+            "棋骑士（黑子）",
+            "棋契陛下（棋骑士黑子）"
+          ]
+        ]
       }
     },
     {
@@ -25936,16 +25964,38 @@
         "spe": 100
       },
       "raw": {
-        "chainId": "manual-evolution-058",
-        "evolutionChainId": "manual-evolution-058",
+        "chainId": "chess-emperor-knight-white",
+        "evolutionChainId": "chess-emperor-knight-white",
         "evolutionStage": 1,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
         "baseMonsterId": "",
         "evolutionLine": [
           "棋棋（白子）",
-          "棋绮后（白子）",
-          "棋契陛下"
+          "棋骑士（白子）",
+          "棋契陛下（棋骑士白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋骑士（白子）",
+            "棋契陛下（棋骑士白子）"
+          ],
+          [
+            "棋棋（白子）",
+            "棋齐垒（白子）",
+            "棋契陛下（棋齐垒白子）"
+          ],
+          [
+            "棋棋（白子）",
+            "棋祈督（白子）",
+            "棋契陛下（棋祈督白子）"
+          ],
+          [
+            "棋棋（白子）",
+            "棋绮后（白子）",
+            "棋契陛下（棋绮后白子）"
+          ]
         ]
       }
     },
@@ -26009,16 +26059,38 @@
         "spe": 100
       },
       "raw": {
-        "chainId": "manual-evolution-059",
-        "evolutionChainId": "manual-evolution-059",
+        "chainId": "chess-emperor-knight-black",
+        "evolutionChainId": "chess-emperor-knight-black",
         "evolutionStage": 1,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
         "baseMonsterId": "",
         "evolutionLine": [
           "棋棋（黑子）",
-          "棋绮后（黑子）",
-          "棋契陛下"
+          "棋骑士（黑子）",
+          "棋契陛下（棋骑士黑子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（黑子）",
+            "棋骑士（黑子）",
+            "棋契陛下（棋骑士黑子）"
+          ],
+          [
+            "棋棋（黑子）",
+            "棋齐垒（黑子）",
+            "棋契陛下（棋齐垒黑子）"
+          ],
+          [
+            "棋棋（黑子）",
+            "棋祈督（黑子）",
+            "棋契陛下（棋祈督黑子）"
+          ],
+          [
+            "棋棋（黑子）",
+            "棋绮后（黑子）",
+            "棋契陛下（棋绮后黑子）"
+          ]
         ]
       }
     },
@@ -26103,8 +26175,8 @@
         "spe": 90
       },
       "raw": {
-        "chainId": "manual-evolution-058",
-        "evolutionChainId": "manual-evolution-058",
+        "chainId": "chess-emperor-queen-white",
+        "evolutionChainId": "chess-emperor-queen-white",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -26112,12 +26184,13 @@
         "evolutionLine": [
           "棋棋（白子）",
           "棋绮后（白子）",
-          "棋契陛下"
+          "棋契陛下（棋绮后白子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（白子）",
             "棋绮后（白子）",
-            "棋契陛下"
+            "棋契陛下（棋绮后白子）"
           ]
         ]
       }
@@ -26204,8 +26277,8 @@
         "spe": 90
       },
       "raw": {
-        "chainId": "manual-evolution-059",
-        "evolutionChainId": "manual-evolution-059",
+        "chainId": "chess-emperor-queen-black",
+        "evolutionChainId": "chess-emperor-queen-black",
         "evolutionStage": 2,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -26213,21 +26286,24 @@
         "evolutionLine": [
           "棋棋（黑子）",
           "棋绮后（黑子）",
-          "棋契陛下"
+          "棋契陛下（棋绮后黑子）"
         ],
         "evolutionLines": [
           [
+            "棋棋（黑子）",
             "棋绮后（黑子）",
-            "棋契陛下"
+            "棋契陛下（棋绮后黑子）"
           ]
         ]
       }
     },
     {
       "kind": "monster",
-      "id": "monster-棋契陛下",
-      "name": "棋契陛下",
+      "id": "monster-chess-emperor-knight-white",
+      "name": "棋契陛下（棋骑士白子）",
       "aliases": [
+        "棋契陛下",
+        "棋骑士白子",
         "首领形态"
       ],
       "types": [
@@ -26246,71 +26322,47 @@
         "skill-猛烈撞击",
         "skill-影袭",
         "skill-钧势",
-        "skill-提气",
-        "skill-鸣沙陷阱",
-        "skill-气沉丹田",
-        "skill-破绽",
-        "skill-岩土暴击",
-        "skill-截拳",
-        "skill-地刺",
-        "skill-星星撞击",
-        "skill-恶能量",
-        "skill-升龙咆哮",
-        "skill-球状闪电",
-        "skill-贯手",
-        "skill-火焰冲锋",
-        "skill-灵媒",
-        "skill-花香",
-        "skill-冰爪",
-        "skill-噬心",
-        "skill-折线冲击",
-        "skill-金属噪音",
-        "skill-碰爪",
-        "skill-星云漩涡",
-        "skill-扬沙",
-        "skill-毒沼",
-        "skill-泡沫",
-        "skill-风矢",
-        "skill-主轴",
-        "skill-借用",
-        "skill-倾泻",
-        "skill-先发制人",
-        "skill-光刃",
-        "skill-地陷",
-        "skill-快速移动",
-        "skill-散手",
-        "skill-晒太阳",
-        "skill-漫反射",
-        "skill-热身运动",
         "skill-石肤术",
-        "skill-触底强击",
-        "skill-连续爪击",
-        "skill-迫近攻击",
-        "skill-透射",
         "skill-陨石",
+        "skill-提气",
         "skill-蓄势待发",
         "skill-岩脉崩毁",
+        "skill-破绽",
         "skill-休息回复",
         "skill-徒长",
         "skill-引燃",
         "skill-蓄水",
         "skill-虹光冲击",
+        "skill-扬沙",
         "skill-霜降",
+        "skill-升龙咆哮",
         "skill-麻痹",
         "skill-毒孢子",
         "skill-假寐",
+        "skill-贯手",
         "skill-羽化加速",
         "skill-甜心续航",
+        "skill-灵媒",
         "skill-贪婪",
         "skill-啮合传递",
         "skill-超维投射",
+        "skill-鸣沙陷阱",
         "skill-听桥",
         "skill-预备势",
         "skill-叠势",
+        "skill-气沉丹田",
         "skill-一拳",
         "skill-抛石",
+        "skill-透射",
         "skill-天光",
+        "skill-漫反射",
         "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
         "skill-摇篮曲",
         "skill-防御反击",
         "skill-有效预防",
@@ -26328,8 +26380,729 @@
         "spe": 125
       },
       "raw": {
-        "chainId": "manual-evolution-059",
-        "evolutionChainId": "manual-evolution-059",
+        "chainId": "chess-emperor-knight-white",
+        "evolutionChainId": "chess-emperor-knight-white",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（白子）",
+          "棋骑士（白子）",
+          "棋契陛下（棋骑士白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋骑士（白子）",
+            "棋契陛下（棋骑士白子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-knight-black",
+      "name": "棋契陛下（棋骑士黑子）",
+      "aliases": [
+        "棋契陛下",
+        "棋骑士黑子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 83,
+        "atk": 194,
+        "defense": 135,
+        "spa": 88,
+        "spd": 111,
+        "spe": 125
+      },
+      "raw": {
+        "chainId": "chess-emperor-knight-black",
+        "evolutionChainId": "chess-emperor-knight-black",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（黑子）",
+          "棋骑士（黑子）",
+          "棋契陛下（棋骑士黑子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（黑子）",
+            "棋骑士（黑子）",
+            "棋契陛下（棋骑士黑子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-fort-white",
+      "name": "棋契陛下（棋齐垒白子）",
+      "aliases": [
+        "棋契陛下",
+        "棋齐垒白子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 93,
+        "atk": 143,
+        "defense": 133,
+        "spa": 143,
+        "spd": 123,
+        "spe": 90
+      },
+      "raw": {
+        "chainId": "chess-emperor-fort-white",
+        "evolutionChainId": "chess-emperor-fort-white",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（白子）",
+          "棋齐垒（白子）",
+          "棋契陛下（棋齐垒白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋齐垒（白子）",
+            "棋契陛下（棋齐垒白子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-fort-black",
+      "name": "棋契陛下（棋齐垒黑子）",
+      "aliases": [
+        "棋契陛下",
+        "棋齐垒黑子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 93,
+        "atk": 143,
+        "defense": 133,
+        "spa": 143,
+        "spd": 123,
+        "spe": 90
+      },
+      "raw": {
+        "chainId": "chess-emperor-fort-black",
+        "evolutionChainId": "chess-emperor-fort-black",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（黑子）",
+          "棋齐垒（黑子）",
+          "棋契陛下（棋齐垒黑子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（黑子）",
+            "棋齐垒（黑子）",
+            "棋契陛下（棋齐垒黑子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-bishop-white",
+      "name": "棋契陛下（棋祈督白子）",
+      "aliases": [
+        "棋契陛下",
+        "棋祈督白子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 89,
+        "atk": 157,
+        "defense": 179,
+        "spa": 80,
+        "spd": 125,
+        "spe": 75
+      },
+      "raw": {
+        "chainId": "chess-emperor-bishop-white",
+        "evolutionChainId": "chess-emperor-bishop-white",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（白子）",
+          "棋祈督（白子）",
+          "棋契陛下（棋祈督白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋祈督（白子）",
+            "棋契陛下（棋祈督白子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-bishop-black",
+      "name": "棋契陛下（棋祈督黑子）",
+      "aliases": [
+        "棋契陛下",
+        "棋祈督黑子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 89,
+        "atk": 157,
+        "defense": 179,
+        "spa": 80,
+        "spd": 125,
+        "spe": 75
+      },
+      "raw": {
+        "chainId": "chess-emperor-bishop-black",
+        "evolutionChainId": "chess-emperor-bishop-black",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（黑子）",
+          "棋祈督（黑子）",
+          "棋契陛下（棋祈督黑子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（黑子）",
+            "棋祈督（黑子）",
+            "棋契陛下（棋祈督黑子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-queen-white",
+      "name": "棋契陛下（棋绮后白子）",
+      "aliases": [
+        "棋契陛下",
+        "棋绮后白子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 126,
+        "atk": 147,
+        "defense": 143,
+        "spa": 147,
+        "spd": 118,
+        "spe": 85
+      },
+      "raw": {
+        "chainId": "chess-emperor-queen-white",
+        "evolutionChainId": "chess-emperor-queen-white",
+        "evolutionStage": 3,
+        "bossFormAvailable": false,
+        "isGeneratedBossForm": false,
+        "baseMonsterId": "",
+        "evolutionLine": [
+          "棋棋（白子）",
+          "棋绮后（白子）",
+          "棋契陛下（棋绮后白子）"
+        ],
+        "evolutionLines": [
+          [
+            "棋棋（白子）",
+            "棋绮后（白子）",
+            "棋契陛下（棋绮后白子）"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "monster",
+      "id": "monster-chess-emperor-queen-black",
+      "name": "棋契陛下（棋绮后黑子）",
+      "aliases": [
+        "棋契陛下",
+        "棋绮后黑子",
+        "首领形态"
+      ],
+      "types": [
+        "fighting",
+        "ground"
+      ],
+      "skillIds": [
+        "skill-寸拳",
+        "skill-魔法增效",
+        "skill-防御",
+        "skill-气波",
+        "skill-缠丝劲",
+        "skill-力量增效",
+        "skill-跺地",
+        "skill-化劲",
+        "skill-猛烈撞击",
+        "skill-影袭",
+        "skill-钧势",
+        "skill-石肤术",
+        "skill-陨石",
+        "skill-提气",
+        "skill-蓄势待发",
+        "skill-岩脉崩毁",
+        "skill-破绽",
+        "skill-休息回复",
+        "skill-徒长",
+        "skill-引燃",
+        "skill-蓄水",
+        "skill-虹光冲击",
+        "skill-扬沙",
+        "skill-霜降",
+        "skill-升龙咆哮",
+        "skill-麻痹",
+        "skill-毒孢子",
+        "skill-假寐",
+        "skill-贯手",
+        "skill-羽化加速",
+        "skill-甜心续航",
+        "skill-灵媒",
+        "skill-贪婪",
+        "skill-啮合传递",
+        "skill-超维投射",
+        "skill-鸣沙陷阱",
+        "skill-听桥",
+        "skill-预备势",
+        "skill-叠势",
+        "skill-气沉丹田",
+        "skill-一拳",
+        "skill-抛石",
+        "skill-透射",
+        "skill-天光",
+        "skill-漫反射",
+        "skill-放晴",
+        "skill-热身运动",
+        "skill-迫近攻击",
+        "skill-先发制人",
+        "skill-触底强击",
+        "skill-借用",
+        "skill-晒太阳",
+        "skill-摇篮曲",
+        "skill-防御反击",
+        "skill-有效预防",
+        "skill-扫尾"
+      ],
+      "passiveIds": [
+        "passive-御驾亲征"
+      ],
+      "stats": {
+        "hp": 126,
+        "atk": 147,
+        "defense": 143,
+        "spa": 147,
+        "spd": 118,
+        "spe": 85
+      },
+      "raw": {
+        "chainId": "chess-emperor-queen-black",
+        "evolutionChainId": "chess-emperor-queen-black",
         "evolutionStage": 3,
         "bossFormAvailable": false,
         "isGeneratedBossForm": false,
@@ -26337,42 +27110,13 @@
         "evolutionLine": [
           "棋棋（黑子）",
           "棋绮后（黑子）",
-          "棋契陛下"
+          "棋契陛下（棋绮后黑子）"
         ],
         "evolutionLines": [
           [
-            "棋棋（白子）",
-            "棋绮后（白子）",
-            "棋契陛下"
-          ],
-          [
             "棋棋（黑子）",
             "棋绮后（黑子）",
-            "棋契陛下"
-          ],
-          [
-            "棋齐垒（白子）",
-            "棋契陛下"
-          ],
-          [
-            "棋齐垒（黑子）",
-            "棋契陛下"
-          ],
-          [
-            "棋祈督（白子）",
-            "棋契陛下"
-          ],
-          [
-            "棋祈督（黑子）",
-            "棋契陛下"
-          ],
-          [
-            "棋绮后（白子）",
-            "棋契陛下"
-          ],
-          [
-            "棋绮后（黑子）",
-            "棋契陛下"
+            "棋契陛下（棋绮后黑子）"
           ]
         ]
       }

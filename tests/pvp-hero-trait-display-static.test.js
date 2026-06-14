@@ -121,6 +121,24 @@ const expectedLayerEffects = [
     stats: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
   },
   {
+    name: "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u7eee\u540e\u767d\u5b50\uff09",
+    trait: "\u5fa1\u9a7e\u4eb2\u5f81",
+    layers: 1,
+    stats: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
+  },
+  {
+    name: "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u7eee\u540e\u9ed1\u5b50\uff09",
+    trait: "\u5fa1\u9a7e\u4eb2\u5f81",
+    layers: 1,
+    stats: { atk: 0.05, defense: 0.05, spa: 0.05, spd: 0.05 }
+  },
+  {
+    name: "\u68cb\u5951\u965b\u4e0b\uff08\u68cb\u9a91\u58eb\u767d\u5b50\uff09",
+    trait: "\u5fa1\u9a7e\u4eb2\u5f81",
+    layers: 1,
+    stats: { atk: 0.1, defense: 0.1, spa: 0.1, spd: 0.1 }
+  },
+  {
     name: "\u6b66\u8005\u9e21",
     trait: "\u6597\u6280",
     layers: 1,

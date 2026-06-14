@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 19:48 +08:00 - Codex
+
+- Request: Split 棋契陛下 into eight independent final forms, keep separate skill pools and evolution chains, and let only the two 棋绮后 final forms use the PVP 渗透 layer effect.
+- Files changed:
+  - `data/local-bundle.json`
+  - `index.html`
+  - `tests/chess-emperor-variants-static.test.js`
+  - `tests/local-bundle-evolution-static.test.js`
+  - `tests/pvp-hero-trait-display-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Replaced the merged 棋契陛下 monster with eight uniquely named and identified final forms using the confirmed stats.
+  - Stored an independent 56-skill array on every final form and kept the second, third, and fourth white/black pairs equal only as temporary separate copies.
+  - Added eight explicit evolution branches from 棋棋 through the matching middle form to the matching final form.
+  - Kept 御驾亲征 as the data passive for all eight forms while applying 5% per-layer 双攻双防 only to the two 棋绮后 final forms; the other six retain 10%.
+  - Replaced stale single-name PVP boss references and added regression coverage for the data split, evolution metadata, and trait effects.
+- Verification: Ran all 36 Node static tests successfully; parsed all 12 inline scripts in `index.html`; confirmed eight unique monster IDs, eight unique final chain IDs, no duplicate monster IDs, and exact 56-skill pools. Direct in-app runtime verification could not run because the browser blocked both the local file URL and the local HTTP page.
+- Status: Complete.
+
 ### 2026-06-14 19:20 +08:00 - Codex
 
 - Request: Execute the approved plan for splitting 棋契陛下 into eight independent final forms with separate skill pools and evolution chains.
