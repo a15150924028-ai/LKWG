@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 18:20 +08:00 - Codex
+
+- Request: Add completion feedback to each team overview card when its monster, bloodline, nature, three talents, and four skills are all selected, without making the roller-coaster target skill required.
+- Files changed:
+  - `index.html`
+  - `tests/team-configuration-feedback-static.test.js`
+  - `docs/superpowers/plans/2026-06-14-team-configuration-feedback.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a pure required-field completion predicate that intentionally excludes `rollerSkillId`.
+  - Added persistent green completion styling, a visible `配置完成` badge, and a reduced-motion-safe one-shot completion animation while preserving the active blue outline.
+  - Added in-memory transition tracking so initial saved complete data does not animate, roller-coaster changes do not replay feedback, and clearing then refilling a required field can animate again.
+  - Added partial overview refreshes for bloodline, nature, talent, and optional roller-coaster target changes so the card state stays current without rebuilding the editor.
+  - Added focused regression coverage for required fields, roller-coaster independence, initial-load behavior, removal, and recompletion.
+- Verification: Watched the focused test fail because `isTeamPetConfigured` was missing, then pass after implementation. Ran all 37 Node static tests successfully; parsed all 12 inline scripts in `index.html`; ran `git diff --check`. In-app Browser verification was attempted, but Browser security policy blocked automation against the current local `file://` page.
+- Status: Complete.
+
 ### 2026-06-14 18:10 +08:00 - Codex
 
 - Request: Design feedback for a team overview card after all required configuration fields are filled.

@@ -2144,6 +2144,41 @@
       background: #f4f9ff;
     }
 
+    .team-overview-slot.configured {
+      border-color: #31a56d;
+      background: #effaf4;
+    }
+
+    .team-overview-slot.configured:hover {
+      border-color: #268958;
+      background: #e7f7ee;
+    }
+
+    .team-overview-slot.active.configured {
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 1px var(--primary), 0 0 0 3px rgba(49, 165, 109, 0.16);
+      background: #effaf4;
+    }
+
+    .team-overview-slot.completion-pop {
+      animation: teamCompletionPop 720ms ease-out;
+    }
+
+    @keyframes teamCompletionPop {
+      0% {
+        transform: scale(0.98);
+        outline: 0 solid rgba(49, 165, 109, 0);
+      }
+      45% {
+        transform: scale(1.025);
+        outline: 6px solid rgba(49, 165, 109, 0.22);
+      }
+      100% {
+        transform: scale(1);
+        outline: 0 solid rgba(49, 165, 109, 0);
+      }
+    }
+
     .team-slot-number {
       display: inline-flex;
       align-items: center;
@@ -2168,6 +2203,21 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       font-size: 14px;
+    }
+
+    .team-slot-complete {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      margin-top: auto;
+      border: 1px solid #8dd5ad;
+      border-radius: 999px;
+      background: #dff5e9;
+      color: #176b43;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
     }
 
     .team-slot-types {
@@ -2614,6 +2664,12 @@
       .team-overview {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .team-overview-slot.completion-pop {
+        animation: none;
       }
     }
 
@@ -5071,6 +5127,9 @@
     let activeLocalBundle = null;
     let activeTeamIndex = 0;
     const rollerHistory = [];
+    let configuredTeamIndexes = new Set();
+    const pendingTeamCompletionAnimations = new Set();
+    let teamCompletionStateInitialized = false;
 
     function typeName(key) {
       return TYPE_MAP[key]?.name || "";
@@ -5200,20 +5259,78 @@
       });
     }
 
+    function isTeamPetConfigured(pet) {
+      return Boolean(pet?.monsterId)
+        && Boolean(pet?.bloodlineId)
+        && Boolean(pet?.natureId)
+        && pet?.talentIds?.length === 3
+        && pet.talentIds.every(Boolean)
+        && pet?.skills?.length === 4
+        && pet.skills.every((skill) => Boolean(skill?.skillId));
+    }
+
+    function prepareTeamCompletionState(team) {
+      const nextConfiguredIndexes = new Set();
+      team.forEach((pet, petIndex) => {
+        if (isTeamPetConfigured(pet)) nextConfiguredIndexes.add(petIndex);
+      });
+      pendingTeamCompletionAnimations.clear();
+      if (teamCompletionStateInitialized) {
+        nextConfiguredIndexes.forEach((petIndex) => {
+          if (!configuredTeamIndexes.has(petIndex)) pendingTeamCompletionAnimations.add(petIndex);
+        });
+      } else {
+        teamCompletionStateInitialized = true;
+      }
+      configuredTeamIndexes = nextConfiguredIndexes;
+    }
+
     function renderTeamOverviewSlot(pet, petIndex) {
       const monster = monsterById.get(pet.monsterId);
       const passiveNames = monster ? getMonsterPassives(monster).map((passive) => passive.name) : [];
+      const configured = configuredTeamIndexes.has(petIndex);
+      const completionPop = pendingTeamCompletionAnimations.has(petIndex);
       const slotMeta = monster
         ? `总和 ${monsterStatTotal(monster)} · 特性 ${passiveNames.join(" / ") || "暂无"}`
         : "点击选择";
       return `
-        <button class="team-overview-slot${petIndex === activeTeamIndex ? " active" : ""}${monster ? " selected" : ""}" type="button" data-team-slot="${petIndex}" aria-pressed="${petIndex === activeTeamIndex ? "true" : "false"}">
+        <button class="team-overview-slot${petIndex === activeTeamIndex ? " active" : ""}${monster ? " selected" : ""}${configured ? " configured" : ""}${completionPop ? " completion-pop" : ""}" type="button" data-team-slot="${petIndex}" aria-pressed="${petIndex === activeTeamIndex ? "true" : "false"}">
           <span class="team-slot-number">${petIndex + 1}</span>
           <strong>${escapeHtml(monster?.name || "未选择精灵")}</strong>
           <span class="team-slot-types">${monster?.types?.length ? chips(monster.types) : '<span class="tag empty">等待配置</span>'}</span>
           <span class="team-slot-meta">${escapeHtml(slotMeta)}</span>
+          ${configured ? '<span class="team-slot-complete">配置完成</span>' : ""}
         </button>
       `;
+    }
+
+    function renderTeamOverview(team) {
+      prepareTeamCompletionState(team);
+      return `
+        <div class="team-overview">
+          ${team.map(renderTeamOverviewSlot).join("")}
+        </div>
+      `;
+    }
+
+    function bindTeamOverviewEvents() {
+      teamGrid.querySelectorAll("[data-team-slot]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const nextIndex = Number(button.dataset.teamSlot);
+          if (!Number.isInteger(nextIndex) || nextIndex === activeTeamIndex) return;
+          const current = readTeam();
+          activeTeamIndex = nextIndex;
+          renderTeam(current);
+        });
+      });
+    }
+
+    function refreshTeamOverview(team) {
+      const overview = teamGrid.querySelector(".team-overview");
+      if (!overview) return;
+      overview.outerHTML = renderTeamOverview(team);
+      bindTeamOverviewEvents();
+      pendingTeamCompletionAnimations.clear();
     }
 
     function renderPetBattleSummary(monster, pet) {
@@ -5308,9 +5425,7 @@
       const selectedCount = team.filter((pet) => monsterById.has(pet.monsterId)).length;
       if (teamCount) teamCount.textContent = `已选择 ${selectedCount}/6`;
       teamGrid.innerHTML = `
-        <div class="team-overview">
-          ${team.map(renderTeamOverviewSlot).join("")}
-        </div>
+        ${renderTeamOverview(team)}
         <div class="team-editors"></div>
       `;
       const editors = teamGrid.querySelector(".team-editors");
@@ -5416,6 +5531,7 @@
             const current = readTeam();
             current[petIndex].bloodlineId = item?.id || "";
             saveSpecificTeam(current);
+            refreshTeamOverview(current);
             updateRollerButton(current);
             renderResults();
           }
@@ -5433,6 +5549,7 @@
             const current = readTeam();
             current[petIndex].natureId = item?.id || "";
             saveSpecificTeam(current);
+            refreshTeamOverview(current);
             renderResults();
           }
         });
@@ -5456,6 +5573,7 @@
               const current = readTeam();
               current[petIndex].talentIds[talentIndex] = item?.id || "";
               saveSpecificTeam(current);
+              refreshTeamOverview(current);
               renderResults();
             }
           });
@@ -5474,6 +5592,7 @@
             const current = readTeam();
             current[petIndex].rollerSkillId = item?.id || "";
             saveSpecificTeam(current);
+            refreshTeamOverview(current);
             updateRollerButton(current);
             renderResults();
           }
@@ -5500,15 +5619,8 @@
         });
         });
       });
-      teamGrid.querySelectorAll("[data-team-slot]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const nextIndex = Number(button.dataset.teamSlot);
-          if (!Number.isInteger(nextIndex) || nextIndex === activeTeamIndex) return;
-          const current = readTeam();
-          activeTeamIndex = nextIndex;
-          renderTeam(current);
-        });
-      });
+      bindTeamOverviewEvents();
+      pendingTeamCompletionAnimations.clear();
     }
 
     function createCombo(host, config) {
