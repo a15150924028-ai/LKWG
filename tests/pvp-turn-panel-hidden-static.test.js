@@ -34,18 +34,25 @@ assert(!renderSource.includes("renderPvpTurnHistory()"), "PVP damage simulator m
   "function recordPvpTurnSettlement(",
   "function undoPvpTurnSettlement(",
   "function clearPvpTurnHistory(",
+  "function currentPvpTurnDamage(",
   "function pvpTurnOutgoingDamage("
 ].forEach((needle) => {
   assert(html.includes(needle), `${needle} must remain available for settlement logic.`);
 });
 
 assert(
-  extractFunction("pvpTurnOutgoingDamage").includes("calcPvpDamage(attackerState, defenderState, action)"),
-  "Turn settlement damage must keep using the same calcPvpDamage path as the visible damage result."
+  extractFunction("pvpTurnDamageForSide").includes("calcPvpDamage(attackerState, defenderState, action, { actsBeforeDefender })"),
+  "Shared turn damage must keep using the turn-order-aware calcPvpDamage path."
 );
 assert(
-  extractFunction("renderPvpDamageResult").includes("const damage = calcPvpDamage(state, opponentState, action);"),
-  "Visible damage results must keep using calcPvpDamage."
+  extractFunction("renderPvpDamageResult").includes("currentPvpTurnDamage(currentPvpTurnContext())[side]"),
+  "Visible damage results must read the shared turn damage result instead of calculating separately."
+);
+assert(
+  extractFunction("currentPvpTurnHp").includes("const turnDamage = currentPvpTurnDamage(context)") &&
+    extractFunction("currentPvpTurnHp").includes("pvpTurnOutgoingDamage(turnDamage.ally)") &&
+    extractFunction("currentPvpTurnHp").includes("pvpTurnOutgoingDamage(turnDamage.enemy)"),
+  "Turn settlement HP must read the same shared turn damage result as the visible cards."
 );
 
 console.log("PVP hidden turn panel static checks passed.");

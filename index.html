@@ -3075,7 +3075,9 @@
       addLabel(labels, defenseDiff >= 271 ? "物防差>=271，威力200" : "物防差<271，威力60");
     }
 
-    const actsBeforeDefender = numberValue(attackerStats.spe) > numberValue(defenderStats.spe);
+    const actsBeforeDefender = typeof context.actsBeforeDefender === "boolean"
+      ? context.actsBeforeDefender
+      : numberValue(attackerStats.spe) > numberValue(defenderStats.spe);
     if (/先于敌方攻击.*威力\+50%/.test(text) && actsBeforeDefender) {
       power = Math.round(power * 1.5);
       addLabel(labels, "先于敌方攻击，威力+50%");
@@ -7146,7 +7148,7 @@
       return Boolean(snapshotMonsterId && currentMonsterId && snapshotMonsterId === currentMonsterId);
     }
 
-    function calcPvpDamage(attackerState, defenderState, action) {
+    function calcPvpDamage(attackerState, defenderState, action, options = {}) {
       const useActionSnapshot = pvpActionSnapshotMatchesCurrentMonster(attackerState);
       const attacker = monsterById.get(useActionSnapshot ? attackerState?.actionMonsterId : attackerState?.monsterId);
       const defender = monsterById.get(defenderState?.monsterId);
@@ -7230,6 +7232,7 @@
             defenderMixedBlood: !!defenderState?.mixedBlood || bloodlineMatchesName(defenderState, /混合/),
             cuteTotal: actionCuteLayers,
             canGainCuteLayer: canGainPvpCuteLayer(attacker),
+            actsBeforeDefender: typeof options.actsBeforeDefender === "boolean" ? options.actsBeforeDefender : undefined,
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: actionBasePower, hitCount: 1, damageMultiplier: 1, canReceiveHitCountBonus: false, labels: [] };
@@ -7439,7 +7442,7 @@
         }
         return `<div class="pvp-damage-result" data-pvp-damage-result="${side}">点击技能后显示伤害</div>`;
       }
-      const damage = calcPvpDamage(state, opponentState, action);
+      const damage = currentPvpTurnDamage(currentPvpTurnContext())[side];
       if (damage?.error) {
         const errorDescriptionText = pvpSkillDescriptionText(action);
         return `
@@ -8453,6 +8456,12 @@
       return { ally, enemy, allyAction, enemyAction, order };
     }
 
+    function pvpSideActsBeforeDefender(side, context) {
+      const first = context?.order?.first || "";
+      if (!first || context?.order?.reason === "missing-action") return undefined;
+      return first === side;
+    }
+
     function renderPvpTurnPreview() {
       const { allyAction, enemyAction, order } = currentPvpTurnContext();
       const detail = allyAction && enemyAction
@@ -8526,9 +8535,24 @@
       return turns ? `${sideName}防御禁用${turns}回合` : `${sideName}防御可用`;
     }
 
-    function pvpTurnOutgoingDamage(attackerState, defenderState, action) {
-      if (!action || !isAttackSkill(action)) return { damage: 0, preventedDamage: 0, labels: [] };
-      const damage = calcPvpDamage(attackerState, defenderState, action);
+    function pvpTurnDamageForSide(context, side) {
+      const attackerState = context?.[side];
+      const defenderSide = side === "ally" ? "enemy" : "ally";
+      const defenderState = context?.[defenderSide];
+      const action = context?.[`${side}Action`];
+      const actsBeforeDefender = side ? pvpSideActsBeforeDefender(side, context) : undefined;
+      const damage = calcPvpDamage(attackerState, defenderState, action, { actsBeforeDefender });
+      return damage || null;
+    }
+
+    function currentPvpTurnDamage(context = currentPvpTurnContext()) {
+      return {
+        ally: pvpTurnDamageForSide(context, "ally"),
+        enemy: pvpTurnDamageForSide(context, "enemy")
+      };
+    }
+
+    function pvpTurnOutgoingDamage(damage) {
       if (!damage || damage.error) return { damage: 0, preventedDamage: 0, labels: [] };
       const useResponse = damage.responseTriggered && damage.responseEstimate != null;
       const amount = Math.max(0, Math.round(Number(useResponse ? damage.responseEstimate : damage.estimate) || 0));
@@ -8541,8 +8565,9 @@
     }
 
     function currentPvpTurnHp(context = currentPvpTurnEffects()) {
-      const allyDamage = pvpTurnOutgoingDamage(context.ally, context.enemy, context.allyAction);
-      const enemyDamage = pvpTurnOutgoingDamage(context.enemy, context.ally, context.enemyAction);
+      const turnDamage = currentPvpTurnDamage(context);
+      const allyDamage = pvpTurnOutgoingDamage(turnDamage.ally);
+      const enemyDamage = pvpTurnOutgoingDamage(turnDamage.enemy);
       return window.LKWG_PVP_HP_RULES.resolveTurnHp({
         allyState: context.ally,
         enemyState: context.enemy,

@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 22:30 +08:00 - Codex
+
+- Request: Make the lower PVP damage cards use the same turn-order-aware damage logic as the hidden upper turn settlement UI, instead of applying a one-off fix for first-strike skills.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/pvp-turn-panel-hidden-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Centralized per-turn PVP damage calculation in `currentPvpTurnDamage()` and `pvpTurnDamageForSide()`.
+  - Changed the visible lower damage cards to read the shared turn damage result.
+  - Changed HP settlement to read the same shared turn damage result, so the hidden upper settlement logic and lower cards stay aligned while the upper UI remains hidden.
+  - Kept variable damage rules generic: turn-order-dependent rules now receive resolved action order when available, with speed fallback only when turn order is unavailable.
+  - Updated regression tests to assert shared damage flow instead of a separate visible-card calculation path.
+- Verification: Watched the focused first-strike/turn-order rule test fail before implementation, then pass after the shared-damage implementation. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-turn-panel-hidden-static.test.js`; `node tests/pvp-damage-formula-static.test.js`; `node tests/pvp-turn-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-turn-effects-static.test.js`; `node tests/pvp-hp-settlement-static.test.js`; parsed all 12 inline scripts; ran all 41 Node static tests; ran `git diff --check` with only LF-to-CRLF warnings. Verified in the in-app Browser at `http://localhost:8765/index.html` that two damage result cards and two PVP side panels render, while the hidden turn preview, turn effects, and turn history UI counts remain 0.
+- Status: Complete.
+
 ### 2026-06-14 22:20 +08:00 - Codex
 
 - Request: Hide the PVP turn preview, settlement summary, and turn history UI shown in the screenshot while preserving the underlying calculation and settlement logic; clarify whether its damage matches the lower damage panel.

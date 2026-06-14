@@ -56,6 +56,32 @@ const statusFailed = damageRules.resolvePvpPostUseEffects(cuteStatusSkill, { can
 assert(!statusFailed.cuteLayerDelta, "Status skills should not gain cute layers when the attacker cannot gain cute +1.");
 assert(!statusFailed.statFlatMods?.spe, "Cute-gain success bonuses should not apply when cute +1 fails.");
 
+const turnOrderPowerSkill = {
+  id: "turn-order-power",
+  name: "\u56de\u5408\u987a\u5e8f\u89c4\u5219\u6d4b\u8bd5",
+  type: "wing",
+  category: "physical",
+  power: 100,
+  description: "\u9020\u6210\u7269\u4f24\uff0c\u82e5\u5148\u4e8e\u654c\u65b9\u653b\u51fb\uff0c\u672c\u6b21\u6280\u80fd\u5a01\u529b+50%\u3002"
+};
+const priorityFirst = damageRules.resolvePvpVariableDamage(turnOrderPowerSkill, {
+  actsBeforeDefender: true,
+  attackerStats: { spe: 100 },
+  defenderStats: { spe: 999 }
+});
+assert(priorityFirst.power === 150, "First-strike power rules must honor turn-order priority even when slower.");
+const prioritySecond = damageRules.resolvePvpVariableDamage(turnOrderPowerSkill, {
+  actsBeforeDefender: false,
+  attackerStats: { spe: 999 },
+  defenderStats: { spe: 100 }
+});
+assert(prioritySecond.power === 100, "First-strike power rules must honor turn-order priority even when faster.");
+const speedFallback = damageRules.resolvePvpVariableDamage(turnOrderPowerSkill, {
+  attackerStats: { spe: 999 },
+  defenderStats: { spe: 100 }
+});
+assert(speedFallback.power === 150, "First-strike power rules should keep speed fallback when turn order is unavailable.");
+
 assert(html.includes("resolveSpecialPvpPowerRule"), "Special PVP power rules should be centralized in a rule-pool resolver.");
 assert(html.includes("canGainPvpCuteLayer(attacker)"), "PVP damage calculation should pass the attacker's current cute availability into power rules.");
 assert(html.includes("actionCuteLayers"), "PVP damage calculation should snapshot pre-use cute layers for post-use form changes.");
@@ -64,5 +90,16 @@ assert(
   "PVP damage calculation should ignore stale pre-use snapshots after a post-use form change."
 );
 assert(html.includes("applyPvpPostUseSkillEffects"), "PVP skill use should have a post-use effect application path.");
+assert(
+  html.includes("function currentPvpTurnDamage(") &&
+    html.includes("function pvpTurnDamageForSide(") &&
+    html.includes("calcPvpDamage(attackerState, defenderState, action, { actsBeforeDefender })"),
+  "PVP turn damage must be centralized through a shared turn-order-aware damage result."
+);
+assert(
+  html.includes("currentPvpTurnDamage(currentPvpTurnContext())[side]") &&
+    html.includes("const turnDamage = currentPvpTurnDamage(context)"),
+  "Visible PVP damage cards and turn settlement must read the same shared damage result."
+);
 
 console.log("PVP special power rule static checks passed.");
