@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 20:56 +08:00 - Codex
+
+- Request: Investigate why the newly added PVP skill description can display as `耗能`.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed the local skill bundle contains stale placeholder descriptions such as `耗能`, including `暗突袭`.
+  - Added `pvpSkillDescriptionText()` so PVP damage result cards treat empty, `耗能`, `能耗`, `能量`, and PP-only placeholders as `暂无技能描述`.
+  - Changed PVP damage result rendering to use the sanitized description helper instead of reading `damage.action.description` directly.
+  - Updated the selected-skill damage regression test to cover stale placeholder filtering and real-description preservation.
+- Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the fix because `pvpSkillDescriptionText` was missing, then pass after implementation. Ran all 39 Node static tests successfully; parsed all 12 inline scripts in `index.html`; ran `git diff --check` with only LF-to-CRLF warnings for touched files. Refreshed the in-app browser and confirmed there was no current `技能描述：耗能` DOM residue, though the active page had no selected damage result after reload.
+- Status: Complete.
+
 ### 2026-06-14 20:24 +08:00 - Codex
 
 - Request: Rework the PVP side panel so bloodline sits beside monster in one row, and monster, nature, bloodline, talents, and base stats use compact inset fields like the upper editor.

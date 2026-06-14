@@ -27,13 +27,15 @@ const sandbox = {};
 vm.runInNewContext(`
   ${extractFunction("repairCachedSkillCategory")}
   ${extractFunction("repairCachedSkillPower")}
+  ${extractFunction("pvpSkillDescriptionText")}
   this.repairCachedSkillCategory = repairCachedSkillCategory;
   this.repairCachedSkillPower = repairCachedSkillPower;
+  this.pvpSkillDescriptionText = pvpSkillDescriptionText;
 `, sandbox);
 
 const directSkill = {
   id: "skill-direct",
-  name: "直接技能",
+  name: "direct skill",
   type: "fire",
   category: "physical",
   mode: "attack",
@@ -45,7 +47,7 @@ assert(sandbox.repairCachedSkillPower(directSkill) === 80, "Selected skills must
 
 const nestedSkill = {
   id: "skill-nested",
-  name: "嵌套技能",
+  name: "nested skill",
   type: "fighting",
   category: "",
   power: null,
@@ -73,10 +75,23 @@ assert(
   html.includes("const skill = skillById.get(state.skillIds?.[skillIndex]);"),
   "PVP damage must resolve the selected skill through skillById."
 );
+assert(
+  sandbox.pvpSkillDescriptionText({ description: "\u8017\u80fd" }) === "\u6682\u65e0\u6280\u80fd\u63cf\u8ff0",
+  "PVP skill descriptions must ignore stale energy placeholder text."
+);
+assert(
+  sandbox.pvpSkillDescriptionText({ description: "\u80fd\u8017" }) === "\u6682\u65e0\u6280\u80fd\u63cf\u8ff0",
+  "PVP skill descriptions must ignore stale cost placeholder text."
+);
+assert(
+  sandbox.pvpSkillDescriptionText({ description: "\u9020\u6210\u7269\u4f24\uff0c\u6bcf\u6b21\u4f7f\u7528\u540e\u5a01\u529b+20\u3002" }) === "\u9020\u6210\u7269\u4f24\uff0c\u6bcf\u6b21\u4f7f\u7528\u540e\u5a01\u529b+20\u3002",
+  "PVP skill descriptions must keep real skill descriptions."
+);
+
 const damageResultSource = extractFunction("renderPvpDamageResult");
 assert(
-  damageResultSource.includes('const descriptionText = damage.action.description || "暂无技能描述";'),
-  "PVP damage results must resolve a description for the selected skill."
+  damageResultSource.includes("const descriptionText = pvpSkillDescriptionText(damage.action);"),
+  "PVP damage results must resolve a sanitized description for the selected skill."
 );
 assert(
   (damageResultSource.match(/class="pvp-skill-description"/g) || []).length === 2,

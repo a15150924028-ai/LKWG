@@ -7385,6 +7385,14 @@
       return String(value);
     }
 
+    function pvpSkillDescriptionText(action) {
+      const text = String(action?.description || "").trim();
+      if (!text || /^(?:耗能|能耗|能量|pp|PP)\s*[:：]?\s*\d*$/.test(text)) {
+        return "暂无技能描述";
+      }
+      return text;
+    }
+
     function renderPvpDamageResult(side) {
       const state = pvpSideState(side);
       const opponentState = pvpSideState(side === "ally" ? "enemy" : "ally");
@@ -7415,7 +7423,7 @@
       const stabText = damage.stabMultiplier > 1 ? ` / 本系${multiplierText(damage.stabMultiplier)}` : "";
       const ruleTextPart = ruleText ? ` / 规则：${ruleText}` : "";
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
-      const descriptionText = damage.action.description || "暂无技能描述";
+      const descriptionText = pvpSkillDescriptionText(damage.action);
       if (damage.responseEstimate != null) {
         const responseReason = damage.action.id === "pvp-force-impact"
           ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
