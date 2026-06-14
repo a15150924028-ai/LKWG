@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 22:20 +08:00 - Codex
+
+- Request: Hide the PVP turn preview, settlement summary, and turn history UI shown in the screenshot while preserving the underlying calculation and settlement logic; clarify whether its damage matches the lower damage panel.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-panel-hidden-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed `renderPvpTurnPreview()`, `renderPvpTurnEffectPreview()`, and `renderPvpTurnHistory()` from the main PVP damage simulator render output.
+  - Kept the turn-order, HP, energy, cooldown, history, and settlement functions in place.
+  - Added a regression test proving the UI panels are not rendered while the settlement functions remain available.
+  - Added static assertions that turn-settlement damage and visible damage cards both use `calcPvpDamage()`.
+- Verification: Watched `node tests/pvp-turn-panel-hidden-static.test.js` fail before the render removal, then pass after implementation. Ran focused turn-effect, turn-history, and damage-formula tests; ran all 41 Node static tests; parsed all 12 inline scripts. Verified in the in-app Browser against `http://localhost:8765/index.html` that turn preview, turn effects, and turn history counts are 0 while two damage result cards and two PVP side panels remain.
+- Status: Complete.
+
 ### 2026-06-14 22:11 +08:00 - Codex
 
 - Request: Improve only the mobile PVP layout from the supplied phone screenshots by reducing wasted vertical space and showing buff controls two per row.
