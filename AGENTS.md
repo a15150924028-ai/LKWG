@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-14 21:17 +08:00 - Codex
+
+- Request: Correct the `斩断` skill description to `造成物伤，应对状态：额外打断被应对技能。`.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/s2-screenshot-data-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed `斩断` from `special` to `physical` so the skill is treated as physical damage.
+  - Changed `斩断`'s local description from `造成魔伤，应对状态：额外打断被应对技能。` to `造成物伤，应对状态：额外打断被应对技能。`.
+  - Updated the S2 screenshot data regression expectation for `斩断`.
+- Verification: Watched `node tests/s2-screenshot-data-static.test.js` fail before the data fix on `斩断.category`, then pass after updating the bundle. Confirmed `斩断` now has `category: physical`, `power: 70`, `pp: 2`, and the requested description. Ran all 39 Node static tests successfully; parsed all 12 inline scripts in `index.html`; ran `git diff --check` with only LF-to-CRLF warnings for touched files.
+- Status: Complete.
+
 ### 2026-06-14 20:56 +08:00 - Codex
 
 - Request: Investigate why the newly added PVP skill description can display as `耗能`.

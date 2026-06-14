@@ -112,9 +112,9 @@ const expectedSkills = {
     description: "造成魔伤，应对状态：额外打断被应对技能。"
   },
   "斩断": {
-    category: "special",
+    category: "physical",
     power: 70,
-    description: "造成魔伤，应对状态：额外打断被应对技能。"
+    description: "造成物伤，应对状态：额外打断被应对技能。"
   },
   "破防": {
     pp: 2,
