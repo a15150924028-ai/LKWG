@@ -292,12 +292,12 @@ Run page contract, PVP domain, and all existing PVP tests.
 - Modify: `AGENTS.md`
 - Modify: this plan
 
-- [ ] **Step 1: Document maintenance**
+- [x] **Step 1: Document maintenance**
 
 Document data synchronization, developer-tool import, preview, real-device
 testing, upload, versioning, and review submission.
 
-- [ ] **Step 2: Run all automated verification**
+- [x] **Step 2: Run all automated verification**
 
 ```powershell
 node scripts/sync-miniprogram-data.js --check
@@ -314,7 +314,7 @@ Confirm no app/page/WXML/WXSS/JavaScript build errors and open all three tabs.
 Check common phone widths, storage persistence, team-to-analysis refresh, PVP
 calculations, clear isolation, and a real-device preview.
 
-- [ ] **Step 5: Update logs, commit, and push**
+- [x] **Step 5: Update logs, commit, and push**
 
 Mark completed checkboxes, append exact verification evidence to `AGENTS.md`,
 stage only scoped files, commit, and push `main`.

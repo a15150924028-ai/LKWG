@@ -56,7 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
-### 2026-06-15 16:43 +08:00 - Codex
+### 2026-06-15 16:07 +08:00 - Codex
+
+- Request: Finish automated verification and document maintenance and publishing for the native WeChat Mini Program.
+- Files changed:
+  - `.gitignore`
+  - `docs/wechat-mini-program.md`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a Chinese maintenance guide covering project import, data and PVP rule synchronization, tests, simulator and real-device checks, CLI service-port recovery, upload, review, and release.
+  - Ignored `project.private.config.json` so machine-specific WeChat settings are not accidentally published.
+  - Marked all implementation and automated-verification plan steps complete while leaving WeChat IDE compilation and real-device preview explicitly pending.
+  - Corrected the latest work-log timestamps to match the actual execution order.
+- Verification: Ran both synchronization scripts in `--check` mode; ran all 51 Node tests successfully; parsed all 31 Mini Program JavaScript files and 7 JSON files; scanned WXML for unsupported HTML tags and method calls; measured the Mini Program at 1,432,948 bytes; ran `git diff --check`. WeChat IDE compilation and real-device preview were not verified because the IDE CLI timed out and Computer Use failed to initialize.
+- Status: Partial; implementation and automated checks are complete, but IDE compile and real-device preview need user confirmation before upload.
+
+### 2026-06-15 16:06 +08:00 - Codex
 
 - Request: Replace the Mini Program PVP placeholder with a native two-side simulator using the synchronized web rules.
 - Files changed:
@@ -79,7 +95,7 @@ Use this entry format:
 - Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail because the stat-grid component was missing, then pass after implementation. Ran Mini Program PVP domain parity and analysis tests, parsed the page JavaScript, found no unsupported HTML tags or method calls in WXML, ran `git diff --check`, and measured the current Mini Program package at 1.37 MiB across 49 files.
 - Status: Complete for code; WeChat IDE compile and real-device checks remain pending.
 
-### 2026-06-15 16:27 +08:00 - Codex
+### 2026-06-15 16:03 +08:00 - Codex
 
 - Request: Port the complete tested web PVP rule layer into reusable Mini Program modules.
 - Files changed:
@@ -112,7 +128,7 @@ Use this entry format:
 - Verification: Watched `node tests/miniprogram-pvp-domain-static.test.js` fail because the synchronization script was missing, generated all 12 modules, corrected cross-VM comparisons to compare serialized values, then watched parity checks pass. Ran `node scripts/sync-miniprogram-pvp-rules.js --check`; ran every existing `tests/pvp-*.test.js` plus the Mini Program PVP domain test successfully.
 - Status: Complete.
 
-### 2026-06-15 16:17 +08:00 - Codex
+### 2026-06-15 16:00 +08:00 - Codex
 
 - Request: Migrate team matchup analysis and final stat display to the native Mini Program.
 - Files changed:
@@ -133,7 +149,7 @@ Use this entry format:
 - Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail because the analysis modules were missing, corrected the fixture's hand-calculated expected stats to match the web formula, then watched the test pass. Re-ran team page/domain tests, parsed all analysis JavaScript, and confirmed no method calls remain inside WXML bindings.
 - Status: Complete.
 
-### 2026-06-15 16:07 +08:00 - Codex
+### 2026-06-15 15:58 +08:00 - Codex
 
 - Request: Replace the Mini Program team placeholder with a native six-slot editor.
 - Files changed:
