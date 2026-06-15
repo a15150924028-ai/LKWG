@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 15:29 +08:00 - Codex
+
+- Request: Design a separately maintained native WeChat Mini Program while preserving the current web version, migrating all ordinary user features, and keeping hidden admin data controls web-only.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-15-wechat-mini-program-migration-design.md`
+  - `AGENTS.md`
+- Changes:
+  - Specified a native three-tab Mini Program under `miniprogram/` for team editing, analysis, and PVP.
+  - Kept `index.html` unchanged and excluded WebView, hidden `#admin` controls, browser file operations, and runtime external data dependencies.
+  - Defined shared domain modules, versioned WeChat local storage, local data generation from `data/local-bundle.json`, functional parity, error handling, tests, and release verification.
+- Verification: Reviewed the specification for placeholders, conflicting web/Mini Program ownership, missing maintenance steps, data-source ambiguity, page-boundary ambiguity, and first-release scope. Ran `git diff --check`.
+- Status: Complete; awaiting user review before implementation planning.
+
 ### 2026-06-15 14:57 +08:00 - Codex
 
 - Request: Rename the PVP default-build warning from `未选择项默认...` to `未选择性格、天分默认...`.
