@@ -16,6 +16,22 @@ const { searchOptions } = require(path.join(
   "utils",
   "search-options"
 ));
+const catalog = require(path.join(
+  packageRoot,
+  "miniprogram",
+  "data",
+  "catalog"
+));
+const {
+  BLOODLINES,
+  NATURES,
+  TALENTS
+} = require(path.join(
+  packageRoot,
+  "miniprogram",
+  "domain",
+  "constants"
+));
 
 const options = [
   { id: "", label: "请选择" },
@@ -44,6 +60,62 @@ const manyOptions = [
   }))
 ];
 assert.strictEqual(searchOptions(manyOptions, "", 20).length, 20);
+
+const fuzzyOptions = [
+  {
+    id: "fire-warrior",
+    label: "烈火战神",
+    aliases: ["火神"]
+  },
+  {
+    id: "ice-dragon",
+    label: "寒冰龙",
+    aliases: ["冰龙"]
+  },
+  {
+    id: "fire-dragon",
+    label: "烈火龙",
+    aliases: []
+  }
+];
+
+assert.strictEqual(searchOptions(fuzzyOptions, "huoshen", 20)[0].id, "fire-warrior");
+assert.strictEqual(searchOptions(fuzzyOptions, "lhzs", 20)[0].id, "fire-warrior");
+assert.strictEqual(
+  searchOptions(fuzzyOptions, "liehuozanshen", 20)[0].id,
+  "fire-warrior"
+);
+assert.strictEqual(searchOptions(fuzzyOptions, "烈火战", 20)[0].id, "fire-warrior");
+assert.deepStrictEqual(
+  searchOptions(fuzzyOptions, "完全不存在", 20).map((item) => item.id),
+  fuzzyOptions.map((item) => item.id)
+);
+
+const aliasedMonster = catalog.monsterOptions.find(
+  (option) => Array.isArray(option.aliases) && option.aliases.length
+);
+assert(aliasedMonster, "monster options must preserve local aliases");
+for (const [name, records] of [
+  ["bloodline", BLOODLINES],
+  ["nature", NATURES],
+  ["talent", TALENTS]
+]) {
+  assert(
+    records.every((record) => Array.isArray(record.aliases) && record.aliases.length),
+    `${name} options must provide searchable aliases`
+  );
+}
+
+const teamJs = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "team", "index.js"),
+  "utf8"
+);
+const pvpJs = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"),
+  "utf8"
+);
+assert(teamJs.includes("aliases: [...(item.aliases || [])]"));
+assert(pvpJs.includes("aliases: [...(item.aliases || [])]"));
 
 const pickerJs = fs.readFileSync(path.join(componentRoot, "index.js"), "utf8");
 const pickerWxml = fs.readFileSync(path.join(componentRoot, "index.wxml"), "utf8");

@@ -56,6 +56,33 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 21:40 +08:00 - Codex
+
+- Request: Add the web roller icon to the Mini Program and restore web-equivalent fuzzy autocomplete for all team and PVP selectors.
+- Files changed:
+  - `lkwgwechat/scripts/sync-miniprogram-search-assets.js`
+  - `lkwgwechat/miniprogram/assets/roller-skill.png`
+  - `lkwgwechat/miniprogram/utils/generated/pinyin-map.js`
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `lkwgwechat/miniprogram/data/catalog.js`
+  - `lkwgwechat/miniprogram/domain/constants.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/README.md`
+  - `tests/miniprogram-search-assets-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added deterministic extraction of the existing web roller PNG and pinyin map into generated Mini Program assets with `--check` support.
+  - Ported the web fuzzy scoring model for direct text, aliases, full pinyin, pinyin initials, and bounded edit distance, with stable ranking and a 20-result cap.
+  - Preserved aliases for monsters and skills, and added practical aliases for bloodline, nature, and talent options.
+  - Added the synchronized roller icon to the existing equal-width team action button and documented the new synchronization command.
+- Verification: Watched the search-asset test fail before the generated PNG existed, then pass after synchronization; watched fuzzy search fail for `huoshen`, then pass after porting the web rules; watched the team icon test fail before the image was rendered, then pass afterward. Verified real local searches: `lhzs` and `liehuozhanshen` found `烈火战神`, while `guoshanche` and `gsc` found `过山车` in 2-9 ms. Ran all three synchronization checks and all 53 Node tests; parsed 33 Mini Program JavaScript files and 7 JSON files; scanned all 5 WXML files; ran `git diff --check`; measured the runtime package at 1,484,390 bytes (1.416 MiB), leaving 612,762 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compilation and real-device preview remain pending external checks.
+
 ### 2026-06-15 21:38 +08:00 - Codex
 
 - Request: Create the implementation plan for the approved web-equivalent Mini Program roller icon and fuzzy autocomplete.

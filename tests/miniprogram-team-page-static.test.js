@@ -48,6 +48,11 @@ for (const binding of [
 assert(pageWxml.includes("配置完成"));
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes("撤回过山车"));
+assert(
+  pageWxml.includes('src="/assets/roller-skill.png"'),
+  "roller action must show the synchronized web icon"
+);
+assert(pageWxml.includes('class="roller-button-icon"'));
 assert(pageJs.includes("catalog.getPassive"), "team view must resolve monster passives");
 assert(pageJs.includes("catalog.getSkill"), "team view must resolve selected skill details");
 assert(pageJs.includes("passives:"), "team view must expose passive details");

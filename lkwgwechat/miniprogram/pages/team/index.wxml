@@ -7,7 +7,14 @@
   <view class="team-toolbar">
     <text class="team-count">配置完成 {{configuredCount}}/6</text>
     <view class="toolbar-actions">
-      <button class="small-button primary" bindtap="rotateSkills">使用过山车</button>
+      <button class="small-button primary" bindtap="rotateSkills">
+        <image
+          class="roller-button-icon"
+          src="/assets/roller-skill.png"
+          mode="aspectFit"
+        />
+        <text>使用过山车</text>
+      </button>
       <button class="small-button" bindtap="undoRotation" disabled="{{!canUndo}}">撤回过山车</button>
       <button class="small-button danger" bindtap="clearTeam">清空</button>
     </view>

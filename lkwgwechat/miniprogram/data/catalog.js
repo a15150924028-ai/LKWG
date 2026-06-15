@@ -5,7 +5,11 @@ const skillById = new Map(bundle.skills.map((skill) => [skill.id, skill]));
 const passiveById = new Map(bundle.passives.map((passive) => [passive.id, passive]));
 
 function option(record) {
-  return { id: record.id, label: record.name };
+  return {
+    id: record.id,
+    label: record.name,
+    aliases: [...(record.aliases || [])]
+  };
 }
 
 const monsterOptions = bundle.monsters.map(option);

@@ -38,19 +38,23 @@
 ```powershell
 node lkwgwechat/scripts/sync-miniprogram-data.js
 node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js
+node lkwgwechat/scripts/sync-miniprogram-search-assets.js
 ```
 
 第一条命令生成小程序本地数据，第二条命令从 `index.html` 同步经过网页
-测试的 PVP 纯规则。不要直接编辑以下生成文件：
+测试的 PVP 纯规则，第三条命令同步过山车图标和模糊搜索拼音表。不要直接编辑以下生成文件：
 
 - `miniprogram/data/local-bundle.js`
 - `miniprogram/domain/generated/*.js`
+- `miniprogram/utils/generated/pinyin-map.js`
+- `miniprogram/assets/roller-skill.png`
 
 提交前检查生成文件是否最新：
 
 ```powershell
 node lkwgwechat/scripts/sync-miniprogram-data.js --check
 node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check
+node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check
 ```
 
 ## 自动测试

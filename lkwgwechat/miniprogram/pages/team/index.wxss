@@ -34,8 +34,19 @@
 }
 
 .small-button.primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
   background: #1677ff;
   color: #ffffff;
+}
+
+.roller-button-icon {
+  flex: none;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 6rpx;
 }
 
 .small-button.danger {

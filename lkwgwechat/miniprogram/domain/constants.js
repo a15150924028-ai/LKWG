@@ -42,6 +42,49 @@ const TALENTS = [
   ["talent-spe", "速度", "spe"]
 ].map(([id, name, stat]) => ({ id, name, stat }));
 
+for (const bloodline of BLOODLINES) {
+  if (bloodline.id === "bloodline-boss") {
+    bloodline.aliases = ["首领", "首领血脉"];
+    continue;
+  }
+  const type = TYPES.find((item) => item.id === bloodline.type);
+  bloodline.aliases = [
+    bloodline.name,
+    type?.name || "",
+    type ? `${type.name}血脉` : ""
+  ].filter(Boolean);
+}
+
+const NATURE_SEARCH_STATS = [
+  ["生命", "物攻"], ["生命", "魔攻"], ["生命", "物防"],
+  ["生命", "魔防"], ["生命", "速度"], ["物攻", "物防"],
+  ["物攻", "魔防"], ["物攻", "速度"], ["物攻", "生命"],
+  ["物攻", "魔攻"], ["魔攻", "物攻"], ["魔攻", "物防"],
+  ["魔攻", "魔防"], ["魔攻", "速度"], ["魔攻", "生命"],
+  ["速度", "物攻"], ["速度", "魔攻"], ["速度", "物防"],
+  ["速度", "魔防"], ["速度", "生命"], ["物防", "物攻"],
+  ["物防", "魔攻"], ["物防", "速度"], ["物防", "魔防"],
+  ["物防", "生命"], ["魔防", "物攻"], ["魔防", "魔攻"],
+  ["魔防", "物防"], ["魔防", "速度"], ["魔防", "生命"]
+];
+
+NATURES.forEach((nature, index) => {
+  nature.aliases = [nature.name, ...(NATURE_SEARCH_STATS[index] || [])];
+});
+
+const TALENT_ALIASES = {
+  "talent-hp": ["生命", "血量", "生命值"],
+  "talent-atk": ["物攻", "攻击", "物理攻击"],
+  "talent-def": ["物防", "防御", "物理防御"],
+  "talent-spa": ["魔攻", "特攻", "魔法攻击"],
+  "talent-spd": ["魔防", "特防", "魔法防御"],
+  "talent-spe": ["速度", "速攻"]
+};
+
+for (const talent of TALENTS) {
+  talent.aliases = TALENT_ALIASES[talent.id] || [talent.name];
+}
+
 module.exports = {
   TYPES,
   BLOODLINES,

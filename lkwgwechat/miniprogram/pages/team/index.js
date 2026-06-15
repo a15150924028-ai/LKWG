@@ -9,7 +9,8 @@ const blankOption = { id: "", label: "请选择" };
 function optionsWithBlank(options) {
   return [blankOption, ...options.map((item) => ({
     id: item.id,
-    label: item.label || item.name
+    label: item.label || item.name,
+    aliases: [...(item.aliases || [])]
   }))];
 }
 
