@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 21:35 +08:00 - Codex
+
+- Request: Design a web-style six-card team switcher and searchable autocomplete inputs for every selector on the Mini Program team and PVP pages.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-15-wechat-searchable-pickers-team-layout-design.md`
+  - `AGENTS.md`
+- Changes:
+  - Defined the top six-card overview and single active-card editor layout for the team page.
+  - Defined one reusable input-and-suggestion component for monster, bloodline, nature, talent, and skill fields on both team and PVP pages.
+  - Limited rendered suggestions to 20 and retained the existing data/state contracts to keep runtime and package growth small.
+- Verification: Reviewed the design against the approved interaction, current 1.37 MiB package size, existing shared picker contract, and WeChat WXML constraints. No runtime tests were run because this change is documentation only.
+- Status: Complete; implementation planning follows.
+
 ### 2026-06-15 20:54 +08:00 - Codex
 
 - Request: Move all generated WeChat Mini Program project files into a new `lkwgwechat` package under the existing repository.
