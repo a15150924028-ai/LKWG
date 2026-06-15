@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 14:16 +08:00 - Codex
+
+- Request: Design enemy PVP default-build presets and effective nature/talent indicators for both PVP sides.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-15-pvp-default-build-presets-design.md`
+  - `AGENTS.md`
+- Changes:
+  - Specified mutually exclusive `最肉`, `最速`, and `最高攻击` enemy presets that supply only missing nature and talent values.
+  - Defined physical/special branching from original attack race stats, including the physical branch for exact ties.
+  - Defined active-button behavior for partial and complete manual builds.
+  - Defined shared race-stat indicators: green/up and red/down nature cells plus a bold green `＋` for talent stats on both sides.
+  - Required one shared effective-build resolver for notes, displayed stats, and damage calculations.
+- Verification: Reviewed the specification for placeholders, conflicting active states, partial manual selections, duplicate talent filling, equal attack race stats, responsive layout, and display/calculation divergence. No implementation tests were run because this update is a design specification only.
+- Status: Complete; awaiting user review before implementation planning.
+
 ### 2026-06-15 12:40 +08:00 - Codex
 
 - Request: Add missing local `加油` skill data after checking the BWiki skill index and skill page.
