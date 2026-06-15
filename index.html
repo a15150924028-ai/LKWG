@@ -3430,6 +3430,14 @@
     if (responseFixedPowerMatch) {
       responsePower = Math.max(1, Number(responseFixedPowerMatch[1]));
     }
+    const responseAttackFixedPowerMatch = text.match(/应对攻击.*造成(\d+)威力/);
+    if (responseAttackFixedPowerMatch) {
+      responsePower = Math.max(1, Number(responseAttackFixedPowerMatch[1]));
+    }
+    if (/应对攻击.*威力与被应对技能相等/.test(text)) {
+      const respondedSkillPower = Math.max(0, numberValue(context.respondedSkillPower, 0));
+      if (respondedSkillPower > 0) responsePower = respondedSkillPower;
+    }
     if (/无视敌方系别抵抗/.test(text)) {
       if (/应对状态.*无视敌方系别抵抗/.test(text)) {
         responseIgnoreResistance = true;
@@ -3450,7 +3458,7 @@
       canReceiveHitCountBonus,
       labels,
       postUseEffects,
-      powerRuleMatched: Boolean(specialPowerRule?.powerRuleMatched)
+      powerRuleMatched: Boolean(specialPowerRule?.powerRuleMatched || responsePower != null)
     };
   }
 
@@ -5257,6 +5265,10 @@
 
     function isAttackSkill(skill) {
       return skill && ["physical", "special", "attack"].includes(skill.category);
+    }
+
+    function pvpActionBasePower(action) {
+      return Math.max(0, Number(action?.power) || 0);
     }
 
     function defaultTeam() {
@@ -7135,6 +7147,13 @@
       if (skill.category === "special") {
         return { attackKey: "spa", defenseKey: "spd", label: "魔攻" };
       }
+      const text = `${skill?.description || ""} ${skill?.raw?.description || ""}`;
+      if (/物伤|物理伤害/.test(text)) {
+        return { attackKey: "atk", defenseKey: "defense", label: "物攻" };
+      }
+      if (/魔伤|魔法伤害/.test(text)) {
+        return { attackKey: "spa", defenseKey: "spd", label: "魔攻" };
+      }
       const physicalRatio = attackerStats.atk / Math.max(1, defenderStats.defense);
       const specialRatio = attackerStats.spa / Math.max(1, defenderStats.spd);
       return physicalRatio >= specialRatio
@@ -7155,10 +7174,8 @@
       if (!attacker || !defender || !action) return null;
       const effectiveAction = effectiveActionForPassives(action, attacker);
       const battleAction = effectiveAction.action;
-      const actionBasePower = Number(battleAction.power) || 0;
-      if (!isAttackSkill(battleAction)) {
-        return { error: `${action.name} 暂无可计算威力` };
-      }
+      const actionBasePower = pvpActionBasePower(battleAction);
+      const defenderAction = pvpActionFromState(defenderState, defender);
 
       const attackerPassiveMods = passiveStatMods(attacker, attackerState);
       const attackerSkillMods = normalizeStatMods(attackerState?.skillStatMods);
@@ -7223,7 +7240,7 @@
             defeatCount: attackerState?.defeatCounts?.[battleAction.id] ?? attackerState?.defeatCount ?? 0,
             defenderFaintedCount: defenderState?.faintedCount ?? 0,
             teamSkillCopies: attackerState?.teamSkillCopies || {},
-            respondedSkillPower: defenderState?.respondedSkillPower ?? 0,
+            respondedSkillPower: pvpActionBasePower(defenderAction),
             responseSuccessCount: attackerState?.responseSuccessCount ?? 0,
             positionChangeCount: attackerState?.positionChangeCounts?.[battleAction.id] ?? attackerState?.positionChangeCount ?? 0,
             otherTypeSkillUseCount: attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0,
@@ -7236,6 +7253,9 @@
             defaultEnergy: DEFAULT_PVP_ENERGY
           })
         : { power: actionBasePower, hitCount: 1, damageMultiplier: 1, canReceiveHitCountBonus: false, labels: [] };
+      if (!isAttackSkill(battleAction) && !variableDamage.powerRuleMatched) {
+        return { error: `${action.name} 暂无可计算威力` };
+      }
       if (!actionBasePower && !variableDamage.powerRuleMatched) {
         return { error: `${action.name} 暂无可计算威力` };
       }
@@ -7271,7 +7291,6 @@
       const manualPowerPercentBonus = Number(attackerState?.manualPowerPercentBonus) || 0;
       const defenseReduction = defenseReductionEffect(pvpActionFromState(defenderState, defender));
       const weatherMultiplier = window.LKWG_PVP_WEATHER_RULES.weatherPowerMultiplier(pvpSimState.weather, damageAction);
-      const defenderAction = pvpActionFromState(defenderState, defender);
       const responseStatus = window.LKWG_PVP_TURN_RULES.canRespondToAction(damageAction, defenderAction);
       const flatPowerAdd = traitEffects.flatPower + passiveDamage.powerAdd + manualDamageBonus;
       const powerBuffPercent = (traitEffects.powerMultiplier - 1)
@@ -7304,7 +7323,13 @@
       const hasResponseDamage = battleAction.id === "pvp-force-impact"
         || variableDamage.responsePower != null
         || responseDamageMultiplier !== 1;
-      const responseTriggered = hasResponseDamage && responseStatus.type === "attack-status";
+      const responseOnly = !isAttackSkill(battleAction) && variableDamage.responsePower != null;
+      const responseTriggered = hasResponseDamage && (
+        responseStatus.type === "attack-status" || responseStatus.type === "defense-attack"
+      );
+      if (responseOnly && !responseTriggered) {
+        return { error: `${action.name} 需要应对攻击后计算伤害` };
+      }
       const responseSkillPower = variableDamage.responsePower != null
         ? Math.max(1, Number(variableDamage.responsePower) || variablePower)
         : variablePower;
@@ -7338,6 +7363,7 @@
         power,
         responsePower,
         responseDamageMultiplier,
+        responseOnly,
         typeMultiplier,
         stabMultiplier,
         passiveDamageMultiplier: passiveDamage.damageMultiplier,
@@ -7463,7 +7489,21 @@
       if (damage.responseEstimate != null) {
         const responseReason = damage.action.id === "pvp-force-impact"
           ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
-          : `应对状态威力${damage.responsePower}${damage.responseDamageMultiplier && damage.responseDamageMultiplier !== 1 ? ` / 伤害×${damage.responseDamageMultiplier}` : ""}`;
+          : `${damage.responseReason || "应对状态"}威力${damage.responsePower}${damage.responseDamageMultiplier && damage.responseDamageMultiplier !== 1 ? ` / 伤害×${damage.responseDamageMultiplier}` : ""}`;
+        if (damage.responseOnly) {
+          return `
+            <div class="pvp-damage-result" data-pvp-damage-result="${side}">
+              <div class="pvp-damage-lines">
+                <div class="pvp-damage-line">
+                  <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate)}（扣除${damage.responsePercent}%生命，${escapeHtml(damage.responseReason || "应对")}）</strong>
+                  <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${damage.responsePower} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""} / ${responseReason}</span>
+                </div>
+                ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
+                <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
+              </div>
+            </div>
+          `;
+        }
         return `
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">

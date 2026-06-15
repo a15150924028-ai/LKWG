@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 10:39 +08:00 - Codex
+
+- Request: Fix PVP damage display for `硬门` and `听桥`.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/pvp-selected-skill-damage-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Allowed PVP response-damage defense skills to pass damage calculation when their description supplies a calculable response power.
+  - Parsed `应对攻击` fixed-power damage for `硬门` and responded-skill-equal power for `听桥`.
+  - Used the opposing selected skill power as the responded skill power and let `defense-attack` states trigger response damage.
+  - Forced physical damage mode for descriptions that explicitly say `物伤` or `物理伤害`.
+  - Rendered response-only damage cards without a fake normal base-power line, while keeping skill descriptions visible.
+  - Added static regression coverage for `硬门`, `听桥`, response-only rendering, and defense response triggers.
+- Verification: Watched `node tests/pvp-special-power-rules-static.test.js` fail before the fix on missing `硬门` response power, then pass after implementation. Watched it fail again before the response-only render rule, then pass after adding `responseOnly`. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/local-bundle-external-static.test.js`; parsed all 12 executable inline scripts; ran all 41 Node static tests; ran `git diff --check` with only CRLF line-ending warnings for touched files. In-app Browser verification was not run because this bug is covered by static PVP damage-rule tests and prior local `file://` automation is blocked by Browser policy in this environment.
+- Status: Complete.
+
 ### 2026-06-14 22:30 +08:00 - Codex
 
 - Request: Make the lower PVP damage cards use the same turn-order-aware damage logic as the hidden upper turn settlement UI, instead of applying a one-off fix for first-strike skills.

@@ -94,8 +94,8 @@ assert(
   "PVP damage results must resolve a sanitized description for the selected skill."
 );
 assert(
-  (damageResultSource.match(/class="pvp-skill-description"/g) || []).length === 3,
-  "Normal, response, and non-damage skill results must show the skill description at the bottom."
+  (damageResultSource.match(/class="pvp-skill-description"/g) || []).length >= 4,
+  "Normal, response, response-only, and non-damage skill results must show the skill description at the bottom."
 );
 assert(
   /if \(damage\?\.error\) \{[\s\S]*pvpSkillDescriptionText\(action\)[\s\S]*class="pvp-skill-description"/.test(damageResultSource),
