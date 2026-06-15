@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/team/index",
+    "pages/analysis/index",
+    "pages/pvp/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "精灵PVP策略助手",
+    "navigationBarBackgroundColor": "#f5f7fb",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f7fb",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#64748b",
+    "selectedColor": "#1677ff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/team/index",
+        "text": "队伍"
+      },
+      {
+        "pagePath": "pages/analysis/index",
+        "text": "分析"
+      },
+      {
+        "pagePath": "pages/pvp/index",
+        "text": "PVP"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

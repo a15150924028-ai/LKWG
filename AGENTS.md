@@ -56,6 +56,37 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 15:42 +08:00 - Codex
+
+- Request: Begin the native WeChat Mini Program implementation and fix the developer-tool `app.json` missing error.
+- Files changed:
+  - `project.config.json`
+  - `miniprogram/app.js`
+  - `miniprogram/app.json`
+  - `miniprogram/app.wxss`
+  - `miniprogram/sitemap.json`
+  - `miniprogram/pages/team/index.js`
+  - `miniprogram/pages/team/index.json`
+  - `miniprogram/pages/team/index.wxml`
+  - `miniprogram/pages/team/index.wxss`
+  - `miniprogram/pages/analysis/index.js`
+  - `miniprogram/pages/analysis/index.json`
+  - `miniprogram/pages/analysis/index.wxml`
+  - `miniprogram/pages/analysis/index.wxss`
+  - `miniprogram/pages/pvp/index.js`
+  - `miniprogram/pages/pvp/index.json`
+  - `miniprogram/pages/pvp/index.wxml`
+  - `miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-shell-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Pointed WeChat Developer Tools to `miniprogram/` and added the required application manifest.
+  - Added a native three-tab shell for team editing, analysis, and PVP without changing the existing web application.
+  - Added shared mobile styling and valid page, sitemap, and navigation configuration.
+- Verification: Watched `node tests/miniprogram-shell-static.test.js` fail because `miniprogramRoot` was missing, then pass after implementation. Parsed every new JSON file with Node and ran `git diff --check`. Windows Computer Use could not connect because its bundled runtime reported an `@oai/sky` package export error. The installed WeChat CLI was found, but `cli.bat open --project ...` timed out against the already open IDE, so simulator compilation still needs an IDE refresh check.
+- Status: Partial; the native shell is implemented and file-verified, while full feature migration continues.
+
 ### 2026-06-15 15:34 +08:00 - Codex
 
 - Request: Create and execute the implementation plan for the approved native WeChat Mini Program migration.

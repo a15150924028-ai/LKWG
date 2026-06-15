@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="hero">
+    <text class="hero-title">阵容分析</text>
+    <text class="hero-description">查看队伍属性覆盖、弱点、抗性与配置完成情况。</text>
+  </view>
+
+  <view class="status-card">
+    <text class="status-title">等待队伍配置</text>
+    <text class="status-text">完成队伍页配置后，本页会自动读取并生成分析。</text>
+    <button class="primary-button" bindtap="goToTeam">前往队伍</button>
+  </view>
+</view>

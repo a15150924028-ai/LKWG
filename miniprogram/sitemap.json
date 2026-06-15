@@ -1,0 +1,9 @@
+{
+  "desc": "精灵PVP策略助手页面索引",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

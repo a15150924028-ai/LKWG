@@ -23,13 +23,13 @@
 - Create: `miniprogram/pages/analysis/index.{js,json,wxml,wxss}`
 - Create: `miniprogram/pages/pvp/index.{js,json,wxml,wxss}`
 
-- [ ] **Step 1: Write the failing shell test**
+- [x] **Step 1: Write the failing shell test**
 
 Assert that `project.config.json.miniprogramRoot` is `miniprogram/`, all three
 pages exist, and `app.json` registers a three-item `tabBar` labelled `队伍`,
 `分析`, and `PVP`.
 
-- [ ] **Step 2: Run the test and verify RED**
+- [x] **Step 2: Run the test and verify RED**
 
 Run:
 
@@ -39,7 +39,7 @@ node tests/miniprogram-shell-static.test.js
 
 Expected: FAIL because `miniprogram/app.json` does not exist.
 
-- [ ] **Step 3: Add the minimal native shell**
+- [x] **Step 3: Add the minimal native shell**
 
 Create valid page files and configure:
 
@@ -69,11 +69,11 @@ Create valid page files and configure:
 }
 ```
 
-- [ ] **Step 4: Run the shell test and verify GREEN**
+- [x] **Step 4: Run the shell test and verify GREEN**
 
 Run `node tests/miniprogram-shell-static.test.js`.
 
-- [ ] **Step 5: Commit the shell**
+- [x] **Step 5: Commit the shell**
 
 Commit only shell files, the focused test, `project.config.json`, the updated
 plan, and `AGENTS.md`.
