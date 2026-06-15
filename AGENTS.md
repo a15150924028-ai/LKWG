@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 21:38 +08:00 - Codex
+
+- Request: Create the implementation plan for the approved web-equivalent Mini Program roller icon and fuzzy autocomplete.
+- Files changed:
+  - `docs/superpowers/plans/2026-06-15-wechat-roller-icon-fuzzy-search.md`
+  - `AGENTS.md`
+- Changes:
+  - Planned deterministic extraction of the web roller PNG and pinyin map instead of maintaining duplicate hand-edited assets.
+  - Split implementation into generated assets, fuzzy ranking and alias propagation, button UI, and complete verification/publication.
+  - Preserved the existing picker index event contract and excluded unrelated local changes from publication.
+- Verification: Reviewed the plan against the approved design, current web search functions, Mini Program option shapes, and repository publication requirements; scanned for placeholders and deferred implementation.
+- Status: Complete; implementation starts immediately.
+
 ### 2026-06-15 21:30 +08:00 - Codex
 
 - Request: Design the Mini Program roller button icon and restore the web version's fuzzy autocomplete behavior for every selector.
