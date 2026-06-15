@@ -39,6 +39,16 @@
         />
       </view>
 
+      <view wx:if="{{pet.passives.length}}" class="detail-panel">
+        <text class="detail-heading">特性</text>
+        <block wx:for="{{pet.passives}}" wx:key="id" wx:for-item="passive">
+          <view class="detail-item">
+            <text class="detail-name">{{passive.name}}</text>
+            <text class="detail-description">{{passive.description}}</text>
+          </view>
+        </block>
+      </view>
+
       <field-picker
         label="性格"
         options="{{natureOptions}}"
@@ -79,6 +89,19 @@
             data-skill-index="{{skillIndex}}"
             bind:change="onSkillChange"
           />
+        </block>
+      </view>
+
+      <view wx:if="{{pet.skillDetails.length}}" class="detail-panel skill-detail-panel">
+        <text class="detail-heading">技能说明</text>
+        <block wx:for="{{pet.skillDetails}}" wx:key="id" wx:for-item="skillDetail">
+          <view class="detail-item">
+            <view class="skill-detail-head">
+              <text class="detail-name">{{skillDetail.slot}}. {{skillDetail.name}}</text>
+              <text class="skill-meta">{{skillDetail.typeName}} · {{skillDetail.categoryName}} · 威力 {{skillDetail.powerLabel}} · 耗能 {{skillDetail.costLabel}}</text>
+            </view>
+            <text class="detail-description">{{skillDetail.description}}</text>
+          </view>
         </block>
       </view>
 

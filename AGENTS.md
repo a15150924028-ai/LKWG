@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 16:12 +08:00 - Codex
+
+- Request: Finish ordinary-user feature parity for the new native WeChat Mini Program while preserving the existing web version.
+- Files changed:
+  - `miniprogram/pages/team/index.js`
+  - `miniprogram/pages/team/index.wxml`
+  - `miniprogram/pages/team/index.wxss`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added the selected monster's passive names and descriptions to each Mini Program team card.
+  - Added selected-skill details including type, category, power, energy cost, and description.
+  - Confirmed the web-only generated `（首领）` duplicates are intentionally hidden from ordinary team and PVP selectors; retained the synchronized direct boss records without exposing duplicate generated options.
+  - Added regression coverage requiring passive and selected-skill details in the native team page.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` fail before implementation and pass afterward. Ran all 51 Node tests; checked both Mini Program data/rule generators with `--check`; parsed all 31 Mini Program JavaScript files and 7 JSON files; passed the WXML compatibility scan; measured the package at 1,436,169 bytes (1.37 MiB); ran `git diff --check`. WeChat Developer Tools compile and real-device preview still require manual validation because the local CLI service port is unavailable.
+- Status: Complete for implementation and automated verification; IDE compile and real-device preview remain external validation steps.
+
 ### 2026-06-15 16:07 +08:00 - Codex
 
 - Request: Finish automated verification and document maintenance and publishing for the native WeChat Mini Program.

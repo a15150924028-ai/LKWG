@@ -102,3 +102,55 @@
   font-size: 23rpx;
   font-weight: 650;
 }
+
+.detail-panel {
+  margin-top: 16rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #f7f9fc;
+}
+
+.detail-heading {
+  display: block;
+  color: #344054;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.detail-item {
+  margin-top: 12rpx;
+}
+
+.detail-item + .detail-item {
+  padding-top: 12rpx;
+  border-top: 1rpx solid #e4e9f0;
+}
+
+.detail-name,
+.detail-description,
+.skill-meta {
+  display: block;
+}
+
+.detail-name {
+  color: #1d2939;
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.detail-description {
+  margin-top: 6rpx;
+  color: #667085;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.skill-detail-head {
+  display: block;
+}
+
+.skill-meta {
+  margin-top: 4rpx;
+  color: #475467;
+  font-size: 20rpx;
+}

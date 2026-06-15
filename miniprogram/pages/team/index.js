@@ -1,5 +1,5 @@
 const catalog = require("../../data/catalog");
-const { BLOODLINES, NATURES, TALENTS } = require("../../domain/constants");
+const { TYPES, BLOODLINES, NATURES, TALENTS } = require("../../domain/constants");
 const teamRules = require("../../domain/team");
 const { createStorageAdapter } = require("../../utils/storage");
 
@@ -17,14 +17,39 @@ const monsterOptions = optionsWithBlank(catalog.monsterOptions);
 const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
+const typeNameById = new Map(TYPES.map((type) => [type.id, type.name]));
+const categoryNames = {
+  physical: "物理",
+  special: "魔法",
+  status: "状态",
+  defense: "防御",
+  cute: "可爱"
+};
 
 function selection(options, id) {
   const index = Math.max(0, options.findIndex((option) => option.id === id));
   return { index, label: options[index].label };
 }
 
+function selectedSkillDetail(skillId, index) {
+  const skill = catalog.getSkill(skillId);
+  if (!skill) return null;
+  const cost = skill.pp ?? skill.energyCost;
+  return {
+    id: skill.id,
+    slot: index + 1,
+    name: skill.name,
+    typeName: typeNameById.get(skill.type) || skill.type || "无属性",
+    categoryName: categoryNames[skill.category || skill.mode] || skill.category || skill.mode || "技能",
+    powerLabel: Number(skill.power) > 0 ? String(skill.power) : "—",
+    costLabel: Number.isFinite(Number(cost)) ? String(cost) : "—",
+    description: skill.description || "暂无技能描述"
+  };
+}
+
 function teamView(team) {
   return team.map((pet, slot) => {
+    const monster = catalog.getMonster(pet.monsterId);
     const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));
     return {
       ...pet,
@@ -34,8 +59,19 @@ function teamView(team) {
       bloodlineSelection: selection(bloodlineOptions, pet.bloodlineId),
       natureSelection: selection(natureOptions, pet.natureId),
       talents: pet.talentIds.map((talentId) => selection(talentOptions, talentId)),
+      passives: (monster?.passiveIds || [])
+        .map((passiveId) => catalog.getPassive(passiveId))
+        .filter(Boolean)
+        .map((passive) => ({
+          id: passive.id,
+          name: passive.name,
+          description: passive.description || "暂无特性说明"
+        })),
       skillOptions,
       skillSelections: pet.skills.map((skill) => selection(skillOptions, skill.skillId)),
+      skillDetails: pet.skills
+        .map((skill, index) => selectedSkillDetail(skill.skillId, index))
+        .filter(Boolean),
       rollerSelection: selection(skillOptions, pet.rollerSkillId)
     };
   });

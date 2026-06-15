@@ -47,6 +47,20 @@ for (const binding of [
 assert(pageWxml.includes("配置完成"));
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes("撤回过山车"));
+assert(pageJs.includes("catalog.getPassive"), "team view must resolve monster passives");
+assert(pageJs.includes("catalog.getSkill"), "team view must resolve selected skill details");
+assert(pageJs.includes("passives:"), "team view must expose passive details");
+assert(pageJs.includes("skillDetails:"), "team view must expose selected skill details");
+assert(pageWxml.includes("特性"), "team cards must show passive details");
+assert(pageWxml.includes("技能说明"), "team cards must show selected skill details");
+assert(
+  pageWxml.includes("{{passive.description}}"),
+  "team cards must render passive descriptions"
+);
+assert(
+  pageWxml.includes("{{skillDetail.description}}"),
+  "team cards must render selected skill descriptions"
+);
 assert(pageJs.includes("storage.saveTeam"));
 assert(pageJs.includes("wx.showModal"));
 
