@@ -86,18 +86,18 @@ plan, and `AGENTS.md`.
 - Create: `miniprogram/data/local-bundle.js`
 - Create: `miniprogram/data/catalog.js`
 
-- [ ] **Step 1: Write a failing synchronization test**
+- [x] **Step 1: Write a failing synchronization test**
 
 Run the sync script in check mode and assert generated monster, skill, and
 passive counts match `data/local-bundle.json`; assert all monster skill and
 passive references resolve.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-data-sync-static.test.js` and expect failure because
 the script and generated module are absent.
 
-- [ ] **Step 3: Implement synchronization**
+- [x] **Step 3: Implement synchronization**
 
 The script must validate schema version `1`, IDs, numerical stats, types, and
 references, then write:
@@ -108,12 +108,12 @@ module.exports = Object.freeze(<validated JSON>);
 
 Support `--check` to compare generated content without writing.
 
-- [ ] **Step 4: Add catalog indexes**
+- [x] **Step 4: Add catalog indexes**
 
 Export `monsterById`, `skillById`, `passiveById`, sorted picker lists, and safe
 lookup functions from `miniprogram/data/catalog.js`.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run the focused sync test and the existing local-bundle validation tests.
 

@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 15:49 +08:00 - Codex
+
+- Request: Continue the native Mini Program migration by packaging the existing local data for WeChat runtime use.
+- Files changed:
+  - `scripts/sync-miniprogram-data.js`
+  - `miniprogram/data/local-bundle.js`
+  - `miniprogram/data/catalog.js`
+  - `tests/miniprogram-data-sync-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added strict schema, ID, type, stat, and cross-reference validation for Mini Program data generation.
+  - Generated a deterministic CommonJS data module from the authoritative `data/local-bundle.json`.
+  - Added reusable monster, skill, and passive indexes plus picker-option helpers.
+  - Added `--check` mode so stale generated data fails verification without rewriting files.
+- Verification: Watched `node tests/miniprogram-data-sync-static.test.js` fail because the sync script was missing, generated data for 513 monsters, 498 skills, and 189 passives, then watched the focused test pass. Also ran `node tests/local-bundle-import-validation.test.js` and `node tests/local-bundle-external-static.test.js`.
+- Status: Complete.
+
 ### 2026-06-15 15:42 +08:00 - Codex
 
 - Request: Begin the native WeChat Mini Program implementation and fix the developer-tool `app.json` missing error.
