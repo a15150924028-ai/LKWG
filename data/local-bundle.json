@@ -6765,7 +6765,8 @@
         "skill-触底强击",
         "skill-酶浓度调整",
         "skill-魔能爆",
-        "skill-加大功率"
+        "skill-加大功率",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-快充"
@@ -15828,7 +15829,8 @@
         "skill-有效预防",
         "skill-快速移动",
         "skill-应激反应",
-        "skill-主场优势"
+        "skill-主场优势",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-拉拉队长"
@@ -15908,7 +15910,8 @@
         "skill-有效预防",
         "skill-快速移动",
         "skill-应激反应",
-        "skill-主场优势"
+        "skill-主场优势",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-拉拉队长"
@@ -16973,7 +16976,8 @@
         "skill-热身运动",
         "skill-生日蛋糕",
         "skill-藤绞",
-        "skill-追打"
+        "skill-追打",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-无忧无虑"
@@ -20167,7 +20171,8 @@
         "skill-超维投射",
         "skill-速冻",
         "skill-降灵",
-        "skill-风起"
+        "skill-风起",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-吟游之弦"
@@ -42442,7 +42447,8 @@
         "skill-生日蛋糕",
         "skill-退化",
         "skill-除厄",
-        "skill-魔法增效"
+        "skill-魔法增效",
+        "skill-加油"
       ],
       "passiveIds": [
         "passive-仁心"
@@ -47573,6 +47579,22 @@
       "accuracy": null,
       "priority": 0,
       "description": "减伤90%，应对攻击：敌方获得1层萌化。",
+      "raw": {}
+    },
+    {
+      "kind": "skill",
+      "id": "skill-加油",
+      "name": "加油",
+      "aliases": [],
+      "type": "cute",
+      "category": "status",
+      "mode": "",
+      "power": 0,
+      "pp": 2,
+      "energyCost": null,
+      "accuracy": null,
+      "priority": 0,
+      "description": "自己获得1层萌芽印记。",
       "raw": {}
     },
     {

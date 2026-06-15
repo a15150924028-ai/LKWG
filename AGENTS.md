@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 12:40 +08:00 - Codex
+
+- Request: Add missing local `加油` skill data after checking the BWiki skill index and skill page.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-cheer-skill-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added local skill record `skill-加油` as a cute status skill with BWiki description, dash-power represented as `power: 0`, and cost `pp: 2`.
+  - Added `skill-加油` to the local skill pools for `加油海葵`, `加油蟹`, `电咩咩`, `菊花梨`, `里拉鳐`, and `治愈兔`.
+  - Added regression coverage for the skill fields and all BWiki-listed local learners.
+- Verification: Watched `node tests/local-bundle-cheer-skill-static.test.js` fail before the data change because `加油` was missing, then pass after updating the bundle. Ran `node tests/local-bundle-import-validation.test.js`; `node tests/local-bundle-external-static.test.js`; `node tests/local-bundle-skill-descriptions-static.test.js`.
+- Status: Complete.
+
 ### 2026-06-15 11:26 +08:00 - Codex
 
 - Request: Add BWiki skill `微型斥候` to the local bundle and make the 方舟 evolution line able to learn it.
