@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 21:30 +08:00 - Codex
+
+- Request: Design the Mini Program roller button icon and restore the web version's fuzzy autocomplete behavior for every selector.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-15-wechat-roller-icon-fuzzy-search-design.md`
+  - `AGENTS.md`
+- Changes:
+  - Specified extracting the existing 23,758-byte embedded roller PNG into the Mini Program package and rendering it inside the existing equal-width action button.
+  - Defined web-parity fuzzy ranking across names, aliases, pinyin, pinyin initials, and bounded edit distance with a 20-result cap.
+  - Preserved the current picker index event contract and existing team/PVP state schemas.
+- Verification: Measured the embedded roller PNG at 23.20 KiB, measured the current web pinyin map at approximately 12.84 KiB, compared the Mini Program contains-only filter with the web fuzzy scoring functions, and reviewed package growth against the current 1.377 MiB runtime.
+- Status: Complete; awaiting design review before implementation planning.
+
 ### 2026-06-15 21:21 +08:00 - Codex
 
 - Request: Implement the web-style top six-card team switcher and searchable autocomplete inputs for every selector on the Mini Program team and PVP pages.
