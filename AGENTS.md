@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 14:57 +08:00 - Codex
+
+- Request: Rename the PVP default-build warning from `未选择项默认...` to `未选择性格、天分默认...`.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-default-build-presets-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated the incomplete-build guidance to explicitly identify nature and talents as the fields receiving preset defaults.
+  - Preserved the dynamic nature and three-talent names and all preset calculation behavior.
+  - Added regression coverage for the exact guidance template.
+- Verification: Watched `node tests/pvp-default-build-presets-static.test.js` fail before the wording change and pass afterward. Ran all 44 Node static tests; parsed all 13 executable inline scripts; ran `git diff --check` with only CRLF line-ending warnings. Reloaded `http://localhost:8765/`; the current cleared browser state showed `未选择精灵`, so the selected-monster guidance was verified through its focused render-source regression.
+- Status: Complete.
+
 ### 2026-06-15 14:49 +08:00 - Codex
 
 - Request: Embed the PVP `种族值` label inside the stats frame so it no longer floats between the enemy build preset buttons and the frame.

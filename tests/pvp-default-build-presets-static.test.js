@@ -120,6 +120,10 @@ assert(
     statsSource.includes("pvp-talent-mark"),
   "Race-stat cards must render nature arrows and talent markers from the shared effective build."
 );
+assert(
+  statsSource.includes("未选择性格、天分默认${defaultNatureText}、${defaultTalentText}。"),
+  "Preset guidance must explicitly say unselected nature and talents use the shown defaults."
+);
 assert(statsSource.includes("＋"), "Talent markers must render a full-width green plus sign.");
 assert(!statsSource.includes("+60"), "Race-stat cards must not render +60 talent text.");
 assert(
