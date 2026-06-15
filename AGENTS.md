@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 14:49 +08:00 - Codex
+
+- Request: Embed the PVP `种族值` label inside the stats frame so it no longer floats between the enemy build preset buttons and the frame.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a dedicated `pvp-stats-field` class to the PVP base-stat container.
+  - Kept other compact field labels on their existing inset borders, while moving only the base-stat label into normal flow inside its frame with compact spacing.
+  - Added regression coverage requiring the stats label to remain inside the stats frame.
+- Verification: Watched `node tests/pvp-compact-side-layout-static.test.js` fail before implementation and pass afterward. Ran all 44 Node static tests; parsed all 13 executable inline scripts; ran `git diff --check` with only CRLF line-ending warnings. Reloaded `http://localhost:8765/` in the in-app Browser and measured both labels inside their frames and above their stat panels; the enemy preset row retained 4px clearance from the stats frame.
+- Status: Complete.
+
 ### 2026-06-15 14:41 +08:00 - Codex
 
 - Request: Make the PVP race-stat nature arrows and talent plus markers thicker and easier to read.

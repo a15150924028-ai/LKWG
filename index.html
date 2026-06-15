@@ -1143,6 +1143,19 @@
       line-height: 14px;
     }
 
+    .pvp-side-form .pvp-stats-field {
+      padding-top: 5px;
+    }
+
+    .pvp-side-form .pvp-stats-field > label {
+      position: static;
+      display: block;
+      width: fit-content;
+      margin: 0 0 3px;
+      padding: 0;
+      background: transparent;
+    }
+
     .pvp-side-form .pvp-compact-field-single > .combo > .combo-control {
       min-height: 34px;
       border: 0;
@@ -8667,7 +8680,7 @@
                 }).join("")}
               </div>
             ` : ""}
-            <div class="field pvp-compact-field pvp-compact-field-group">
+            <div class="field pvp-compact-field pvp-compact-field-group pvp-stats-field">
               <label>种族值</label>
               ${renderPvpPanelStats(monster, state, side)}
             </div>

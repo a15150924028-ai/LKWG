@@ -82,6 +82,11 @@ assert(
   "PVP compact labels must be inset into their field borders."
 );
 assert(
+  sideSource.includes('class="field pvp-compact-field pvp-compact-field-group pvp-stats-field"') &&
+    /\.pvp-side-form\s+\.pvp-stats-field\s*>\s*label\s*\{[^}]*position:\s*static;[^}]*background:\s*transparent;/s.test(html),
+  "PVP stats labels must sit inside the stats frame instead of floating into the preset row."
+);
+assert(
   /\.pvp-sim-grid\s*\{[\s\S]*?grid-template-columns:\s*1fr;/.test(phoneBlock),
   "Phone-width PVP simulator must stack ally and enemy panels into one column."
 );
