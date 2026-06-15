@@ -60,6 +60,16 @@ assert(
   "PVP nature, talents, and stats must use inset compact fields."
 );
 assert(
+  sideSource.includes('class="pvp-build-presets"') &&
+    sideSource.includes('data-pvp-build-preset="${preset.id}"'),
+  "Enemy PVP default-build presets must render in one compact control row."
+);
+assert(
+  /\.pvp-build-presets\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/s.test(html) &&
+    /\.pvp-build-preset\s*\{[^}]*min-height:\s*28px;[^}]*border-radius:\s*9px;/s.test(html),
+  "PVP default-build presets must use three equal compact Apple-style buttons."
+);
+assert(
   /\.pvp-side-form\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\);/s.test(html),
   "PVP side form should use a single vertical stack of compact rows."
 );
@@ -82,6 +92,10 @@ assert(
 assert(
   /\.pvp-side-form\s+\.pvp-build-row\s+\.talent-picks\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/.test(phoneBlock),
   "Phone-width PVP talent picks must stay in one compact three-column row."
+);
+assert(
+  /\.pvp-build-presets\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);/.test(phoneBlock),
+  "Phone-width enemy build presets must remain in one three-button row."
 );
 assert(
   /\.pvp-buff-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/.test(phoneBlock),

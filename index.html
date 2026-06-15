@@ -419,8 +419,43 @@
     }
 
     .pvp-panel-stats .stat-value {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
       margin-top: 1px;
       font-size: 12px;
+    }
+
+    .pvp-panel-stats .stat-cell.nature-up {
+      border-color: #b7e4c7;
+      background: #eaf8ef;
+    }
+
+    .pvp-panel-stats .stat-cell.nature-down {
+      border-color: #fecaca;
+      background: #fff0f0;
+    }
+
+    .pvp-nature-arrow {
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .nature-up .pvp-nature-arrow {
+      color: #15803d;
+    }
+
+    .nature-down .pvp-nature-arrow {
+      color: #dc2626;
+    }
+
+    .pvp-talent-mark {
+      color: #059669;
+      font-size: 12px;
+      font-weight: 1000;
+      line-height: 1;
     }
 
     .pvp-default-note {
@@ -1039,6 +1074,40 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 4px;
       min-width: 0;
+    }
+
+    .pvp-build-presets {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      margin-top: 0;
+    }
+
+    .pvp-build-preset {
+      min-width: 0;
+      min-height: 28px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: #f8fafc;
+      color: #475569;
+      padding: 3px 5px;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.1;
+      cursor: pointer;
+      transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .pvp-build-preset:hover {
+      border-color: #93b4d8;
+      background: #eef6ff;
+    }
+
+    .pvp-build-preset.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 113, 227, 0.2);
     }
 
     .pvp-side-form .pvp-compact-field {
@@ -2661,6 +2730,11 @@
 
       .pvp-side-form .pvp-build-row .talent-picks {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pvp-build-presets {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3px;
       }
 
       .pvp-buff-grid {
@@ -4787,6 +4861,98 @@
 
 </script>
   <script>
+(function initPvpBuildRules(root, factory) {
+  const api = factory();
+  if (typeof module === "object" && module.exports) {
+    module.exports = api;
+  }
+  root.LKWG_PVP_BUILD_RULES = api;
+})(typeof globalThis !== "undefined" ? globalThis : window, function buildPvpBuildRules() {
+  const DEFAULT_PRESET = "durable";
+  const PRESETS = [
+    { id: "durable", label: "最肉" },
+    { id: "fast", label: "最速" },
+    { id: "attack", label: "最高攻击" }
+  ];
+  const PRESET_IDS = new Set(PRESETS.map((preset) => preset.id));
+
+  function normalizePreset(presetId) {
+    return PRESET_IDS.has(presetId) ? presetId : DEFAULT_PRESET;
+  }
+
+  function resolveDefaultBuild(presetId, monster) {
+    const normalizedPreset = normalizePreset(presetId);
+    const physicalAttack = Number(monster?.stats?.atk ?? monster?.raw?.stats?.atk) || 0;
+    const specialAttack = Number(monster?.stats?.spa ?? monster?.raw?.stats?.spa) || 0;
+    const usesPhysicalBranch = physicalAttack >= specialAttack;
+    if (normalizedPreset === "fast") {
+      return {
+        presetId: normalizedPreset,
+        natureId: usesPhysicalBranch ? "nature-jolly" : "nature-timid",
+        talentIds: ["talent-hp", usesPhysicalBranch ? "talent-atk" : "talent-spa", "talent-spe"]
+      };
+    }
+    if (normalizedPreset === "attack") {
+      return {
+        presetId: normalizedPreset,
+        natureId: usesPhysicalBranch ? "nature-brave" : "nature-quiet",
+        talentIds: ["talent-hp", "talent-atk", "talent-spa"]
+      };
+    }
+    return {
+      presetId: DEFAULT_PRESET,
+      natureId: "nature-practical",
+      talentIds: ["talent-hp", "talent-def", "talent-spd"]
+    };
+  }
+
+  function resolveEffectiveBuild(input = {}) {
+    const side = input.side === "enemy" ? "enemy" : "ally";
+    const presetId = side === "enemy" ? normalizePreset(input.presetId) : DEFAULT_PRESET;
+    const defaults = resolveDefaultBuild(presetId, input.monster);
+    const manualNatureId = String(input.natureId || "");
+    const manualTalentIds = Array.from({ length: 3 }, (_, index) => String(input.talentIds?.[index] || ""));
+    const talentIds = manualTalentIds.slice();
+    const usedTalentIds = new Set();
+    talentIds.forEach((talentId, index) => {
+      if (!talentId || usedTalentIds.has(talentId)) {
+        talentIds[index] = "";
+        return;
+      }
+      usedTalentIds.add(talentId);
+    });
+    talentIds.forEach((talentId, index) => {
+      if (talentId) return;
+      const fallbackTalentId = defaults.talentIds.find((candidateId) => !usedTalentIds.has(candidateId));
+      if (!fallbackTalentId) return;
+      talentIds[index] = fallbackTalentId;
+      usedTalentIds.add(fallbackTalentId);
+    });
+    const allManual = Boolean(manualNatureId)
+      && manualTalentIds.every(Boolean)
+      && new Set(manualTalentIds).size === manualTalentIds.length;
+    return {
+      presetId,
+      natureId: manualNatureId || defaults.natureId,
+      talentIds,
+      defaultNatureId: defaults.natureId,
+      defaultTalentIds: defaults.talentIds.slice(),
+      allManual,
+      usesDefaults: !allManual
+    };
+  }
+
+  return {
+    DEFAULT_PRESET,
+    PRESETS,
+    normalizePreset,
+    resolveDefaultBuild,
+    resolveEffectiveBuild
+  };
+});
+
+</script>
+  <script>
     const LOCAL_BUNDLE_URL = "data/local-bundle.json";
     const ADMIN_DATA_STORAGE_KEY = "roco-world-admin-local-bundle-v1";
     const STORAGE_KEY = "roco-world-type-tool-v3";
@@ -5097,6 +5263,8 @@
     const DEFAULT_DAMAGE_NATURE_TEXT = "踏实性格";
     const DEFAULT_DAMAGE_TALENT_TEXT = "生命、物防、魔防";
     const DEFAULT_DAMAGE_TALENT_EMPTY_TEXTS = ["默认生命", "默认物防", "默认魔防"];
+    const PVP_BUILD_PRESETS = window.LKWG_PVP_BUILD_RULES.PRESETS;
+    const DEFAULT_PVP_BUILD_PRESET = window.LKWG_PVP_BUILD_RULES.DEFAULT_PRESET;
     const PVP_MAX_IV = 10;
     const PVP_IV_STAT_RATE = 3;
     const PVP_HP_STAT_RATE = 1.7;
@@ -5189,7 +5357,7 @@
       undoSnapshot: null,
       turnNumber: 0,
       ally: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, traitLayerMemory: {}, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" },
-      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, traitLayerMemory: {}, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
+      enemy: { monsterId: "", bloodlineId: "", natureId: "", talentIds: ["", "", ""], defaultBuildPreset: DEFAULT_PVP_BUILD_PRESET, skillIds: ["", "", "", ""], action: "", actionMonsterId: "", actionCuteLayers: 0, forceImpact: false, traitLayers: 0, traitLayerMemory: {}, cuteLayers: 0, currentHp: 0, currentHpMonsterId: "", energy: DEFAULT_PVP_ENERGY, skillCostOverrides: {}, statusLayers: {}, nextPriority: 0, defenseBlockTurns: 0, skillStatMods: {}, skillFlatStatMods: {}, manualStatMods: {}, manualDamageBonus: 0, manualPowerPercentBonus: 0, manualHitCountBonus: 0, usedSupportSkillIds: [], supportText: "" }
     };
 
     let dexSourceData = FALLBACK_DATA;
@@ -6635,8 +6803,7 @@
       `;
     }
 
-    function natureStatMods(natureId) {
-      const mods = { hp: 1, atk: 1, defense: 1, spa: 1, spd: 1, spe: 1 };
+    function natureStatPair(natureId) {
       const map = {
         "nature-silent": ["hp", "atk"],
         "nature-peaceful": ["hp", "spa"],
@@ -6669,7 +6836,12 @@
         "nature-careful": ["spd", "spe"],
         "nature-anxious": ["spd", "hp"]
       };
-      const pair = natureId ? map[natureId] : [DEFAULT_DAMAGE_NATURE_UP, DEFAULT_DAMAGE_NATURE_DOWN];
+      return map[natureId] || [DEFAULT_DAMAGE_NATURE_UP, DEFAULT_DAMAGE_NATURE_DOWN];
+    }
+
+    function natureStatMods(natureId) {
+      const mods = { hp: 1, atk: 1, defense: 1, spa: 1, spd: 1, spe: 1 };
+      const pair = natureStatPair(natureId);
       if (pair?.[0] && pair?.[1]) {
         mods[pair[0]] = PVP_NATURE_UP_MOD;
         mods[pair[1]] = PVP_NATURE_DOWN_MOD;
@@ -6681,20 +6853,44 @@
       return DEFAULT_DAMAGE_TALENT_EMPTY_TEXTS[talentIndex] || "默认天分";
     }
 
-    function effectiveTalentIds(state) {
-      const ids = unique(state?.talentIds || []);
-      DEFAULT_DAMAGE_TALENTS.forEach((id) => {
-        if (ids.length < 3 && !ids.includes(id)) ids.push(id);
+    function pvpNatureShortName(natureId) {
+      const nature = PVP_NATURES.find((item) => item.id === natureId);
+      return nature?.aliases?.[0] || String(nature?.name || "").split("（")[0] || "踏实";
+    }
+
+    function pvpTalentName(talentId) {
+      return PVP_TALENTS.find((item) => item.id === talentId)?.name || "天分";
+    }
+
+    function resolveEffectivePvpBuild(state, monster = monsterById.get(state?.monsterId)) {
+      return window.LKWG_PVP_BUILD_RULES.resolveEffectiveBuild({
+        side: state?.side,
+        presetId: state?.defaultBuildPreset,
+        monster,
+        natureId: state?.natureId,
+        talentIds: state?.talentIds
       });
-      return ids.slice(0, 3);
     }
 
-    function hasDamageTalent(state, statKey) {
-      return effectiveTalentIds(state).some((id) => TALENT_STAT_BY_ID[id] === statKey);
+    function effectiveTalentIds(state, monster) {
+      return resolveEffectivePvpBuild(state, monster).talentIds;
     }
 
-    function pvpTalentIv(state, statKey) {
-      return hasDamageTalent(state, statKey) ? PVP_MAX_IV : 0;
+    function defaultPvpNatureEmptyText(state, monster) {
+      return `默认${pvpNatureShortName(resolveEffectivePvpBuild(state, monster).defaultNatureId)}性格`;
+    }
+
+    function defaultPvpTalentEmptyText(state, monster, talentIndex) {
+      const talentId = resolveEffectivePvpBuild(state, monster).talentIds[talentIndex];
+      return `默认${pvpTalentName(talentId)}`;
+    }
+
+    function hasDamageTalent(state, statKey, monster) {
+      return effectiveTalentIds(state, monster).some((id) => TALENT_STAT_BY_ID[id] === statKey);
+    }
+
+    function pvpTalentIv(state, statKey, monster) {
+      return hasDamageTalent(state, statKey, monster) ? PVP_MAX_IV : 0;
     }
 
     function blankStatMods() {
@@ -6929,8 +7125,9 @@
 
     function finalBattleStat(monster, state, statKey) {
       const base = Number(monster?.raw?.stats?.[statKey]) || 0;
-      const iv = pvpTalentIv(state, statKey);
-      const mod = natureStatMods(state?.natureId)[statKey] || 1;
+      const effectiveBuild = resolveEffectivePvpBuild(state, monster);
+      const iv = pvpTalentIv(state, statKey, monster);
+      const mod = natureStatMods(effectiveBuild.natureId)[statKey] || 1;
       const trained = statKey === "hp"
         ? PVP_HP_STAT_RATE * (base + PVP_IV_STAT_RATE * iv) + PVP_HP_INNER_BONUS
         : PVP_NON_HP_STAT_RATE * (base + PVP_IV_STAT_RATE * iv) + PVP_NON_HP_INNER_BONUS;
@@ -8089,6 +8286,7 @@
         state.skillIds = ["", "", "", ""];
       }
       state.skillIds = Array.from({ length: 4 }, (_, index) => state.skillIds[index] || "");
+      state.defaultBuildPreset = window.LKWG_PVP_BUILD_RULES.normalizePreset(state.defaultBuildPreset);
       state.action = typeof state.action === "string" ? state.action : "";
       state.actionMonsterId = state.action ? (typeof state.actionMonsterId === "string" ? state.actionMonsterId : "") : "";
       state.actionCuteLayers = state.action ? normalizePvpCuteLayers(state.actionCuteLayers) : 0;
@@ -8187,6 +8385,7 @@
       state.bloodlineId = "";
       state.natureId = "";
       state.talentIds = ["", "", ""];
+      state.defaultBuildPreset = DEFAULT_PVP_BUILD_PRESET;
       state.skillIds = ["", "", "", ""];
       state.action = "";
       state.actionMonsterId = "";
@@ -8258,26 +8457,45 @@
       if (!monster) {
         return `<div class="readonly-line pvp-panel-stats" data-pvp-panel-stats="${side}"><span class="tag empty">未选择精灵</span></div>`;
       }
+      const effectiveBuild = resolveEffectivePvpBuild(state, monster);
+      const [natureUpStat, natureDownStat] = natureStatPair(effectiveBuild.natureId);
+      const talentStats = new Set(effectiveBuild.talentIds.map((talentId) => TALENT_STAT_BY_ID[talentId]).filter(Boolean));
       const stats = finalBattleStats(monster, state, blankStatMods());
       const rows = [
-        ["生命", stats.hp],
-        ["物攻", stats.atk],
-        ["物防", stats.defense],
-        ["魔攻", stats.spa],
-        ["魔防", stats.spd],
-        ["速度", stats.spe]
+        ["hp", "生命", stats.hp],
+        ["atk", "物攻", stats.atk],
+        ["defense", "物防", stats.defense],
+        ["spa", "魔攻", stats.spa],
+        ["spd", "魔防", stats.spd],
+        ["spe", "速度", stats.spe]
       ];
+      const defaultNatureText = `${pvpNatureShortName(effectiveBuild.defaultNatureId)}性格`;
+      const defaultTalentText = effectiveBuild.defaultTalentIds.map(pvpTalentName).join("、");
+      const noteText = effectiveBuild.allManual
+        ? "当前性格、天分已手动配置。"
+        : `未选择项默认${defaultNatureText}、${defaultTalentText}。`;
       return `
         <div class="pvp-panel-stats" data-pvp-panel-stats="${side}">
           <div class="stat-grid">
-            ${rows.map(([label, value]) => `
-              <div class="stat-cell">
+            ${rows.map(([statKey, label, value]) => {
+              const natureClass = statKey === natureUpStat ? " nature-up" : statKey === natureDownStat ? " nature-down" : "";
+              const natureArrow = statKey === natureUpStat
+                ? '<span class="pvp-nature-arrow" aria-label="性格加成">↑</span>'
+                : statKey === natureDownStat
+                  ? '<span class="pvp-nature-arrow" aria-label="性格削弱">↓</span>'
+                  : "";
+              const talentMark = talentStats.has(statKey)
+                ? '<span class="pvp-talent-mark" aria-label="天分加成">＋</span>'
+                : "";
+              return `
+              <div class="stat-cell${natureClass}">
                 <span class="stat-label">${escapeHtml(label)}</span>
-                <span class="stat-value">${Number(value) || 0}</span>
+                <span class="stat-value">${Number(value) || 0}${natureArrow}${talentMark}</span>
               </div>
-            `).join("")}
+            `;
+            }).join("")}
           </div>
-          <div class="pvp-default-note">未选择性格、天分时，默认${escapeHtml(DEFAULT_DAMAGE_NATURE_TEXT)}、${escapeHtml(DEFAULT_DAMAGE_TALENT_TEXT)}。</div>
+          <div class="pvp-default-note">${escapeHtml(noteText)}</div>
         </div>
       `;
     }
@@ -8436,6 +8654,15 @@
                 </div>
               </div>
             </div>
+            ${side === "enemy" ? `
+              <div class="pvp-build-presets" aria-label="敌方默认构筑">
+                ${PVP_BUILD_PRESETS.map((preset) => {
+                  const active = resolveEffectivePvpBuild(state, monster).usesDefaults
+                    && preset.id === state.defaultBuildPreset;
+                  return `<button class="pvp-build-preset${active ? " active" : ""}" type="button" data-pvp-build-preset="${preset.id}" aria-pressed="${active ? "true" : "false"}">${escapeHtml(preset.label)}</button>`;
+                }).join("")}
+              </div>
+            ` : ""}
             <div class="field pvp-compact-field pvp-compact-field-group">
               <label>种族值</label>
               ${renderPvpPanelStats(monster, state, side)}
@@ -9082,6 +9309,14 @@
         }
       });
 
+      root.querySelectorAll("[data-pvp-build-preset]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const state = pvpSideState("enemy");
+          state.defaultBuildPreset = button.dataset.pvpBuildPreset;
+          renderResults();
+        });
+      });
+
       ["ally", "enemy"].forEach((side) => {
         const state = pvpSideState(side);
         const isAlly = side === "ally";
@@ -9161,11 +9396,11 @@
           items: PVP_NATURES,
           value: state.natureId,
           placeholder: "选择性格",
-          emptyText: `默认${DEFAULT_DAMAGE_NATURE_TEXT}`,
+          emptyText: defaultPvpNatureEmptyText(state, selectedMonster),
           clearPlaceholderOnFocus: true,
           onSelect: (item) => {
             state.natureId = item?.id || "";
-            refreshPvpDamageOutputs(root);
+            renderResults();
           }
         });
 
@@ -9178,7 +9413,7 @@
             items: talentItems(),
             value: talentId,
             placeholder: "选择天分",
-            emptyText: defaultDamageTalentEmptyText(talentIndex),
+            emptyText: defaultPvpTalentEmptyText(state, selectedMonster, talentIndex),
             clearPlaceholderOnFocus: true,
             itemsForQuery: talentItems,
             onSelect: (item) => {

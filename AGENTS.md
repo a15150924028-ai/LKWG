@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 14:33 +08:00 - Codex
+
+- Request: Implement enemy `最肉`、`最速`、`最高攻击` PVP default-build presets and show effective nature/talent indicators in both PVP race-stat cards.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-default-build-presets-static.test.js`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-pvp-default-build-presets.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a shared pure default-build rule module for durable, fastest, and highest-attack presets, including physical/special branching from original race stats and physical tie-breaking.
+  - Made manual nature and talent selections override presets field by field, with missing or duplicate talent slots filled by unique preset talents.
+  - Routed PVP stat and damage calculations through the same effective-build resolver used by the UI.
+  - Added compact enemy-only preset buttons that remain mutually exclusive while defaults are in use and lose their active fill after a complete manual build.
+  - Added green/up and red/down nature indicators plus a bold green `＋` talent marker to both ally and enemy race-stat cards.
+  - Updated default notes and empty combo text to describe the currently effective preset values.
+- Verification: Watched `node tests/pvp-default-build-presets-static.test.js` fail before the build rules existed, then pass after implementation; watched the UI contract tests fail before the controls and markers existed, then pass after implementation; added and passed a duplicate-manual-talent regression. Ran all Node static tests; parsed all 13 inline scripts; ran `git diff --check` with only LF-to-CRLF warnings. In the in-app Browser, verified the enemy has exactly three preset buttons and the ally has none, `最肉` is initially active, switching to `最速` leaves one active 28px button, 烈火战神 shows the expected 开朗 default note, one up arrow, one down arrow, three `＋` markers, and no `+60`; at a 393x852 phone viewport the buttons stayed on one row without horizontal overflow.
+- Status: Complete.
+
 ### 2026-06-15 14:16 +08:00 - Codex
 
 - Request: Design enemy PVP default-build presets and effective nature/talent indicators for both PVP sides.
