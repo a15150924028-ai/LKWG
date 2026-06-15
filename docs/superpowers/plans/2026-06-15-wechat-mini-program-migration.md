@@ -125,22 +125,22 @@ Run the focused sync test and the existing local-bundle validation tests.
 - Create: `miniprogram/domain/team.js`
 - Create: `miniprogram/utils/storage.js`
 
-- [ ] **Step 1: Write failing domain tests**
+- [x] **Step 1: Write failing domain tests**
 
 Cover six normalized slots, invalid ID removal, three unique talents, four
 skills per slot, completion excluding roller target, skill rotation, undo
 snapshot cloning, and independent team/PVP storage keys.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-team-domain-static.test.js`.
 
-- [ ] **Step 3: Implement pure team rules**
+- [x] **Step 3: Implement pure team rules**
 
 Export `emptyPet`, `defaultTeam`, `normalizePet`, `normalizeTeam`,
 `isPetComplete`, `rotateSkillsDown`, and `cloneTeam`.
 
-- [ ] **Step 4: Implement storage adapter**
+- [x] **Step 4: Implement storage adapter**
 
 Use injected storage functions in tests and `wx.getStorageSync`,
 `wx.setStorageSync`, and `wx.removeStorageSync` in the Mini Program. Store:
@@ -149,7 +149,7 @@ Use injected storage functions in tests and `wx.getStorageSync`,
 { schemaVersion: 1, value: normalizedValue }
 ```
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run focused tests and ensure no browser API appears under `miniprogram/`.
 

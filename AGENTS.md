@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 15:55 +08:00 - Codex
+
+- Request: Add shared Mini Program team rules and independent versioned persistence.
+- Files changed:
+  - `miniprogram/domain/constants.js`
+  - `miniprogram/domain/team.js`
+  - `miniprogram/utils/storage.js`
+  - `tests/miniprogram-team-domain-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added shared type, bloodline, nature, and talent option constants.
+  - Added pure six-slot team normalization, invalid reference cleanup, unique talent enforcement, completion checks, cloning, and 24-skill rotation.
+  - Added schema-versioned WeChat storage with independent team and PVP keys and injectable test backends.
+- Verification: Watched `node tests/miniprogram-team-domain-static.test.js` fail because the domain modules were missing, then pass after implementation. Re-ran Mini Program shell and data synchronization tests. Searched `miniprogram/` and found no browser-only `window`, `document`, `localStorage`, `fetch`, `Blob`, or `URL` usage.
+- Status: Complete.
+
 ### 2026-06-15 15:49 +08:00 - Codex
 
 - Request: Continue the native Mini Program migration by packaging the existing local data for WeChat runtime use.
