@@ -130,5 +130,13 @@ assert(
     html.includes(".stat-cell.nature-down"),
   "Preset controls and race-stat indicators must have dedicated styles."
 );
+assert(
+  /\.pvp-nature-arrow\s*\{[^}]*font-size:\s*13px;[^}]*font-weight:\s*1000;[^}]*-webkit-text-stroke:\s*0\.45px currentColor;[^}]*text-shadow:/s.test(html),
+  "Nature arrows must be large and stroked enough to remain readable."
+);
+assert(
+  /\.pvp-talent-mark\s*\{[^}]*font-size:\s*15px;[^}]*font-weight:\s*1000;[^}]*-webkit-text-stroke:\s*0\.6px currentColor;[^}]*text-shadow:/s.test(html),
+  "Talent plus markers must be larger and more heavily stroked than before."
+);
 
 console.log("PVP default build preset static checks passed.");

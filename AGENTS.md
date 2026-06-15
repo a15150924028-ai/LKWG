@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 14:41 +08:00 - Codex
+
+- Request: Make the PVP race-stat nature arrows and talent plus markers thicker and easier to read.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-default-build-presets-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Increased nature arrow size from 10px to 13px and talent `＋` size from 12px to 15px.
+  - Increased marker weight and added light text stroke plus four-direction same-color shadow for reliable thickness across browsers.
+  - Kept the existing colors, compact stat-cell layout, and indicator meanings unchanged.
+- Verification: Watched `node tests/pvp-default-build-presets-static.test.js` fail before the thicker marker styles, then pass after implementation. Browser-measured 13px/1000 arrows and 15px/1000 plus markers, a 40px stat-cell height, and no horizontal overflow. Ran the full Node static test suite and parsed all inline scripts.
+- Status: Complete.
+
 ### 2026-06-15 14:33 +08:00 - Codex
 
 - Request: Implement enemy `最肉`、`最速`、`最高攻击` PVP default-build presets and show effective nature/talent indicators in both PVP race-stat cards.
