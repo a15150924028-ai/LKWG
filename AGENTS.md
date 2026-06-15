@@ -56,7 +56,30 @@ Use this entry format:
 
 ## Development Work Log
 
-### 2026-06-15 21:43 +08:00 - Codex
+### 2026-06-15 21:21 +08:00 - Codex
+
+- Request: Implement the web-style top six-card team switcher and searchable autocomplete inputs for every selector on the Mini Program team and PVP pages.
+- Files changed:
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Replaced the shared native selector with an input-based component that filters local options, displays at most 20 in-flow suggestions, restores committed values after unmatched input, and supports selection and clearing.
+  - Reused the component for monster, bloodline, nature, talent, skill, and selected-action fields on both team and PVP pages without changing their persisted state or event contracts.
+  - Changed the team page to a three-column, two-row six-card overview and one active editor while retaining passives, skill details, rotation, undo, clear, and immediate persistence.
+  - Added pure search filtering and page/component regression coverage.
+- Verification: Watched the new search test fail because `search-options.js` was absent, then pass after implementation; watched the component contract fail on the native picker, then pass after replacement; watched the team layout test fail before `activeTeamIndex` existed, then pass after the six-card layout. Ran both synchronization scripts; ran all 52 Node tests; parsed 32 Mini Program JavaScript files and 7 JSON files; scanned all 5 WXML files for unsupported tags and method calls; ran `git diff --check`; measured the runtime package at 1,443,466 bytes (1.377 MiB), leaving 653,686 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compilation and real-device preview remain pending external checks.
+
+### 2026-06-15 21:15 +08:00 - Codex
 
 - Request: Create the implementation plan for the approved Mini Program six-card team layout and searchable inputs across team and PVP pages.
 - Files changed:
@@ -69,7 +92,7 @@ Use this entry format:
 - Verification: Reviewed the plan against every approved design requirement, checked exact file ownership and handler names against the current Mini Program source, and scanned the plan for deferred placeholders.
 - Status: Complete; ready for implementation.
 
-### 2026-06-15 21:35 +08:00 - Codex
+### 2026-06-15 21:08 +08:00 - Codex
 
 - Request: Design a web-style six-card team switcher and searchable autocomplete inputs for every selector on the Mini Program team and PVP pages.
 - Files changed:

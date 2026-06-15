@@ -1,16 +1,34 @@
 <view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}">
   <text class="field-label">{{label}}</text>
-  <picker
-    mode="selector"
-    range="{{options}}"
-    range-key="label"
-    value="{{valueIndex}}"
-    disabled="{{disabled}}"
-    bindchange="onPickerChange"
-  >
-    <view class="field-value">
-      <text class="{{valueIndex === 0 ? 'placeholder' : ''}}">{{valueLabel}}</text>
-      <text class="chevron">⌄</text>
-    </view>
-  </picker>
+  <view class="search-control">
+    <input
+      class="field-input"
+      value="{{query}}"
+      placeholder="{{valueIndex === 0 ? valueLabel : '输入搜索'}}"
+      disabled="{{disabled}}"
+      confirm-type="done"
+      bindfocus="onFocus"
+      bindinput="onInput"
+      bindblur="onBlur"
+    />
+    <text
+      wx:if="{{query && !disabled}}"
+      class="clear-button"
+      bindtap="onClear"
+    >×</text>
+    <text wx:else class="search-mark">⌕</text>
+  </view>
+
+  <view wx:if="{{focused}}" class="suggestion-list">
+    <block wx:if="{{suggestions.length}}">
+      <view
+        wx:for="{{suggestions}}"
+        wx:key="id"
+        class="suggestion-item"
+        data-index="{{item.index}}"
+        bindtap="onSelect"
+      >{{item.label}}</view>
+    </block>
+    <text wx:else class="empty-result">没有匹配项</text>
+  </view>
 </view>

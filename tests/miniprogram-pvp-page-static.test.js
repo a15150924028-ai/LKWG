@@ -20,6 +20,10 @@ const statGridWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "components", "stat-grid", "index.wxml"),
   "utf8"
 );
+const pickerWxml = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "components", "field-picker", "index.wxml"),
+  "utf8"
+);
 
 assert.strictEqual(
   pageJson.usingComponents["field-picker"],
@@ -29,6 +33,14 @@ assert.strictEqual(
   pageJson.usingComponents["stat-grid"],
   "/components/stat-grid/index"
 );
+assert.strictEqual(
+  (pageWxml.match(/<field-picker/g) || []).length,
+  6,
+  "PVP must route every selector template through field-picker"
+);
+assert(pickerWxml.includes("<input"), "PVP field-picker must support text input");
+assert(pickerWxml.includes("suggestion-list"), "PVP field-picker must show suggestions");
+assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
 assert(statGridWxml.includes("nature-up"));
 assert(statGridWxml.includes("nature-down"));
 assert(statGridWxml.includes("talent-mark"));

@@ -16,19 +16,19 @@ const pageJson = JSON.parse(fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "team", "index.json"),
   "utf8"
 ));
-const pickerWxml = fs.readFileSync(
-  path.join(packageRoot, "miniprogram", "components", "field-picker", "index.wxml"),
-  "utf8"
-);
-
 assert.strictEqual(
   pageJson.usingComponents["field-picker"],
   "/components/field-picker/index"
 );
-assert(pickerWxml.includes("<picker"), "field picker must use native picker");
-assert(pageWxml.includes('wx:for="{{team}}"'), "team page must render all six slots");
+assert(pageJs.includes("activeTeamIndex: 0"));
+assert(pageJs.includes("selectTeamSlot("));
+assert(pageWxml.includes('wx:for="{{teamOverview}}"'));
+assert(pageWxml.includes('data-team-slot="{{slot.slot}}"'));
+assert(pageWxml.includes("activePet"));
+assert(!pageWxml.includes('wx:for="{{team}}"'));
 
 for (const binding of [
+  "selectTeamSlot",
   "onMonsterChange",
   "onBloodlineChange",
   "onNatureChange",

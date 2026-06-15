@@ -25,14 +25,66 @@
   line-height: 1.2;
 }
 
-.field-value {
+.search-control {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-height: 48rpx;
+}
+
+.field-input {
+  flex: 1;
+  min-width: 0;
+  height: 48rpx;
   color: #172033;
   font-size: 27rpx;
   font-weight: 560;
+  line-height: 48rpx;
+}
+
+.field-input::placeholder {
+  color: #98a2b3;
+  font-weight: 400;
+}
+
+.clear-button,
+.search-mark {
+  flex: none;
+  width: 44rpx;
+  margin-left: 6rpx;
+  color: #98a2b3;
+  font-size: 28rpx;
+  line-height: 44rpx;
+  text-align: center;
+}
+
+.suggestion-list {
+  max-height: 440rpx;
+  margin: 8rpx -4rpx 2rpx;
+  overflow-y: auto;
+  border-top: 1rpx solid #edf0f5;
+}
+
+.suggestion-item,
+.empty-result {
+  display: block;
+  padding: 16rpx 8rpx;
+  color: #344054;
+  font-size: 25rpx;
+  line-height: 1.35;
+}
+
+.suggestion-item + .suggestion-item {
+  border-top: 1rpx solid #f0f2f5;
+}
+
+.suggestion-item:active {
+  background: #eef5ff;
+  color: #1677ff;
+}
+
+.empty-result {
+  color: #98a2b3;
+  text-align: center;
 }
 
 .compact {
@@ -44,17 +96,8 @@
   font-size: 19rpx;
 }
 
-.compact .field-value {
+.compact .field-input,
+.compact .suggestion-item,
+.compact .empty-result {
   font-size: 23rpx;
-}
-
-.placeholder {
-  color: #98a2b3;
-  font-weight: 400;
-}
-
-.chevron {
-  margin-left: 8rpx;
-  color: #98a2b3;
-  font-size: 24rpx;
 }

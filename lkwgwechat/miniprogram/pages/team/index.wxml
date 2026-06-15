@@ -13,107 +13,131 @@
     </view>
   </view>
 
-  <block wx:for="{{team}}" wx:key="slot" wx:for-item="pet" wx:for-index="petIndex">
-    <view class="pet-card {{pet.complete ? 'complete' : ''}}">
-      <view class="pet-card-head">
-        <text class="pet-title">精灵 {{petIndex + 1}}</text>
-        <text wx:if="{{pet.complete}}" class="complete-badge">配置完成</text>
+  <view class="team-overview">
+    <button
+      wx:for="{{teamOverview}}"
+      wx:key="slot"
+      wx:for-item="slot"
+      class="team-slot {{slot.slot === activeTeamIndex ? 'active' : ''}} {{slot.complete ? 'complete' : ''}}"
+      data-team-slot="{{slot.slot}}"
+      bindtap="selectTeamSlot"
+    >
+      <view class="team-slot-head">
+        <text class="team-slot-number">{{slot.slot + 1}}</text>
+        <text wx:if="{{slot.complete}}" class="team-slot-status">完成</text>
       </view>
-
-      <view class="identity-grid">
-        <field-picker
-          label="精灵"
-          options="{{monsterOptions}}"
-          value-index="{{pet.monsterSelection.index}}"
-          value-label="{{pet.monsterSelection.label}}"
-          data-pet-index="{{petIndex}}"
-          bind:change="onMonsterChange"
-        />
-        <field-picker
-          label="血脉"
-          options="{{bloodlineOptions}}"
-          value-index="{{pet.bloodlineSelection.index}}"
-          value-label="{{pet.bloodlineSelection.label}}"
-          data-pet-index="{{petIndex}}"
-          bind:change="onBloodlineChange"
-        />
+      <text class="team-slot-name">{{slot.monsterName}}</text>
+      <view class="team-slot-types">
+        <text
+          wx:for="{{slot.typeNames}}"
+          wx:key="*this"
+          wx:for-item="typeName"
+          class="team-slot-type"
+        >{{typeName}}</text>
+        <text wx:if="{{!slot.typeNames.length}}" class="team-slot-empty">等待配置</text>
       </view>
+    </button>
+  </view>
 
-      <view wx:if="{{pet.passives.length}}" class="detail-panel">
-        <text class="detail-heading">特性</text>
-        <block wx:for="{{pet.passives}}" wx:key="id" wx:for-item="passive">
-          <view class="detail-item">
-            <text class="detail-name">{{passive.name}}</text>
-            <text class="detail-description">{{passive.description}}</text>
-          </view>
-        </block>
-      </view>
+  <view wx:if="{{activePet}}" class="pet-card {{activePet.complete ? 'complete' : ''}}">
+    <view class="pet-card-head">
+      <text class="pet-title">精灵 {{activePet.slot + 1}}</text>
+      <text wx:if="{{activePet.complete}}" class="complete-badge">配置完成</text>
+    </view>
 
+    <view class="identity-grid">
       <field-picker
-        label="性格"
-        options="{{natureOptions}}"
-        value-index="{{pet.natureSelection.index}}"
-        value-label="{{pet.natureSelection.label}}"
-        data-pet-index="{{petIndex}}"
-        bind:change="onNatureChange"
+        label="精灵"
+        options="{{monsterOptions}}"
+        value-index="{{activePet.monsterSelection.index}}"
+        value-label="{{activePet.monsterSelection.label}}"
+        data-pet-index="{{activePet.slot}}"
+        bind:change="onMonsterChange"
       />
+      <field-picker
+        label="血脉"
+        options="{{bloodlineOptions}}"
+        value-index="{{activePet.bloodlineSelection.index}}"
+        value-label="{{activePet.bloodlineSelection.label}}"
+        data-pet-index="{{activePet.slot}}"
+        bind:change="onBloodlineChange"
+      />
+    </view>
 
-      <view class="field-group">
-        <text class="group-label">天分</text>
-        <view class="talent-grid">
-          <block wx:for="{{pet.talents}}" wx:key="index" wx:for-item="talent" wx:for-index="talentIndex">
-            <field-picker
-              compact
-              label="天分 {{talentIndex + 1}}"
-              options="{{talentOptions}}"
-              value-index="{{talent.index}}"
-              value-label="{{talent.label}}"
-              data-pet-index="{{petIndex}}"
-              data-talent-index="{{talentIndex}}"
-              bind:change="onTalentChange"
-            />
-          </block>
+    <view wx:if="{{activePet.passives.length}}" class="detail-panel">
+      <text class="detail-heading">特性</text>
+      <block wx:for="{{activePet.passives}}" wx:key="id" wx:for-item="passive">
+        <view class="detail-item">
+          <text class="detail-name">{{passive.name}}</text>
+          <text class="detail-description">{{passive.description}}</text>
         </view>
-      </view>
+      </block>
+    </view>
 
-      <view class="field-group">
-        <text class="group-label">技能</text>
-        <block wx:for="{{pet.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
+    <field-picker
+      label="性格"
+      options="{{natureOptions}}"
+      value-index="{{activePet.natureSelection.index}}"
+      value-label="{{activePet.natureSelection.label}}"
+      data-pet-index="{{activePet.slot}}"
+      bind:change="onNatureChange"
+    />
+
+    <view class="field-group">
+      <text class="group-label">天分</text>
+      <view class="talent-grid">
+        <block wx:for="{{activePet.talents}}" wx:key="index" wx:for-item="talent" wx:for-index="talentIndex">
           <field-picker
-            label="技能 {{skillIndex + 1}}"
-            options="{{pet.skillOptions}}"
-            value-index="{{skillSelection.index}}"
-            value-label="{{skillSelection.label}}"
-            disabled="{{!pet.monsterId}}"
-            data-pet-index="{{petIndex}}"
-            data-skill-index="{{skillIndex}}"
-            bind:change="onSkillChange"
+            compact
+            label="天分 {{talentIndex + 1}}"
+            options="{{talentOptions}}"
+            value-index="{{talent.index}}"
+            value-label="{{talent.label}}"
+            data-pet-index="{{activePet.slot}}"
+            data-talent-index="{{talentIndex}}"
+            bind:change="onTalentChange"
           />
         </block>
       </view>
-
-      <view wx:if="{{pet.skillDetails.length}}" class="detail-panel skill-detail-panel">
-        <text class="detail-heading">技能说明</text>
-        <block wx:for="{{pet.skillDetails}}" wx:key="id" wx:for-item="skillDetail">
-          <view class="detail-item">
-            <view class="skill-detail-head">
-              <text class="detail-name">{{skillDetail.slot}}. {{skillDetail.name}}</text>
-              <text class="skill-meta">{{skillDetail.typeName}} · {{skillDetail.categoryName}} · 威力 {{skillDetail.powerLabel}} · 耗能 {{skillDetail.costLabel}}</text>
-            </view>
-            <text class="detail-description">{{skillDetail.description}}</text>
-          </view>
-        </block>
-      </view>
-
-      <field-picker
-        label="过山车目标（可选）"
-        options="{{pet.skillOptions}}"
-        value-index="{{pet.rollerSelection.index}}"
-        value-label="{{pet.rollerSelection.label}}"
-        disabled="{{!pet.monsterId}}"
-        data-pet-index="{{petIndex}}"
-        bind:change="onRollerSkillChange"
-      />
     </view>
-  </block>
+
+    <view class="field-group">
+      <text class="group-label">技能</text>
+      <block wx:for="{{activePet.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
+        <field-picker
+          label="技能 {{skillIndex + 1}}"
+          options="{{activePet.skillOptions}}"
+          value-index="{{skillSelection.index}}"
+          value-label="{{skillSelection.label}}"
+          disabled="{{!activePet.monsterId}}"
+          data-pet-index="{{activePet.slot}}"
+          data-skill-index="{{skillIndex}}"
+          bind:change="onSkillChange"
+        />
+      </block>
+    </view>
+
+    <view wx:if="{{activePet.skillDetails.length}}" class="detail-panel skill-detail-panel">
+      <text class="detail-heading">技能说明</text>
+      <block wx:for="{{activePet.skillDetails}}" wx:key="id" wx:for-item="skillDetail">
+        <view class="detail-item">
+          <view class="skill-detail-head">
+            <text class="detail-name">{{skillDetail.slot}}. {{skillDetail.name}}</text>
+            <text class="skill-meta">{{skillDetail.typeName}} · {{skillDetail.categoryName}} · 威力 {{skillDetail.powerLabel}} · 耗能 {{skillDetail.costLabel}}</text>
+          </view>
+          <text class="detail-description">{{skillDetail.description}}</text>
+        </view>
+      </block>
+    </view>
+
+    <field-picker
+      label="过山车目标（可选）"
+      options="{{activePet.skillOptions}}"
+      value-index="{{activePet.rollerSelection.index}}"
+      value-label="{{activePet.rollerSelection.label}}"
+      disabled="{{!activePet.monsterId}}"
+      data-pet-index="{{activePet.slot}}"
+      bind:change="onRollerSkillChange"
+    />
+  </view>
 </view>

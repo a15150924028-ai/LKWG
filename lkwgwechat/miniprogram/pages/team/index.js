@@ -55,6 +55,8 @@ function teamView(team) {
       ...pet,
       slot,
       complete: teamRules.isPetComplete(pet),
+      monsterName: monster?.name || "等待配置",
+      typeNames: (monster?.types || []).map((type) => typeNameById.get(type) || type),
       monsterSelection: selection(monsterOptions, pet.monsterId),
       bloodlineSelection: selection(bloodlineOptions, pet.bloodlineId),
       natureSelection: selection(natureOptions, pet.natureId),
@@ -81,6 +83,9 @@ Page({
   data: {
     configuredCount: 0,
     team: [],
+    teamOverview: [],
+    activeTeamIndex: 0,
+    activePet: null,
     monsterOptions,
     bloodlineOptions,
     natureOptions,
@@ -99,8 +104,21 @@ Page({
   applyTeam(team, save = true) {
     const normalized = teamRules.normalizeTeam(team, catalog);
     if (save) storage.saveTeam(normalized);
+    const view = teamView(normalized);
+    const activeTeamIndex = Math.max(
+      0,
+      Math.min(view.length - 1, Number(this.data.activeTeamIndex) || 0)
+    );
     this.setData({
-      team: teamView(normalized),
+      team: view,
+      teamOverview: view.map((pet) => ({
+        slot: pet.slot,
+        complete: pet.complete,
+        monsterName: pet.monsterName,
+        typeNames: pet.typeNames
+      })),
+      activeTeamIndex,
+      activePet: view[activeTeamIndex] || null,
       configuredCount: normalized.filter(teamRules.isPetComplete).length,
       canUndo: Boolean(this.undoTeam)
     });
@@ -116,6 +134,15 @@ Page({
       rollerSkillId: pet.rollerSkillId,
       skills: pet.skills.map((skill) => ({ skillId: skill.skillId }))
     }));
+  },
+
+  selectTeamSlot(event) {
+    const index = Number(event.currentTarget.dataset.teamSlot);
+    if (!Number.isInteger(index) || index < 0 || index >= this.data.team.length) return;
+    this.setData({
+      activeTeamIndex: index,
+      activePet: this.data.team[index]
+    });
   },
 
   mutatePet(index, update) {
