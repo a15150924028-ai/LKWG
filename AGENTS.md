@@ -56,6 +56,29 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 16:43 +08:00 - Codex
+
+- Request: Replace the Mini Program PVP placeholder with a native two-side simulator using the synchronized web rules.
+- Files changed:
+  - `miniprogram/components/stat-grid/index.js`
+  - `miniprogram/components/stat-grid/index.json`
+  - `miniprogram/components/stat-grid/index.wxml`
+  - `miniprogram/components/stat-grid/index.wxss`
+  - `miniprogram/pages/pvp/index.js`
+  - `miniprogram/pages/pvp/index.json`
+  - `miniprogram/pages/pvp/index.wxml`
+  - `miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added ally/enemy native configuration panels with monster, bloodline, nature, talents, four skills, and selected-action controls.
+  - Added enemy durable, fastest, and highest-attack presets; nature arrows; talent markers; weather; trait layers; energy; stat, flat-power, percentage-power, and hit-count controls.
+  - Added live turn-order-aware damage results using the synchronized variable-power and damage-core modules, including descriptions, effectiveness, per-hit damage, and total damage.
+  - Added independent side clearing and versioned PVP persistence.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail because the stat-grid component was missing, then pass after implementation. Ran Mini Program PVP domain parity and analysis tests, parsed the page JavaScript, found no unsupported HTML tags or method calls in WXML, ran `git diff --check`, and measured the current Mini Program package at 1.37 MiB across 49 files.
+- Status: Complete for code; WeChat IDE compile and real-device checks remain pending.
+
 ### 2026-06-15 16:27 +08:00 - Codex
 
 - Request: Port the complete tested web PVP rule layer into reusable Mini Program modules.

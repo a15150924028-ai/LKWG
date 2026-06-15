@@ -1,1 +1,212 @@
-/* PVP-specific styles are added with the native simulator. */
+.weather-card,
+.side-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border: 1rpx solid #dfe6ef;
+  border-radius: 24rpx;
+  background: #ffffff;
+}
+
+.section-title,
+.side-title {
+  font-size: 29rpx;
+  font-weight: 700;
+}
+
+.weather-grid,
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10rpx;
+  margin-top: 16rpx;
+}
+
+.weather-button,
+.preset-button,
+.clear-side {
+  margin: 0;
+  padding: 0 8rpx;
+  border-radius: 14rpx;
+  background: #eef2f7;
+  color: #475467;
+  font-size: 23rpx;
+}
+
+.weather-button::after,
+.preset-button::after,
+.clear-side::after,
+.stepper button::after {
+  border: 0;
+}
+
+.weather-button.active,
+.preset-button.active {
+  background: #1677ff;
+  color: #ffffff;
+}
+
+.side-head,
+.damage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.clear-side {
+  background: #fff1f0;
+  color: #d92d20;
+}
+
+.identity-grid,
+.talent-grid,
+.counter-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.talent-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 14rpx;
+}
+
+.preset-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.preset-hidden-labels {
+  display: none;
+}
+
+.default-note,
+.skill-description,
+.order-text {
+  display: block;
+  margin-top: 14rpx;
+  color: #667085;
+  font-size: 23rpx;
+  line-height: 1.55;
+}
+
+.counter-row {
+  margin-top: 18rpx;
+}
+
+.counter-block,
+.buff-control {
+  padding: 14rpx;
+  border-radius: 16rpx;
+  background: #f5f7fb;
+}
+
+.counter-label,
+.buff-control > text {
+  display: block;
+  color: #475467;
+  font-size: 22rpx;
+}
+
+.stepper {
+  display: grid;
+  grid-template-columns: 48rpx minmax(56rpx, 1fr) 48rpx;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 10rpx;
+  text-align: center;
+}
+
+.stepper button {
+  width: 48rpx;
+  min-width: 0;
+  height: 48rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 12rpx;
+  background: #ffffff;
+  color: #1677ff;
+  font-size: 28rpx;
+  line-height: 48rpx;
+}
+
+.buff-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10rpx;
+  margin-top: 12rpx;
+}
+
+.skills-card,
+.damage-card {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border: 1rpx solid #e1e7f0;
+  border-radius: 18rpx;
+}
+
+.damage-card {
+  background: #f8fbff;
+}
+
+.damage-error {
+  display: block;
+  color: #d92d20;
+  font-size: 25rpx;
+  font-weight: 650;
+}
+
+.damage-name {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.effectiveness {
+  color: #1677ff;
+  font-size: 22rpx;
+  font-weight: 650;
+}
+
+.damage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10rpx;
+  margin-top: 16rpx;
+}
+
+.damage-grid view {
+  padding: 12rpx;
+  border-radius: 14rpx;
+  background: #ffffff;
+}
+
+.damage-grid text,
+.damage-grid .damage-strong {
+  display: block;
+}
+
+.damage-grid text {
+  color: #667085;
+  font-size: 20rpx;
+}
+
+.damage-grid .damage-strong {
+  margin-top: 4rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.damage-grid .total {
+  grid-column: 1 / -1;
+  background: #eaf3ff;
+}
+
+@media (max-width: 430px) {
+  .weather-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .identity-grid,
+  .counter-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "PVP伤害模拟"
+  "navigationBarTitleText": "PVP伤害模拟",
+  "usingComponents": {
+    "field-picker": "/components/field-picker/index",
+    "stat-grid": "/components/stat-grid/index"
+  }
 }

@@ -260,28 +260,28 @@ Run the focused fixtures and all existing PVP rule tests.
 - Modify: `miniprogram/pages/pvp/index.{js,wxml,wxss}`
 - Create: `miniprogram/components/stat-grid/index.{js,json,wxml,wxss}`
 
-- [ ] **Step 1: Write failing page contract tests**
+- [x] **Step 1: Write failing page contract tests**
 
 Require ally/enemy selectors, enemy preset buttons, effective nature/talent
 markers, weather, buff controls, selected skills, descriptions, damage cards,
 clear actions, and storage writes.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-pvp-page-static.test.js`.
 
-- [ ] **Step 3: Implement both side panels**
+- [x] **Step 3: Implement both side panels**
 
 Use compact native controls, one column on phone widths, and a shared
 calculation refresh after every relevant field change.
 
-- [ ] **Step 4: Implement result cards**
+- [x] **Step 4: Implement result cards**
 
 Render final stat grids, nature arrows, talent markers, skill metadata,
 response-only results, per-hit and total damage, effectiveness, and error
 messages for non-damage skills.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run page contract, PVP domain, and all existing PVP tests.
 

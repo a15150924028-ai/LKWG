@@ -4,8 +4,164 @@
     <text class="hero-description">配置双方精灵、天气、状态和技能，计算最终伤害。</text>
   </view>
 
-  <view class="status-card">
-    <text class="status-title">原生模拟器框架已建立</text>
-    <text class="status-text">下一阶段将迁移网页版完整计算规则和交互控件。</text>
+  <view class="weather-card">
+    <text class="section-title">天气</text>
+    <view class="weather-grid">
+      <block wx:for="{{weatherOptions}}" wx:key="id" wx:for-item="weatherItem">
+        <button
+          class="weather-button {{weatherItem.active ? 'active' : ''}}"
+          data-weather="{{weatherItem.id}}"
+          bindtap="selectWeather"
+        >{{weatherItem.label}}</button>
+      </block>
+    </view>
   </view>
+
+  <block wx:for="{{sides}}" wx:key="side" wx:for-item="side">
+    <view class="side-card">
+      <view class="side-head">
+        <text class="side-title">{{side.title}}</text>
+        <button class="clear-side" data-side="{{side.side}}" bindtap="clearSide">清空本方</button>
+      </view>
+
+      <view class="identity-grid">
+        <field-picker
+          label="精灵"
+          options="{{monsterOptions}}"
+          value-index="{{side.monsterSelection.index}}"
+          value-label="{{side.monsterSelection.label}}"
+          data-side="{{side.side}}"
+          bind:change="onMonsterChange"
+        />
+        <field-picker
+          label="血脉"
+          options="{{bloodlineOptions}}"
+          value-index="{{side.bloodlineSelection.index}}"
+          value-label="{{side.bloodlineSelection.label}}"
+          data-side="{{side.side}}"
+          bind:change="onBloodlineChange"
+        />
+      </view>
+
+      <field-picker
+        label="性格"
+        options="{{natureOptions}}"
+        value-index="{{side.natureSelection.index}}"
+        value-label="{{side.natureSelection.label}}"
+        data-side="{{side.side}}"
+        bind:change="onNatureChange"
+      />
+
+      <view class="talent-grid">
+        <block wx:for="{{side.talentSelections}}" wx:key="index" wx:for-item="talent" wx:for-index="talentIndex">
+          <field-picker
+            compact
+            label="天分 {{talentIndex + 1}}"
+            options="{{talentOptions}}"
+            value-index="{{talent.index}}"
+            value-label="{{talent.label}}"
+            data-side="{{side.side}}"
+            data-talent-index="{{talentIndex}}"
+            bind:change="onTalentChange"
+          />
+        </block>
+      </view>
+
+      <view wx:if="{{side.side === 'enemy'}}" class="preset-grid">
+        <block wx:for="{{side.presets}}" wx:key="id" wx:for-item="preset">
+          <button
+            class="preset-button {{preset.active ? 'active' : ''}}"
+            data-side="{{side.side}}"
+            data-preset="{{preset.id}}"
+            bindtap="selectPreset"
+          >{{preset.label}}</button>
+        </block>
+      </view>
+      <view wx:if="{{side.side === 'enemy'}}" class="preset-hidden-labels">
+        <text>最肉</text><text>最速</text><text>最高攻击</text>
+      </view>
+
+      <text class="default-note">{{side.defaultNote}}</text>
+      <stat-grid rows="{{side.statRows}}" />
+
+      <view class="counter-row">
+        <view class="counter-block">
+          <text class="counter-label">特性层数 · {{side.traitName}}</text>
+          <view class="stepper">
+            <button data-side="{{side.side}}" data-key="traitLayers" data-delta="-1" bindtap="adjustValue">−</button>
+            <text>{{side.traitLayers}}</text>
+            <button data-side="{{side.side}}" data-key="traitLayers" data-delta="1" bindtap="adjustValue">＋</button>
+          </view>
+        </view>
+        <view class="counter-block">
+          <text class="counter-label">能量</text>
+          <view class="stepper">
+            <button data-side="{{side.side}}" data-key="energy" data-delta="-1" bindtap="adjustValue">−</button>
+            <text>{{side.energy}}</text>
+            <button data-side="{{side.side}}" data-key="energy" data-delta="1" bindtap="adjustValue">＋</button>
+          </view>
+        </view>
+      </view>
+
+      <view class="buff-grid">
+        <block wx:for="{{side.controls}}" wx:key="key" wx:for-item="control">
+          <view class="buff-control">
+            <text>{{control.label}}</text>
+            <view class="stepper compact">
+              <button data-side="{{side.side}}" data-key="{{control.key}}" data-delta="-1" bindtap="adjustValue">−</button>
+              <text>{{control.value}}</text>
+              <button data-side="{{side.side}}" data-key="{{control.key}}" data-delta="1" bindtap="adjustValue">＋</button>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <view class="skills-card">
+        <text class="section-title">技能配置</text>
+        <block wx:for="{{side.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
+          <field-picker
+            label="技能 {{skillIndex + 1}}"
+            options="{{side.skillOptions}}"
+            value-index="{{skillSelection.index}}"
+            value-label="{{skillSelection.label}}"
+            disabled="{{!side.monsterId}}"
+            data-side="{{side.side}}"
+            data-skill-index="{{skillIndex}}"
+            bind:change="onSkillChange"
+          />
+        </block>
+        <field-picker
+          label="本回合技能"
+          options="{{side.actionOptions}}"
+          value-index="{{side.actionSelection.index}}"
+          value-label="{{side.actionSelection.label}}"
+          disabled="{{!side.monsterId}}"
+          data-side="{{side.side}}"
+          bind:change="onActionChange"
+        />
+      </view>
+
+      <view class="damage-card">
+        <block wx:if="{{side.result.error}}">
+          <text class="damage-error">{{side.result.error}}</text>
+          <text wx:if="{{side.result.description}}" class="skill-description">技能描述：{{side.result.description}}</text>
+        </block>
+        <block wx:else>
+          <view class="damage-head">
+            <text class="damage-name">{{side.result.actionName}}</text>
+            <text class="effectiveness">{{side.result.effectiveness}}</text>
+          </view>
+          <view class="damage-grid">
+            <view><text>计算模式</text><text class="damage-strong">{{side.result.modeLabel}}</text></view>
+            <view><text>最终威力</text><text class="damage-strong">{{side.result.power}}</text></view>
+            <view><text>连击数</text><text class="damage-strong">{{side.result.hitCount}}</text></view>
+            <view><text>单段伤害</text><text class="damage-strong">{{side.result.singleDamage}}</text></view>
+            <view class="total"><text>总伤害</text><text class="damage-strong">{{side.result.damage}}</text></view>
+          </view>
+          <text class="order-text">{{side.result.orderText}}</text>
+          <text class="skill-description">技能描述：{{side.result.description}}</text>
+        </block>
+      </view>
+    </view>
+  </block>
 </view>
