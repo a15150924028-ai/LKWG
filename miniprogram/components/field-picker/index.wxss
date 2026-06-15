@@ -1,0 +1,60 @@
+.field-picker {
+  box-sizing: border-box;
+  min-width: 0;
+  margin-top: 14rpx;
+  padding: 12rpx 16rpx 10rpx;
+  border: 1rpx solid #dfe6ef;
+  border-radius: 16rpx;
+  background: #ffffff;
+}
+
+.identity-grid .field-picker,
+.talent-grid .field-picker {
+  margin-top: 0;
+}
+
+.field-picker.disabled {
+  background: #f2f4f7;
+  opacity: 0.66;
+}
+
+.field-label {
+  display: block;
+  color: #667085;
+  font-size: 21rpx;
+  line-height: 1.2;
+}
+
+.field-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48rpx;
+  color: #172033;
+  font-size: 27rpx;
+  font-weight: 560;
+}
+
+.compact {
+  padding-right: 10rpx;
+  padding-left: 10rpx;
+}
+
+.compact .field-label {
+  font-size: 19rpx;
+}
+
+.compact .field-value {
+  font-size: 23rpx;
+}
+
+.placeholder {
+  color: #98a2b3;
+  font-weight: 400;
+}
+
+.chevron {
+  margin-left: 8rpx;
+  color: #98a2b3;
+  font-size: 24rpx;
+}

@@ -1,1 +1,104 @@
-/* Team-specific styles are added with the native editor. */
+.team-toolbar {
+  margin-top: 24rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  background: #ffffff;
+}
+
+.team-count {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 650;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.small-button {
+  flex: 1;
+  min-width: 190rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  border-radius: 16rpx;
+  background: #eef2f7;
+  color: #344054;
+  font-size: 24rpx;
+}
+
+.small-button::after {
+  border: 0;
+}
+
+.small-button.primary {
+  background: #1677ff;
+  color: #ffffff;
+}
+
+.small-button.danger {
+  background: #fff1f0;
+  color: #d92d20;
+}
+
+.pet-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border: 2rpx solid #e1e7f0;
+  border-radius: 26rpx;
+  background: #ffffff;
+}
+
+.pet-card.complete {
+  border-color: #32b36b;
+  box-shadow: 0 10rpx 28rpx rgba(50, 179, 107, 0.1);
+}
+
+.pet-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.pet-title {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.complete-badge {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: #eaf8ef;
+  color: #128245;
+  font-size: 22rpx;
+  font-weight: 650;
+}
+
+.identity-grid,
+.talent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
+}
+
+.talent-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field-group {
+  margin-top: 16rpx;
+  padding: 18rpx 16rpx 10rpx;
+  border: 1rpx solid #dfe6ef;
+  border-radius: 18rpx;
+}
+
+.group-label {
+  display: block;
+  margin-bottom: 12rpx;
+  color: #475467;
+  font-size: 23rpx;
+  font-weight: 650;
+}

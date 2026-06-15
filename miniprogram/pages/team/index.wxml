@@ -4,8 +4,93 @@
     <text class="hero-description">配置六只精灵的血脉、性格、天分和技能。</text>
   </view>
 
-  <view class="status-card">
-    <text class="status-title">已选择 {{configuredCount}}/6</text>
-    <text class="status-text">原生队伍编辑器正在接入，本页已可在微信开发者工具中预览。</text>
+  <view class="team-toolbar">
+    <text class="team-count">配置完成 {{configuredCount}}/6</text>
+    <view class="toolbar-actions">
+      <button class="small-button primary" bindtap="rotateSkills">使用过山车</button>
+      <button class="small-button" bindtap="undoRotation" disabled="{{!canUndo}}">撤回过山车</button>
+      <button class="small-button danger" bindtap="clearTeam">清空</button>
+    </view>
   </view>
+
+  <block wx:for="{{team}}" wx:key="slot" wx:for-item="pet" wx:for-index="petIndex">
+    <view class="pet-card {{pet.complete ? 'complete' : ''}}">
+      <view class="pet-card-head">
+        <text class="pet-title">精灵 {{petIndex + 1}}</text>
+        <text wx:if="{{pet.complete}}" class="complete-badge">配置完成</text>
+      </view>
+
+      <view class="identity-grid">
+        <field-picker
+          label="精灵"
+          options="{{monsterOptions}}"
+          value-index="{{pet.monsterSelection.index}}"
+          value-label="{{pet.monsterSelection.label}}"
+          data-pet-index="{{petIndex}}"
+          bind:change="onMonsterChange"
+        />
+        <field-picker
+          label="血脉"
+          options="{{bloodlineOptions}}"
+          value-index="{{pet.bloodlineSelection.index}}"
+          value-label="{{pet.bloodlineSelection.label}}"
+          data-pet-index="{{petIndex}}"
+          bind:change="onBloodlineChange"
+        />
+      </view>
+
+      <field-picker
+        label="性格"
+        options="{{natureOptions}}"
+        value-index="{{pet.natureSelection.index}}"
+        value-label="{{pet.natureSelection.label}}"
+        data-pet-index="{{petIndex}}"
+        bind:change="onNatureChange"
+      />
+
+      <view class="field-group">
+        <text class="group-label">天分</text>
+        <view class="talent-grid">
+          <block wx:for="{{pet.talents}}" wx:key="index" wx:for-item="talent" wx:for-index="talentIndex">
+            <field-picker
+              compact
+              label="天分 {{talentIndex + 1}}"
+              options="{{talentOptions}}"
+              value-index="{{talent.index}}"
+              value-label="{{talent.label}}"
+              data-pet-index="{{petIndex}}"
+              data-talent-index="{{talentIndex}}"
+              bind:change="onTalentChange"
+            />
+          </block>
+        </view>
+      </view>
+
+      <view class="field-group">
+        <text class="group-label">技能</text>
+        <block wx:for="{{pet.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
+          <field-picker
+            label="技能 {{skillIndex + 1}}"
+            options="{{pet.skillOptions}}"
+            value-index="{{skillSelection.index}}"
+            value-label="{{skillSelection.label}}"
+            disabled="{{!pet.monsterId}}"
+            data-pet-index="{{petIndex}}"
+            data-skill-index="{{skillIndex}}"
+            bind:change="onSkillChange"
+          />
+        </block>
+      </view>
+
+      <field-picker
+        label="过山车目标（可选）"
+        options="{{pet.skillOptions}}"
+        value-index="{{pet.rollerSelection.index}}"
+        value-label="{{pet.rollerSelection.label}}"
+        disabled="{{!pet.monsterId}}"
+        data-pet-index="{{petIndex}}"
+        bind:change="onRollerSkillChange"
+      />
+    </view>
+  </block>
 </view>

@@ -160,28 +160,28 @@ Run focused tests and ensure no browser API appears under `miniprogram/`.
 - Modify: `miniprogram/pages/team/index.{js,wxml,wxss}`
 - Create: `miniprogram/components/field-picker/index.{js,json,wxml,wxss}`
 
-- [ ] **Step 1: Write failing page contract tests**
+- [x] **Step 1: Write failing page contract tests**
 
 Require six cards and handlers for monster, bloodline, nature, three talents,
 four skills, roller target, clear, rotate, and undo. Require every picker to
 use native `picker` controls and every mutation to save normalized state.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-team-page-static.test.js`.
 
-- [ ] **Step 3: Implement native editing**
+- [x] **Step 3: Implement native editing**
 
 Bind picker ranges from catalog data. Changing a monster clears incompatible
 skills and preserves valid common fields. Show `配置完成` only when all required
 fields are present.
 
-- [ ] **Step 4: Implement rotation and undo**
+- [x] **Step 4: Implement rotation and undo**
 
 Keep one in-memory previous snapshot and disable undo when absent. Clear removes
 only team storage after an explicit modal confirmation.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run focused tests and the team domain tests.
 

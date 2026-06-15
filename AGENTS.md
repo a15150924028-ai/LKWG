@@ -56,6 +56,28 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 16:07 +08:00 - Codex
+
+- Request: Replace the Mini Program team placeholder with a native six-slot editor.
+- Files changed:
+  - `miniprogram/components/field-picker/index.js`
+  - `miniprogram/components/field-picker/index.json`
+  - `miniprogram/components/field-picker/index.wxml`
+  - `miniprogram/components/field-picker/index.wxss`
+  - `miniprogram/pages/team/index.js`
+  - `miniprogram/pages/team/index.json`
+  - `miniprogram/pages/team/index.wxml`
+  - `miniprogram/pages/team/index.wxss`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added a reusable native picker component and six compact team configuration cards.
+  - Added monster, bloodline, nature, three-talent, four-skill, and optional roller-target editing backed by real local data.
+  - Added immediate normalized persistence, completion feedback, 24-skill rotation, single-step undo, and team-only clear confirmation.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` fail because the field picker component was missing, then pass after implementation. Ran the team domain test, parsed the page/component JavaScript and JSON with Node, and ran `git diff --check`. The official WeChat `preview` CLI command timed out against the current IDE instance and produced no QR code, so IDE compilation remains unverified.
+- Status: Complete for code; WeChat IDE compile check remains pending.
+
 ### 2026-06-15 15:55 +08:00 - Codex
 
 - Request: Add shared Mini Program team rules and independent versioned persistence.
