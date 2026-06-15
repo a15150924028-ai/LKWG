@@ -228,28 +228,28 @@ Run focused parity tests and adjacent web stat/type tests.
 - Create: `miniprogram/domain/pvp-effects.js`
 - Create: `miniprogram/domain/pvp-state.js`
 
-- [ ] **Step 1: Write failing web-parity fixtures**
+- [x] **Step 1: Write failing web-parity fixtures**
 
 Cover durable/fast/attack presets, physical/special tie rules, displayed stats,
 STAB, dual-type effectiveness, weather, response damage, variable power,
 multi-hit rounding, energy, cooldown, action order, trait layers, HP, and
 cleanup.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-pvp-domain-static.test.js`.
 
-- [ ] **Step 3: Port pure rule modules**
+- [x] **Step 3: Port pure rule modules**
 
 Move the web rule behavior into CommonJS exports with no `window`, `document`,
 `localStorage`, `fetch`, `Blob`, or URL dependencies.
 
-- [ ] **Step 4: Add normalized PVP state**
+- [x] **Step 4: Add normalized PVP state**
 
 Keep ally and enemy state, shared weather, independent clear behavior, preset
 defaults, and versioned storage.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run the focused fixtures and all existing PVP rule tests.
 

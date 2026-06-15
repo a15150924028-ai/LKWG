@@ -56,6 +56,39 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 16:27 +08:00 - Codex
+
+- Request: Port the complete tested web PVP rule layer into reusable Mini Program modules.
+- Files changed:
+  - `scripts/sync-miniprogram-pvp-rules.js`
+  - `miniprogram/domain/generated/damage-rules.js`
+  - `miniprogram/domain/generated/trait-rules.js`
+  - `miniprogram/domain/generated/damage-core.js`
+  - `miniprogram/domain/generated/weather-rules.js`
+  - `miniprogram/domain/generated/energy-rules.js`
+  - `miniprogram/domain/generated/cooldown-rules.js`
+  - `miniprogram/domain/generated/hp-rules.js`
+  - `miniprogram/domain/generated/cleanup-rules.js`
+  - `miniprogram/domain/generated/history-rules.js`
+  - `miniprogram/domain/generated/turn-rules.js`
+  - `miniprogram/domain/generated/effect-rules.js`
+  - `miniprogram/domain/generated/build-rules.js`
+  - `miniprogram/domain/pvp-build.js`
+  - `miniprogram/domain/pvp-damage.js`
+  - `miniprogram/domain/pvp-turn.js`
+  - `miniprogram/domain/pvp-effects.js`
+  - `miniprogram/domain/pvp-state.js`
+  - `tests/miniprogram-pvp-domain-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Added deterministic extraction of all 12 pure PVP rule modules from `index.html` so web and Mini Program logic remain source-aligned.
+  - Added stable CommonJS entry points for build presets, damage, turn state, weather, energy, cooldown, HP, cleanup, history, traits, and effects.
+  - Added normalized, independently persisted ally/enemy/shared-weather PVP state.
+  - Added cross-runtime parity fixtures comparing generated Mini Program outputs with the current web modules.
+- Verification: Watched `node tests/miniprogram-pvp-domain-static.test.js` fail because the synchronization script was missing, generated all 12 modules, corrected cross-VM comparisons to compare serialized values, then watched parity checks pass. Ran `node scripts/sync-miniprogram-pvp-rules.js --check`; ran every existing `tests/pvp-*.test.js` plus the Mini Program PVP domain test successfully.
+- Status: Complete.
+
 ### 2026-06-15 16:17 +08:00 - Codex
 
 - Request: Migrate team matchup analysis and final stat display to the native Mini Program.
