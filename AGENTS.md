@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 10:59 +08:00 - Codex
+
+- Request: Correct PVP dynamic damage rules for `听桥`, `反击拳`, `鸣沙陷阱`, and `闪击`.
+- Files changed:
+  - `index.html`
+  - `data/local-bundle.json`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `tests/s2-screenshot-data-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed `听桥` response power to prefer the opponent's final single-hit incoming damage, including type effectiveness, STAB, current reductions, and multi-hit single-hit extraction, while preserving the old selected-power fallback.
+  - Added a guarded helper for calculating that opponent single-hit damage without recursive response-power lookup.
+  - Added `反击拳`'s after-moving rule so it changes from 2 hits to 3 hits when acting second.
+  - Added exact PVP power tiers for `鸣沙陷阱` based on physical-defense difference and for `闪击` based on speed difference.
+  - Updated the local skill descriptions for `鸣沙陷阱` and `闪击` to show the detailed tier rules.
+  - Added regression coverage for the new response-power, after-moving multi-hit, and dynamic tier boundaries.
+- Verification: Watched `node tests/pvp-special-power-rules-static.test.js` fail before the fix on `听桥` final single-hit damage, confirmed the old `HEAD` used selected skill power and kept `反击拳` at 2 hits, then watched the focused test pass after implementation. Added tier tests and watched the focused test fail on the missing `鸣沙陷阱` 1-29 tier before adding the tier rules, then pass after implementation. Watched `node tests/s2-screenshot-data-static.test.js` fail on stale `闪击` local description before updating `data/local-bundle.json`, then pass after the data update. Ran adjacent PVP damage, turn, HP, and selected-skill tests; parsed all 12 executable inline scripts.
+- Status: Complete.
+
 ### 2026-06-15 10:39 +08:00 - Codex
 
 - Request: Fix PVP damage display for `硬门` and `听桥`.

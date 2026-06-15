@@ -2932,6 +2932,27 @@
     return names.some((name) => candidates.includes(cleanText(name)));
   }
 
+  function sandTrapPowerFromDefenseDiff(diff) {
+    if (diff <= 0) return 60;
+    if (diff >= 271) return 200;
+    if (diff >= 30) return 130;
+    return 100;
+  }
+
+  function flashStrikePowerFromSpeedDiff(diff) {
+    if (diff < 0) return 60;
+    if (diff >= 135) return 200;
+    if (diff >= 120) return 195;
+    if (diff >= 105) return 190;
+    if (diff >= 90) return 180;
+    if (diff >= 75) return 170;
+    if (diff >= 60) return 160;
+    if (diff >= 45) return 150;
+    if (diff >= 30) return 140;
+    if (diff >= 15) return 130;
+    return 100;
+  }
+
   function blankRuleStatMods() {
     return Object.fromEntries(Object.values(STAT_NAME_TO_KEY).map((key) => [key, 0]));
   }
@@ -3064,13 +3085,19 @@
     const attackerStats = context.attackerStats || {};
     const defenderStats = context.defenderStats || {};
     const speedDiff = numberValue(attackerStats.spe) - numberValue(defenderStats.spe);
-    if (/速度高于对手271及以上时.*威力提升至200/.test(text)) {
+    if (actionNameMatches(action, ["闪击"])) {
+      power = flashStrikePowerFromSpeedDiff(speedDiff);
+      addLabel(labels, `速度差${speedDiff}，威力${power}`);
+    } else if (/速度高于对手271及以上时.*威力提升至200/.test(text)) {
       power = speedDiff >= 271 ? 200 : 60;
       addLabel(labels, speedDiff >= 271 ? "速度差>=271，威力200" : "速度差<271，威力60");
     }
 
     const defenseDiff = numberValue(attackerStats.defense) - numberValue(defenderStats.defense);
-    if (/物防高于对手271及以上时.*威力提升至200/.test(text)) {
+    if (actionNameMatches(action, ["鸣沙陷阱"])) {
+      power = sandTrapPowerFromDefenseDiff(defenseDiff);
+      addLabel(labels, `物防差${defenseDiff}，威力${power}`);
+    } else if (/物防高于对手271及以上时.*威力提升至200/.test(text)) {
       power = defenseDiff >= 271 ? 200 : 60;
       addLabel(labels, defenseDiff >= 271 ? "物防差>=271，威力200" : "物防差<271，威力60");
     }
@@ -3085,6 +3112,10 @@
     if (canReceiveHitCountBonus && /先于敌方攻击.*改为3连击/.test(text) && actsBeforeDefender) {
       hitCount = 3;
       addLabel(labels, "先于敌方攻击，改为3连击");
+    }
+    if (canReceiveHitCountBonus && /后手攻击.*改为3连击/.test(text) && !actsBeforeDefender) {
+      hitCount = 3;
+      addLabel(labels, "后手攻击，改为3连击");
     }
 
     const attackerEnergy = clampEnergy(context.attackerEnergy, context.defaultEnergy ?? DEFAULT_ENERGY);
@@ -3435,8 +3466,13 @@
       responsePower = Math.max(1, Number(responseAttackFixedPowerMatch[1]));
     }
     if (/应对攻击.*威力与被应对技能相等/.test(text)) {
+      const respondedFinalSingleDamage = Math.max(0, numberValue(context.respondedFinalSingleDamage, 0));
       const respondedSkillPower = Math.max(0, numberValue(context.respondedSkillPower, 0));
-      if (respondedSkillPower > 0) responsePower = respondedSkillPower;
+      if (respondedFinalSingleDamage > 0) {
+        responsePower = respondedFinalSingleDamage;
+      } else if (respondedSkillPower > 0) {
+        responsePower = respondedSkillPower;
+      }
     }
     if (/无视敌方系别抵抗/.test(text)) {
       if (/应对状态.*无视敌方系别抵抗/.test(text)) {
@@ -7167,6 +7203,15 @@
       return Boolean(snapshotMonsterId && currentMonsterId && snapshotMonsterId === currentMonsterId);
     }
 
+    function pvpRespondedFinalSingleDamage(attackerState, defenderState, action, actsBeforeDefender) {
+      if (!action || !isAttackSkill(action)) return 0;
+      const damage = calcPvpDamage(attackerState, defenderState, action, {
+        actsBeforeDefender,
+        skipRespondedFinalSingleDamage: true
+      });
+      return Math.max(0, Number(damage?.singleEstimate) || 0);
+    }
+
     function calcPvpDamage(attackerState, defenderState, action, options = {}) {
       const useActionSnapshot = pvpActionSnapshotMatchesCurrentMonster(attackerState);
       const attacker = monsterById.get(useActionSnapshot ? attackerState?.actionMonsterId : attackerState?.monsterId);
@@ -7213,6 +7258,14 @@
           weatherStatusLayers.freeze
         )
       };
+      const respondedFinalSingleDamage = options.skipRespondedFinalSingleDamage
+        ? 0
+        : pvpRespondedFinalSingleDamage(
+            defenderState,
+            attackerState,
+            defenderAction,
+            typeof options.actsBeforeDefender === "boolean" ? !options.actsBeforeDefender : undefined
+          );
       const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
         ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
             attackerStats,
@@ -7241,6 +7294,7 @@
             defenderFaintedCount: defenderState?.faintedCount ?? 0,
             teamSkillCopies: attackerState?.teamSkillCopies || {},
             respondedSkillPower: pvpActionBasePower(defenderAction),
+            respondedFinalSingleDamage,
             responseSuccessCount: attackerState?.responseSuccessCount ?? 0,
             positionChangeCount: attackerState?.positionChangeCounts?.[battleAction.id] ?? attackerState?.positionChangeCount ?? 0,
             otherTypeSkillUseCount: attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0,

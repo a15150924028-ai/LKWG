@@ -82,6 +82,47 @@ const speedFallback = damageRules.resolvePvpVariableDamage(turnOrderPowerSkill, 
 });
 assert(speedFallback.power === 150, "First-strike power rules should keep speed fallback when turn order is unavailable.");
 
+const sandTrap = {
+  id: "sand-trap",
+  name: "\u9e23\u6c99\u9677\u9631",
+  type: "ground",
+  category: "physical",
+  power: 60,
+  description: "\u9020\u6210\u7269\u4f24\uff0c\u7269\u9632\u4f4e\u4e8e\u6216\u7b49\u4e8e\u5bf9\u624b\u65f6\u5a01\u529b\u4e3a60\uff1b\u7269\u9632\u9ad8\u4e8e\u5bf9\u624b271\u53ca\u4ee5\u4e0a\u65f6\uff0c\u5a01\u529b\u63d0\u5347\u81f3200\u3002"
+};
+function sandTrapPower(defenseDiff) {
+  return damageRules.resolvePvpVariableDamage(sandTrap, {
+    attackerStats: { defense: 500 + defenseDiff },
+    defenderStats: { defense: 500 }
+  }).power;
+}
+assert(sandTrapPower(0) === 60, "鸣沙陷阱 should stay 60 power when physical defense is not higher.");
+assert(sandTrapPower(1) === 100, "鸣沙陷阱 should be 100 power for 1-29 physical defense lead.");
+assert(sandTrapPower(29) === 100, "鸣沙陷阱 should stay 100 power through 29 physical defense lead.");
+assert(sandTrapPower(30) === 130, "鸣沙陷阱 should be 130 power from 30 physical defense lead.");
+assert(sandTrapPower(271) === 200, "鸣沙陷阱 should be 200 power from 271 physical defense lead.");
+
+const flashStrike = {
+  id: "flash-strike",
+  name: "\u95ea\u51fb",
+  type: "wing",
+  category: "physical",
+  power: 60,
+  description: "\u901f\u5ea6\u4f4e\u4e8e\u6216\u7b49\u4e8e\u5bf9\u624b\u65f6\u5a01\u529b\u4e3a60\uff1b\u901f\u5ea6\u9ad8\u4e8e\u5bf9\u624b271\u53ca\u4ee5\u4e0a\u65f6\uff0c\u5a01\u529b\u63d0\u5347\u81f3200\u3002"
+};
+function flashStrikePower(speedDiff) {
+  return damageRules.resolvePvpVariableDamage(flashStrike, {
+    attackerStats: { spe: 500 + speedDiff },
+    defenderStats: { spe: 500 }
+  }).power;
+}
+assert(flashStrikePower(-1) === 60, "闪击 should be 60 power when slower.");
+assert(flashStrikePower(0) === 100, "闪击 should be 100 power at equal speed.");
+assert(flashStrikePower(14) === 100, "闪击 should stay 100 power through speed diff 14.");
+assert(flashStrikePower(15) === 130, "闪击 should be 130 power from speed diff 15.");
+assert(flashStrikePower(120) === 195, "闪击 should be 195 power from speed diff 120.");
+assert(flashStrikePower(135) === 200, "闪击 should be 200 power from speed diff 135.");
+
 const hardGate = {
   id: "hard-gate",
   name: "\u786c\u95e8",
@@ -105,6 +146,27 @@ const listeningBridge = {
 const bridgeDamage = damageRules.resolvePvpVariableDamage(listeningBridge, { respondedSkillPower: 125 });
 assert(bridgeDamage.responsePower === 125, "听桥 should use the responded skill power for response damage.");
 assert(bridgeDamage.powerRuleMatched, "听桥 should be considered calculable even though it is a defense skill.");
+const bridgeFinalDamage = damageRules.resolvePvpVariableDamage(listeningBridge, {
+  respondedSkillPower: 125,
+  respondedFinalSingleDamage: 321
+});
+assert(
+  bridgeFinalDamage.responsePower === 321,
+  "听桥 should use the responded final single-hit damage as response power when available."
+);
+
+const counterPunch = {
+  id: "counter-punch",
+  name: "\u53cd\u51fb\u62f3",
+  type: "fighting",
+  category: "physical",
+  power: 25,
+  description: "\u9020\u6210\u7269\u4f24\uff0c2\u8fde\u51fb\uff0c\u82e5\u540e\u624b\u653b\u51fb\uff0c\u6539\u4e3a3\u8fde\u51fb\u3002"
+};
+const counterPunchFirst = damageRules.resolvePvpVariableDamage(counterPunch, { actsBeforeDefender: true });
+assert(counterPunchFirst.hitCount === 2, "反击拳 should stay 2-hit when it acts first.");
+const counterPunchSecond = damageRules.resolvePvpVariableDamage(counterPunch, { actsBeforeDefender: false });
+assert(counterPunchSecond.hitCount === 3, "反击拳 should become 3-hit when it acts second.");
 
 assert(html.includes("resolveSpecialPvpPowerRule"), "Special PVP power rules should be centralized in a rule-pool resolver.");
 assert(html.includes("canGainPvpCuteLayer(attacker)"), "PVP damage calculation should pass the attacker's current cute availability into power rules.");
@@ -132,6 +194,10 @@ assert(
 assert(
   html.includes("respondedSkillPower: pvpActionBasePower(defenderAction)"),
   "PVP damage calculation must pass the opponent selected skill power into response-power rules."
+);
+assert(
+  html.includes("respondedFinalSingleDamage"),
+  "PVP damage calculation must pass the opponent's final single-hit damage into response-power rules."
 );
 assert(
   /function damageMode\(skill[\s\S]*物伤[\s\S]*物理伤害[\s\S]*attackKey: "atk"/.test(html),
