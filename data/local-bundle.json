@@ -14697,7 +14697,8 @@
         "skill-倾泻",
         "skill-晒太阳",
         "skill-铁蒺藜",
-        "skill-过山车"
+        "skill-过山车",
+        "skill-微型斥候"
       ],
       "passiveIds": [
         "passive-狂欢开始"
@@ -15346,7 +15347,8 @@
         "skill-倾泻",
         "skill-晒太阳",
         "skill-铁蒺藜",
-        "skill-过山车"
+        "skill-过山车",
+        "skill-微型斥候"
       ],
       "passiveIds": [
         "passive-狂欢开始"
@@ -33501,7 +33503,8 @@
         "skill-倾泻",
         "skill-晒太阳",
         "skill-铁蒺藜",
-        "skill-过山车"
+        "skill-过山车",
+        "skill-微型斥候"
       ],
       "passiveIds": [
         "passive-狂欢开始"
@@ -50850,6 +50853,22 @@
       "accuracy": null,
       "priority": 0,
       "description": "减伤70%，应对攻击：自己获得物攻和魔攻+70%。",
+      "raw": {}
+    },
+    {
+      "kind": "skill",
+      "id": "skill-微型斥候",
+      "name": "微型斥候",
+      "aliases": [],
+      "type": "mechanical",
+      "category": "special",
+      "mode": "",
+      "power": 75,
+      "pp": 3,
+      "energyCost": null,
+      "accuracy": null,
+      "priority": 0,
+      "description": "造成魔伤，自己每受到一次抵抗伤害，本技能威力永久+20。",
       "raw": {}
     }
   ],

@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 11:26 +08:00 - Codex
+
+- Request: Add BWiki skill `微型斥候` to the local bundle and make the 方舟 evolution line able to learn it.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-ark-skill-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added local skill record `skill-微型斥候` as a mechanical special skill with power 75, cost 3, and the BWiki description.
+  - Added `skill-微型斥候` to `钨丝贝贝`, `辉光幕机`, and `机幕方舟`, which share `local-evolution-114`.
+  - Added regression coverage that verifies the skill data and all three 方舟 evolution-chain skill pools.
+- Verification: Used the supplied BWiki `微型斥候` page to confirm type, category, power, cost, description, and skill-stone source. Watched `node tests/local-bundle-ark-skill-static.test.js` fail before the data change because the skill was missing, then pass after updating the bundle. Ran `node tests/local-bundle-import-validation.test.js` and `node tests/local-bundle-external-static.test.js`.
+- Status: Complete.
+
 ### 2026-06-15 11:06 +08:00 - Codex
 
 - Request: Explain and fix why `反击拳` still displayed as 2 hits in the manual PVP damage card.
