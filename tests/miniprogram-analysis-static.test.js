@@ -3,11 +3,12 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const catalog = require(path.join(root, "miniprogram", "data", "catalog.js"));
-const teamRules = require(path.join(root, "miniprogram", "domain", "team.js"));
-const typeRules = require(path.join(root, "miniprogram", "domain", "type-rules.js"));
-const stats = require(path.join(root, "miniprogram", "domain", "stats.js"));
-const analysis = require(path.join(root, "miniprogram", "domain", "analysis.js"));
+const packageRoot = path.join(root, "lkwgwechat");
+const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
+const teamRules = require(path.join(packageRoot, "miniprogram", "domain", "team.js"));
+const typeRules = require(path.join(packageRoot, "miniprogram", "domain", "type-rules.js"));
+const stats = require(path.join(packageRoot, "miniprogram", "domain", "stats.js"));
+const analysis = require(path.join(packageRoot, "miniprogram", "domain", "analysis.js"));
 
 assert.strictEqual(typeRules.relationMultiplier("fire", "grass"), 2);
 assert.strictEqual(typeRules.relationMultiplier("fire", "water"), 0.5);
@@ -65,11 +66,11 @@ assert(Array.isArray(result.missingTypes));
 assert.strictEqual(result.coveredTypes.length + result.missingTypes.length, 18);
 
 const pageJs = fs.readFileSync(
-  path.join(root, "miniprogram", "pages", "analysis", "index.js"),
+  path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"),
   "utf8"
 );
 const pageWxml = fs.readFileSync(
-  path.join(root, "miniprogram", "pages", "analysis", "index.wxml"),
+  path.join(packageRoot, "miniprogram", "pages", "analysis", "index.wxml"),
   "utf8"
 );
 assert(pageJs.includes("onShow()"));

@@ -2,10 +2,11 @@ const assert = require("assert");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
-const catalog = require(path.join(root, "miniprogram", "data", "catalog.js"));
-const constants = require(path.join(root, "miniprogram", "domain", "constants.js"));
-const teamRules = require(path.join(root, "miniprogram", "domain", "team.js"));
-const storageRules = require(path.join(root, "miniprogram", "utils", "storage.js"));
+const packageRoot = path.join(root, "lkwgwechat");
+const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
+const constants = require(path.join(packageRoot, "miniprogram", "domain", "constants.js"));
+const teamRules = require(path.join(packageRoot, "miniprogram", "domain", "team.js"));
+const storageRules = require(path.join(packageRoot, "miniprogram", "utils", "storage.js"));
 
 const monster = catalog.bundle.monsters.find(
   (candidate) => candidate.skillIds.length >= 5

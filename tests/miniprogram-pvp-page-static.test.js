@@ -3,20 +3,21 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.resolve(__dirname, "..");
+const packageRoot = path.join(root, "lkwgwechat");
 const pageJs = fs.readFileSync(
-  path.join(root, "miniprogram", "pages", "pvp", "index.js"),
+  path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"),
   "utf8"
 );
 const pageWxml = fs.readFileSync(
-  path.join(root, "miniprogram", "pages", "pvp", "index.wxml"),
+  path.join(packageRoot, "miniprogram", "pages", "pvp", "index.wxml"),
   "utf8"
 );
 const pageJson = JSON.parse(fs.readFileSync(
-  path.join(root, "miniprogram", "pages", "pvp", "index.json"),
+  path.join(packageRoot, "miniprogram", "pages", "pvp", "index.json"),
   "utf8"
 ));
 const statGridWxml = fs.readFileSync(
-  path.join(root, "miniprogram", "components", "stat-grid", "index.wxml"),
+  path.join(packageRoot, "miniprogram", "components", "stat-grid", "index.wxml"),
   "utf8"
 );
 

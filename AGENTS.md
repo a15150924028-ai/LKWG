@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 20:54 +08:00 - Codex
+
+- Request: Move all generated WeChat Mini Program project files into a new `lkwgwechat` package under the existing repository.
+- Files changed:
+  - `lkwgwechat/miniprogram/**`
+  - `lkwgwechat/project.config.json`
+  - `lkwgwechat/scripts/sync-miniprogram-data.js`
+  - `lkwgwechat/scripts/sync-miniprogram-pvp-rules.js`
+  - `lkwgwechat/README.md`
+  - `.gitignore`
+  - `tests/miniprogram-*.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Moved the native Mini Program runtime from the repository root into `lkwgwechat/miniprogram/`.
+  - Moved the WeChat project configuration into `lkwgwechat/`, making that directory the new Developer Tools import target.
+  - Moved the Mini Program synchronization scripts into the package and kept them reading the authoritative parent `data/local-bundle.json` and `index.html`.
+  - Moved the maintenance guide to `lkwgwechat/README.md` and updated all import, synchronization, preview, test, and generated-file paths.
+  - Updated Mini Program tests and private-config ignore rules for the new package location.
+- Verification: Watched `node tests/miniprogram-shell-static.test.js` fail before the move because `lkwgwechat/project.config.json` was absent, then pass after implementation. Ran all 7 Mini Program tests and all 51 Node tests; checked both moved synchronization scripts with `--check`; parsed all 31 Mini Program JavaScript files, 7 Mini Program JSON files, and `lkwgwechat/project.config.json`; passed the WXML compatibility scan; measured the runtime package at 1,436,159 bytes (1.37 MiB); confirmed no stale active Mini Program test paths remain.
+- Status: Complete.
+
 ### 2026-06-15 19:56 +08:00 - Codex
 
 - Request: Investigate and fix the WeChat Developer Tools console showing one startup error and seven warnings.

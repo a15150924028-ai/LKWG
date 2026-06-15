@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
-const root = path.resolve(__dirname, "..");
-const htmlPath = path.join(root, "index.html");
-const outputDir = path.join(root, "miniprogram", "domain", "generated");
+const packageRoot = path.resolve(__dirname, "..");
+const repositoryRoot = path.resolve(packageRoot, "..");
+const htmlPath = path.join(repositoryRoot, "index.html");
+const outputDir = path.join(packageRoot, "miniprogram", "domain", "generated");
 const modules = [
   ["LKWG_PVP_DAMAGE_RULES", "damage-rules.js"],
   ["LKWG_PVP_TRAIT_RULES", "trait-rules.js"],

@@ -4,11 +4,12 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
+const packageRoot = path.join(root, "lkwgwechat");
 const source = require(path.join(root, "data", "local-bundle.json"));
 const sync = spawnSync(
   process.execPath,
-  [path.join(root, "scripts", "sync-miniprogram-data.js"), "--check"],
-  { cwd: root, encoding: "utf8" }
+  [path.join(packageRoot, "scripts", "sync-miniprogram-data.js"), "--check"],
+  { cwd: packageRoot, encoding: "utf8" }
 );
 
 assert.strictEqual(
@@ -17,7 +18,7 @@ assert.strictEqual(
   `Mini Program data check failed:\n${sync.stdout}\n${sync.stderr}`
 );
 
-const generatedPath = path.join(root, "miniprogram", "data", "local-bundle.js");
+const generatedPath = path.join(packageRoot, "miniprogram", "data", "local-bundle.js");
 assert(fs.existsSync(generatedPath), "generated Mini Program data module is missing");
 delete require.cache[require.resolve(generatedPath)];
 const generated = require(generatedPath);
@@ -38,7 +39,7 @@ for (const monster of generated.monsters) {
   }
 }
 
-const catalog = require(path.join(root, "miniprogram", "data", "catalog.js"));
+const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
 assert.strictEqual(catalog.monsterById.size, generated.monsters.length);
 assert.strictEqual(catalog.skillById.size, generated.skills.length);
 assert.strictEqual(catalog.passiveById.size, generated.passives.length);

@@ -5,10 +5,11 @@ const vm = require("vm");
 const { spawnSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
+const packageRoot = path.join(root, "lkwgwechat");
 const sync = spawnSync(
   process.execPath,
-  [path.join(root, "scripts", "sync-miniprogram-pvp-rules.js"), "--check"],
-  { cwd: root, encoding: "utf8" }
+  [path.join(packageRoot, "scripts", "sync-miniprogram-pvp-rules.js"), "--check"],
+  { cwd: packageRoot, encoding: "utf8" }
 );
 assert.strictEqual(
   sync.status,
@@ -33,11 +34,11 @@ const webDamage = webModule("LKWG_PVP_DAMAGE_CORE");
 const webWeather = webModule("LKWG_PVP_WEATHER_RULES");
 const webTurn = webModule("LKWG_PVP_TURN_RULES");
 
-const miniBuild = require(path.join(root, "miniprogram", "domain", "pvp-build.js"));
-const miniDamage = require(path.join(root, "miniprogram", "domain", "pvp-damage.js"));
-const miniTurn = require(path.join(root, "miniprogram", "domain", "pvp-turn.js"));
-const miniEffects = require(path.join(root, "miniprogram", "domain", "pvp-effects.js"));
-const pvpState = require(path.join(root, "miniprogram", "domain", "pvp-state.js"));
+const miniBuild = require(path.join(packageRoot, "miniprogram", "domain", "pvp-build.js"));
+const miniDamage = require(path.join(packageRoot, "miniprogram", "domain", "pvp-damage.js"));
+const miniTurn = require(path.join(packageRoot, "miniprogram", "domain", "pvp-turn.js"));
+const miniEffects = require(path.join(packageRoot, "miniprogram", "domain", "pvp-effects.js"));
+const pvpState = require(path.join(packageRoot, "miniprogram", "domain", "pvp-state.js"));
 
 const physical = { stats: { atk: 120, spa: 90 } };
 assert.strictEqual(

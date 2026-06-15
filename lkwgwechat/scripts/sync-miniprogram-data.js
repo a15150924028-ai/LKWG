@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
-const root = path.resolve(__dirname, "..");
-const sourcePath = path.join(root, "data", "local-bundle.json");
-const outputPath = path.join(root, "miniprogram", "data", "local-bundle.js");
+const packageRoot = path.resolve(__dirname, "..");
+const repositoryRoot = path.resolve(packageRoot, "..");
+const sourcePath = path.join(repositoryRoot, "data", "local-bundle.json");
+const outputPath = path.join(packageRoot, "miniprogram", "data", "local-bundle.js");
 const allowedTypes = new Set([
   "grass", "water", "fire", "electric", "poison", "fantasy", "ice",
   "fighting", "cute", "light", "dragon", "mechanical", "ghost", "demon",
@@ -129,7 +130,7 @@ function main() {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, next, "utf8");
   console.log(
-    `Generated ${path.relative(root, outputPath)}: `
+    `Generated ${path.relative(packageRoot, outputPath)}: `
     + `${bundle.monsters.length} monsters, ${bundle.skills.length} skills, `
     + `${bundle.passives.length} passives.`
   );

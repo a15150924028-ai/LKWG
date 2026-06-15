@@ -2,11 +2,12 @@
 
 ## 工程位置
 
-- 网页版入口：`index.html`
+- 小程序包目录：`C:\codex-work\codex-lkwg-battle\lkwgwechat`
+- 网页版入口：上级目录的 `..\index.html`
 - 微信小程序入口：`miniprogram/app.json`
-- 微信开发者工具项目目录：仓库根目录
+- 微信开发者工具项目目录：当前 `lkwgwechat` 目录
 - 小程序代码根目录：`miniprogram/`
-- AppID：由根目录 `project.config.json` 管理
+- AppID：由当前目录 `project.config.json` 管理
 - 本机私有设置：`project.private.config.json`，已加入 `.gitignore`
 
 网页版与小程序版相互独立。不要删除或替换 `index.html`。
@@ -14,7 +15,7 @@
 ## 首次打开或重新载入
 
 1. 在微信开发者工具中关闭当前项目。
-2. 重新导入 `C:\codex-work\codex-lkwg-battle`。
+2. 重新导入 `C:\codex-work\codex-lkwg-battle\lkwgwechat`。
 3. 确认项目类型为“小程序”。
 4. 点击顶部“编译”。
 5. 底部应出现 `队伍`、`分析`、`PVP` 三个 Tab。
@@ -30,13 +31,13 @@
 
 ## 日常数据更新
 
-`data/local-bundle.json` 是网页和小程序共同使用的权威数据源。
+上级目录的 `..\data\local-bundle.json` 是网页和小程序共同使用的权威数据源。
 
 更新精灵、技能或特性后运行：
 
 ```powershell
-node scripts/sync-miniprogram-data.js
-node scripts/sync-miniprogram-pvp-rules.js
+node lkwgwechat/scripts/sync-miniprogram-data.js
+node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js
 ```
 
 第一条命令生成小程序本地数据，第二条命令从 `index.html` 同步经过网页
@@ -48,8 +49,8 @@ node scripts/sync-miniprogram-pvp-rules.js
 提交前检查生成文件是否最新：
 
 ```powershell
-node scripts/sync-miniprogram-data.js --check
-node scripts/sync-miniprogram-pvp-rules.js --check
+node lkwgwechat/scripts/sync-miniprogram-data.js --check
+node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check
 ```
 
 ## 自动测试
@@ -95,7 +96,7 @@ Get-ChildItem tests -Filter *.test.js |
 
 ```powershell
 & 'C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat' preview `
-  --project 'C:\codex-work\codex-lkwg-battle'
+  --project 'C:\codex-work\codex-lkwg-battle\lkwgwechat'
 ```
 
 CLI 不是发布必需条件；也可以直接使用开发者工具顶部的“预览”和“上传”。
