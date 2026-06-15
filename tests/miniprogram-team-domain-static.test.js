@@ -92,4 +92,26 @@ adapter.clearTeam();
 assert.strictEqual(memory.has(storageRules.PVP_STORAGE_KEY), true);
 assert.strictEqual(memory.has(storageRules.TEAM_STORAGE_KEY), false);
 
+const timeoutAdapter = storageRules.createStorageAdapter({
+  get() {
+    throw new Error("timeout");
+  },
+  set() {},
+  remove() {}
+});
+assert.doesNotThrow(
+  () => timeoutAdapter.loadTeam(catalog),
+  "a WeChat storage timeout must not abort Mini Program startup"
+);
+assert.strictEqual(
+  timeoutAdapter.loadTeam(catalog).length,
+  6,
+  "a WeChat storage timeout should fall back to an empty normalized team"
+);
+assert.strictEqual(
+  timeoutAdapter.loadPvp((value) => value),
+  null,
+  "a WeChat storage timeout should fall back to no saved PVP state"
+);
+
 console.log("miniprogram team domain checks passed");

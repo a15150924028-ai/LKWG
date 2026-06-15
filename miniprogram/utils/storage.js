@@ -19,7 +19,12 @@ function defaultBackend() {
 }
 
 function storedValue(backend, key) {
-  const record = backend.get(key);
+  let record;
+  try {
+    record = backend.get(key);
+  } catch (_error) {
+    return null;
+  }
   if (!record || record.schemaVersion !== STORAGE_SCHEMA_VERSION) return null;
   return record.value;
 }

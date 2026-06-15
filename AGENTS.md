@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 19:56 +08:00 - Codex
+
+- Request: Investigate and fix the WeChat Developer Tools console showing one startup error and seven warnings.
+- Files changed:
+  - `miniprogram/utils/storage.js`
+  - `tests/miniprogram-team-domain-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Traced the uncaught `Error: timeout` to the only synchronous WeChat API called during team-page startup: `wx.getStorageSync`.
+  - Made saved-state reads fall back to empty team or PVP state when the WeChat storage backend throws, so a transient developer-tool storage timeout no longer aborts page rendering.
+  - Confirmed the visible `getSystemInfo`, SharedArrayBuffer, gray base-library, and hot-reload warnings are emitted by WeChat Developer Tools or its base library rather than project API calls.
+  - Added regression coverage for team and PVP loading when the storage backend throws `Error: timeout`.
+- Verification: Watched `node tests/miniprogram-team-domain-static.test.js` fail with the reproduced `timeout` before implementation and pass afterward. Ran all 51 Node tests; checked both Mini Program generators with `--check`; parsed all 31 Mini Program JavaScript files and 7 JSON files; confirmed there are no project `getSystemInfo` or `getDeviceInfo` calls; ran `git diff --check`. The official WeChat `preview` CLI still timed out after 45 seconds because the IDE service port is unavailable, so the post-fix simulator console requires one manual compile.
+- Status: Complete for the project error fix and automated verification; simulator confirmation remains pending.
+
 ### 2026-06-15 16:12 +08:00 - Codex
 
 - Request: Finish ordinary-user feature parity for the new native WeChat Mini Program while preserving the existing web version.
