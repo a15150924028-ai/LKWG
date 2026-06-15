@@ -45,6 +45,14 @@ assert(
   "Shared turn damage must keep using the turn-order-aware calcPvpDamage path."
 );
 assert(
+  html.includes("function pvpActionPrefersSecondMove("),
+  "PVP damage should detect actions whose visible manual estimate should assume after-moving behavior when the opponent action is missing."
+);
+assert(
+  /function pvpSideActsBeforeDefender\([\s\S]*order\?\.reason === "missing-action"[\s\S]*pvpActionPrefersSecondMove/.test(html),
+  "When the opponent action is missing, after-moving skills such as 反击拳 must be estimated as acting second instead of falling back to speed."
+);
+assert(
   extractFunction("renderPvpDamageResult").includes("currentPvpTurnDamage(currentPvpTurnContext())[side]"),
   "Visible damage results must read the shared turn damage result instead of calculating separately."
 );

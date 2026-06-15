@@ -8550,9 +8550,18 @@
       return { ally, enemy, allyAction, enemyAction, order };
     }
 
+    function pvpActionPrefersSecondMove(action) {
+      const text = `${action?.name || ""} ${action?.description || ""} ${action?.effect || ""}`.replace(/\s+/g, "");
+      return /后手攻击/.test(text);
+    }
+
     function pvpSideActsBeforeDefender(side, context) {
       const first = context?.order?.first || "";
-      if (!first || context?.order?.reason === "missing-action") return undefined;
+      if (!first) return undefined;
+      if (context?.order?.reason === "missing-action") {
+        const action = context?.[`${side}Action`];
+        return pvpActionPrefersSecondMove(action) ? false : undefined;
+      }
       return first === side;
     }
 

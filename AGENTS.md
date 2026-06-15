@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 11:06 +08:00 - Codex
+
+- Request: Explain and fix why `反击拳` still displayed as 2 hits in the manual PVP damage card.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-panel-hidden-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed `反击拳` already becomes 3 hits when the damage rule receives an explicit after-moving turn order.
+  - Found the visible manual damage card can have missing opponent action context; in that path it fell back to speed, so a faster attacker still displayed the base 2 hits.
+  - Added `pvpActionPrefersSecondMove()` and changed `pvpSideActsBeforeDefender()` so missing-opponent-action estimates treat after-moving skills as acting second.
+  - Kept real turn order unchanged when both sides have selected actions.
+  - Added regression coverage for the missing-opponent-action visible damage path.
+- Verification: Watched `node tests/pvp-turn-panel-hidden-static.test.js` fail before the fix on missing after-moving detection, then pass after implementation. Ran `node tests/pvp-special-power-rules-static.test.js`; parsed all 12 executable inline scripts. Browser DOM verification was blocked by Browser policy for the current local `file://` page.
+- Status: Complete.
+
 ### 2026-06-15 10:59 +08:00 - Codex
 
 - Request: Correct PVP dynamic damage rules for `听桥`, `反击拳`, `鸣沙陷阱`, and `闪击`.
