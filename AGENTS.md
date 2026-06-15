@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-15 16:17 +08:00 - Codex
+
+- Request: Migrate team matchup analysis and final stat display to the native Mini Program.
+- Files changed:
+  - `miniprogram/domain/type-rules.js`
+  - `miniprogram/domain/stats.js`
+  - `miniprogram/domain/analysis.js`
+  - `miniprogram/pages/analysis/index.js`
+  - `miniprogram/pages/analysis/index.wxml`
+  - `miniprogram/pages/analysis/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `AGENTS.md`
+- Changes:
+  - Ported the full web type relationship matrix, dual-type multipliers, coverage, weaknesses, resistances, and immunity profiling.
+  - Ported nature and talent final-stat calculations using the web PVP constants and formulas.
+  - Added team aggregation and a native analysis page that refreshes from saved team data on every tab visit.
+  - Precomputed display strings in JavaScript so WXML templates avoid unsupported method calls.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail because the analysis modules were missing, corrected the fixture's hand-calculated expected stats to match the web formula, then watched the test pass. Re-ran team page/domain tests, parsed all analysis JavaScript, and confirmed no method calls remain inside WXML bindings.
+- Status: Complete.
+
 ### 2026-06-15 16:07 +08:00 - Codex
 
 - Request: Replace the Mini Program team placeholder with a native six-slot editor.

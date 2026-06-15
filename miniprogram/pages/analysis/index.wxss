@@ -1,1 +1,128 @@
-/* Analysis-specific styles are added with the native result cards. */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.summary-card,
+.analysis-card {
+  padding: 24rpx;
+  border: 1rpx solid #e0e7f0;
+  border-radius: 22rpx;
+  background: #ffffff;
+}
+
+.analysis-card {
+  margin-top: 20rpx;
+}
+
+.summary-value,
+.summary-label {
+  display: block;
+}
+
+.summary-value {
+  color: #1677ff;
+  font-size: 36rpx;
+  font-weight: 750;
+}
+
+.summary-label {
+  margin-top: 6rpx;
+  color: #667085;
+  font-size: 23rpx;
+}
+
+.card-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.card-title.secondary {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+}
+
+.tag-text {
+  display: block;
+  margin-top: 10rpx;
+  color: #344054;
+  font-size: 25rpx;
+  line-height: 1.6;
+}
+
+.tag-text.warning {
+  color: #b54708;
+}
+
+.tag-text.good {
+  color: #128245;
+}
+
+.monster-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.monster-name,
+.monster-types {
+  display: block;
+}
+
+.monster-name {
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.monster-types {
+  margin-top: 5rpx;
+  color: #667085;
+  font-size: 23rpx;
+}
+
+.state-badge {
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  background: #fff4e5;
+  color: #b54708;
+  font-size: 21rpx;
+}
+
+.state-badge.complete {
+  background: #eaf8ef;
+  color: #128245;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10rpx;
+  margin-top: 20rpx;
+}
+
+.stat-cell {
+  padding: 12rpx 8rpx;
+  border-radius: 14rpx;
+  background: #f5f7fb;
+  text-align: center;
+}
+
+.stat-label,
+.stat-value {
+  display: block;
+}
+
+.stat-label {
+  color: #667085;
+  font-size: 20rpx;
+}
+
+.stat-value {
+  margin-top: 4rpx;
+  font-size: 27rpx;
+  font-weight: 700;
+}

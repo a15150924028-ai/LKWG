@@ -194,27 +194,27 @@ Run focused tests and the team domain tests.
 - Create: `miniprogram/domain/analysis.js`
 - Modify: `miniprogram/pages/analysis/index.{js,wxml,wxss}`
 
-- [ ] **Step 1: Write failing parity fixtures**
+- [x] **Step 1: Write failing parity fixtures**
 
 Use representative dual-type monsters and complete/incomplete teams to verify
 final stats, team counts, weaknesses, resistances, immunities, and incomplete
 configuration messages.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run `node tests/miniprogram-analysis-static.test.js`.
 
-- [ ] **Step 3: Implement pure analysis modules**
+- [x] **Step 3: Implement pure analysis modules**
 
 Port the web type matrix, nature multipliers, talent bonuses, bloodline stat
 effects, and team aggregation into CommonJS modules without DOM access.
 
-- [ ] **Step 4: Render the analysis page**
+- [x] **Step 4: Render the analysis page**
 
 Refresh from storage in `onShow`, render one summary per configured monster,
 and show an actionable empty state linking users to the team tab.
 
-- [ ] **Step 5: Verify GREEN**
+- [x] **Step 5: Verify GREEN**
 
 Run focused parity tests and adjacent web stat/type tests.
 

@@ -1,0 +1,74 @@
+const { TYPES } = require("./constants");
+const { calculateFinalStats } = require("./stats");
+const typeRules = require("./type-rules");
+const teamRules = require("./team");
+
+const attackCategories = new Set(["physical", "special", "attack"]);
+
+function analyzeMonster(pet, catalog) {
+  const monster = catalog.getMonster(pet.monsterId);
+  if (!monster) return null;
+  const profile = typeRules.defensiveProfile(monster.types);
+  const stats = calculateFinalStats(monster, pet);
+  const typeLabels = monster.types.map(typeRules.typeName);
+  const weaknessLabels = profile.weaknesses.map(typeRules.typeName);
+  const resistanceLabels = profile.resistances.map(typeRules.typeName);
+  const immunityLabels = profile.immunities.map(typeRules.typeName);
+  return {
+    id: monster.id,
+    name: monster.name,
+    types: monster.types,
+    typeLabels,
+    typeText: typeLabels.join(" / "),
+    complete: teamRules.isPetComplete(pet),
+    weaknesses: profile.weaknesses,
+    weaknessLabels,
+    weaknessText: weaknessLabels.join("、") || "无",
+    resistances: profile.resistances,
+    resistanceLabels,
+    resistanceText: resistanceLabels.join("、") || "无",
+    immunities: profile.immunities,
+    immunityLabels,
+    immunityText: immunityLabels.join("、") || "无",
+    stats,
+    statRows: [
+      ["生命", stats.hp], ["物攻", stats.atk], ["物防", stats.defense],
+      ["魔攻", stats.spa], ["魔防", stats.spd], ["速度", stats.spe]
+    ].map(([label, value]) => ({ label, value }))
+  };
+}
+
+function analyzeTeam(team, catalog) {
+  const normalized = teamRules.normalizeTeam(team, catalog);
+  const attackTypes = [];
+  for (const pet of normalized) {
+    for (const selected of pet.skills) {
+      const skill = catalog.getSkill(selected.skillId);
+      if (skill && attackCategories.has(skill.category)) attackTypes.push(skill.type);
+    }
+  }
+  const uniqueAttackTypes = [...new Set(attackTypes)];
+  const coveredTypes = typeRules.coverageOfTypes(uniqueAttackTypes);
+  const covered = new Set(coveredTypes);
+  const coveredTypeLabels = coveredTypes.map(typeRules.typeName);
+  const missingTypes = TYPES.map((type) => type.id).filter((id) => !covered.has(id));
+  const missingTypeLabels = missingTypes.map(typeRules.typeName);
+  return {
+    configuredCount: normalized.filter((pet) => Boolean(pet.monsterId)).length,
+    completeCount: normalized.filter(teamRules.isPetComplete).length,
+    attackTypes: uniqueAttackTypes,
+    attackTypeLabels: uniqueAttackTypes.map(typeRules.typeName),
+    coveredTypes,
+    coveredTypeLabels,
+    coveredTypeText: coveredTypeLabels.join("、") || "暂无",
+    missingTypes,
+    missingTypeLabels,
+    missingTypeText: missingTypeLabels.join("、") || "无",
+    monsters: normalized.map((pet) => analyzeMonster(pet, catalog)).filter(Boolean)
+  };
+}
+
+module.exports = {
+  analyzeMonster,
+  analyzeTeam
+};

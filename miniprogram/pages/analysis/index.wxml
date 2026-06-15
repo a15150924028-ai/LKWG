@@ -4,9 +4,57 @@
     <text class="hero-description">查看队伍属性覆盖、弱点、抗性与配置完成情况。</text>
   </view>
 
-  <view class="status-card">
-    <text class="status-title">等待队伍配置</text>
-    <text class="status-text">完成队伍页配置后，本页会自动读取并生成分析。</text>
+  <view wx:if="{{result.configuredCount === 0}}" class="status-card">
+    <text class="status-title">暂无队伍配置</text>
+    <text class="status-text">先在队伍页选择精灵和技能，本页会自动读取并生成分析。</text>
     <button class="primary-button" bindtap="goToTeam">前往队伍</button>
   </view>
+
+  <block wx:else>
+    <view class="summary-grid">
+      <view class="summary-card">
+        <text class="summary-value">{{result.configuredCount}}/6</text>
+        <text class="summary-label">已选择精灵</text>
+      </view>
+      <view class="summary-card">
+        <text class="summary-value">{{result.completeCount}}/6</text>
+        <text class="summary-label">配置完成</text>
+      </view>
+    </view>
+
+    <view class="analysis-card">
+      <text class="card-title">当前克制面</text>
+      <text class="tag-text">{{result.coveredTypeText}}</text>
+      <text class="card-title secondary">尚未覆盖</text>
+      <text class="tag-text warning">{{result.missingTypeText}}</text>
+    </view>
+
+    <block wx:for="{{result.monsters}}" wx:key="id" wx:for-item="monster">
+      <view class="analysis-card">
+        <view class="monster-head">
+          <view>
+            <text class="monster-name">{{monster.name}}</text>
+            <text class="monster-types">{{monster.typeText}}</text>
+          </view>
+          <text class="state-badge {{monster.complete ? 'complete' : ''}}">
+            {{monster.complete ? '配置完成' : '配置未完成'}}
+          </text>
+        </view>
+
+        <view class="stat-grid">
+          <block wx:for="{{monster.statRows}}" wx:key="label" wx:for-item="stat">
+            <view class="stat-cell">
+              <text class="stat-label">{{stat.label}}</text>
+              <text class="stat-value">{{stat.value}}</text>
+            </view>
+          </block>
+        </view>
+
+        <text class="card-title secondary">主要弱点</text>
+        <text class="tag-text warning">{{monster.weaknessText}}</text>
+        <text class="card-title secondary">抗性</text>
+        <text class="tag-text good">{{monster.resistanceText}}</text>
+      </view>
+    </block>
+  </block>
 </view>
