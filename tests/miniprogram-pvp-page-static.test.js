@@ -309,4 +309,76 @@ assert(
   "Mini Program 听桥 result meta should display the enemy final damage as its effective power."
 );
 
+const bossMonsterNames = [
+  "彩虹独角兽",
+  "叶冕魔力猫",
+  "烈火战神",
+  "圣水守护",
+  "鸭吉吉国王",
+  "波普鹿",
+  "恶魔狼王",
+  "风暴战犬",
+  "雪影冰灵",
+  "奇梦咪",
+  "伊兰龙",
+  "幻影荆棘",
+  "蹦蹦果",
+  "奇丽果",
+  "女王蜂",
+  "神谕鲨",
+  "霜翼领主",
+  "迷嶂布莱克",
+  "祭礼巨像",
+  "钻石蜗",
+  "千棘海针",
+  "圣剑骑士",
+  "黑猫密探",
+  "棋契陛下"
+];
+assert(
+  pageJs.includes("const BOSS_MONSTER_NAMES = new Set(["),
+  "PVP page should keep an explicit complete boss monster whitelist."
+);
+assert(pageJs.includes("\"鸭吉吉国王\""), "Boss whitelist must include 鸭吉吉国王 variants.");
+assert(pageJs.includes("\"蹦蹦果\""), "Boss whitelist must include 蹦蹦果 variants.");
+
+function representativeMonster(baseName) {
+  return catalog.bundle.monsters.find((monster) => (
+    monster.name === baseName
+    || monster.name.startsWith(`${baseName}（`)
+    || (monster.aliases || []).includes(baseName)
+  ));
+}
+
+for (const bossName of bossMonsterNames) {
+  const monster = representativeMonster(bossName);
+  assert(monster, `${bossName} boss representative must exist in the local bundle.`);
+  pageInstance.applyState(pvpState.defaultPvpState(), false);
+  const enemyView = pageInstance.data.sides.find((side) => side.side === "enemy");
+  const monsterIndex = enemyView.monsterOptions.findIndex((option) => option.id === monster.id);
+  assert(monsterIndex > 0, `${monster.name} must be selectable from the enemy monster picker.`);
+  pageInstance.onMonsterChange({
+    currentTarget: { dataset: { side: "enemy" } },
+    detail: { index: monsterIndex }
+  });
+  assert.strictEqual(
+    pageInstance.pvpState.enemy.bloodlineId,
+    "bloodline-boss",
+    `${monster.name} should auto-fill 首领血脉 when selected manually.`
+  );
+}
+
+pageInstance.applyState(pvpState.defaultPvpState(), false);
+const enemyView = pageInstance.data.sides.find((side) => side.side === "enemy");
+const speedDogIndex = enemyView.monsterOptions.findIndex((option) => option.id === speedDog.id);
+pageInstance.onMonsterChange({
+  currentTarget: { dataset: { side: "enemy" } },
+  detail: { index: speedDogIndex }
+});
+assert.strictEqual(
+  pageInstance.pvpState.enemy.bloodlineId,
+  "",
+  "Non-boss monsters should not auto-fill 首领血脉."
+);
+
 console.log("miniprogram PVP page static checks passed");

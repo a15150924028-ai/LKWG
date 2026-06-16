@@ -91,6 +91,32 @@ const weatherOptions = [
   { id: "sandstorm", label: "沙暴", type: "ground", icon: "/assets/type-icons/ground.png", weatherClass: "weather-sandstorm" },
   { id: "blizzard", label: "雪天", type: "ice", icon: "/assets/type-icons/ice.png", weatherClass: "weather-blizzard" }
 ];
+const BOSS_MONSTER_NAMES = new Set([
+  "彩虹独角兽",
+  "叶冕魔力猫",
+  "烈火战神",
+  "圣水守护",
+  "鸭吉吉国王",
+  "波普鹿",
+  "恶魔狼王",
+  "风暴战犬",
+  "雪影冰灵",
+  "奇梦咪",
+  "伊兰龙",
+  "幻影荆棘",
+  "蹦蹦果",
+  "奇丽果",
+  "女王蜂",
+  "神谕鲨",
+  "霜翼领主",
+  "迷嶂布莱克",
+  "祭礼巨像",
+  "钻石蜗",
+  "千棘海针",
+  "圣剑骑士",
+  "黑猫密探",
+  "棋契陛下"
+]);
 const statLabels = {
   hp: "生命",
   atk: "物攻",
@@ -105,6 +131,16 @@ const typeLabels = new Map(TYPES.map((item) => [item.id, item.name]));
 function selection(options, id) {
   const index = Math.max(0, options.findIndex((option) => option.id === id));
   return { index, label: options[index].label };
+}
+
+function isBossMonster(monster) {
+  if (!monster) return false;
+  const aliases = monster.aliases || [];
+  return [...BOSS_MONSTER_NAMES].some((name) => (
+    monster.name === name
+    || monster.name.startsWith(`${name}（`)
+    || aliases.includes(name)
+  ));
 }
 
 function bloodlineForState(state) {
@@ -609,11 +645,12 @@ Page({
     }
     this.clearImportedTeamPet(side);
     this.mutateSide(side, (state) => {
+      const monster = catalog.getMonster(option.id);
       Object.assign(state, pvpStateRules.defaultSide(side), {
         monsterId: option.id,
+        bloodlineId: isBossMonster(monster) ? "bloodline-boss" : "",
         defaultBuildPreset: state.defaultBuildPreset
       });
-      const monster = catalog.getMonster(option.id);
       state.traitLayers = monster
         ? pvpEffects.trait.defaultTraitLayers(monster)
         : 0;

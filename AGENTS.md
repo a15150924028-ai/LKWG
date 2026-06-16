@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 00:07 +08:00 - Codex
+
+- Request: Continue the boss-monster PVP change and ensure all supplied boss families, including multi-form `鸭吉吉国王` and `蹦蹦果`, auto-fill `首领血脉` when selected.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added an explicit 24-family boss-monster whitelist to the Mini Program PVP page.
+  - Added boss matching by exact monster name, `名称（形态）` prefix, or alias, so multi-form boss families such as `鸭吉吉国王（等一等鸭）` and `蹦蹦果（彩玉球形态）` are included.
+  - Made manual PVP monster selection auto-fill `bloodline-boss` for matched boss monsters while leaving non-boss monsters unchanged.
+  - Added page-level regression coverage that selects a representative for every supplied boss family and verifies `首领血脉` is filled.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the whitelist/auto-fill implementation, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,832,168` bytes.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 22:02 +08:00 - Codex
 
 - Request: In Mini Program PVP, show the real HP-loss percentage instead of capping at 100%, and make the enemy card clear button say `清空敌方`; only inspect boss monsters for the next request.
