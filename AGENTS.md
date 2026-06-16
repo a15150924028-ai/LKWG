@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:01 +08:00 - Codex
+
+- Request: Investigate and fix Mini Program PVP damage mismatch where 音速犬 vs 音速犬 using 灼伤 with 开朗、生命/物攻/速度 should match the web result of 370 damage.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Root caused the mismatch to Mini Program page-level damage inputs: passive percentage stat boosts were already applied to displayed attack/defense and then applied again through `abilityLevel`, while the web path uses base battle attack/defense plus a separate ability-level multiplier.
+  - Split Mini Program PVP damage stats into base battle stats and fully boosted battle stats, using boosted stats for turn order / variable power context but base stats for the damage core's `attack` and `defense` inputs.
+  - Included passive, settled skill stat changes, and manual stat changes in the Mini Program ability-level multiplier so it matches the web data flow instead of only considering passive/manual state.
+  - Added regression coverage that loads the Mini Program PVP page logic and verifies 音速犬 mirror `灼伤` with 开朗、生命/物攻/速度 and 10 专注力 layers deals 370 damage, plus structural assertions preventing passive percentage boosts from being double-counted again.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail at 739 before the fix and pass at 370 afterward. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed 43 Mini Program JavaScript/JSON files; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,830,691` bytes.
+- Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device visual confirmation remains pending.
+
 ### 2026-06-16 20:41 +08:00 - Codex
 
 - Request: Remove the blank-looking extra line below the Mini Program analysis-page `谁能学` learner heading.

@@ -210,6 +210,20 @@ function displayedStats(monster, state, action) {
   return { values: next, build, trait };
 }
 
+function damageStatValues(monster, state, trait, statMods = {}) {
+  if (!monster) return null;
+  const build = effectiveBuild(state, monster);
+  const next = statsRules.calculateFinalStats(monster, build);
+  const flatMods = mergeStatMods(trait?.statFlatMods, state?.skillFlatStatMods);
+  for (const key of Object.keys(next)) {
+    const percent = Number(statMods?.[key]) || 0;
+    const flat = Number(flatMods?.[key]) || 0;
+    if (percent) next[key] = Math.max(1, Math.floor(next[key] * (1 + percent)));
+    if (flat) next[key] = Math.max(1, Math.round(next[key] + flat));
+  }
+  return next;
+}
+
 function statRows(statResult) {
   if (!statResult) return [];
   const pair = statsRules.NATURE_PAIRS[statResult.build.natureId] || [];
@@ -326,8 +340,26 @@ function calculateDamageFor(side, state, views) {
   if (!attacker || !defender) return { error: "请先选择双方精灵" };
   if (!action) return { error: "请选择本回合技能" };
 
-  const attackerStats = Object.fromEntries(attackerView.statRows.map((row) => [row.key, row.value]));
-  const defenderStats = Object.fromEntries(defenderView.statRows.map((row) => [row.key, row.value]));
+  const attackerTrait = attackerView
+    ? displayedStats(attacker, attackerState, action).trait
+    : { statMods: {}, statFlatMods: {}, flatPower: 0, powerMultiplier: 1, hitCountAdd: 0 };
+  const defenderTrait = defenderView
+    ? displayedStats(defender, defenderState, defenderAction).trait
+    : { statMods: {}, statFlatMods: {} };
+  const attackerMods = mergeStatMods(
+    attackerTrait.statMods,
+    attackerState.skillStatMods,
+    attackerState.manualStatMods
+  );
+  const defenderMods = mergeStatMods(
+    defenderTrait.statMods,
+    defenderState.skillStatMods,
+    defenderState.manualStatMods
+  );
+  const attackerBaseStats = damageStatValues(attacker, attackerState, attackerTrait);
+  const defenderBaseStats = damageStatValues(defender, defenderState, defenderTrait);
+  const attackerStats = damageStatValues(attacker, attackerState, attackerTrait, attackerMods);
+  const defenderStats = damageStatValues(defender, defenderState, defenderTrait, defenderMods);
   const order = pvpTurn.turn.resolveTurnOrder({
     allyAction: side === "ally" ? action : defenderAction,
     enemyAction: side === "enemy" ? action : defenderAction,
@@ -363,7 +395,7 @@ function calculateDamageFor(side, state, views) {
     return { error: `${action.name} 需要对手选择可应对的攻击技能`, description: action.description };
   }
 
-  const [attackKey, defenseKey, modeLabel] = damageMode(action, attackerStats, defenderStats);
+  const [attackKey, defenseKey, modeLabel] = damageMode(action, attackerBaseStats, defenderBaseStats);
   const damageType = variable.type || action.type;
   const rawTypeMultiplier = typeRules.combinedDefenseMultiplier(
     damageType,
@@ -372,14 +404,6 @@ function calculateDamageFor(side, state, views) {
   const typeMultiplier = variable.ignoreResistance && rawTypeMultiplier < 1
     ? 1
     : rawTypeMultiplier;
-  const attackerTrait = attackerView
-    ? displayedStats(attacker, attackerState, action).trait
-    : { statMods: {}, flatPower: 0, powerMultiplier: 1, hitCountAdd: 0 };
-  const defenderTrait = defenderView
-    ? displayedStats(defender, defenderState, defenderAction).trait
-    : { statMods: {} };
-  const attackerMods = mergeStatMods(attackerTrait.statMods, attackerState.manualStatMods);
-  const defenderMods = mergeStatMods(defenderTrait.statMods, defenderState.manualStatMods);
   const abilityLevel = damageCore.abilityLevelMultiplier(
     attackerMods,
     defenderMods,
@@ -407,8 +431,8 @@ function calculateDamageFor(side, state, views) {
   });
   const hitCount = Math.max(1, baseHitCount + hitCountBonus);
   const calculateSettledDamage = (forceImpactResponded = response.success) => damageCore.calculateDamage({
-    attack: attackerStats[attackKey],
-    defense: defenderStats[defenseKey],
+    attack: attackerBaseStats[attackKey],
+    defense: defenderBaseStats[defenseKey],
     skillPower: baseSkillPower,
     flatPowerAdd,
     abilityLevel,

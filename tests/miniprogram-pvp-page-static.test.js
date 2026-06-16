@@ -178,5 +178,71 @@ assert(pageJs.includes("damageCore.calculateDamage"));
 assert(pageJs.includes("damageRules.resolvePvpVariableDamage"));
 assert(pageJs.includes("turn.resolveTurnOrder"));
 assert(pageJs.includes("storage.savePvp"));
+assert(
+  pageJs.includes("const attackerBaseStats = damageStatValues(attacker, attackerState, attackerTrait);"),
+  "PVP damage must keep an unboosted base stat snapshot for formula attack/defense inputs."
+);
+assert(
+  pageJs.includes("const attackerStats = damageStatValues(attacker, attackerState, attackerTrait, attackerMods);"),
+  "PVP variable damage and turn order may use the fully boosted battle stats."
+);
+assert(
+  pageJs.includes("damageMode(action, attackerBaseStats, defenderBaseStats)"),
+  "PVP damage mode must match the web path and choose physical/special from base battle stats."
+);
+assert(
+  pageJs.includes("attackerState.skillStatMods") && pageJs.includes("defenderState.skillStatMods"),
+  "PVP ability-level calculation must include settled skill stat changes, not only manual changes."
+);
+assert(
+  pageJs.includes("attack: attackerBaseStats[attackKey]") && pageJs.includes("defense: defenderBaseStats[defenseKey]"),
+  "PVP core damage attack/defense inputs must use base battle stats so passive percentage boosts are not double-counted."
+);
+
+const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
+const pvpState = require(path.join(packageRoot, "miniprogram", "domain", "pvp-state.js"));
+
+let capturedPage = null;
+global.Page = (config) => {
+  capturedPage = config;
+};
+global.wx = {
+  getStorageSync() { return null; },
+  setStorageSync() {},
+  removeStorageSync() {}
+};
+delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"))];
+require(path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"));
+assert(capturedPage, "PVP page config must be loadable in the static harness");
+
+const pageInstance = {
+  ...capturedPage,
+  data: JSON.parse(JSON.stringify(capturedPage.data)),
+  setData(update) {
+    this.data = { ...this.data, ...update };
+  }
+};
+const speedDog = catalog.bundle.monsters.find((monster) => monster.name === "音速犬");
+const burn = catalog.bundle.skills.find((skill) => skill.name === "灼伤");
+assert(speedDog && burn, "音速犬 and 灼伤 fixtures must exist");
+const dogSide = (side) => ({
+  ...pvpState.defaultSide(side),
+  monsterId: speedDog.id,
+  natureId: "nature-jolly",
+  talentIds: ["talent-hp", "talent-atk", "talent-spe"],
+  traitLayers: 10,
+  skillIds: [burn.id, "", "", ""],
+  action: burn.id
+});
+pageInstance.applyState({
+  ...pvpState.defaultPvpState(),
+  ally: dogSide("ally"),
+  enemy: dogSide("enemy")
+}, false);
+assert.strictEqual(
+  pageInstance.data.sides[0].result.damage,
+  370,
+  "Mini Program PVP should match web damage for 开朗生命/物攻/速度 音速犬 灼伤 mirror matchup."
+);
 
 console.log("miniprogram PVP page static checks passed");
