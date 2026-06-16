@@ -24,9 +24,25 @@
 
     <view class="analysis-card">
       <text class="card-title">当前克制面</text>
-      <text class="tag-text">{{result.coveredTypeText}}</text>
+      <view class="type-chip-list">
+        <block wx:for="{{result.coveredTypeChips}}" wx:key="id" wx:for-item="type">
+          <view class="type-chip">
+            <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+            <text>{{type.name}}</text>
+          </view>
+        </block>
+        <text wx:if="{{!result.coveredTypeChips.length}}" class="tag-text">暂无</text>
+      </view>
       <text class="card-title secondary">尚未覆盖</text>
-      <text class="tag-text warning">{{result.missingTypeText}}</text>
+      <view class="type-chip-list warning">
+        <block wx:for="{{result.missingTypeChips}}" wx:key="id" wx:for-item="type">
+          <view class="type-chip">
+            <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+            <text>{{type.name}}</text>
+          </view>
+        </block>
+        <text wx:if="{{!result.missingTypeChips.length}}" class="tag-text warning">无</text>
+      </view>
     </view>
 
     <block wx:for="{{result.monsters}}" wx:key="id" wx:for-item="monster">
@@ -34,7 +50,14 @@
         <view class="monster-head">
           <view>
             <text class="monster-name">{{monster.name}}</text>
-            <text class="monster-types">{{monster.typeText}}</text>
+            <view class="type-chip-list compact">
+              <block wx:for="{{monster.typeChips}}" wx:key="id" wx:for-item="type">
+                <view class="type-chip">
+                  <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+                  <text>{{type.name}}</text>
+                </view>
+              </block>
+            </view>
           </view>
           <text class="state-badge {{monster.complete ? 'complete' : ''}}">
             {{monster.complete ? '配置完成' : '配置未完成'}}
@@ -51,9 +74,25 @@
         </view>
 
         <text class="card-title secondary">主要弱点</text>
-        <text class="tag-text warning">{{monster.weaknessText}}</text>
+        <view class="type-chip-list warning">
+          <block wx:for="{{monster.weaknessChips}}" wx:key="id" wx:for-item="type">
+            <view class="type-chip">
+              <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+              <text>{{type.name}}</text>
+            </view>
+          </block>
+          <text wx:if="{{!monster.weaknessChips.length}}" class="tag-text warning">无</text>
+        </view>
         <text class="card-title secondary">抗性</text>
-        <text class="tag-text good">{{monster.resistanceText}}</text>
+        <view class="type-chip-list good">
+          <block wx:for="{{monster.resistanceChips}}" wx:key="id" wx:for-item="type">
+            <view class="type-chip">
+              <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+              <text>{{type.name}}</text>
+            </view>
+          </block>
+          <text wx:if="{{!monster.resistanceChips.length}}" class="tag-text good">无</text>
+        </view>
       </view>
     </block>
   </block>

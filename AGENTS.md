@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 11:40 +08:00 - Codex
+
+- Request: Add type icons to the Mini Program analysis weakness/resistance display and fix the mobile bug where the autocomplete selector disappears while swiping down through options, including keyboard-covered selectors.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/domain/analysis.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added reusable type-chip data to team analysis results for monster types, weaknesses, resistances, immunities, covered types, and missing types.
+  - Rendered analysis type lists as icon-and-name chips instead of plain text, covering current coverage, missing coverage, monster types, main weaknesses, and resistances.
+  - Changed the autocomplete overlay from a plain view to a scroll-view and guarded blur handling while the suggestion list is being touched, preventing the selector from disappearing during mobile swipe scrolling.
+  - Added keyboard-height handling, cursor spacing, and a `drop-up` overlay mode so lower selectors can open upward when the keyboard would cover a downward list.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before `typeChips` existed, then pass after implementation. Watched `node tests/miniprogram-search-picker-static.test.js` fail before scroll-view touch guards and keyboard-height handling existed, then pass after implementation. Ran the three Mini Program synchronization checks, all 53 Node tests, parsed 33 Mini Program JavaScript files and 7 JSON files plus `project.config.json`, passed the WXML compatibility scan, ran `git diff --check`, and measured the runtime package at 1,802,906 bytes (1.719 MiB), leaving 294,246 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compile, phone swipe-scroll confirmation, and real-device preview remain pending manual/external validation.
+
 ### 2026-06-16 11:12 +08:00 - Codex
 
 - Request: Remove the 20-result selector display limit and make Mini Program autocomplete suggestions overlay the page instead of pushing lower fields down.

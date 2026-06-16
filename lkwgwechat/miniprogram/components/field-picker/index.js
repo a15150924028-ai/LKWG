@@ -31,6 +31,8 @@ Component({
   data: {
     query: "",
     focused: false,
+    keyboardHeight: 0,
+    dropUp: false,
     selectedOption: null,
     suggestions: []
   },
@@ -54,6 +56,8 @@ Component({
     attached() {
       this.blurTimer = null;
       this.ignoreNextBlur = false;
+      this.suggestionTouching = false;
+      this.suggestionTouchTimer = null;
       this.setData({
         query: Number(this.properties.valueIndex) > 0
           ? this.properties.valueLabel
@@ -64,6 +68,7 @@ Component({
 
     detached() {
       if (this.blurTimer) clearTimeout(this.blurTimer);
+      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
     }
   },
 
@@ -93,11 +98,40 @@ Component({
       });
     },
 
+    updateDropDirection(keyboardHeight) {
+      const height = Number(keyboardHeight) || 0;
+      if (!height || !this.data.focused) {
+        this.setData({ dropUp: false });
+        return;
+      }
+      const windowInfo = typeof wx !== "undefined" && wx.getWindowInfo
+        ? wx.getWindowInfo()
+        : null;
+      const windowHeight = Number(windowInfo?.windowHeight) || 0;
+      if (!windowHeight) {
+        this.setData({ dropUp: true });
+        return;
+      }
+      this.createSelectorQuery()
+        .select(".field-picker")
+        .boundingClientRect((rect) => {
+          if (!rect) return;
+          const keyboardTop = windowHeight - height;
+          const spaceBelow = keyboardTop - rect.bottom;
+          const spaceAbove = rect.top;
+          this.setData({
+            dropUp: spaceBelow < 260 && spaceAbove > spaceBelow
+          });
+        })
+        .exec();
+    },
+
     onFocus() {
       if (this.properties.disabled) return;
       if (this.blurTimer) clearTimeout(this.blurTimer);
       this.setData({ focused: true });
       this.refreshSuggestions(this.data.query);
+      this.updateDropDirection(this.data.keyboardHeight);
     },
 
     onInput(event) {
@@ -113,10 +147,12 @@ Component({
           this.ignoreNextBlur = false;
           return;
         }
+        if (this.suggestionTouching) return;
         this.setData({
           query: this.committedQuery(),
           selectedOption: this.optionView(Number(this.properties.valueIndex)),
           focused: false,
+          dropUp: false,
           suggestions: []
         });
       }, 120);
@@ -131,6 +167,7 @@ Component({
         query: option.label,
         selectedOption: this.optionView(index),
         focused: false,
+        dropUp: false,
         suggestions: []
       });
       this.triggerEvent("change", { index });
@@ -143,9 +180,32 @@ Component({
         query: "",
         selectedOption: null,
         focused: false,
+        dropUp: false,
         suggestions: []
       });
       this.triggerEvent("change", { index: 0 });
+    },
+
+    onSuggestionTouchStart() {
+      this.suggestionTouching = true;
+      if (this.blurTimer) clearTimeout(this.blurTimer);
+      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
+    },
+
+    onSuggestionTouchEnd() {
+      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
+      this.suggestionTouchTimer = setTimeout(() => {
+        this.suggestionTouching = false;
+      }, 300);
+    },
+
+    onKeyboardHeightChange(event) {
+      const keyboardHeight = Number(event.detail.height) || 0;
+      this.setData({
+        keyboardHeight,
+        dropUp: keyboardHeight ? this.data.dropUp : false
+      });
+      if (keyboardHeight) this.updateDropDirection(keyboardHeight);
     }
   }
 });

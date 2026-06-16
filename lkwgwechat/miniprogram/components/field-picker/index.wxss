@@ -122,6 +122,12 @@
   box-shadow: 0 16rpx 36rpx rgba(16, 24, 40, 0.14);
 }
 
+.drop-up .suggestion-list {
+  top: auto;
+  bottom: 100%;
+  margin: 0 0 4rpx;
+}
+
 .suggestion-item,
 .empty-result {
   display: flex;

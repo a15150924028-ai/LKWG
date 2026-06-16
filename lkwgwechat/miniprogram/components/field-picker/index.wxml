@@ -1,4 +1,4 @@
-<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}} {{focused ? 'focused' : ''}}">
+<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}} {{focused ? 'focused' : ''}} {{dropUp ? 'drop-up' : ''}}">
   <text class="field-label">{{label}}</text>
   <view class="search-control">
     <image
@@ -17,9 +17,12 @@
       placeholder="{{valueIndex === 0 ? valueLabel : '输入搜索'}}"
       disabled="{{disabled}}"
       confirm-type="done"
+      adjust-position="{{true}}"
+      cursor-spacing="160"
       bindfocus="onFocus"
       bindinput="onInput"
       bindblur="onBlur"
+      bindkeyboardheightchange="onKeyboardHeightChange"
     />
     <text
       wx:if="{{query && !disabled}}"
@@ -29,7 +32,14 @@
     <text wx:else class="search-mark">⌕</text>
   </view>
 
-  <view wx:if="{{focused}}" class="suggestion-list">
+  <scroll-view
+    wx:if="{{focused}}"
+    class="suggestion-list"
+    scroll-y="{{true}}"
+    bindtouchstart="onSuggestionTouchStart"
+    bindtouchend="onSuggestionTouchEnd"
+    bindtouchcancel="onSuggestionTouchEnd"
+  >
     <block wx:if="{{suggestions.length}}">
       <view
         wx:for="{{suggestions}}"
@@ -54,5 +64,5 @@
       </view>
     </block>
     <text wx:else class="empty-result">没有匹配项</text>
-  </view>
+  </scroll-view>
 </view>

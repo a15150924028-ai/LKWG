@@ -64,6 +64,22 @@ assert.strictEqual(result.monsters.length, 1);
 assert(Array.isArray(result.coveredTypes));
 assert(Array.isArray(result.missingTypes));
 assert.strictEqual(result.coveredTypes.length + result.missingTypes.length, 18);
+assert(
+  result.monsters[0].typeChips.every((chip) => chip.icon && chip.iconClass === "type-icon-image"),
+  "monster type chips must expose type icons"
+);
+assert(
+  result.monsters[0].weaknessChips.every((chip) => chip.icon && chip.iconClass === "type-icon-image"),
+  "weakness chips must expose type icons"
+);
+assert(
+  result.monsters[0].resistanceChips.every((chip) => chip.icon && chip.iconClass === "type-icon-image"),
+  "resistance chips must expose type icons"
+);
+assert(
+  result.coveredTypeChips.every((chip) => chip.icon && chip.iconClass === "type-icon-image"),
+  "coverage chips must expose type icons"
+);
 
 const pageJs = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"),
@@ -78,6 +94,9 @@ assert(pageJs.includes("storage.loadTeam"));
 assert(pageJs.includes("analysis.analyzeTeam"));
 assert(pageWxml.includes("当前克制面"));
 assert(pageWxml.includes("主要弱点"));
+assert(pageWxml.includes("type-chip-list"));
+assert(pageWxml.includes("type-chip-icon"));
+assert(pageWxml.includes("{{type.icon}}"));
 assert(pageWxml.includes("暂无队伍配置"));
 
 console.log("miniprogram analysis checks passed");

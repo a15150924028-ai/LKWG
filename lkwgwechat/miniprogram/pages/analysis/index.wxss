@@ -61,6 +61,41 @@
   color: #128245;
 }
 
+.type-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.type-chip-list.compact {
+  margin-top: 8rpx;
+}
+
+.type-chip {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  color: #344054;
+  font-size: 25rpx;
+  line-height: 1.4;
+}
+
+.type-chip-list.warning .type-chip {
+  color: #b54708;
+}
+
+.type-chip-list.good .type-chip {
+  color: #128245;
+}
+
+.type-chip-icon {
+  flex: none;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+}
+
 .monster-head {
   display: flex;
   align-items: flex-start;

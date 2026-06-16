@@ -4,6 +4,17 @@ const typeRules = require("./type-rules");
 const teamRules = require("./team");
 
 const attackCategories = new Set(["physical", "special", "attack"]);
+const typeMetaById = new Map(TYPES.map((type) => [type.id, type]));
+
+function typeChip(id) {
+  const type = typeMetaById.get(id);
+  return {
+    id,
+    name: typeRules.typeName(id),
+    icon: type?.icon || "",
+    iconClass: type?.iconClass || ""
+  };
+}
 
 function analyzeMonster(pet, catalog) {
   const monster = catalog.getMonster(pet.monsterId);
@@ -18,16 +29,20 @@ function analyzeMonster(pet, catalog) {
     id: monster.id,
     name: monster.name,
     types: monster.types,
+    typeChips: monster.types.map(typeChip),
     typeLabels,
     typeText: typeLabels.join(" / "),
     complete: teamRules.isPetComplete(pet),
     weaknesses: profile.weaknesses,
+    weaknessChips: profile.weaknesses.map(typeChip),
     weaknessLabels,
     weaknessText: weaknessLabels.join("、") || "无",
     resistances: profile.resistances,
+    resistanceChips: profile.resistances.map(typeChip),
     resistanceLabels,
     resistanceText: resistanceLabels.join("、") || "无",
     immunities: profile.immunities,
+    immunityChips: profile.immunities.map(typeChip),
     immunityLabels,
     immunityText: immunityLabels.join("、") || "无",
     stats,
@@ -59,9 +74,11 @@ function analyzeTeam(team, catalog) {
     attackTypes: uniqueAttackTypes,
     attackTypeLabels: uniqueAttackTypes.map(typeRules.typeName),
     coveredTypes,
+    coveredTypeChips: coveredTypes.map(typeChip),
     coveredTypeLabels,
     coveredTypeText: coveredTypeLabels.join("、") || "暂无",
     missingTypes,
+    missingTypeChips: missingTypes.map(typeChip),
     missingTypeLabels,
     missingTypeText: missingTypeLabels.join("、") || "无",
     monsters: normalized.map((pet) => analyzeMonster(pet, catalog)).filter(Boolean)
