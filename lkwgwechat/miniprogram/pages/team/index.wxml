@@ -148,17 +148,6 @@
       </block>
     </view>
 
-    <field-picker
-      label="过山车目标（可选）"
-      options="{{activePet.skillOptions}}"
-      value-index="{{activePet.rollerSelection.index}}"
-      value-label="{{activePet.rollerSelection.label}}"
-      disabled="{{!activePet.monsterId}}"
-      data-pet-index="{{activePet.slot}}"
-      data-picker-handler="onRollerSkillChange"
-      bind:change="onRollerSkillChange"
-      bind:open="onPickerOpen"
-    />
   </view>
   <floating-picker
     visible="{{floatingPicker.visible}}"

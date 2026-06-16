@@ -98,6 +98,12 @@ assert.deepStrictEqual(
   fuzzyOptions.map((item) => item.id)
 );
 
+assert.strictEqual(
+  searchOptions(catalog.skillOptions, "hyc", 20)[0].id,
+  "skill-火云车",
+  "exact pinyin-initial searches such as hyc must rank 火云车 first"
+);
+
 const aliasedMonster = catalog.monsterOptions.find(
   (option) => Array.isArray(option.aliases) && option.aliases.length
 );

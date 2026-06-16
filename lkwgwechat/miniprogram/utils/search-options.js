@@ -66,7 +66,14 @@ function fuzzyScore(option, query) {
     if (pinyinIndexes.length) {
       best = Math.max(best, 920 - Math.min(...pinyinIndexes));
     }
-    if (
+    if (keyInitials === normalizedQuery || keyInitials === queryInitials) {
+      best = Math.max(best, 960);
+    } else if (
+      keyInitials.startsWith(normalizedQuery)
+      || keyInitials.startsWith(queryInitials)
+    ) {
+      best = Math.max(best, 880);
+    } else if (
       keyInitials.includes(normalizedQuery)
       || keyInitials.includes(queryInitials)
     ) {

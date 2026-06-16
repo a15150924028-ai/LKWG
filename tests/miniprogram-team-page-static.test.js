@@ -60,7 +60,6 @@ for (const binding of [
   "onNatureChange",
   "onTalentChange",
   "onSkillChange",
-  "onRollerSkillChange",
   "rotateSkills",
   "undoRotation",
   "clearTeam"
@@ -72,7 +71,6 @@ for (const binding of [
 }
 
 assert(pageWxml.includes("配置完成"));
-assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes("撤回过山车"));
 assert(
   pageWxml.includes('src="/assets/roller-skill.png"'),
@@ -95,5 +93,7 @@ assert(
 );
 assert(pageJs.includes("storage.saveTeam"));
 assert(pageJs.includes("wx.showModal"));
+assert(!pageWxml.includes("rollerSelection"));
+assert(!pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
 
 console.log("miniprogram team page static checks passed");

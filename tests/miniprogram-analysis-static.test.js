@@ -89,9 +89,32 @@ const pageWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.wxml"),
   "utf8"
 );
+const pageJson = JSON.parse(fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "analysis", "index.json"),
+  "utf8"
+));
 assert(pageJs.includes("onShow()"));
 assert(pageJs.includes("storage.loadTeam"));
 assert(pageJs.includes("analysis.analyzeTeam"));
+assert.strictEqual(
+  pageJson.usingComponents["field-picker"],
+  "/components/field-picker/index"
+);
+assert.strictEqual(
+  pageJson.usingComponents["floating-picker"],
+  "/components/floating-picker/index"
+);
+assert(pageWxml.includes("<page-meta"));
+assert(pageWxml.includes("pickerScrollLocked"));
+assert(pageJs.includes("rollerSlots:"));
+assert(pageJs.includes("buildRollerSlots("));
+assert(pageJs.includes("onRollerSkillChange("));
+assert(pageJs.includes("onPickerOpen("));
+assert(pageJs.includes("onFloatingPickerSelect("));
+assert(pageWxml.includes("过山车目标"));
+assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
+assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
+assert(pageWxml.includes("<floating-picker"));
 assert(pageWxml.includes("当前克制面"));
 assert(pageWxml.includes("主要弱点"));
 assert(pageWxml.includes("type-chip-list"));

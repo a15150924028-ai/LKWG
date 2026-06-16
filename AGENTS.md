@@ -56,6 +56,29 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 14:15 +08:00 - Codex
+
+- Request: Make pinyin-initial search rank `hyc` as `火云车` and move the Mini Program roller target selector from the team editor to the analysis page.
+- Files changed:
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.json`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed fuzzy-search scoring so exact pinyin-initial matches outrank longer pinyin-initial prefixes, making `hyc` rank `火云车` before `火焰冲锋`.
+  - Removed the `过山车目标（可选）` field from the team editor while preserving the stored `rollerSkillId` schema and top `使用过山车`/undo controls.
+  - Added an analysis-page `过山车目标` card with six compact slots, each showing the slot number, monster name, and a target-skill selector backed by the existing team storage.
+  - Registered `field-picker` and `floating-picker` on the analysis page so target selection uses the same global floating selector as team/PVP.
+- Verification: Watched the focused search, team-page, and analysis-page tests fail before implementation, then pass afterward. Confirmed real `hyc` search returns `skill-火云车` first. Ran all three Mini Program synchronization checks, all 53 Node tests, parsed 34 Mini Program JavaScript files and 8 JSON files, scanned 6 WXML files for unsupported tags and binding method calls, ran `git diff --check`, and measured the runtime package at 1,814,053 bytes (1.730 MiB), leaving 283,099 bytes before 2 MiB.
+- Status: Complete for implementation and automated verification; manual Mini Program UI confirmation remains pending.
+
 ### 2026-06-16 13:49 +08:00 - Codex
 
 - Request: Fix the Mini Program floating selector leaving a gap above the phone keyboard and staying elevated after the keyboard is dismissed.

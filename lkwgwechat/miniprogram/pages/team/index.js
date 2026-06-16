@@ -88,8 +88,7 @@ function teamView(team) {
       skillSelections: pet.skills.map((skill) => selection(skillOptions, skill.skillId)),
       skillDetails: pet.skills
         .map((skill, index) => selectedSkillDetail(skill.skillId, index))
-        .filter(Boolean),
-      rollerSelection: selection(skillOptions, pet.rollerSkillId)
+        .filter(Boolean)
     };
   });
 }
@@ -210,15 +209,6 @@ Page({
     const option = options[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.skills[skillIndex].skillId = option.id;
-    });
-  },
-
-  onRollerSkillChange(event) {
-    const petIndex = Number(event.currentTarget.dataset.petIndex);
-    const options = this.data.team[petIndex].skillOptions;
-    const option = options[event.detail.index] || blankOption;
-    this.mutatePet(petIndex, (pet) => {
-      pet.rollerSkillId = option.id;
     });
   },
 

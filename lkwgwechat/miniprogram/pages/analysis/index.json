@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "阵容分析"
+  "navigationBarTitleText": "阵容分析",
+  "usingComponents": {
+    "field-picker": "/components/field-picker/index",
+    "floating-picker": "/components/floating-picker/index"
+  }
 }

@@ -1,3 +1,4 @@
+<page-meta page-style="{{pickerScrollLocked ? 'overflow: hidden;' : ''}}" />
 <view class="page">
   <view class="hero">
     <text class="hero-title">阵容分析</text>
@@ -19,6 +20,38 @@
       <view class="summary-card">
         <text class="summary-value">{{result.completeCount}}/6</text>
         <text class="summary-label">配置完成</text>
+      </view>
+    </view>
+
+    <view class="analysis-card roller-target-card">
+      <text class="card-title">过山车目标</text>
+      <view class="roller-slot-grid">
+        <view
+          wx:for="{{rollerSlots}}"
+          wx:key="slot"
+          wx:for-item="slot"
+          class="roller-target-slot {{slot.hasMonster ? '' : 'empty'}}"
+        >
+          <view class="roller-target-head">
+            <text class="roller-target-index">{{slot.slot + 1}}</text>
+            <view class="roller-target-title">
+              <text class="roller-target-name">{{slot.title}}</text>
+              <text class="roller-target-monster">{{slot.monsterName}}</text>
+            </view>
+          </view>
+          <field-picker
+            compact
+            label="目标技能"
+            options="{{slot.skillOptions}}"
+            value-index="{{slot.rollerSelection.index}}"
+            value-label="{{slot.rollerSelection.label}}"
+            disabled="{{!slot.hasMonster}}"
+            data-pet-index="{{slot.slot}}"
+            data-picker-handler="onRollerSkillChange"
+            bind:change="onRollerSkillChange"
+            bind:open="onPickerOpen"
+          />
+        </view>
       </view>
     </view>
 
@@ -96,4 +129,13 @@
       </view>
     </block>
   </block>
+  <floating-picker
+    visible="{{floatingPicker.visible}}"
+    label="{{floatingPicker.label}}"
+    options="{{floatingPicker.options}}"
+    value-index="{{floatingPicker.valueIndex}}"
+    value-label="{{floatingPicker.valueLabel}}"
+    bind:select="onFloatingPickerSelect"
+    bind:close="onFloatingPickerClose"
+  />
 </view>
