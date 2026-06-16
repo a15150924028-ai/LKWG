@@ -51,6 +51,10 @@
             bind:change="onRollerSkillChange"
             bind:open="onPickerOpen"
           />
+          <view class="roller-learner-card">
+            <text class="roller-learner-title">谁能学 · {{slot.learnerCount}}</text>
+            <text class="roller-learner-text">{{slot.learnerPreview}}</text>
+          </view>
         </view>
       </view>
     </view>

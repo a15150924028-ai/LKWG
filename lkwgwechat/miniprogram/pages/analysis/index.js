@@ -34,12 +34,14 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
-function buildRollerSlots(team) {
+function buildRollerSlots(team, analyzedSlots = []) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
     const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));
     const rollerSelection = selection(skillOptions, pet.rollerSkillId);
+    const analyzed = analyzedSlots[slot] || {};
     return {
+      ...analyzed,
       slot,
       title: `${slot + 1}号位`,
       monsterName: monster?.name || "未选择精灵",
@@ -74,11 +76,12 @@ Page({
 
   applyTeam(team, save = true) {
     const normalized = teamRules.normalizeTeam(team, catalog);
+    const result = analysis.analyzeTeam(normalized, catalog);
     this.teamState = normalized;
     if (save) storage.saveTeam(normalized);
     this.setData({
-      result: analysis.analyzeTeam(normalized, catalog),
-      rollerSlots: buildRollerSlots(normalized)
+      result,
+      rollerSlots: buildRollerSlots(normalized, result.rollerSlots)
     });
   },
 

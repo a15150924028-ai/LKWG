@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 15:17 +08:00 - Codex
+
+- Request: Close more Mini Program parity gaps by showing who can learn each roller target skill on the analysis page, and let PVP ally import already configured team pets with their configured build while keeping enemy setup manual.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/analysis.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added roller target learner analysis to the Mini Program analysis domain, including target skill name, learner count, learner names, and compact preview text.
+  - Rendered the learner summary below each analysis-page roller target selector so selected target skills now show which monsters can learn them.
+  - Added an ally-only PVP from-team picker that reads saved team configurations and copies monster, bloodline, nature, talents, skills, and default trait layers into the ally side.
+  - Kept enemy PVP setup as manual/free configuration and cleared the imported-team marker when the ally side is manually edited.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` and `node tests/miniprogram-pvp-page-static.test.js` fail before implementation, then pass after implementation. Ran all three Mini Program synchronization checks, all 53 Node tests, parsed 34 Mini Program JavaScript files and 9 JSON files, passed the WXML compatibility scan, ran `git diff --check`, and measured the runtime package at 1,819,181 bytes (1.735 MiB), leaving 277,971 bytes before 2 MiB. WeChat Developer Tools compile and real-device confirmation remain manual/external checks.
+- Status: Complete for implementation and automated verification; manual phone validation remains pending.
+
 ### 2026-06-16 14:15 +08:00 - Codex
 
 - Request: Make pinyin-initial search rank `hyc` as `火云车` and move the Mini Program roller target selector from the team editor to the analysis page.

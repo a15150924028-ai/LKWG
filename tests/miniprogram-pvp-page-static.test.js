@@ -39,7 +39,7 @@ assert.strictEqual(
 );
 assert.strictEqual(
   (pageWxml.match(/<field-picker/g) || []).length,
-  6,
+  7,
   "PVP must route every selector template through field-picker"
 );
 assert(pageWxml.includes("<page-meta"));
@@ -64,6 +64,13 @@ assert(pageJs.includes("onPickerOpen("));
 assert(pageJs.includes("onFloatingPickerSelect("));
 assert(pageJs.includes("onFloatingPickerClose("));
 assert(pageJs.includes("pickerHandler"));
+assert(pageJs.includes("teamPetOptions"));
+assert(pageJs.includes("buildTeamPetOptions("));
+assert(pageJs.includes("onTeamPetChange("));
+assert(pageJs.includes("storage.loadTeam"));
+assert(pageWxml.includes('wx:if="{{side.side === \'ally\'}}"'));
+assert(pageWxml.includes('data-picker-handler="onTeamPetChange"'));
+assert(pageWxml.includes("teamPetOptions"));
 assert(!pickerWxml.includes("<input"), "PVP field-picker must be read-only");
 assert(!pickerWxml.includes("suggestion-list"), "PVP field-picker must not inline suggestions");
 assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
@@ -78,6 +85,7 @@ for (const handler of [
   "onTalentChange",
   "onSkillChange",
   "onActionChange",
+  "onTeamPetChange",
   "selectPreset",
   "selectWeather",
   "adjustValue",

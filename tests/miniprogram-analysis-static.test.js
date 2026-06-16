@@ -54,6 +54,7 @@ const pet = {
   bloodlineId: "bloodline-fire",
   natureId: "nature-practical",
   talentIds: ["talent-hp", "talent-def", "talent-spd"],
+  rollerSkillId: attackSkills[0].id,
   skills: attackSkills.map((skill) => ({ skillId: skill.id }))
 };
 while (pet.skills.length < 4) pet.skills.push({ skillId: "" });
@@ -79,6 +80,17 @@ assert(
 assert(
   result.coveredTypeChips.every((chip) => chip.icon && chip.iconClass === "type-icon-image"),
   "coverage chips must expose type icons"
+);
+assert.strictEqual(result.rollerSlots.length, 6);
+assert.strictEqual(result.rollerSlots[0].targetSkillId, attackSkills[0].id);
+assert.strictEqual(result.rollerSlots[0].targetSkillName, attackSkills[0].name);
+assert(
+  result.rollerSlots[0].learnerNames.includes(monster.name),
+  "roller target analysis must expose who can learn the selected target skill"
+);
+assert(
+  result.rollerSlots[0].learnerPreview.includes(monster.name),
+  "roller target analysis must provide a compact learner preview"
 );
 
 const pageJs = fs.readFileSync(
@@ -114,6 +126,8 @@ assert(pageJs.includes("onFloatingPickerSelect("));
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
+assert(pageWxml.includes("learnerPreview"));
+assert(pageWxml.includes("learnerCount"));
 assert(pageWxml.includes("<floating-picker"));
 assert(pageWxml.includes("当前克制面"));
 assert(pageWxml.includes("主要弱点"));

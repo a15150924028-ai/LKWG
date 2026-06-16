@@ -53,6 +53,42 @@ function analyzeMonster(pet, catalog) {
   };
 }
 
+function learnerSummaryForSkill(skillId, catalog) {
+  const skill = catalog.getSkill(skillId);
+  if (!skill) {
+    return {
+      targetSkillId: "",
+      targetSkillName: "",
+      learnerNames: [],
+      learnerCount: 0,
+      learnerPreview: "先选择目标技能"
+    };
+  }
+  const learnerNames = catalog.bundle.monsters
+    .filter((monster) => monster.skillIds.includes(skill.id))
+    .map((monster) => monster.name);
+  return {
+    targetSkillId: skill.id,
+    targetSkillName: skill.name,
+    learnerNames,
+    learnerCount: learnerNames.length,
+    learnerPreview: learnerNames.length
+      ? learnerNames.slice(0, 12).join("、")
+      : "暂无可学习精灵"
+  };
+}
+
+function analyzeRollerSlot(pet, slot, catalog) {
+  const monster = catalog.getMonster(pet.monsterId);
+  return {
+    slot,
+    monsterId: monster?.id || "",
+    monsterName: monster?.name || "未选择精灵",
+    hasMonster: Boolean(monster),
+    ...learnerSummaryForSkill(pet.rollerSkillId, catalog)
+  };
+}
+
 function analyzeTeam(team, catalog) {
   const normalized = teamRules.normalizeTeam(team, catalog);
   const attackTypes = [];
@@ -81,11 +117,13 @@ function analyzeTeam(team, catalog) {
     missingTypeChips: missingTypes.map(typeChip),
     missingTypeLabels,
     missingTypeText: missingTypeLabels.join("、") || "无",
+    rollerSlots: normalized.map((pet, slot) => analyzeRollerSlot(pet, slot, catalog)),
     monsters: normalized.map((pet) => analyzeMonster(pet, catalog)).filter(Boolean)
   };
 }
 
 module.exports = {
   analyzeMonster,
+  analyzeRollerSlot,
   analyzeTeam
 };

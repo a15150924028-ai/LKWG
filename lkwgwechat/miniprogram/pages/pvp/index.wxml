@@ -25,6 +25,18 @@
         <button class="clear-side" data-side="{{side.side}}" bindtap="clearSide">清空本方</button>
       </view>
 
+      <field-picker
+        wx:if="{{side.side === 'ally'}}"
+        label="从队伍导入"
+        options="{{teamPetOptions}}"
+        value-index="{{side.teamPetSelection.index}}"
+        value-label="{{side.teamPetSelection.label}}"
+        data-side="{{side.side}}"
+        data-picker-handler="onTeamPetChange"
+        bind:change="onTeamPetChange"
+        bind:open="onPickerOpen"
+      />
+
       <view class="identity-grid">
         <field-picker
           label="精灵"
