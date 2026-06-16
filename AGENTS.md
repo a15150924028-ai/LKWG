@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:39 +08:00 - Codex
+
+- Request: Make the Mini Program PVP manual adjustment controls fit three per row without truncating or swallowing labels.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Merged trait layers and the manual adjustment controls into one compact control grid so the first row can show three controls.
+  - Changed the compact control grid to three equal columns.
+  - Tightened stepper button sizing and added single-line ellipsis for control labels so long labels such as `特性层数 · 指挥家` and `技能威力%` do not push into the value/buttons.
+  - Added static regression coverage for the three-column grid and label truncation behavior.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the compact three-column grid existed, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 21:21 +08:00 - Codex
 
 - Request: Correct the `听桥` description so its response power is described as the enemy's final damage, matching the web calculation behavior.

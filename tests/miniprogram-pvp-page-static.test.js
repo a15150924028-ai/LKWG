@@ -123,6 +123,10 @@ assert(pageWxml.includes("side.forceImpact.label"));
 assert(pageWxml.includes("side.result.resultTitle"));
 assert(pageWxml.includes("side.result.resultMeta"));
 assert(pageWxml.includes("side.result.responseVariants"));
+assert(pageWxml.includes("compact-control-grid"), "PVP manual controls should share one compact three-column grid.");
+assert(!pageWxml.includes('class="counter-row"'), "Trait layers should not occupy a separate row above the compact control grid.");
+assert(pageWxss.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"), "PVP manual controls should fit three items per row.");
+assert(pageWxss.includes("text-overflow: ellipsis"), "Compact PVP control labels must truncate instead of pushing into steppers.");
 assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
 assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
 for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {

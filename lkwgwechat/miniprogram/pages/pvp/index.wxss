@@ -97,8 +97,7 @@
 }
 
 .identity-grid,
-.talent-grid,
-.counter-row {
+.talent-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12rpx;
@@ -163,13 +162,10 @@
   color: #667085;
 }
 
-.counter-row {
-  margin-top: 12rpx;
-}
-
 .counter-block,
 .buff-control {
-  padding: 8rpx 10rpx;
+  min-width: 0;
+  padding: 8rpx;
   border-radius: 14rpx;
   background: #f5f7fb;
 }
@@ -177,35 +173,39 @@
 .counter-label,
 .buff-control > text {
   display: block;
+  overflow: hidden;
   color: #475467;
   font-size: 22rpx;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stepper {
   display: grid;
-  grid-template-columns: 42rpx minmax(48rpx, 1fr) 42rpx;
+  grid-template-columns: 36rpx minmax(36rpx, 1fr) 36rpx;
   align-items: center;
-  gap: 6rpx;
+  gap: 4rpx;
   margin-top: 6rpx;
   text-align: center;
 }
 
 .stepper button {
-  width: 42rpx;
+  width: 36rpx;
   min-width: 0;
-  height: 42rpx;
+  height: 36rpx;
   margin: 0;
   padding: 0;
   border-radius: 10rpx;
   background: #ffffff;
   color: #1677ff;
-  font-size: 25rpx;
-  line-height: 42rpx;
+  font-size: 24rpx;
+  line-height: 36rpx;
 }
 
-.buff-grid {
+.compact-control-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8rpx;
   margin-top: 10rpx;
 }
