@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 00:14 +08:00 - Codex
+
+- Request: Add the same boss-monster `首领血脉` auto-fill mechanism to the Mini Program team module.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added the 24-family boss-monster whitelist to the team editor, matching exact names, `名称（形态）` prefixed names, and aliases.
+  - Made team monster selection auto-fill `bloodline-boss` for matched boss monsters and clear the boss bloodline for non-boss monster selections to avoid stale boss state.
+  - Added page-level regression coverage that selects a representative for every supplied boss family in the team editor, including multi-form families such as `鸭吉吉国王` and `蹦蹦果`, and verifies non-boss `音速犬` does not receive the boss bloodline.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` fail before implementation because the team page had no boss whitelist, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,833,016` bytes.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-17 00:07 +08:00 - Codex
 
 - Request: Continue the boss-monster PVP change and ensure all supplied boss families, including multi-form `鸭吉吉国王` and `蹦蹦果`, auto-fill `首领血脉` when selected.

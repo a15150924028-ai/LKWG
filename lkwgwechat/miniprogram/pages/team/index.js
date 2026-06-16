@@ -33,6 +33,32 @@ const allSkillOptions = optionsWithBlank(catalog.skillOptions);
 const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
+const BOSS_MONSTER_NAMES = new Set([
+  "彩虹独角兽",
+  "叶冕魔力猫",
+  "烈火战神",
+  "圣水守护",
+  "鸭吉吉国王",
+  "波普鹿",
+  "恶魔狼王",
+  "风暴战犬",
+  "雪影冰灵",
+  "奇梦咪",
+  "伊兰龙",
+  "幻影荆棘",
+  "蹦蹦果",
+  "奇丽果",
+  "女王蜂",
+  "神谕鲨",
+  "霜翼领主",
+  "迷嶂布莱克",
+  "祭礼巨像",
+  "钻石蜗",
+  "千棘海针",
+  "圣剑骑士",
+  "黑猫密探",
+  "棋契陛下"
+]);
 const typeNameById = new Map(TYPES.map((type) => [type.id, type.name]));
 const categoryNames = {
   physical: "物理",
@@ -45,6 +71,16 @@ const categoryNames = {
 function selection(options, id) {
   const index = Math.max(0, options.findIndex((option) => option.id === id));
   return { index, label: options[index].label };
+}
+
+function isBossMonster(monster) {
+  if (!monster) return false;
+  const aliases = monster.aliases || [];
+  return [...BOSS_MONSTER_NAMES].some((name) => (
+    monster.name === name
+    || monster.name.startsWith(`${name}（`)
+    || aliases.includes(name)
+  ));
 }
 
 function selectedSkillDetail(skillId, index) {
@@ -171,8 +207,10 @@ Page({
   onMonsterChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
     const option = monsterOptions[event.detail.index] || blankOption;
+    const monster = catalog.getMonster(option.id);
     this.mutatePet(petIndex, (pet) => {
       pet.monsterId = option.id;
+      pet.bloodlineId = isBossMonster(monster) ? "bloodline-boss" : "";
       pet.skills = Array.from({ length: 4 }, () => ({ skillId: "" }));
     });
   },

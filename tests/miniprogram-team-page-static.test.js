@@ -104,4 +104,120 @@ assert(pageJs.includes("wx.showModal"));
 assert(!pageWxml.includes("rollerSelection"));
 assert(!pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
 
+const bossMonsterNames = [
+  "彩虹独角兽",
+  "叶冕魔力猫",
+  "烈火战神",
+  "圣水守护",
+  "鸭吉吉国王",
+  "波普鹿",
+  "恶魔狼王",
+  "风暴战犬",
+  "雪影冰灵",
+  "奇梦咪",
+  "伊兰龙",
+  "幻影荆棘",
+  "蹦蹦果",
+  "奇丽果",
+  "女王蜂",
+  "神谕鲨",
+  "霜翼领主",
+  "迷嶂布莱克",
+  "祭礼巨像",
+  "钻石蜗",
+  "千棘海针",
+  "圣剑骑士",
+  "黑猫密探",
+  "棋契陛下"
+];
+
+assert(pageJs.includes("const BOSS_MONSTER_NAMES = new Set(["));
+for (const name of bossMonsterNames) {
+  assert(
+    pageJs.includes(`"${name}"`),
+    `team boss whitelist is missing ${name}`
+  );
+}
+assert(pageJs.includes('bloodlineId = isBossMonster(monster) ? "bloodline-boss" : "";'));
+
+const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
+
+function representativeMonster(baseName) {
+  return catalog.monsterOptions.find((option) => {
+    const monster = catalog.getMonster(option.id);
+    const aliases = monster?.aliases || [];
+    return monster?.name === baseName
+      || monster?.name.startsWith(`${baseName}（`)
+      || aliases.includes(baseName);
+  });
+}
+
+let capturedPage = null;
+global.Page = (config) => {
+  capturedPage = config;
+};
+global.wx = {
+  getStorageSync() {
+    return null;
+  },
+  setStorageSync() {},
+  removeStorageSync() {},
+  showModal() {}
+};
+delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "team", "index.js"))];
+require(path.join(packageRoot, "miniprogram", "pages", "team", "index.js"));
+assert(capturedPage, "team page must register a Page config");
+
+function createPageInstance() {
+  return {
+    ...capturedPage,
+    data: JSON.parse(JSON.stringify(capturedPage.data)),
+    setData(update) {
+      this.data = {
+        ...this.data,
+        ...update
+      };
+    }
+  };
+}
+
+for (const bossName of bossMonsterNames) {
+  const representative = representativeMonster(bossName);
+  assert(representative, `missing representative monster for ${bossName}`);
+  const pageInstance = createPageInstance();
+  pageInstance.onLoad();
+  pageInstance.applyTeam(undefined, false);
+  const optionIndex = pageInstance.data.monsterOptions.findIndex((option) => option.id === representative.id);
+  assert(optionIndex > 0, `missing team monster option for ${bossName}`);
+  pageInstance.onMonsterChange({
+    currentTarget: { dataset: { petIndex: 0 } },
+    detail: { index: optionIndex }
+  });
+  assert.strictEqual(
+    pageInstance.data.team[0].bloodlineId,
+    "bloodline-boss",
+    `${bossName} should auto-fill boss bloodline in team editor`
+  );
+}
+
+const nonBoss = catalog.monsterOptions.find((option) => {
+  const monster = catalog.getMonster(option.id);
+  return monster?.name === "音速犬";
+});
+assert(nonBoss, "missing non-boss 音速犬 fixture");
+const nonBossPage = createPageInstance();
+nonBossPage.onLoad();
+nonBossPage.applyTeam(undefined, false);
+const nonBossIndex = nonBossPage.data.monsterOptions.findIndex((option) => option.id === nonBoss.id);
+assert(nonBossIndex > 0, "missing team monster option for 音速犬");
+nonBossPage.onMonsterChange({
+  currentTarget: { dataset: { petIndex: 0 } },
+  detail: { index: nonBossIndex }
+});
+assert.strictEqual(
+  nonBossPage.data.team[0].bloodlineId,
+  "",
+  "non-boss monsters should not keep or receive boss bloodline"
+);
+
 console.log("miniprogram team page static checks passed");
