@@ -10,6 +10,16 @@ const pvpStateRules = require("../../domain/pvp-state");
 const { createStorageAdapter } = require("../../utils/storage");
 
 const storage = createStorageAdapter();
+function closedFloatingPicker() {
+  return {
+    visible: false,
+    label: "",
+    options: [],
+    valueIndex: 0,
+    valueLabel: blankOption.label,
+    dataset: {}
+  };
+}
 const blankOption = { id: "", label: "请选择" };
 const bloodlineIds = new Set(BLOODLINES.map((item) => item.id));
 const natureIds = new Set(NATURES.map((item) => item.id));
@@ -321,6 +331,7 @@ Page({
     weatherOptions,
     weather: "",
     pickerScrollLocked: false,
+    floatingPicker: closedFloatingPicker(),
     sides: []
   },
 
@@ -420,10 +431,38 @@ Page({
     });
   },
 
-  onPickerScrollLock(event) {
-    const locked = Boolean(event.detail.locked);
-    if (this.data.pickerScrollLocked === locked) return;
-    this.setData({ pickerScrollLocked: locked });
+  onPickerOpen(event) {
+    const detail = event.detail || {};
+    this.setData({
+      pickerScrollLocked: true,
+      floatingPicker: {
+        visible: true,
+        label: detail.label || "",
+        options: detail.options || [],
+        valueIndex: Number(detail.valueIndex) || 0,
+        valueLabel: detail.valueLabel || blankOption.label,
+        dataset: { ...(event.currentTarget.dataset || {}) }
+      }
+    });
+  },
+
+  onFloatingPickerSelect(event) {
+    const picker = this.data.floatingPicker || closedFloatingPicker();
+    const handler = picker.dataset?.pickerHandler;
+    const index = Number(event.detail.index) || 0;
+    this.onFloatingPickerClose();
+    if (!handler || typeof this[handler] !== "function") return;
+    this[handler]({
+      currentTarget: { dataset: picker.dataset || {} },
+      detail: { index }
+    });
+  },
+
+  onFloatingPickerClose() {
+    this.setData({
+      pickerScrollLocked: false,
+      floatingPicker: closedFloatingPicker()
+    });
   },
 
   selectPreset(event) {

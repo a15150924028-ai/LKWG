@@ -20,6 +20,10 @@ assert.strictEqual(
   pageJson.usingComponents["field-picker"],
   "/components/field-picker/index"
 );
+assert.strictEqual(
+  pageJson.usingComponents["floating-picker"],
+  "/components/floating-picker/index"
+);
 assert(pageJs.includes("activeTeamIndex: 0"));
 assert(pageJs.includes("selectTeamSlot("));
 assert(pageWxml.includes('wx:for="{{teamOverview}}"'));
@@ -30,12 +34,24 @@ assert(pageWxml.includes("<page-meta"));
 assert(pageWxml.includes("pickerScrollLocked"));
 assert(pageWxml.includes("overflow: hidden"));
 assert.strictEqual(
-  (pageWxml.match(/bind:lockscroll="onPickerScrollLock"/g) || []).length,
+  (pageWxml.match(/bind:open="onPickerOpen"/g) || []).length,
   (pageWxml.match(/<field-picker/g) || []).length,
-  "every team field-picker must lock page scroll while focused"
+  "every team field-picker must open the shared floating picker"
 );
+assert.strictEqual(
+  (pageWxml.match(/data-picker-handler=/g) || []).length,
+  (pageWxml.match(/<field-picker/g) || []).length,
+  "every team field-picker must declare its selection handler"
+);
+assert.strictEqual((pageWxml.match(/<floating-picker/g) || []).length, 1);
+assert(pageWxml.includes('bind:select="onFloatingPickerSelect"'));
+assert(pageWxml.includes('bind:close="onFloatingPickerClose"'));
 assert(pageJs.includes("pickerScrollLocked: false"));
-assert(pageJs.includes("onPickerScrollLock("));
+assert(pageJs.includes("floatingPicker:"));
+assert(pageJs.includes("onPickerOpen("));
+assert(pageJs.includes("onFloatingPickerSelect("));
+assert(pageJs.includes("onFloatingPickerClose("));
+assert(pageJs.includes("pickerHandler"));
 
 for (const binding of [
   "selectTeamSlot",
@@ -45,7 +61,6 @@ for (const binding of [
   "onTalentChange",
   "onSkillChange",
   "onRollerSkillChange",
-  "onPickerScrollLock",
   "rotateSkills",
   "undoRotation",
   "clearTeam"

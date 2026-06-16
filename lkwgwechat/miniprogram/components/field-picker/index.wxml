@@ -1,4 +1,4 @@
-<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}} {{focused ? 'focused' : ''}} {{dropUp ? 'drop-up' : ''}}">
+<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}" bindtap="onOpen">
   <text class="field-label">{{label}}</text>
   <view class="search-control">
     <image
@@ -11,58 +11,12 @@
       wx:elif="{{selectedOption.iconText}}"
       class="option-icon-text"
     >{{selectedOption.iconText}}</text>
-    <input
-      class="field-input"
-      value="{{query}}"
-      placeholder="{{valueIndex === 0 ? valueLabel : '输入搜索'}}"
-      disabled="{{disabled}}"
-      confirm-type="done"
-      adjust-position="{{true}}"
-      cursor-spacing="160"
-      bindfocus="onFocus"
-      bindinput="onInput"
-      bindblur="onBlur"
-      bindkeyboardheightchange="onKeyboardHeightChange"
-    />
+    <text class="field-value {{valueIndex === 0 ? 'placeholder' : ''}}">{{valueIndex === 0 ? valueLabel : selectedOption.label}}</text>
     <text
-      wx:if="{{query && !disabled}}"
+      wx:if="{{valueIndex > 0 && !disabled}}"
       class="clear-button"
-      bindtap="onClear"
-    >×</text>
-    <text wx:else class="search-mark">⌕</text>
+      catchtap="onClear"
+    >x</text>
+    <text wx:else class="search-mark">v</text>
   </view>
-
-  <scroll-view
-    wx:if="{{focused}}"
-    class="suggestion-list"
-    scroll-y="{{true}}"
-    bindtouchstart="onSuggestionTouchStart"
-    bindtouchend="onSuggestionTouchEnd"
-    bindtouchcancel="onSuggestionTouchEnd"
-  >
-    <block wx:if="{{suggestions.length}}">
-      <view
-        wx:for="{{suggestions}}"
-        wx:key="id"
-        class="suggestion-item"
-        data-index="{{item.index}}"
-        bindtap="onSelect"
-      >
-        <image
-          wx:if="{{item.icon}}"
-          class="option-icon-image {{item.iconClass}}"
-          src="{{item.icon}}"
-          mode="aspectFit"
-        />
-        <text
-          wx:elif="{{item.iconText}}"
-          class="option-icon-text"
-        >{{item.iconText}}</text>
-        <view class="suggestion-copy">
-          <text class="suggestion-label">{{item.label}}</text>
-        </view>
-      </view>
-    </block>
-    <text wx:else class="empty-result">没有匹配项</text>
-  </scroll-view>
 </view>

@@ -60,8 +60,9 @@
         value-index="{{activePet.monsterSelection.index}}"
         value-label="{{activePet.monsterSelection.label}}"
         data-pet-index="{{activePet.slot}}"
+        data-picker-handler="onMonsterChange"
         bind:change="onMonsterChange"
-        bind:lockscroll="onPickerScrollLock"
+        bind:open="onPickerOpen"
       />
       <field-picker
         label="血脉"
@@ -69,8 +70,9 @@
         value-index="{{activePet.bloodlineSelection.index}}"
         value-label="{{activePet.bloodlineSelection.label}}"
         data-pet-index="{{activePet.slot}}"
+        data-picker-handler="onBloodlineChange"
         bind:change="onBloodlineChange"
-        bind:lockscroll="onPickerScrollLock"
+        bind:open="onPickerOpen"
       />
     </view>
 
@@ -90,8 +92,9 @@
       value-index="{{activePet.natureSelection.index}}"
       value-label="{{activePet.natureSelection.label}}"
       data-pet-index="{{activePet.slot}}"
+      data-picker-handler="onNatureChange"
       bind:change="onNatureChange"
-      bind:lockscroll="onPickerScrollLock"
+      bind:open="onPickerOpen"
     />
 
     <view class="field-group">
@@ -106,8 +109,9 @@
             value-label="{{talent.label}}"
             data-pet-index="{{activePet.slot}}"
             data-talent-index="{{talentIndex}}"
+            data-picker-handler="onTalentChange"
             bind:change="onTalentChange"
-            bind:lockscroll="onPickerScrollLock"
+            bind:open="onPickerOpen"
           />
         </block>
       </view>
@@ -124,8 +128,9 @@
           disabled="{{!activePet.monsterId}}"
           data-pet-index="{{activePet.slot}}"
           data-skill-index="{{skillIndex}}"
+          data-picker-handler="onSkillChange"
           bind:change="onSkillChange"
-          bind:lockscroll="onPickerScrollLock"
+          bind:open="onPickerOpen"
         />
       </block>
     </view>
@@ -150,8 +155,18 @@
       value-label="{{activePet.rollerSelection.label}}"
       disabled="{{!activePet.monsterId}}"
       data-pet-index="{{activePet.slot}}"
+      data-picker-handler="onRollerSkillChange"
       bind:change="onRollerSkillChange"
-      bind:lockscroll="onPickerScrollLock"
+      bind:open="onPickerOpen"
     />
   </view>
+  <floating-picker
+    visible="{{floatingPicker.visible}}"
+    label="{{floatingPicker.label}}"
+    options="{{floatingPicker.options}}"
+    value-index="{{floatingPicker.valueIndex}}"
+    value-label="{{floatingPicker.valueLabel}}"
+    bind:select="onFloatingPickerSelect"
+    bind:close="onFloatingPickerClose"
+  />
 </view>

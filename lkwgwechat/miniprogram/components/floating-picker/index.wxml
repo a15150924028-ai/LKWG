@@ -1,0 +1,60 @@
+<view wx:if="{{visible}}" class="floating-picker-root">
+  <view class="floating-picker-mask" catchtap="onClose"></view>
+  <view
+    class="floating-picker-panel"
+    style="bottom: {{keyboardHeight}}px;"
+    catchtap="onPanelTap"
+  >
+    <view class="floating-picker-grip"></view>
+    <view class="floating-picker-head">
+      <text class="floating-picker-title">选择{{label}}</text>
+      <text class="floating-picker-close" catchtap="onClose">x</text>
+    </view>
+    <view class="floating-picker-input-row">
+      <text class="floating-picker-search">⌕</text>
+      <input
+        class="floating-picker-input"
+        value="{{query}}"
+        placeholder="输入名称 / 别名 / 拼音 / 首字母"
+        confirm-type="done"
+        focus="{{visible}}"
+        adjust-position="{{false}}"
+        hold-keyboard="{{true}}"
+        bindinput="onInput"
+        bindkeyboardheightchange="onKeyboardHeightChange"
+      />
+    </view>
+    <scroll-view
+      class="floating-picker-list"
+      scroll-y="{{true}}"
+      enhanced="{{true}}"
+      show-scrollbar="{{true}}"
+      bindtouchstart="onSuggestionTouchStart"
+      bindtouchend="onSuggestionTouchEnd"
+      bindtouchcancel="onSuggestionTouchEnd"
+    >
+      <block wx:if="{{suggestions.length}}">
+        <view
+          wx:for="{{suggestions}}"
+          wx:key="id"
+          class="floating-picker-item"
+          data-index="{{item.index}}"
+          bindtap="onSelect"
+        >
+          <image
+            wx:if="{{item.icon}}"
+            class="option-icon-image {{item.iconClass}}"
+            src="{{item.icon}}"
+            mode="aspectFit"
+          />
+          <text
+            wx:elif="{{item.iconText}}"
+            class="option-icon-text"
+          >{{item.iconText}}</text>
+          <text class="floating-picker-label">{{item.label}}</text>
+        </view>
+      </block>
+      <text wx:else class="floating-picker-empty">没有匹配项</text>
+    </scroll-view>
+  </view>
+</view>

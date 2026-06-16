@@ -2,6 +2,7 @@
   "navigationBarTitleText": "PVP伤害模拟",
   "usingComponents": {
     "field-picker": "/components/field-picker/index",
+    "floating-picker": "/components/floating-picker/index",
     "stat-grid": "/components/stat-grid/index"
   }
 }

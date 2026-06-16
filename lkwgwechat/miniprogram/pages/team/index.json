@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "我的队伍",
   "usingComponents": {
-    "field-picker": "/components/field-picker/index"
+    "field-picker": "/components/field-picker/index",
+    "floating-picker": "/components/floating-picker/index"
   }
 }

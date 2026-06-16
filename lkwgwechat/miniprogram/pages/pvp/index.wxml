@@ -32,8 +32,9 @@
           value-index="{{side.monsterSelection.index}}"
           value-label="{{side.monsterSelection.label}}"
           data-side="{{side.side}}"
+          data-picker-handler="onMonsterChange"
           bind:change="onMonsterChange"
-          bind:lockscroll="onPickerScrollLock"
+          bind:open="onPickerOpen"
         />
         <field-picker
           label="血脉"
@@ -41,8 +42,9 @@
           value-index="{{side.bloodlineSelection.index}}"
           value-label="{{side.bloodlineSelection.label}}"
           data-side="{{side.side}}"
+          data-picker-handler="onBloodlineChange"
           bind:change="onBloodlineChange"
-          bind:lockscroll="onPickerScrollLock"
+          bind:open="onPickerOpen"
         />
       </view>
 
@@ -52,8 +54,9 @@
         value-index="{{side.natureSelection.index}}"
         value-label="{{side.natureSelection.label}}"
         data-side="{{side.side}}"
+        data-picker-handler="onNatureChange"
         bind:change="onNatureChange"
-        bind:lockscroll="onPickerScrollLock"
+        bind:open="onPickerOpen"
       />
 
       <view class="talent-grid">
@@ -66,8 +69,9 @@
             value-label="{{talent.label}}"
             data-side="{{side.side}}"
             data-talent-index="{{talentIndex}}"
+            data-picker-handler="onTalentChange"
             bind:change="onTalentChange"
-            bind:lockscroll="onPickerScrollLock"
+            bind:open="onPickerOpen"
           />
         </block>
       </view>
@@ -132,8 +136,9 @@
             disabled="{{!side.monsterId}}"
             data-side="{{side.side}}"
             data-skill-index="{{skillIndex}}"
+            data-picker-handler="onSkillChange"
             bind:change="onSkillChange"
-            bind:lockscroll="onPickerScrollLock"
+            bind:open="onPickerOpen"
           />
         </block>
         <field-picker
@@ -143,8 +148,9 @@
           value-label="{{side.actionSelection.label}}"
           disabled="{{!side.monsterId}}"
           data-side="{{side.side}}"
+          data-picker-handler="onActionChange"
           bind:change="onActionChange"
-          bind:lockscroll="onPickerScrollLock"
+          bind:open="onPickerOpen"
         />
       </view>
 
@@ -171,4 +177,13 @@
       </view>
     </view>
   </block>
+  <floating-picker
+    visible="{{floatingPicker.visible}}"
+    label="{{floatingPicker.label}}"
+    options="{{floatingPicker.options}}"
+    value-index="{{floatingPicker.valueIndex}}"
+    value-label="{{floatingPicker.valueLabel}}"
+    bind:select="onFloatingPickerSelect"
+    bind:close="onFloatingPickerClose"
+  />
 </view>

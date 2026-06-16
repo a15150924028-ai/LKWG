@@ -10,6 +10,12 @@ const componentRoot = path.join(
   "components",
   "field-picker"
 );
+const floatingComponentRoot = path.join(
+  packageRoot,
+  "miniprogram",
+  "components",
+  "floating-picker"
+);
 const { searchOptions } = require(path.join(
   packageRoot,
   "miniprogram",
@@ -140,54 +146,33 @@ assert(pvpJs.includes("detail: item.detail"));
 
 const pickerJs = fs.readFileSync(path.join(componentRoot, "index.js"), "utf8");
 const pickerWxml = fs.readFileSync(path.join(componentRoot, "index.wxml"), "utf8");
+const floatingJs = fs.readFileSync(path.join(floatingComponentRoot, "index.js"), "utf8");
+const floatingWxml = fs.readFileSync(path.join(floatingComponentRoot, "index.wxml"), "utf8");
+const floatingWxss = fs.readFileSync(path.join(floatingComponentRoot, "index.wxss"), "utf8");
 
-assert(pickerWxml.includes("<input"));
-assert(pickerWxml.includes('bindfocus="onFocus"'));
-assert(pickerWxml.includes('bindinput="onInput"'));
-assert(pickerWxml.includes('bindblur="onBlur"'));
-assert(pickerWxml.includes('bindkeyboardheightchange="onKeyboardHeightChange"'));
-assert(pickerWxml.includes('cursor-spacing="160"'));
-assert(pickerWxml.includes('adjust-position="{{true}}"'));
-assert(pickerWxml.includes('bindtap="onSelect"'));
-assert(pickerWxml.includes('bindtap="onClear"'));
-assert(pickerWxml.includes("<scroll-view"));
-assert(pickerWxml.includes('scroll-y="{{true}}"'));
-assert(pickerWxml.includes('bindtouchstart="onSuggestionTouchStart"'));
-assert(pickerWxml.includes('bindtouchend="onSuggestionTouchEnd"'));
-assert(pickerWxml.includes('bindtouchcancel="onSuggestionTouchEnd"'));
-assert(pickerWxml.includes('wx:for="{{suggestions}}"'));
+assert(!pickerWxml.includes("<input"), "field-picker must be read-only display");
+assert(!pickerWxml.includes("suggestion-list"), "field-picker must not render inline suggestions");
+assert(pickerWxml.includes('bindtap="onOpen"'));
+assert(pickerWxml.includes('catchtap="onClear"'));
 assert(pickerWxml.includes("selectedOption"));
 assert(pickerWxml.includes("option-icon-image"));
 assert(pickerWxml.includes("option-icon-text"));
 assert(pickerWxml.includes("iconClass"));
-assert(pickerWxml.includes("dropUp"));
 assert(!pickerWxml.includes("{{item.detail}}"));
 assert(!pickerWxml.includes("suggestion-detail"));
 assert(!pickerWxml.includes("<picker"));
 
 for (const method of [
-  "onFocus",
-  "onInput",
-  "onBlur",
-  "onSelect",
+  "onOpen",
   "onClear",
-  "onSuggestionTouchStart",
-  "onSuggestionTouchEnd",
-  "onKeyboardHeightChange",
-  "updateDropDirection",
-  "setPageScrollLocked"
 ]) {
   assert(pickerJs.includes(`${method}(`), `field picker is missing ${method}`);
 }
 assert(pickerJs.includes("selectedOption"));
 assert(pickerJs.includes("optionView("));
 assert(pickerJs.includes("iconClass"));
-assert(pickerJs.includes('require("../../utils/search-options")'));
-assert(pickerJs.includes("suggestionTouching"));
-assert(pickerJs.includes("if (this.suggestionTouching)"));
-assert(pickerJs.includes("keyboardHeight"));
-assert(pickerJs.includes("wx.getWindowInfo"));
-assert(pickerJs.includes('this.triggerEvent("lockscroll"'));
+assert(!pickerJs.includes('require("../../utils/search-options")'));
+assert(pickerJs.includes('this.triggerEvent("open"'));
 assert(!pickerJs.includes("getSystemInfo"));
 assert(!pickerJs.includes("searchOptions(this.properties.options, query, 20)"));
 assert(pickerJs.includes('this.triggerEvent("change", {'));
@@ -195,13 +180,45 @@ assert(pickerJs.includes("index"));
 
 const pickerWxss = fs.readFileSync(path.join(componentRoot, "index.wxss"), "utf8");
 assert(pickerWxss.includes("position: relative"));
-assert(pickerWxss.includes("position: absolute"));
-assert(pickerWxss.includes("z-index"));
-assert(pickerWxss.includes("top: 100%"));
-assert(pickerWxss.includes(".drop-up .suggestion-list"));
-assert(pickerWxss.includes("bottom: 100%"));
 assert(pickerWxss.includes(".stat-atk-icon"));
 assert(pickerWxss.includes("transform: translate"));
+
+assert(floatingWxml.includes("<input"));
+assert(floatingWxml.includes('focus="{{visible}}"'));
+assert(floatingWxml.includes('adjust-position="{{false}}"'));
+assert(floatingWxml.includes('hold-keyboard="{{true}}"'));
+assert(floatingWxml.includes('bindkeyboardheightchange="onKeyboardHeightChange"'));
+assert(floatingWxml.includes("<scroll-view"));
+assert(floatingWxml.includes('scroll-y="{{true}}"'));
+assert(floatingWxml.includes('bindtouchstart="onSuggestionTouchStart"'));
+assert(floatingWxml.includes('bindtouchend="onSuggestionTouchEnd"'));
+assert(floatingWxml.includes('bindtouchcancel="onSuggestionTouchEnd"'));
+assert(floatingWxml.includes('wx:for="{{suggestions}}"'));
+assert(floatingWxml.includes('bindtap="onSelect"'));
+assert(floatingWxml.includes('catchtap="onClose"'));
+assert(floatingWxml.includes("keyboardHeight"));
+assert(floatingWxml.includes("option-icon-image"));
+assert(floatingWxml.includes("option-icon-text"));
+assert(floatingWxml.includes("iconClass"));
+for (const method of [
+  "onInput",
+  "onSelect",
+  "onClose",
+  "onKeyboardHeightChange",
+  "onSuggestionTouchStart",
+  "onSuggestionTouchEnd",
+  "refreshSuggestions"
+]) {
+  assert(floatingJs.includes(`${method}(`), `floating picker is missing ${method}`);
+}
+assert(floatingJs.includes('require("../../utils/search-options")'));
+assert(floatingJs.includes('this.triggerEvent("select"'));
+assert(floatingJs.includes('this.triggerEvent("close"'));
+assert(!floatingJs.includes("commitFreeText"));
+assert(floatingWxss.includes("position: fixed"));
+assert(floatingWxss.includes("z-index"));
+assert(floatingWxss.includes("max-height: 360rpx"));
+assert(floatingWxss.includes("floating-picker-panel"));
 
 const skillWithIcon = catalog.skillOptions.find(
   (option) => option.icon && option.icon.startsWith("/assets/type-icons/")

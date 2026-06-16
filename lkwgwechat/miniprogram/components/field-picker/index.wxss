@@ -9,10 +9,6 @@
   background: #ffffff;
 }
 
-.field-picker.focused {
-  z-index: 30;
-}
-
 .identity-grid .field-picker,
 .talent-grid .field-picker {
   margin-top: 0;
@@ -81,7 +77,7 @@
   text-align: center;
 }
 
-.field-input {
+.field-value {
   flex: 1;
   min-width: 0;
   height: 48rpx;
@@ -89,9 +85,12 @@
   font-size: 27rpx;
   font-weight: 560;
   line-height: 48rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.field-input::placeholder {
+.field-value.placeholder {
   color: #98a2b3;
   font-weight: 400;
 }
@@ -107,81 +106,15 @@
   text-align: center;
 }
 
-.suggestion-list {
-  position: absolute;
-  top: 100%;
-  left: 16rpx;
-  right: 16rpx;
-  z-index: 31;
-  max-height: 520rpx;
-  margin: 4rpx 0 0;
-  overflow-y: auto;
-  border: 1rpx solid #edf0f5;
-  border-radius: 14rpx;
-  background: #ffffff;
-  box-shadow: 0 16rpx 36rpx rgba(16, 24, 40, 0.14);
-}
-
-.drop-up .suggestion-list {
-  top: auto;
-  bottom: 100%;
-  margin: 0 0 4rpx;
-}
-
-.suggestion-item,
-.empty-result {
-  display: flex;
-  align-items: center;
-  padding: 16rpx 8rpx;
-  color: #344054;
-  font-size: 25rpx;
-  line-height: 1.35;
-}
-
-.suggestion-copy {
-  min-width: 0;
-}
-
-.suggestion-label {
-  display: block;
-}
-
-.suggestion-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.suggestion-item + .suggestion-item {
-  border-top: 1rpx solid #f0f2f5;
-}
-
-.suggestion-item:active {
-  background: #eef5ff;
-  color: #1677ff;
-}
-
-.empty-result {
-  color: #98a2b3;
-  text-align: center;
-}
-
 .compact {
   padding-right: 10rpx;
   padding-left: 10rpx;
-}
-
-.compact .suggestion-list {
-  left: 10rpx;
-  right: 10rpx;
 }
 
 .compact .field-label {
   font-size: 19rpx;
 }
 
-.compact .field-input,
-.compact .suggestion-item,
-.compact .empty-result {
+.compact .field-value {
   font-size: 23rpx;
 }

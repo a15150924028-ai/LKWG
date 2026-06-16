@@ -56,6 +56,35 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 13:13 +08:00 - Codex
+
+- Request: Replace the Mini Program inline autocomplete with a compact global floating selector fixed above the keyboard, keeping the page body from jumping and keeping the panel small for phone keyboards.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.js`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.json`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.json`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.json`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Converted `field-picker` into a read-only display trigger with clear support, preserving selected icons, borders, placeholder text, and the existing `change { index }` contract for clears.
+  - Added one reusable `floating-picker` component per page with a fixed bottom panel, keyboard-height tracking, `adjust-position="{{false}}"`, `hold-keyboard`, scrollable suggestions, and a compact `360rpx` maximum candidate-list height.
+  - Wired the team and PVP pages so every selector opens the shared floating picker and selected candidates dispatch back into the existing page handlers without changing team or PVP state schemas.
+  - Kept overlay close as cancel-only rather than writing arbitrary free text, because the existing business state stores valid option IDs.
+- Verification: Watched the three focused Mini Program selector/page tests fail before the floating picker existed or the pages registered it, then pass after implementation. Ran all three Mini Program synchronization checks, all 53 Node tests, parsed 34 Mini Program JavaScript files and 8 JSON files, scanned 6 WXML files for unsupported tags and binding method calls, ran `git diff --check`, and measured the runtime package at 1,808,236 bytes (1.724 MiB), leaving 288,916 bytes before 2 MiB. WeChat Developer Tools compile and real-device keyboard behavior still require manual confirmation.
+- Status: Complete for implementation and automated verification; manual phone validation remains pending.
+
 ### 2026-06-16 12:22 +08:00 - Codex
 
 - Request: Continue fixing Mini Program mobile selector behavior by preventing page scrolling while autocomplete suggestions are open.

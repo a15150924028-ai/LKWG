@@ -1,5 +1,3 @@
-const { searchOptions } = require("../../utils/search-options");
-
 Component({
   properties: {
     label: {
@@ -29,64 +27,32 @@ Component({
   },
 
   data: {
-    query: "",
-    focused: false,
-    keyboardHeight: 0,
-    dropUp: false,
-    selectedOption: null,
-    suggestions: []
+    selectedOption: null
   },
 
   observers: {
     "valueIndex, valueLabel": function syncCommittedValue(valueIndex, valueLabel) {
-      if (this.data.focused) return;
       this.setData({
-        query: Number(valueIndex) > 0 ? valueLabel : "",
         selectedOption: this.optionView(Number(valueIndex))
       });
     },
 
     options() {
-      if (!this.data.focused) return;
-      this.refreshSuggestions(this.data.query);
+      this.setData({
+        selectedOption: this.optionView(Number(this.properties.valueIndex))
+      });
     }
   },
 
   lifetimes: {
     attached() {
-      this.blurTimer = null;
-      this.ignoreNextBlur = false;
-      this.suggestionTouching = false;
-      this.suggestionTouchTimer = null;
-      this.pageScrollLocked = false;
       this.setData({
-        query: Number(this.properties.valueIndex) > 0
-          ? this.properties.valueLabel
-          : "",
         selectedOption: this.optionView(Number(this.properties.valueIndex))
       });
-    },
-
-    detached() {
-      if (this.blurTimer) clearTimeout(this.blurTimer);
-      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
     }
   },
 
   methods: {
-    committedQuery() {
-      return Number(this.properties.valueIndex) > 0
-        ? this.properties.valueLabel
-        : "";
-    },
-
-    setPageScrollLocked(locked) {
-      const next = Boolean(locked);
-      if (this.pageScrollLocked === next) return;
-      this.pageScrollLocked = next;
-      this.triggerEvent("lockscroll", { locked: next });
-    },
-
     optionView(index) {
       const option = this.properties.options[index];
       if (!option || !option.id) return null;
@@ -100,124 +66,22 @@ Component({
       };
     },
 
-    refreshSuggestions(query) {
-      this.setData({
-        suggestions: searchOptions(this.properties.options, query)
-      });
-    },
-
-    updateDropDirection(keyboardHeight) {
-      const height = Number(keyboardHeight) || 0;
-      if (!height || !this.data.focused) {
-        this.setData({ dropUp: false });
-        return;
-      }
-      const windowInfo = typeof wx !== "undefined" && wx.getWindowInfo
-        ? wx.getWindowInfo()
-        : null;
-      const windowHeight = Number(windowInfo?.windowHeight) || 0;
-      if (!windowHeight) {
-        this.setData({ dropUp: true });
-        return;
-      }
-      this.createSelectorQuery()
-        .select(".field-picker")
-        .boundingClientRect((rect) => {
-          if (!rect) return;
-          const keyboardTop = windowHeight - height;
-          const spaceBelow = keyboardTop - rect.bottom;
-          const spaceAbove = rect.top;
-          this.setData({
-            dropUp: spaceBelow < 260 && spaceAbove > spaceBelow
-          });
-        })
-        .exec();
-    },
-
-    onFocus() {
+    onOpen() {
       if (this.properties.disabled) return;
-      if (this.blurTimer) clearTimeout(this.blurTimer);
-      this.setData({ focused: true });
-      this.setPageScrollLocked(true);
-      this.refreshSuggestions(this.data.query);
-      this.updateDropDirection(this.data.keyboardHeight);
-    },
-
-    onInput(event) {
-      const query = event.detail.value;
-      this.setData({ query, focused: true });
-      this.refreshSuggestions(query);
-    },
-
-    onBlur() {
-      if (this.blurTimer) clearTimeout(this.blurTimer);
-      this.blurTimer = setTimeout(() => {
-        if (this.ignoreNextBlur) {
-          this.ignoreNextBlur = false;
-          return;
-        }
-        if (this.suggestionTouching) return;
-        this.setData({
-          query: this.committedQuery(),
-          selectedOption: this.optionView(Number(this.properties.valueIndex)),
-          focused: false,
-          dropUp: false,
-          suggestions: []
-        });
-        this.setPageScrollLocked(false);
-      }, 120);
-    },
-
-    onSelect(event) {
-      const index = Number(event.currentTarget.dataset.index);
-      const option = this.properties.options[index];
-      if (!option || this.properties.disabled) return;
-      this.ignoreNextBlur = true;
-      this.setData({
-        query: option.label,
-        selectedOption: this.optionView(index),
-        focused: false,
-        dropUp: false,
-        suggestions: []
+      this.triggerEvent("open", {
+        label: this.properties.label,
+        options: this.properties.options,
+        valueIndex: this.properties.valueIndex,
+        valueLabel: this.properties.valueLabel
       });
-      this.setPageScrollLocked(false);
-      this.triggerEvent("change", { index });
     },
 
     onClear() {
       if (this.properties.disabled) return;
-      this.ignoreNextBlur = true;
       this.setData({
-        query: "",
-        selectedOption: null,
-        focused: false,
-        dropUp: false,
-        suggestions: []
+        selectedOption: null
       });
-      this.setPageScrollLocked(false);
       this.triggerEvent("change", { index: 0 });
-    },
-
-    onSuggestionTouchStart() {
-      this.suggestionTouching = true;
-      if (this.blurTimer) clearTimeout(this.blurTimer);
-      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
-    },
-
-    onSuggestionTouchEnd() {
-      if (this.suggestionTouchTimer) clearTimeout(this.suggestionTouchTimer);
-      this.suggestionTouchTimer = setTimeout(() => {
-        this.suggestionTouching = false;
-      }, 300);
-    },
-
-    onKeyboardHeightChange(event) {
-      const keyboardHeight = Number(event.detail.height) || 0;
-      this.setData({
-        keyboardHeight,
-        dropUp: keyboardHeight ? this.data.dropUp : false
-      });
-      if (keyboardHeight) this.updateDropDirection(keyboardHeight);
     }
   }
 });
