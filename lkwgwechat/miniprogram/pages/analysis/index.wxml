@@ -38,18 +38,13 @@
           bind:change="onRollerSkillChange"
           bind:open="onPickerOpen"
         />
-        <view class="roller-learner-card">
+        <view
+          class="roller-learner-card {{slot.learnerHasMore ? 'expandable' : ''}}"
+          data-slot="{{slot.slot}}"
+          bindtap="onToggleLearners"
+        >
           <view class="roller-learner-head">
             <text class="roller-learner-title">谁能学 · {{slot.learnerCount}}</text>
-            <view
-              wx:if="{{slot.learnerHasMore}}"
-              class="roller-learner-toggle"
-              data-slot="{{slot.slot}}"
-              bindtap="onToggleLearners"
-            >
-              <text>{{slot.learnerExpanded ? '收起' : '展开'}}</text>
-              <text class="roller-learner-toggle-arrow">{{slot.learnerExpanded ? '▲' : '▼'}}</text>
-            </view>
           </view>
           <text class="roller-learner-text {{slot.learnerExpanded ? 'expanded' : ''}}">
             {{slot.learnerExpanded ? slot.learnerFullText : slot.learnerPreview}}

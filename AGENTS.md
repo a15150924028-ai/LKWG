@@ -2741,3 +2741,19 @@ Use this entry format:
   - Added regression coverage for no-monster target resolution, full learner text, expandable learner lists, full-skill selector sourcing, and the always-visible roller-target card structure.
 - Verification: Ran `node tests/miniprogram-analysis-static.test.js` and `node tests/miniprogram-team-domain-static.test.js`; ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; parsed 42 Mini Program JS/JSON files; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,031` bytes. Manual WeChat Developer Tools / real-device confirmation remains pending.
 - Status: Complete for implementation and automated verification; manual Mini Program preview remains pending.
+
+### 2026-06-16 19:48 +08:00 - Codex
+
+- Request: Change the Mini Program analysis-page `谁能学` interaction so the learner content area itself expands downward, instead of showing a separate right-side dropdown/toggle control.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the dedicated right-side `展开/收起` learner toggle from the analysis-page roller-target card.
+  - Moved the expand/collapse tap target onto the `谁能学` content card itself, so long learner lists expand directly from the content area below the title.
+  - Kept expansion gated to slots that actually have truncated learner lists, and added regression coverage so the right-side toggle markup/text cannot come back accidentally.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before removing the right-side toggle, then pass after the implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,828,678` bytes.
+- Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.
