@@ -56,6 +56,28 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 10:52 +08:00 - Codex
+
+- Request: Remove the extra small subtitle line in Mini Program selector suggestions, center and resize stat icons such as physical attack, and show skill type icons in skill selectors.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/data/catalog.js`
+  - `lkwgwechat/miniprogram/domain/constants.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the duplicated suggestion detail subtitle from the shared searchable selector while keeping full nature up/down wording in the selected option label.
+  - Propagated `iconClass` through constants, catalog options, search results, team/PVP option adapters, and the picker component so each icon family can be styled consistently.
+  - Added centered icon sizing for type, bloodline, and stat icons, with a physical-attack-specific offset and scale adjustment.
+  - Added skill type icons to catalog skill options so team and PVP skill selectors show the skill attribute icon on the left.
+- Verification: Watched `node tests/miniprogram-search-picker-static.test.js` fail before implementation because `iconClass` was absent, then pass after implementation. Ran the three Mini Program synchronization checks, all 53 Node tests, parsed 33 Mini Program JavaScript files and 7 JSON files plus `project.config.json`, passed the adjusted WXML compatibility scan, ran `git diff --check`, and measured the runtime package at 1,797,309 bytes (1.714 MiB), leaving 299,843 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compile and real-device preview remain pending manual/external validation.
+
 ### 2026-06-16 10:33 +08:00 - Codex
 
 - Request: Add web-style bloodline, talent, and nature icons to Mini Program selectors, including nature stat up/down labels, and report package impact.

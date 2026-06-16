@@ -96,6 +96,7 @@ function resultItem(option, index) {
     index
   };
   if (option.icon) item.icon = option.icon;
+  if (option.iconClass) item.iconClass = option.iconClass;
   if (option.iconText) item.iconText = option.iconText;
   if (option.detail) item.detail = option.detail;
   return item;

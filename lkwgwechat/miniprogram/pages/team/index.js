@@ -12,6 +12,7 @@ function optionsWithBlank(options) {
     label: item.label || item.name,
     aliases: [...(item.aliases || [])],
     icon: item.icon,
+    iconClass: item.iconClass,
     iconText: item.iconText,
     detail: item.detail
   }))];

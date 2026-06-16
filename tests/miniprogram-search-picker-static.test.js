@@ -150,7 +150,9 @@ assert(pickerWxml.includes('wx:for="{{suggestions}}"'));
 assert(pickerWxml.includes("selectedOption"));
 assert(pickerWxml.includes("option-icon-image"));
 assert(pickerWxml.includes("option-icon-text"));
-assert(pickerWxml.includes("{{item.detail}}"));
+assert(pickerWxml.includes("iconClass"));
+assert(!pickerWxml.includes("{{item.detail}}"));
+assert(!pickerWxml.includes("suggestion-detail"));
 assert(!pickerWxml.includes("<picker"));
 
 for (const method of [
@@ -164,8 +166,18 @@ for (const method of [
 }
 assert(pickerJs.includes("selectedOption"));
 assert(pickerJs.includes("optionView("));
+assert(pickerJs.includes("iconClass"));
 assert(pickerJs.includes('require("../../utils/search-options")'));
 assert(pickerJs.includes('this.triggerEvent("change", {'));
 assert(pickerJs.includes("index"));
+
+const pickerWxss = fs.readFileSync(path.join(componentRoot, "index.wxss"), "utf8");
+assert(pickerWxss.includes(".stat-atk-icon"));
+assert(pickerWxss.includes("transform: translate"));
+
+const skillWithIcon = catalog.skillOptions.find(
+  (option) => option.icon && option.icon.startsWith("/assets/type-icons/")
+);
+assert(skillWithIcon, "skill options must expose type icons");
 
 console.log("miniprogram searchable picker static checks passed");

@@ -7,16 +7,17 @@ const TYPES = [
 ].map(([id, name]) => ({
   id,
   name,
-  icon: `/assets/type-icons/${id}.png`
+  icon: `/assets/type-icons/${id}.png`,
+  iconClass: "type-icon-image"
 }));
 
 const STAT_META = {
-  hp: { name: "生命", iconText: "生", icon: "/assets/stat-icons/hp.png" },
-  atk: { name: "物攻", iconText: "物", icon: "/assets/stat-icons/atk.png" },
-  defense: { name: "物防", iconText: "防", icon: "/assets/stat-icons/defense.png" },
-  spa: { name: "魔攻", iconText: "魔", icon: "/assets/stat-icons/spa.png" },
-  spd: { name: "魔防", iconText: "抗", icon: "/assets/stat-icons/spd.png" },
-  spe: { name: "速度", iconText: "速", icon: "/assets/stat-icons/spe.png" }
+  hp: { name: "生命", iconText: "生", icon: "/assets/stat-icons/hp.png", iconClass: "stat-icon-image" },
+  atk: { name: "物攻", iconText: "物", icon: "/assets/stat-icons/atk.png", iconClass: "stat-icon-image stat-atk-icon" },
+  defense: { name: "物防", iconText: "防", icon: "/assets/stat-icons/defense.png", iconClass: "stat-icon-image" },
+  spa: { name: "魔攻", iconText: "魔", icon: "/assets/stat-icons/spa.png", iconClass: "stat-icon-image" },
+  spd: { name: "魔防", iconText: "抗", icon: "/assets/stat-icons/spd.png", iconClass: "stat-icon-image" },
+  spe: { name: "速度", iconText: "速", icon: "/assets/stat-icons/spe.png", iconClass: "stat-icon-image" }
 };
 
 const BLOODLINES = [
@@ -25,6 +26,7 @@ const BLOODLINES = [
     name: "首领血脉",
     type: "boss",
     icon: "/assets/bloodline-icons/boss.png",
+    iconClass: "bloodline-icon-image",
     aliases: ["首领", "首领血脉"]
   },
   ...TYPES.map((type) => ({
@@ -32,6 +34,7 @@ const BLOODLINES = [
     name: `${type.name}属性血脉`,
     type: type.id,
     icon: type.icon,
+    iconClass: type.iconClass,
     aliases: [`${type.name}血脉`, type.name, `${type.name}属性血脉`]
   }))
 ];
@@ -81,6 +84,7 @@ const NATURES = NATURE_DEFINITIONS.map(([id, baseName, upStat, downStat]) => {
     downStat,
     detail,
     icon: up.icon,
+    iconClass: up.iconClass,
     iconText: up.iconText,
     aliases: [baseName, up.name, down.name]
   };
@@ -100,6 +104,7 @@ const TALENTS = TALENT_DEFINITIONS.map(([id, name, stat, aliases]) => ({
   name,
   stat,
   icon: STAT_META[stat].icon,
+  iconClass: STAT_META[stat].iconClass,
   iconText: STAT_META[stat].iconText,
   aliases: [name, ...aliases]
 }));

@@ -81,6 +81,7 @@ Component({
         id: option.id,
         label: option.label,
         icon: option.icon || "",
+        iconClass: option.iconClass || "",
         iconText: option.iconText || "",
         detail: option.detail || ""
       };

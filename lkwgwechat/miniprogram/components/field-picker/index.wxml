@@ -3,7 +3,7 @@
   <view class="search-control">
     <image
       wx:if="{{selectedOption.icon}}"
-      class="option-icon-image"
+      class="option-icon-image {{selectedOption.iconClass}}"
       src="{{selectedOption.icon}}"
       mode="aspectFit"
     />
@@ -40,7 +40,7 @@
       >
         <image
           wx:if="{{item.icon}}"
-          class="option-icon-image"
+          class="option-icon-image {{item.iconClass}}"
           src="{{item.icon}}"
           mode="aspectFit"
         />
@@ -50,7 +50,6 @@
         >{{item.iconText}}</text>
         <view class="suggestion-copy">
           <text class="suggestion-label">{{item.label}}</text>
-          <text wx:if="{{item.detail}}" class="suggestion-detail">{{item.detail}}</text>
         </view>
       </view>
     </block>

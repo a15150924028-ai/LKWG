@@ -41,7 +41,30 @@
 }
 
 .option-icon-image {
+  display: block;
   background: transparent;
+  object-fit: contain;
+  object-position: center;
+  align-self: center;
+  transform-origin: center;
+}
+
+.type-icon-image {
+  border-radius: 50%;
+}
+
+.bloodline-icon-image {
+  border-radius: 8rpx;
+}
+
+.stat-icon-image {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 0;
+}
+
+.stat-atk-icon {
+  transform: translate(-2rpx, 2rpx) scale(1.14);
 }
 
 .option-icon-text {
@@ -100,8 +123,7 @@
   min-width: 0;
 }
 
-.suggestion-label,
-.suggestion-detail {
+.suggestion-label {
   display: block;
 }
 
@@ -109,12 +131,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.suggestion-detail {
-  margin-top: 2rpx;
-  color: #667085;
-  font-size: 21rpx;
 }
 
 .suggestion-item + .suggestion-item {

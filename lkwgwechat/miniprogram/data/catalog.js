@@ -5,11 +5,16 @@ const skillById = new Map(bundle.skills.map((skill) => [skill.id, skill]));
 const passiveById = new Map(bundle.passives.map((passive) => [passive.id, passive]));
 
 function option(record) {
-  return {
+  const item = {
     id: record.id,
     label: record.name,
     aliases: [...(record.aliases || [])]
   };
+  if (record.type) {
+    item.icon = `/assets/type-icons/${record.type}.png`;
+    item.iconClass = "type-icon-image";
+  }
+  return item;
 }
 
 const monsterOptions = bundle.monsters.map(option);
