@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:45 +08:00 - Codex
+
+- Request: Remove the four-character `特性层数` prefix from the Mini Program PVP compact trait-layer control while keeping the controls in three columns.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the compact trait-layer control label from `特性层数 · {{side.traitName}}` to just `{{side.traitName}}`.
+  - Updated static regression coverage so the compact control keeps the three-column layout without spending width on the `特性层数` prefix.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the label change, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 21:39 +08:00 - Codex
 
 - Request: Make the Mini Program PVP manual adjustment controls fit three per row without truncating or swallowing labels.

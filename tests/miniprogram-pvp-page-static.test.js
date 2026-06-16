@@ -125,6 +125,8 @@ assert(pageWxml.includes("side.result.resultMeta"));
 assert(pageWxml.includes("side.result.responseVariants"));
 assert(pageWxml.includes("compact-control-grid"), "PVP manual controls should share one compact three-column grid.");
 assert(!pageWxml.includes('class="counter-row"'), "Trait layers should not occupy a separate row above the compact control grid.");
+assert(pageWxml.includes('<text class="counter-label">{{side.traitName}}</text>'), "Trait layer control should use only the trait name as its compact label.");
+assert(!pageWxml.includes("特性层数 ·"), "Trait layer control must not spend compact-grid width on the four-character prefix.");
 assert(pageWxss.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"), "PVP manual controls should fit three items per row.");
 assert(pageWxss.includes("text-overflow: ellipsis"), "Compact PVP control labels must truncate instead of pushing into steppers.");
 assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
@@ -180,7 +182,6 @@ for (const handler of [
 }
 
 for (const text of [
-  "\u7279\u6027\u5c42\u6570",
   "\u6280\u80fd\u63cf\u8ff0", "\u6e05\u7a7a\u672c\u65b9"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);

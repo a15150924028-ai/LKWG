@@ -97,7 +97,7 @@
 
       <view class="compact-control-grid">
         <view wx:if="{{side.showTraitLayers}}" class="counter-block">
-          <text class="counter-label">特性层数 · {{side.traitName}}</text>
+          <text class="counter-label">{{side.traitName}}</text>
           <view class="stepper">
             <button data-side="{{side.side}}" data-key="traitLayers" data-delta="-1" bindtap="adjustValue">−</button>
             <text>{{side.traitLayers}}</text>
