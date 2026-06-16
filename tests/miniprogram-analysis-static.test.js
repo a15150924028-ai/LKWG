@@ -156,6 +156,10 @@ const pageWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.wxml"),
   "utf8"
 );
+const pageWxss = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "analysis", "index.wxss"),
+  "utf8"
+);
 const pageJson = JSON.parse(fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.json"),
   "utf8"
@@ -183,12 +187,16 @@ assert(pageJs.includes("onFloatingPickerSelect("));
 assert(pageJs.includes("expandedLearnerSlots"));
 assert(pageJs.includes("onToggleLearners("));
 assert(pageJs.includes("learnerExpandable"));
+assert(pageWxml.includes("learnerDisplayText"));
+assert(pageWxml.includes("roller-learner-chevron"));
+assert(pageWxss.includes(".roller-learner-chevron"));
+assert(pageWxss.includes("-webkit-line-clamp: 1"), "Collapsed learner preview should stay to one line and avoid extra blank height.");
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
-assert(pageWxml.includes("learnerPreview"));
+assert(pageJs.includes("learnerPreview"));
 assert(pageWxml.includes("learnerCount"));
-assert(pageWxml.includes("learnerFullText"));
+assert(pageJs.includes("learnerFullText"));
 assert(pageWxml.includes("learnerExpandable"));
 assert(pageWxml.includes('class="roller-learner-card'));
 assert(pageWxml.includes('bindtap="onToggleLearners"'));

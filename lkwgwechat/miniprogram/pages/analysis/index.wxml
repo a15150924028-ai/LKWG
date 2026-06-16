@@ -45,9 +45,13 @@
         >
           <view class="roller-learner-head">
             <text class="roller-learner-title">谁能学 · {{slot.learnerCount}}</text>
+            <view
+              wx:if="{{slot.learnerExpandable}}"
+              class="roller-learner-chevron {{slot.learnerExpanded ? 'expanded' : ''}}"
+            ></view>
           </view>
           <text class="roller-learner-text {{slot.learnerExpanded ? 'expanded' : ''}}">
-            {{slot.learnerExpanded ? slot.learnerFullText : slot.learnerPreview}}
+            {{slot.learnerDisplayText}}
           </text>
         </view>
       </view>

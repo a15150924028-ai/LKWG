@@ -81,16 +81,15 @@
 
       <view wx:if="{{side.side === 'enemy'}}" class="preset-grid">
         <block wx:for="{{side.presets}}" wx:key="id" wx:for-item="preset">
-          <button
+          <view
             class="preset-button {{preset.active ? 'active' : ''}}"
             data-side="{{side.side}}"
             data-preset="{{preset.id}}"
             bindtap="selectPreset"
-          >{{preset.label}}</button>
+          >
+            <text class="preset-button-label">{{preset.label}}</text>
+          </view>
         </block>
-      </view>
-      <view wx:if="{{side.side === 'enemy'}}" class="preset-hidden-labels">
-        <text>最肉</text><text>最速</text><text>最高攻击</text>
       </view>
 
       <text class="default-note">{{side.defaultNote}}</text>

@@ -2790,3 +2790,22 @@ Use this entry format:
   - Added regression coverage for visually long learner text with 12-or-fewer learners and for explicit preset-button centering geometry.
 - Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before `learnerExpandable` existed, then pass after implementation. Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the explicit preset-button centering styles existed, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,121` bytes.
 - Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.
+
+### 2026-06-16 20:20 +08:00 - Codex
+
+- Request: Fix the Mini Program analysis-page learner summary so the learner card no longer looks like it leaves a blank extra line and shows an inline expand affordance, and redesign the enemy preset pills so the three preset labels are actually centered instead of drifting right.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the analysis-page learner card from a two-line clamped preview to a single-line ellipsis preview, which removes the blank-looking extra height in collapsed state.
+  - Added an inline chevron affordance inside the same tappable learner card, while keeping the interaction as tap-the-card-to-expand instead of reintroducing a separate right-side dropdown control.
+  - Replaced the enemy preset control from a native Mini Program `button` text layout to a view-based pill with an explicit inner label wrapper, because the prior native-button centering still rendered visually off-center in WeChat.
+  - Removed the hidden preset-label fallback markup and updated regression coverage so the real preset labels, inner wrapper centering, and learner-card affordance remain locked in.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before `learnerDisplayText` and the inline chevron existed, then pass after implementation. Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the explicit preset-label wrapper existed, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,819` bytes.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools and real-device visual confirmation remain manual/external checks.

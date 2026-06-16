@@ -28,6 +28,10 @@ const pageWxss = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "pvp", "index.wxss"),
   "utf8"
 );
+const buildRulesJs = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "domain", "generated", "build-rules.js"),
+  "utf8"
+);
 
 assert.strictEqual(
   pageJson.usingComponents["field-picker"],
@@ -131,11 +135,15 @@ assert(pageWxss.includes("width: 100%"), "Force Impact row should stretch full w
 assert(pageWxss.includes(".default-note"));
 assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
 assert(pageWxss.includes(".preset-button"), "Enemy preset buttons must keep dedicated styling.");
+assert(pageWxml.includes("preset-button-label"), "Enemy preset buttons should render an explicit label wrapper for reliable centering.");
+assert(!pageWxml.includes("preset-hidden-labels"), "Enemy preset labels should come from the real segmented control, not hidden fallback text.");
+assert(pageWxss.includes(".preset-button-label"), "Enemy preset buttons should style the inner label wrapper directly.");
 assert(pageWxss.includes("border-radius: 999rpx"), "Enemy preset buttons should use full pill corners instead of small rounded corners.");
 assert(pageWxss.includes("width: 100%"), "Enemy preset buttons should stretch to fill their grid cells.");
 assert(pageWxss.includes("height: 58rpx"), "Enemy preset buttons should keep a fixed height for stable centering.");
-assert(pageWxss.includes("line-height: 58rpx"), "Enemy preset button labels should be vertically centered with explicit line-height.");
-assert(pageWxss.includes("text-align: center"), "Enemy preset button labels should stay horizontally centered.");
+assert(pageWxss.includes("display: flex"), "Enemy preset buttons should use flex centering instead of relying on native button text layout.");
+assert(pageWxss.includes("justify-content: center"), "Enemy preset buttons should center content horizontally.");
+assert(pageWxss.includes("align-items: center"), "Enemy preset buttons should center content vertically.");
 assert(pageWxss.includes("min-height: 58rpx"), "Enemy preset buttons should keep stable button height.");
 assert(pageJs.includes("未应对成功"));
 assert(pageJs.includes("应对成功"));
@@ -156,10 +164,13 @@ for (const handler of [
 }
 
 for (const text of [
-  "最肉", "最速", "最高攻击", "特性层数",
-  "技能描述", "清空本方"
+  "\u7279\u6027\u5c42\u6570",
+  "\u6280\u80fd\u63cf\u8ff0", "\u6e05\u7a7a\u672c\u65b9"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);
+}
+for (const presetLabel of ["\u6700\u8089", "\u6700\u901f", "\u6700\u9ad8\u653b\u51fb"]) {
+  assert(buildRulesJs.includes(presetLabel), `PVP preset label is missing from build rules: ${presetLabel}`);
 }
 assert(pageJs.includes('label: "能量"'), "Energy must still be available as a compact control item.");
 
