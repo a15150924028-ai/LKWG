@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 18:57 +08:00 - Codex
+
+- Request: Further tighten the Mini Program PVP UI so Force Impact stays left-aligned on one line, selector labels embed into the border like the web layout, and tapping an already selected skill means "release this skill" without opening the floating picker; opening the picker should happen only for empty skill cards or the dedicated edit trigger.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Reworked the shared `field-picker` into a compact embedded-label layout with a floating label chip, inner frame, smaller vertical padding, and a fallback `?` placeholder icon for empty selections.
+  - Added `openOnTap` and `showEditTrigger` behavior to `field-picker`, so pages can separate "select this value" from "edit/search this value".
+  - Changed PVP skill slots so empty cards still open the picker directly, but filled cards no longer open it on tap; they now use the card tap for current-turn skill selection and a separate inline edit trigger to reopen the floating picker.
+  - Forced the PVP Force Impact row text to stay left-aligned and single-line with ellipsis instead of centering or wrapping.
+  - Expanded static regression coverage for the embedded selector layout, edit trigger support, and the no-popup-on-skill-release PVP behavior.
+- Verification: Watched `node tests/miniprogram-search-picker-static.test.js` and `node tests/miniprogram-pvp-page-static.test.js` fail before the new embedded-label/edit-trigger behavior existed, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed all Mini Program JavaScript and JSON files; ran `git diff --check`; confirmed the upload-readiness package check at `1,825,806` bytes, still under 2 MiB.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools and real-device visual confirmation remain manual/external checks.
+
 ### 2026-06-16 18:40 +08:00 - Codex
 
 - Request: Finish the previously approved Mini Program PVP UI brief by implementing compact 2x2 weather buttons with icons/colors, reducing vertical spacing, making stat labels and values inline, hiding trait layers when unsupported, keeping the 2x2 skill grid plus separate Force Impact row, and replacing the large damage metric card with a one-line compact result summary.

@@ -24,6 +24,10 @@ const pickerWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "components", "field-picker", "index.wxml"),
   "utf8"
 );
+const pageWxss = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "pvp", "index.wxss"),
+  "utf8"
+);
 
 assert.strictEqual(
   pageJson.usingComponents["field-picker"],
@@ -91,6 +95,8 @@ assert(pageWxml.includes("side.monsterOptions"));
 assert(pageWxml.includes("side.skillCards"));
 assert(pageWxml.includes("skill-action-grid"));
 assert(pageWxml.includes("data-action-skill-id"));
+assert(pageWxml.includes('open-on-tap="{{!skillCard.skillId}}"'));
+assert(pageWxml.includes('show-edit-trigger="{{!!skillCard.skillId}}"'));
 assert(pageWxml.includes("wx:if=\"{{side.showTraitLayers}}\""));
 assert(pageWxml.includes("weatherItem.icon"));
 assert(pageWxml.includes("{{weatherItem.weatherClass}}"));
@@ -106,10 +112,14 @@ assert(pageJs.includes("原力冲击"));
 assert(!pickerWxml.includes("<input"), "PVP field-picker must be read-only");
 assert(!pickerWxml.includes("suggestion-list"), "PVP field-picker must not inline suggestions");
 assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
+assert(pickerWxml.includes("field-label-chip"), "PVP selectors must use embedded border labels to reduce height.");
+assert(pickerWxml.includes("field-frame"), "PVP selectors must render the compact inner frame.");
 assert(statGridWxml.includes("nature-up"));
 assert(statGridWxml.includes("nature-down"));
 assert(statGridWxml.includes("talent-mark"));
 assert(statGridWxml.includes("stat-inline-row"), "Stat labels and values must share one inline row to reduce vertical height.");
+assert(pageWxss.includes("justify-content: flex-start"), "Force Impact row must left-align instead of centering.");
+assert(pageWxss.includes("white-space: nowrap"), "Force Impact row text must stay on one line.");
 
 for (const handler of [
   "onMonsterChange",

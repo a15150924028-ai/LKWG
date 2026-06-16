@@ -2,11 +2,7 @@
   box-sizing: border-box;
   position: relative;
   min-width: 0;
-  margin-top: 14rpx;
-  padding: 12rpx 16rpx 10rpx;
-  border: 1rpx solid #dfe6ef;
-  border-radius: 16rpx;
-  background: #ffffff;
+  margin-top: 12rpx;
 }
 
 .identity-grid .field-picker,
@@ -14,36 +10,55 @@
   margin-top: 0;
 }
 
-.field-picker.disabled {
+.field-frame {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 10rpx 14rpx;
+  border: 1rpx solid #dfe6ef;
+  border-radius: 16rpx;
+  background: #ffffff;
+}
+
+.field-picker.disabled .field-frame {
   background: #f2f4f7;
   opacity: 0.66;
 }
 
-.field-label {
-  display: block;
+.field-label-chip {
+  position: absolute;
+  top: -11rpx;
+  left: 16rpx;
+  z-index: 1;
+  padding: 0 8rpx;
+  background: #ffffff;
   color: #667085;
   font-size: 21rpx;
   line-height: 1.2;
 }
 
+.field-content-row,
 .search-control {
   display: flex;
   align-items: center;
-  min-height: 48rpx;
+  min-height: 40rpx;
+  min-width: 0;
 }
 
 .option-icon-image,
 .option-icon-text {
   flex: none;
-  width: 34rpx;
-  height: 34rpx;
+  width: 32rpx;
+  height: 32rpx;
   margin-right: 8rpx;
-  border-radius: 8rpx;
+  border-radius: 10rpx;
 }
 
 .option-icon-image {
   display: block;
-  background: transparent;
+  box-sizing: border-box;
+  padding: 3rpx;
+  border: 1rpx solid #e4e7ec;
+  background: #f8fafc;
   object-fit: contain;
   object-position: center;
   align-self: center;
@@ -52,6 +67,9 @@
 
 .type-icon-image {
   border-radius: 50%;
+  border: 0;
+  background: transparent;
+  padding: 0;
 }
 
 .bloodline-icon-image {
@@ -69,22 +87,23 @@
 }
 
 .option-icon-text {
-  background: #eef2f7;
+  border: 1rpx solid #e4e7ec;
+  background: #f8fafc;
   color: #475467;
   font-size: 20rpx;
   font-weight: 700;
-  line-height: 34rpx;
+  line-height: 32rpx;
   text-align: center;
 }
 
 .field-value {
   flex: 1;
   min-width: 0;
-  height: 48rpx;
+  height: 40rpx;
   color: #172033;
-  font-size: 27rpx;
+  font-size: 25rpx;
   font-weight: 560;
-  line-height: 48rpx;
+  line-height: 40rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -95,24 +114,34 @@
   font-weight: 400;
 }
 
+.edit-trigger,
 .clear-button,
 .search-mark {
   flex: none;
-  width: 44rpx;
+  width: 36rpx;
   margin-left: 6rpx;
   color: #98a2b3;
-  font-size: 28rpx;
-  line-height: 44rpx;
+  font-size: 25rpx;
+  line-height: 36rpx;
   text-align: center;
 }
 
-.compact {
-  padding-right: 10rpx;
-  padding-left: 10rpx;
+.edit-trigger {
+  font-size: 24rpx;
 }
 
-.compact .field-label {
+.compact {
+  margin-top: 10rpx;
+}
+
+.compact .field-frame {
+  padding: 8rpx 10rpx;
+  border-radius: 14rpx;
+}
+
+.compact .field-label-chip {
   font-size: 19rpx;
+  left: 12rpx;
 }
 
 .compact .field-value {

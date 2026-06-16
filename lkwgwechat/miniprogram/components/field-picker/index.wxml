@@ -1,22 +1,29 @@
 <view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}" bindtap="onOpen">
-  <text class="field-label">{{label}}</text>
-  <view class="search-control">
-    <image
-      wx:if="{{selectedOption.icon}}"
-      class="option-icon-image {{selectedOption.iconClass}}"
-      src="{{selectedOption.icon}}"
-      mode="aspectFit"
-    />
-    <text
-      wx:elif="{{selectedOption.iconText}}"
-      class="option-icon-text"
-    >{{selectedOption.iconText}}</text>
-    <text class="field-value {{valueIndex === 0 ? 'placeholder' : ''}}">{{valueIndex === 0 ? valueLabel : selectedOption.label}}</text>
-    <text
-      wx:if="{{valueIndex > 0 && !disabled}}"
-      class="clear-button"
-      catchtap="onClear"
-    >x</text>
-    <text wx:else class="search-mark">v</text>
+  <text class="field-label-chip">{{label}}</text>
+  <view class="field-frame">
+    <view class="search-control field-content-row">
+      <image
+        wx:if="{{selectedOption.icon}}"
+        class="option-icon-image {{selectedOption.iconClass}}"
+        src="{{selectedOption.icon}}"
+        mode="aspectFit"
+      />
+      <text
+        wx:elif="{{selectedOption.iconText}}"
+        class="option-icon-text"
+      >{{selectedOption.iconText}}</text>
+      <text class="field-value {{valueIndex === 0 ? 'placeholder' : ''}}">{{valueIndex === 0 ? valueLabel : selectedOption.label}}</text>
+      <text
+        wx:if="{{showEditTrigger && valueIndex > 0 && !disabled}}"
+        class="edit-trigger"
+        catchtap="onOpenTrigger"
+      >⌕</text>
+      <text
+        wx:if="{{valueIndex > 0 && !disabled}}"
+        class="clear-button"
+        catchtap="onClear"
+      >x</text>
+      <text wx:if="{{!(valueIndex > 0 && !disabled)}}" class="search-mark">v</text>
+    </view>
   </view>
 </view>

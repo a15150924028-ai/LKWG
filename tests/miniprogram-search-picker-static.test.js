@@ -163,6 +163,11 @@ assert(pickerWxml.includes('catchtap="onClear"'));
 assert(pickerWxml.includes("selectedOption"));
 assert(pickerWxml.includes("option-icon-image"));
 assert(pickerWxml.includes("option-icon-text"));
+assert(pickerWxml.includes("field-label-chip"));
+assert(pickerWxml.includes("field-frame"));
+assert(pickerWxml.includes("field-content-row"));
+assert(pickerWxml.includes("edit-trigger"));
+assert(pickerWxml.includes('catchtap="onOpenTrigger"'));
 assert(pickerWxml.includes("iconClass"));
 assert(!pickerWxml.includes("{{item.detail}}"));
 assert(!pickerWxml.includes("suggestion-detail"));
@@ -170,6 +175,7 @@ assert(!pickerWxml.includes("<picker"));
 
 for (const method of [
   "onOpen",
+  "onOpenTrigger",
   "onClear",
 ]) {
   assert(pickerJs.includes(`${method}(`), `field picker is missing ${method}`);
@@ -177,6 +183,8 @@ for (const method of [
 assert(pickerJs.includes("selectedOption"));
 assert(pickerJs.includes("optionView("));
 assert(pickerJs.includes("iconClass"));
+assert(pickerJs.includes("openOnTap"));
+assert(pickerJs.includes("showEditTrigger"));
 assert(!pickerJs.includes('require("../../utils/search-options")'));
 assert(pickerJs.includes('this.triggerEvent("open"'));
 assert(!pickerJs.includes("getSystemInfo"));
@@ -186,6 +194,12 @@ assert(pickerJs.includes("index"));
 
 const pickerWxss = fs.readFileSync(path.join(componentRoot, "index.wxss"), "utf8");
 assert(pickerWxss.includes("position: relative"));
+assert(pickerWxss.includes(".field-label-chip"));
+assert(pickerWxss.includes("top: -"));
+assert(pickerWxss.includes(".field-frame"));
+assert(pickerWxss.includes(".field-content-row"));
+assert(pickerWxss.includes(".edit-trigger"));
+assert(pickerWxss.includes("min-height: 40rpx"));
 assert(pickerWxss.includes(".stat-atk-icon"));
 assert(pickerWxss.includes("transform: translate"));
 

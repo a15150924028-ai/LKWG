@@ -227,6 +227,7 @@
 .force-action-button {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10rpx;
   min-height: 60rpx;
   margin-top: 10rpx;
@@ -240,11 +241,20 @@
 }
 
 .force-action-text {
+  display: flex;
+  align-items: center;
   flex: 1;
   min-width: 0;
   color: inherit;
   font-size: 24rpx;
   font-weight: 700;
+}
+
+.force-action-text text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .damage-card {

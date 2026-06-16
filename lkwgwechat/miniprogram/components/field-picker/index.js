@@ -20,6 +20,14 @@ Component({
       type: Boolean,
       value: false
     },
+    openOnTap: {
+      type: Boolean,
+      value: true
+    },
+    showEditTrigger: {
+      type: Boolean,
+      value: false
+    },
     compact: {
       type: Boolean,
       value: false
@@ -53,9 +61,28 @@ Component({
   },
 
   methods: {
+    emitOpen() {
+      if (this.properties.disabled) return;
+      this.triggerEvent("open", {
+        label: this.properties.label,
+        options: this.properties.options,
+        valueIndex: this.properties.valueIndex,
+        valueLabel: this.properties.valueLabel
+      });
+    },
+
     optionView(index) {
       const option = this.properties.options[index];
-      if (!option || !option.id) return null;
+      if (!option || !option.id) {
+        return {
+          id: "",
+          label: "",
+          icon: "",
+          iconClass: "",
+          iconText: "?",
+          detail: ""
+        };
+      }
       return {
         id: option.id,
         label: option.label,
@@ -67,13 +94,12 @@ Component({
     },
 
     onOpen() {
-      if (this.properties.disabled) return;
-      this.triggerEvent("open", {
-        label: this.properties.label,
-        options: this.properties.options,
-        valueIndex: this.properties.valueIndex,
-        valueLabel: this.properties.valueLabel
-      });
+      if (!this.properties.openOnTap) return;
+      this.emitOpen();
+    },
+
+    onOpenTrigger() {
+      this.emitOpen();
     },
 
     onClear() {

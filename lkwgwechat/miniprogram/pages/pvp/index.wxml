@@ -144,6 +144,8 @@
               options="{{side.skillOptions}}"
               value-index="{{skillCard.selection.index}}"
               value-label="{{skillCard.selection.label}}"
+              open-on-tap="{{!skillCard.skillId}}"
+              show-edit-trigger="{{!!skillCard.skillId}}"
               disabled="{{!side.monsterId}}"
               data-side="{{side.side}}"
               data-skill-index="{{skillIndex}}"
