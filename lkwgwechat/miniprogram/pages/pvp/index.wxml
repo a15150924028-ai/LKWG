@@ -25,7 +25,7 @@
     <view class="side-card">
       <view class="side-head">
         <text class="side-title">{{side.title}}</text>
-        <button class="clear-side" data-side="{{side.side}}" bindtap="clearSide">清空本方</button>
+        <button class="clear-side" data-side="{{side.side}}" bindtap="clearSide">清空{{side.title}}</button>
       </view>
 
       <view class="identity-grid">

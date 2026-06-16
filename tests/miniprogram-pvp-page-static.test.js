@@ -123,6 +123,8 @@ assert(pageWxml.includes("side.forceImpact.label"));
 assert(pageWxml.includes("side.result.resultTitle"));
 assert(pageWxml.includes("side.result.resultMeta"));
 assert(pageWxml.includes("side.result.responseVariants"));
+assert(pageWxml.includes("清空{{side.title}}"), "PVP clear button should say 清空我方 or 清空敌方 according to the side card.");
+assert(!pageWxml.includes("清空本方"), "Enemy PVP side must not show the ally-only 清空本方 label.");
 assert(pageWxml.includes("compact-control-grid"), "PVP manual controls should share one compact three-column grid.");
 assert(!pageWxml.includes('class="counter-row"'), "Trait layers should not occupy a separate row above the compact control grid.");
 assert(pageWxml.includes('<text class="counter-label">{{side.traitName}}</text>'), "Trait layer control should use only the trait name as its compact label.");
@@ -173,6 +175,14 @@ assert(
   pageJs.includes("...adjustableStatKeys.map((key) => ({"),
   "PVP compact manual controls should be built from adjustableStatKeys, not every stat label."
 );
+assert(
+  !pageJs.includes("Math.min(100, Math.round((settled.damage / defenderMaxHp) * 100))"),
+  "PVP HP-loss percentage must show the real damage ratio instead of clamping at 100%."
+);
+assert(
+  pageJs.includes("const hpPercent = Math.max(0, Math.round((settled.damage / defenderMaxHp) * 100));"),
+  "PVP HP-loss percentage should keep overkill values such as 125% visible."
+);
 
 for (const handler of [
   "onMonsterChange",
@@ -190,7 +200,7 @@ for (const handler of [
 }
 
 for (const text of [
-  "\u6280\u80fd\u63cf\u8ff0", "\u6e05\u7a7a\u672c\u65b9"
+  "\u6280\u80fd\u63cf\u8ff0"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);
 }

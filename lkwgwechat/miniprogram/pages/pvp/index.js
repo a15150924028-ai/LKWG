@@ -462,7 +462,7 @@ function calculateDamageFor(side, state, views, options = {}) {
   });
   const defenderMaxHp = Math.max(1, Number(defenderStats.hp) || 1);
   const summarizeDamage = (settled) => {
-    const hpPercent = Math.max(0, Math.min(100, Math.round((settled.damage / defenderMaxHp) * 100)));
+    const hpPercent = Math.max(0, Math.round((settled.damage / defenderMaxHp) * 100));
     return {
       ...settled,
       hpPercent,

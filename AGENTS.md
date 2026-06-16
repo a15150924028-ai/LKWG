@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 22:02 +08:00 - Codex
+
+- Request: In Mini Program PVP, show the real HP-loss percentage instead of capping at 100%, and make the enemy card clear button say `清空敌方`; only inspect boss monsters for the next request.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the 100% clamp from PVP HP-loss percentage text so overkill damage can display values above 100%.
+  - Changed the PVP clear button from fixed `清空本方` text to `清空{{side.title}}`, making enemy cards show `清空敌方` and ally cards show `清空我方`.
+  - Added static regression coverage for both behaviors.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before implementation, then pass after the fix. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,831,374` bytes.
+- Status: Complete for requested items 1 and 2; boss-bloodline auto-fill remains intentionally not implemented yet.
+
 ### 2026-06-16 21:55 +08:00 - Codex
 
 - Request: Remove the PVP compact manual `生命` control first, then fix Mini Program `听桥` so its response power uses the enemy action's final damage instead of the enemy skill's base power.
