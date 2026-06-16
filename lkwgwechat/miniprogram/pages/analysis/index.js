@@ -5,6 +5,7 @@ const { createStorageAdapter } = require("../../utils/storage");
 
 const storage = createStorageAdapter();
 const blankOption = { id: "", label: "请选择" };
+const allSkillOptions = optionsWithBlank(catalog.skillOptions);
 
 function closedFloatingPicker() {
   return {
@@ -34,12 +35,13 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
-function buildRollerSlots(team, analyzedSlots = []) {
+function buildRollerSlots(team, analyzedSlots = [], expandedLearnerSlots = {}) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
-    const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));
+    const skillOptions = allSkillOptions;
     const rollerSelection = selection(skillOptions, pet.rollerSkillId);
     const analyzed = analyzedSlots[slot] || {};
+    const learnerExpanded = Boolean(expandedLearnerSlots[slot]);
     return {
       ...analyzed,
       slot,
@@ -47,7 +49,11 @@ function buildRollerSlots(team, analyzedSlots = []) {
       monsterName: monster?.name || "未选择精灵",
       hasMonster: Boolean(monster),
       skillOptions,
-      rollerSelection
+      rollerSelection,
+      learnerExpanded,
+      learnerDisplayText: learnerExpanded
+        ? (analyzed.learnerFullText || analyzed.learnerPreview || "先选择目标技能")
+        : (analyzed.learnerPreview || "先选择目标技能")
     };
   });
 }
@@ -56,6 +62,7 @@ Page({
   data: {
     pickerScrollLocked: false,
     floatingPicker: closedFloatingPicker(),
+    expandedLearnerSlots: {},
     rollerSlots: [],
     result: {
       configuredCount: 0,
@@ -77,11 +84,12 @@ Page({
   applyTeam(team, save = true) {
     const normalized = teamRules.normalizeTeam(team, catalog);
     const result = analysis.analyzeTeam(normalized, catalog);
+    const expandedLearnerSlots = this.data?.expandedLearnerSlots || {};
     this.teamState = normalized;
     if (save) storage.saveTeam(normalized);
     this.setData({
       result,
-      rollerSlots: buildRollerSlots(normalized, result.rollerSlots)
+      rollerSlots: buildRollerSlots(normalized, result.rollerSlots, expandedLearnerSlots)
     });
   },
 
@@ -131,6 +139,22 @@ Page({
     this.setData({
       pickerScrollLocked: false,
       floatingPicker: closedFloatingPicker()
+    });
+  },
+
+  onToggleLearners(event) {
+    const slot = Number(event.currentTarget.dataset.slot);
+    const expandedLearnerSlots = {
+      ...(this.data.expandedLearnerSlots || {}),
+      [slot]: !(this.data.expandedLearnerSlots || {})[slot]
+    };
+    this.setData({
+      expandedLearnerSlots,
+      rollerSlots: buildRollerSlots(
+        this.currentTeam(),
+        (this.data.result && this.data.result.rollerSlots) || [],
+        expandedLearnerSlots
+      )
     });
   },
 

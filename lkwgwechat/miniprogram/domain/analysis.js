@@ -61,12 +61,17 @@ function learnerSummaryForSkill(skillId, catalog) {
       targetSkillName: "",
       learnerNames: [],
       learnerCount: 0,
-      learnerPreview: "先选择目标技能"
+      learnerPreview: "先选择目标技能",
+      learnerFullText: "先选择目标技能",
+      learnerHasMore: false
     };
   }
   const learnerNames = catalog.bundle.monsters
     .filter((monster) => monster.skillIds.includes(skill.id))
     .map((monster) => monster.name);
+  const learnerFullText = learnerNames.length
+    ? learnerNames.join("、")
+    : "暂无可学习精灵";
   return {
     targetSkillId: skill.id,
     targetSkillName: skill.name,
@@ -74,7 +79,9 @@ function learnerSummaryForSkill(skillId, catalog) {
     learnerCount: learnerNames.length,
     learnerPreview: learnerNames.length
       ? learnerNames.slice(0, 12).join("、")
-      : "暂无可学习精灵"
+      : "暂无可学习精灵",
+    learnerFullText,
+    learnerHasMore: learnerNames.length > 12
   };
 }
 

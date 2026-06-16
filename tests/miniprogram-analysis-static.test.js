@@ -92,6 +92,44 @@ assert(
   result.rollerSlots[0].learnerPreview.includes(monster.name),
   "roller target analysis must provide a compact learner preview"
 );
+assert.strictEqual(
+  result.rollerSlots[0].learnerFullText,
+  result.rollerSlots[0].learnerNames.join("、"),
+  "roller target analysis must expose the full learner list"
+);
+
+const noMonsterRollerPet = {
+  ...teamRules.emptyPet(0),
+  rollerSkillId: attackSkills[0].id
+};
+const noMonsterRollerResult = analysis.analyzeTeam([noMonsterRollerPet], catalog);
+assert.strictEqual(
+  noMonsterRollerResult.rollerSlots[0].targetSkillId,
+  attackSkills[0].id,
+  "roller target analysis must still resolve a chosen target skill even when no monster is configured"
+);
+assert.strictEqual(
+  noMonsterRollerResult.rollerSlots[0].targetSkillName,
+  attackSkills[0].name,
+  "roller target analysis must still show the target skill name even when no monster is configured"
+);
+
+const learnerCounts = new Map();
+for (const bundleMonster of catalog.bundle.monsters) {
+  for (const skillId of bundleMonster.skillIds) {
+    learnerCounts.set(skillId, (learnerCounts.get(skillId) || 0) + 1);
+  }
+}
+const expandableSkillId = [...learnerCounts.entries()].find(([, count]) => count > 12)?.[0];
+assert(expandableSkillId, "analysis fixture requires at least one target skill with more than 12 learners");
+const expandableSkillResult = analysis.analyzeTeam([{
+  ...teamRules.emptyPet(0),
+  rollerSkillId: expandableSkillId
+}], catalog);
+assert(
+  expandableSkillResult.rollerSlots[0].learnerHasMore,
+  "roller target analysis must expose when learner preview is truncated"
+);
 
 const pageJs = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"),
@@ -120,14 +158,22 @@ assert(pageWxml.includes("<page-meta"));
 assert(pageWxml.includes("pickerScrollLocked"));
 assert(pageJs.includes("rollerSlots:"));
 assert(pageJs.includes("buildRollerSlots("));
+assert(pageJs.includes("catalog.skillOptions"));
+assert(!pageJs.includes("catalog.monsterSkillOptions("));
 assert(pageJs.includes("onRollerSkillChange("));
 assert(pageJs.includes("onPickerOpen("));
 assert(pageJs.includes("onFloatingPickerSelect("));
+assert(pageJs.includes("expandedLearnerSlots"));
+assert(pageJs.includes("onToggleLearners("));
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
 assert(pageWxml.includes("learnerPreview"));
 assert(pageWxml.includes("learnerCount"));
+assert(pageWxml.includes("learnerFullText"));
+assert(pageWxml.includes("learnerHasMore"));
+assert(pageWxml.includes('bindtap="onToggleLearners"'));
+assert(!pageWxml.includes('disabled="{{!slot.hasMonster}}"'));
 assert(pageWxml.includes("<floating-picker"));
 assert(pageWxml.includes("当前克制面"));
 assert(pageWxml.includes("主要弱点"));
@@ -135,5 +181,10 @@ assert(pageWxml.includes("type-chip-list"));
 assert(pageWxml.includes("type-chip-icon"));
 assert(pageWxml.includes("{{type.icon}}"));
 assert(pageWxml.includes("暂无队伍配置"));
+assert(pageWxml.includes('wx:if="{{result.configuredCount > 0}}"'));
+assert(
+  pageWxml.indexOf("roller-target-card") < pageWxml.indexOf('wx:if="{{result.configuredCount > 0}}"'),
+  "roller target card must stay visible even when no team monster is configured"
+);
 
 console.log("miniprogram analysis checks passed");

@@ -172,7 +172,6 @@ Page({
     const option = monsterOptions[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.monsterId = option.id;
-      pet.rollerSkillId = "";
       pet.skills = Array.from({ length: 4 }, () => ({ skillId: "" }));
     });
   },

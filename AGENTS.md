@@ -2721,3 +2721,23 @@ Use this entry format:
   - Specified that only the two 棋绮后 final variants receive 渗透's PVP layer effect.
 - Verification: Reviewed the specification for placeholders, conflicting names, merged skill-pool assumptions, evolution-chain color mismatches, and ambiguous PVP trait scope; ran `git diff --check`.
 - Status: Complete; awaiting user review before implementation planning.
+
+### 2026-06-16 19:38 +08:00 - Codex
+
+- Request: Fix Mini Program analysis-page `过山车目标` so target skills can search/select all skills, remain usable even with no configured monster, and show the full `谁能学` list with expand/collapse.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/analysis.js`
+  - `lkwgwechat/miniprogram/domain/team.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed analysis-page roller target options from per-monster skill pools to the full skill catalog, keeping the shared floating selector search behavior.
+  - Preserved `rollerSkillId` even when no monster is configured, and stopped clearing it when the team page changes a monster, so analysis target skills remain independently editable and storable.
+  - Moved the `过山车目标` card outside the configured-team-only block, removed the no-monster disabled state, and added expandable `谁能学` learner text with count, preview, full text, and expand/collapse control.
+  - Added regression coverage for no-monster target resolution, full learner text, expandable learner lists, full-skill selector sourcing, and the always-visible roller-target card structure.
+- Verification: Ran `node tests/miniprogram-analysis-static.test.js` and `node tests/miniprogram-team-domain-static.test.js`; ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; parsed 42 Mini Program JS/JSON files; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,031` bytes. Manual WeChat Developer Tools / real-device confirmation remains pending.
+- Status: Complete for implementation and automated verification; manual Mini Program preview remains pending.

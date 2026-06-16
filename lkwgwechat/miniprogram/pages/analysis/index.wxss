@@ -121,15 +121,32 @@
   background: #ffffff;
 }
 
-.roller-learner-title,
-.roller-learner-text {
-  display: block;
+.roller-learner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10rpx;
 }
 
 .roller-learner-title {
+  display: block;
   color: #1677ff;
   font-size: 21rpx;
   font-weight: 700;
+}
+
+.roller-learner-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  flex: none;
+  color: #667085;
+  font-size: 20rpx;
+  line-height: 1.2;
+}
+
+.roller-learner-toggle-arrow {
+  font-size: 18rpx;
 }
 
 .roller-learner-text {
@@ -141,6 +158,12 @@
   line-height: 1.45;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.roller-learner-text.expanded {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: initial;
 }
 
 .tag-text {

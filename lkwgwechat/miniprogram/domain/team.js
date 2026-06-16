@@ -36,8 +36,10 @@ function normalizePet(pet, index = 0, catalog) {
   const allowedSkills = new Set(monster?.skillIds || []);
   const monsterId = monster?.id || "";
 
-  function validSkillId(value) {
-    if (!monsterId || !allowedSkills.has(value) || !catalog?.getSkill(value)) return "";
+  function validSkillId(value, { allowAny = false } = {}) {
+    if (!catalog?.getSkill(value)) return "";
+    if (allowAny) return value;
+    if (!monsterId || !allowedSkills.has(value)) return "";
     return value;
   }
 
@@ -47,7 +49,7 @@ function normalizePet(pet, index = 0, catalog) {
     bloodlineId: bloodlineIds.has(source.bloodlineId) ? source.bloodlineId : "",
     natureId: natureIds.has(source.natureId) ? source.natureId : "",
     talentIds: uniqueValidTalents(source.talentIds),
-    rollerSkillId: validSkillId(source.rollerSkillId),
+    rollerSkillId: validSkillId(source.rollerSkillId, { allowAny: true }),
     skills: Array.from({ length: 4 }, (_, skillIndex) => {
       const skill = source.skills?.[skillIndex] || {};
       return { skillId: validSkillId(skill.skillId || skill.id || "") };
