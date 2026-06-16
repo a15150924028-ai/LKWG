@@ -90,11 +90,15 @@ function validOptions(options) {
 }
 
 function resultItem(option, index) {
-  return {
+  const item = {
     id: option.id,
     label: option.label,
     index
   };
+  if (option.icon) item.icon = option.icon;
+  if (option.iconText) item.iconText = option.iconText;
+  if (option.detail) item.detail = option.detail;
+  return item;
 }
 
 function searchOptions(options, query, limit = 20) {

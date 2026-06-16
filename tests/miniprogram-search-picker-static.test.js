@@ -104,7 +104,23 @@ for (const [name, records] of [
     records.every((record) => Array.isArray(record.aliases) && record.aliases.length),
     `${name} options must provide searchable aliases`
   );
+  assert(
+    records.every((record) => record.icon),
+    `${name} options must provide selector icons`
+  );
 }
+assert(
+  BLOODLINES.some((record) => record.icon === "/assets/bloodline-icons/boss.png"),
+  "boss bloodline must use the synchronized boss icon"
+);
+assert(
+  NATURES.every((record) => record.detail && record.name.includes("↑") && record.name.includes("↓")),
+  "nature options must show stat up/down details"
+);
+assert(
+  TALENTS.every((record) => record.icon.startsWith("/assets/stat-icons/")),
+  "talent options must use stat icons"
+);
 
 const teamJs = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "team", "index.js"),
@@ -116,6 +132,10 @@ const pvpJs = fs.readFileSync(
 );
 assert(teamJs.includes("aliases: [...(item.aliases || [])]"));
 assert(pvpJs.includes("aliases: [...(item.aliases || [])]"));
+assert(teamJs.includes("icon: item.icon"));
+assert(teamJs.includes("detail: item.detail"));
+assert(pvpJs.includes("icon: item.icon"));
+assert(pvpJs.includes("detail: item.detail"));
 
 const pickerJs = fs.readFileSync(path.join(componentRoot, "index.js"), "utf8");
 const pickerWxml = fs.readFileSync(path.join(componentRoot, "index.wxml"), "utf8");
@@ -127,6 +147,10 @@ assert(pickerWxml.includes('bindblur="onBlur"'));
 assert(pickerWxml.includes('bindtap="onSelect"'));
 assert(pickerWxml.includes('bindtap="onClear"'));
 assert(pickerWxml.includes('wx:for="{{suggestions}}"'));
+assert(pickerWxml.includes("selectedOption"));
+assert(pickerWxml.includes("option-icon-image"));
+assert(pickerWxml.includes("option-icon-text"));
+assert(pickerWxml.includes("{{item.detail}}"));
 assert(!pickerWxml.includes("<picker"));
 
 for (const method of [
@@ -138,6 +162,8 @@ for (const method of [
 ]) {
   assert(pickerJs.includes(`${method}(`), `field picker is missing ${method}`);
 }
+assert(pickerJs.includes("selectedOption"));
+assert(pickerJs.includes("optionView("));
 assert(pickerJs.includes('require("../../utils/search-options")'));
 assert(pickerJs.includes('this.triggerEvent("change", {'));
 assert(pickerJs.includes("index"));

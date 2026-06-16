@@ -31,6 +31,28 @@
   min-height: 48rpx;
 }
 
+.option-icon-image,
+.option-icon-text {
+  flex: none;
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 8rpx;
+  border-radius: 8rpx;
+}
+
+.option-icon-image {
+  background: transparent;
+}
+
+.option-icon-text {
+  background: #eef2f7;
+  color: #475467;
+  font-size: 20rpx;
+  font-weight: 700;
+  line-height: 34rpx;
+  text-align: center;
+}
+
 .field-input {
   flex: 1;
   min-width: 0;
@@ -66,11 +88,33 @@
 
 .suggestion-item,
 .empty-result {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 16rpx 8rpx;
   color: #344054;
   font-size: 25rpx;
   line-height: 1.35;
+}
+
+.suggestion-copy {
+  min-width: 0;
+}
+
+.suggestion-label,
+.suggestion-detail {
+  display: block;
+}
+
+.suggestion-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggestion-detail {
+  margin-top: 2rpx;
+  color: #667085;
+  font-size: 21rpx;
 }
 
 .suggestion-item + .suggestion-item {

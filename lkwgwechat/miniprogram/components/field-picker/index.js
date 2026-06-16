@@ -31,6 +31,7 @@ Component({
   data: {
     query: "",
     focused: false,
+    selectedOption: null,
     suggestions: []
   },
 
@@ -38,7 +39,8 @@ Component({
     "valueIndex, valueLabel": function syncCommittedValue(valueIndex, valueLabel) {
       if (this.data.focused) return;
       this.setData({
-        query: Number(valueIndex) > 0 ? valueLabel : ""
+        query: Number(valueIndex) > 0 ? valueLabel : "",
+        selectedOption: this.optionView(Number(valueIndex))
       });
     },
 
@@ -55,7 +57,8 @@ Component({
       this.setData({
         query: Number(this.properties.valueIndex) > 0
           ? this.properties.valueLabel
-          : ""
+          : "",
+        selectedOption: this.optionView(Number(this.properties.valueIndex))
       });
     },
 
@@ -69,6 +72,18 @@ Component({
       return Number(this.properties.valueIndex) > 0
         ? this.properties.valueLabel
         : "";
+    },
+
+    optionView(index) {
+      const option = this.properties.options[index];
+      if (!option || !option.id) return null;
+      return {
+        id: option.id,
+        label: option.label,
+        icon: option.icon || "",
+        iconText: option.iconText || "",
+        detail: option.detail || ""
+      };
     },
 
     refreshSuggestions(query) {
@@ -99,6 +114,7 @@ Component({
         }
         this.setData({
           query: this.committedQuery(),
+          selectedOption: this.optionView(Number(this.properties.valueIndex)),
           focused: false,
           suggestions: []
         });
@@ -112,6 +128,7 @@ Component({
       this.ignoreNextBlur = true;
       this.setData({
         query: option.label,
+        selectedOption: this.optionView(index),
         focused: false,
         suggestions: []
       });
@@ -123,6 +140,7 @@ Component({
       this.ignoreNextBlur = true;
       this.setData({
         query: "",
+        selectedOption: null,
         focused: false,
         suggestions: []
       });

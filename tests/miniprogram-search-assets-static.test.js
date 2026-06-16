@@ -33,6 +33,47 @@ const pinyinMap = require(path.join(
 ));
 assert(Object.keys(pinyinMap).length > 100, "generated pinyin map must be populated");
 
+for (const type of [
+  "grass", "water", "fire", "electric", "poison", "fantasy", "ice",
+  "fighting", "cute", "light", "dragon", "mechanical", "ghost",
+  "demon", "bug", "normal", "wing", "ground"
+]) {
+  const source = fs.readFileSync(path.join(root, "assets", "type-icons", `${type}.png`));
+  const target = fs.readFileSync(path.join(
+    packageRoot,
+    "miniprogram",
+    "assets",
+    "type-icons",
+    `${type}.png`
+  ));
+  assert(target.equals(source), `type icon must be synchronized: ${type}`);
+}
+
+const bossSource = fs.readFileSync(path.join(root, "assets", "bloodline-icons", "boss.png"));
+const bossTarget = fs.readFileSync(path.join(
+  packageRoot,
+  "miniprogram",
+  "assets",
+  "bloodline-icons",
+  "boss.png"
+));
+assert(bossTarget.equals(bossSource), "boss bloodline icon must be synchronized");
+
+for (const stat of ["hp", "atk", "defense", "spa", "spd", "spe"]) {
+  const statIcon = fs.readFileSync(path.join(
+    packageRoot,
+    "miniprogram",
+    "assets",
+    "stat-icons",
+    `${stat}.png`
+  ));
+  assert.strictEqual(
+    statIcon.subarray(0, 8).toString("hex"),
+    "89504e470d0a1a0a",
+    `stat icon must be a PNG: ${stat}`
+  );
+}
+
 childProcess.execFileSync(
   process.execPath,
   [path.join(packageRoot, "scripts", "sync-miniprogram-search-assets.js"), "--check"],

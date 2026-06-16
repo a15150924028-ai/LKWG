@@ -1,6 +1,16 @@
 <view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}">
   <text class="field-label">{{label}}</text>
   <view class="search-control">
+    <image
+      wx:if="{{selectedOption.icon}}"
+      class="option-icon-image"
+      src="{{selectedOption.icon}}"
+      mode="aspectFit"
+    />
+    <text
+      wx:elif="{{selectedOption.iconText}}"
+      class="option-icon-text"
+    >{{selectedOption.iconText}}</text>
     <input
       class="field-input"
       value="{{query}}"
@@ -27,7 +37,22 @@
         class="suggestion-item"
         data-index="{{item.index}}"
         bindtap="onSelect"
-      >{{item.label}}</view>
+      >
+        <image
+          wx:if="{{item.icon}}"
+          class="option-icon-image"
+          src="{{item.icon}}"
+          mode="aspectFit"
+        />
+        <text
+          wx:elif="{{item.iconText}}"
+          class="option-icon-text"
+        >{{item.iconText}}</text>
+        <view class="suggestion-copy">
+          <text class="suggestion-label">{{item.label}}</text>
+          <text wx:if="{{item.detail}}" class="suggestion-detail">{{item.detail}}</text>
+        </view>
+      </view>
     </block>
     <text wx:else class="empty-result">没有匹配项</text>
   </view>

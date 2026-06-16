@@ -10,7 +10,10 @@ function optionsWithBlank(options) {
   return [blankOption, ...options.map((item) => ({
     id: item.id,
     label: item.label || item.name,
-    aliases: [...(item.aliases || [])]
+    aliases: [...(item.aliases || [])],
+    icon: item.icon,
+    iconText: item.iconText,
+    detail: item.detail
   }))];
 }
 

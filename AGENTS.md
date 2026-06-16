@@ -56,6 +56,33 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 10:33 +08:00 - Codex
+
+- Request: Add web-style bloodline, talent, and nature icons to Mini Program selectors, including nature stat up/down labels, and report package impact.
+- Files changed:
+  - `lkwgwechat/scripts/sync-miniprogram-search-assets.js`
+  - `lkwgwechat/miniprogram/assets/type-icons/*.png`
+  - `lkwgwechat/miniprogram/assets/bloodline-icons/boss.png`
+  - `lkwgwechat/miniprogram/assets/stat-icons/*.png`
+  - `lkwgwechat/miniprogram/domain/constants.js`
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/README.md`
+  - `tests/miniprogram-search-assets-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Extended the Mini Program search asset sync script to copy web type icons, copy the boss bloodline icon, and extract six stat PNGs from the web inline data.
+  - Added icon and detail metadata to bloodline, nature, and talent options while preserving existing IDs and persisted values.
+  - Updated the shared searchable picker to render selected-option and suggestion icons, plus nature detail subtitles such as `生命↑ / 速度↓`.
+  - Documented the expanded generated selector assets.
+- Verification: Watched the asset test fail before type icons existed, then pass after synchronization; watched option metadata tests fail before icons/details were added, then pass after implementation; watched component rendering tests fail before icon rendering existed, then pass after implementation. Confirmed `nature-practical` displays `踏实（生命↑/速度↓）`, bloodline/talent options carry icon paths, all three sync checks pass, all 53 Node tests pass, 33 Mini Program JavaScript files and 7 JSON files parse, all 5 WXML files scan cleanly, and `git diff --check` passes. Runtime package size is 1,796,424 bytes (1.713 MiB), leaving 300,728 bytes before 2 MiB.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compilation and real-device preview remain pending external checks.
+
 ### 2026-06-16 10:26 +08:00 - Codex
 
 - Request: Design and plan Mini Program selector icons for bloodline, talent, and nature fields, including nature stat up/down labels.
