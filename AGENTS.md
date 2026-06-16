@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 13:49 +08:00 - Codex
+
+- Request: Fix the Mini Program floating selector leaving a gap above the phone keyboard and staying elevated after the keyboard is dismissed.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/floating-picker/index.js`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxml`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added keyboard-height calibration for the floating picker so Android/WeChat keyboard-height reports that include extra chrome no longer leave a visible gap above the keyboard.
+  - Added input blur handling so dismissing the keyboard immediately resets the panel to the bottom instead of leaving it at the old keyboard height until the suggestion list is touched.
+  - Reset the panel bottom when the floating picker is hidden, preventing stale keyboard height from carrying into the next open.
+- Verification: Watched `node tests/miniprogram-search-picker-static.test.js` fail before blur handling and calibrated `panelBottom` existed, then pass after implementation. Ran all three Mini Program synchronization checks, all 53 Node tests, parsed 34 Mini Program JavaScript files and 8 JSON files, scanned 6 WXML files for unsupported tags and binding method calls, ran `git diff --check`, and measured the runtime package at 1,808,682 bytes (1.725 MiB), leaving 288,470 bytes before 2 MiB. Real-device confirmation is still needed because the bug depends on phone keyboard behavior.
+- Status: Complete for implementation and automated verification; manual phone validation remains pending.
+
 ### 2026-06-16 13:13 +08:00 - Codex
 
 - Request: Replace the Mini Program inline autocomplete with a compact global floating selector fixed above the keyboard, keeping the page body from jumping and keeping the panel small for phone keyboards.

@@ -1,5 +1,13 @@
 const { searchOptions } = require("../../utils/search-options");
 
+const KEYBOARD_HEIGHT_COMPENSATION = 96;
+
+function calibrateKeyboardHeight(height) {
+  const raw = Number(height) || 0;
+  if (raw <= 0) return 0;
+  return Math.max(0, raw - Math.min(KEYBOARD_HEIGHT_COMPENSATION, Math.round(raw * 0.22)));
+}
+
 Component({
   properties: {
     visible: {
@@ -26,13 +34,16 @@ Component({
 
   data: {
     query: "",
-    keyboardHeight: 0,
+    panelBottom: 0,
     suggestions: []
   },
 
   observers: {
     "visible, valueIndex, valueLabel, options": function syncVisible(visible) {
-      if (!visible) return;
+      if (!visible) {
+        this.setData({ panelBottom: 0 });
+        return;
+      }
       const query = Number(this.properties.valueIndex) > 0
         ? this.properties.valueLabel
         : "";
@@ -82,8 +93,13 @@ Component({
 
     onKeyboardHeightChange(event) {
       this.setData({
-        keyboardHeight: Number(event.detail.height) || 0
+        panelBottom: calibrateKeyboardHeight(event.detail.height)
       });
+    },
+
+    onInputBlur() {
+      if (this.suggestionTouching) return;
+      this.setData({ panelBottom: 0 });
     },
 
     onSuggestionTouchStart() {

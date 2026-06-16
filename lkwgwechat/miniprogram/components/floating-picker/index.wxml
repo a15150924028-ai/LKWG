@@ -2,7 +2,7 @@
   <view class="floating-picker-mask" catchtap="onClose"></view>
   <view
     class="floating-picker-panel"
-    style="bottom: {{keyboardHeight}}px;"
+    style="bottom: {{panelBottom}}px;"
     catchtap="onPanelTap"
   >
     <view class="floating-picker-grip"></view>
@@ -21,6 +21,7 @@
         adjust-position="{{false}}"
         hold-keyboard="{{true}}"
         bindinput="onInput"
+        bindblur="onInputBlur"
         bindkeyboardheightchange="onKeyboardHeightChange"
       />
     </view>

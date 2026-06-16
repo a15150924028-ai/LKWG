@@ -187,6 +187,7 @@ assert(floatingWxml.includes("<input"));
 assert(floatingWxml.includes('focus="{{visible}}"'));
 assert(floatingWxml.includes('adjust-position="{{false}}"'));
 assert(floatingWxml.includes('hold-keyboard="{{true}}"'));
+assert(floatingWxml.includes('bindblur="onInputBlur"'));
 assert(floatingWxml.includes('bindkeyboardheightchange="onKeyboardHeightChange"'));
 assert(floatingWxml.includes("<scroll-view"));
 assert(floatingWxml.includes('scroll-y="{{true}}"'));
@@ -196,7 +197,8 @@ assert(floatingWxml.includes('bindtouchcancel="onSuggestionTouchEnd"'));
 assert(floatingWxml.includes('wx:for="{{suggestions}}"'));
 assert(floatingWxml.includes('bindtap="onSelect"'));
 assert(floatingWxml.includes('catchtap="onClose"'));
-assert(floatingWxml.includes("keyboardHeight"));
+assert(floatingWxml.includes("panelBottom"));
+assert(!floatingWxml.includes("bottom: {{keyboardHeight}}px"));
 assert(floatingWxml.includes("option-icon-image"));
 assert(floatingWxml.includes("option-icon-text"));
 assert(floatingWxml.includes("iconClass"));
@@ -204,6 +206,7 @@ for (const method of [
   "onInput",
   "onSelect",
   "onClose",
+  "onInputBlur",
   "onKeyboardHeightChange",
   "onSuggestionTouchStart",
   "onSuggestionTouchEnd",
@@ -215,6 +218,9 @@ assert(floatingJs.includes('require("../../utils/search-options")'));
 assert(floatingJs.includes('this.triggerEvent("select"'));
 assert(floatingJs.includes('this.triggerEvent("close"'));
 assert(!floatingJs.includes("commitFreeText"));
+assert(floatingJs.includes("KEYBOARD_HEIGHT_COMPENSATION"));
+assert(floatingJs.includes("calibrateKeyboardHeight("));
+assert(floatingJs.includes("panelBottom: 0"));
 assert(floatingWxss.includes("position: fixed"));
 assert(floatingWxss.includes("z-index"));
 assert(floatingWxss.includes("max-height: 360rpx"));
