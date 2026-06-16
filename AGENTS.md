@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:21 +08:00 - Codex
+
+- Request: Correct the `听桥` description so its response power is described as the enemy's final damage, matching the web calculation behavior.
+- Files changed:
+  - `data/local-bundle.json`
+  - `index.html`
+  - `lkwgwechat/miniprogram/data/local-bundle.js`
+  - `lkwgwechat/miniprogram/domain/generated/damage-rules.js`
+  - `tests/pvp-skill-data-cleanup-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Updated `听桥`'s local bundle description from "威力与被应对技能相等" to "威力与敌方最终伤害相等".
+  - Updated the web PVP parser so the corrected final-damage wording still maps to `respondedFinalSingleDamage`, while preserving compatibility with the old wording.
+  - Regenerated the Mini Program local bundle and generated PVP damage rules from the authoritative sources.
+  - Added regression coverage for the corrected `听桥` description and final-damage parsing.
+- Verification: Watched `node tests/pvp-skill-data-cleanup-static.test.js` and `node tests/pvp-special-power-rules-static.test.js` fail before the fix, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON plus `data/local-bundle.json`; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 21:14 +08:00 - Codex
 
 - Request: Let Mini Program pet skill configuration choose from all skills instead of only the currently selected monster's native skill pool.

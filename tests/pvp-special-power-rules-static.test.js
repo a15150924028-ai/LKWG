@@ -141,7 +141,7 @@ const listeningBridge = {
   type: "fighting",
   category: "defense",
   power: 0,
-  description: "\u51cf\u4f2460%\uff0c\u5e94\u5bf9\u653b\u51fb\uff1a\u5bf9\u654c\u65b9\u9020\u6210\u6b66\u7cfb\u7269\u7406\u4f24\u5bb3\uff0c\u5a01\u529b\u4e0e\u88ab\u5e94\u5bf9\u6280\u80fd\u76f8\u7b49\u3002"
+  description: "\u51cf\u4f2460%\uff0c\u5e94\u5bf9\u653b\u51fb\uff1a\u5bf9\u654c\u65b9\u9020\u6210\u6b66\u7cfb\u7269\u7406\u4f24\u5bb3\uff0c\u5a01\u529b\u4e0e\u654c\u65b9\u6700\u7ec8\u4f24\u5bb3\u76f8\u7b49\u3002"
 };
 const bridgeDamage = damageRules.resolvePvpVariableDamage(listeningBridge, { respondedSkillPower: 125 });
 assert(bridgeDamage.responsePower === 125, "听桥 should use the responded skill power for response damage.");
@@ -153,6 +153,10 @@ const bridgeFinalDamage = damageRules.resolvePvpVariableDamage(listeningBridge, 
 assert(
   bridgeFinalDamage.responsePower === 321,
   "听桥 should use the responded final single-hit damage as response power when available."
+);
+assert(
+  /应对攻击.*威力.*最终伤害/.test(html),
+  "听桥 parsing should be keyed to final damage wording instead of stale responded-skill wording."
 );
 
 const counterPunch = {

@@ -3556,7 +3556,7 @@
     if (responseAttackFixedPowerMatch) {
       responsePower = Math.max(1, Number(responseAttackFixedPowerMatch[1]));
     }
-    if (/应对攻击.*威力与被应对技能相等/.test(text)) {
+    if (/应对攻击.*威力(?:与被应对技能相等|与敌方最终伤害相等)/.test(text)) {
       const respondedFinalSingleDamage = Math.max(0, numberValue(context.respondedFinalSingleDamage, 0));
       const respondedSkillPower = Math.max(0, numberValue(context.respondedSkillPower, 0));
       if (respondedFinalSingleDamage > 0) {
