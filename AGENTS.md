@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:55 +08:00 - Codex
+
+- Request: Remove the PVP compact manual `生命` control first, then fix Mini Program `听桥` so its response power uses the enemy action's final damage instead of the enemy skill's base power.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `adjustableStatKeys` so the compact manual controls omit HP/`生命` while keeping HP available in stat display and damage formulas.
+  - Added Mini Program page-level response-damage plumbing that calculates the opponent action's final single-hit damage and passes it as `respondedFinalSingleDamage`, matching the web path for `听桥`.
+  - Added regression coverage proving `听桥` response power equals the opponent action's final single-hit damage instead of falling back to base skill power.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the HP-control removal and again before the `听桥` final-damage plumbing, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript/JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,831,381` bytes.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 21:45 +08:00 - Codex
 
 - Request: Remove the four-character `特性层数` prefix from the Mini Program PVP compact trait-layer control while keeping the controls in three columns.

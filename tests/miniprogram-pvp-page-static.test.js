@@ -165,6 +165,14 @@ assert(pageWxss.includes("align-items: center"), "Enemy preset buttons should ce
 assert(pageWxss.includes("min-height: 58rpx"), "Enemy preset buttons should keep stable button height.");
 assert(pageJs.includes("未应对成功"));
 assert(pageJs.includes("应对成功"));
+assert(
+  pageJs.includes("const adjustableStatKeys = Object.keys(statLabels).filter((key) => key !== \"hp\");"),
+  "PVP compact manual controls must omit HP/生命 while keeping the HP stat available for display and damage formulas."
+);
+assert(
+  pageJs.includes("...adjustableStatKeys.map((key) => ({"),
+  "PVP compact manual controls should be built from adjustableStatKeys, not every stat label."
+);
 
 for (const handler of [
   "onMonsterChange",
@@ -260,6 +268,35 @@ assert.strictEqual(
   pageInstance.data.sides[0].result.damage,
   370,
   "Mini Program PVP should match web damage for 开朗生命/物攻/速度 音速犬 灼伤 mirror matchup."
+);
+
+const waterCannon = catalog.bundle.skills.find((skill) => skill.name === "水炮");
+const listeningBridge = catalog.bundle.skills.find((skill) => skill.name === "听桥");
+assert(waterCannon && listeningBridge, "水炮 and 听桥 fixtures must exist");
+pageInstance.applyState({
+  ...pvpState.defaultPvpState(),
+  ally: {
+    ...dogSide("ally"),
+    skillIds: [listeningBridge.id, "", "", ""],
+    action: listeningBridge.id
+  },
+  enemy: {
+    ...dogSide("enemy"),
+    skillIds: [waterCannon.id, "", "", ""],
+    action: waterCannon.id
+  }
+}, false);
+const bridgeResult = pageInstance.data.sides[0].result;
+const cannonResult = pageInstance.data.sides[1].result;
+assert(cannonResult.singleDamage > 0, "水炮 should produce a final single-hit damage value.");
+assert.strictEqual(
+  bridgeResult.power,
+  cannonResult.singleDamage,
+  "Mini Program 听桥 response power should equal the enemy action's final single-hit damage, not the enemy skill's base power."
+);
+assert(
+  bridgeResult.resultMeta.includes(`威力${cannonResult.singleDamage}`),
+  "Mini Program 听桥 result meta should display the enemy final damage as its effective power."
 );
 
 console.log("miniprogram PVP page static checks passed");

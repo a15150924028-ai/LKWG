@@ -99,6 +99,7 @@ const statLabels = {
   spd: "魔防",
   spe: "速度"
 };
+const adjustableStatKeys = Object.keys(statLabels).filter((key) => key !== "hp");
 const typeLabels = new Map(TYPES.map((item) => [item.id, item.name]));
 
 function selection(options, id) {
@@ -248,7 +249,7 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
   const build = result?.build;
   const traitName = monster ? pvpEffects.trait.traitName(monster) : "";
   const controls = [
-    ...Object.keys(statLabels).map((key) => ({
+    ...adjustableStatKeys.map((key) => ({
       key: `stat:${key}`,
       label: statLabels[key],
       value: `${Math.round((Number(state.manualStatMods[key]) || 0) * 100)}%`
@@ -326,7 +327,15 @@ function multiplierText(value) {
   return `${rounded}x`;
 }
 
-function calculateDamageFor(side, state, views) {
+function respondedFinalSingleDamageFor(side, state, views, actsBeforeDefender) {
+  const result = calculateDamageFor(side, state, views, {
+    actsBeforeDefender,
+    skipRespondedFinalSingleDamage: true
+  });
+  return Math.max(0, Number(result?.singleDamage) || 0);
+}
+
+function calculateDamageFor(side, state, views, options = {}) {
   const attackerState = state[side];
   const defenderSide = side === "ally" ? "enemy" : "ally";
   const defenderState = state[defenderSide];
@@ -367,12 +376,18 @@ function calculateDamageFor(side, state, views) {
     enemySpeed: side === "enemy" ? attackerStats.spe : defenderStats.spe,
     random: () => 0.25
   });
-  const actsBeforeDefender = order.first === side;
+  const actsBeforeDefender = typeof options.actsBeforeDefender === "boolean"
+    ? options.actsBeforeDefender
+    : order.first === side;
+  const respondedFinalSingleDamage = options.skipRespondedFinalSingleDamage
+    ? 0
+    : respondedFinalSingleDamageFor(defenderSide, state, views, !actsBeforeDefender);
   const variable = damageRules.resolvePvpVariableDamage(action, {
     attackerStats,
     defenderStats,
     actsBeforeDefender,
     respondedSkillPower: Number(defenderAction?.power) || 0,
+    respondedFinalSingleDamage,
     currentEnergy: attackerState.energy,
     attackerEnergy: attackerState.energy,
     defenderEnergy: defenderState.energy,
