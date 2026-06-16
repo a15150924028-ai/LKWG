@@ -147,24 +147,24 @@
             />
             </view>
           </block>
+          <button
+            class="force-action-button force-action-row {{side.forceImpact.active ? 'active' : ''}}"
+            disabled="{{side.forceImpact.locked}}"
+            data-side="{{side.side}}"
+            data-action-skill-id="force"
+            bindtap="onSkillActionTap"
+          >
+            <image
+              wx:if="{{side.forceImpact.icon}}"
+              class="force-action-icon {{side.forceImpact.iconClass}}"
+              src="{{side.forceImpact.icon}}"
+              mode="aspectFit"
+            />
+            <view class="force-action-text">
+              <text>{{side.forceImpact.label}}</text>
+            </view>
+          </button>
         </view>
-        <button
-          class="force-action-button {{side.forceImpact.active ? 'active' : ''}}"
-          disabled="{{side.forceImpact.locked}}"
-          data-side="{{side.side}}"
-          data-action-skill-id="force"
-          bindtap="onSkillActionTap"
-        >
-          <image
-            wx:if="{{side.forceImpact.icon}}"
-            class="force-action-icon {{side.forceImpact.iconClass}}"
-            src="{{side.forceImpact.icon}}"
-            mode="aspectFit"
-          />
-          <view class="force-action-text">
-            <text>{{side.forceImpact.label}}</text>
-          </view>
-        </button>
       </view>
 
       <view class="damage-card">

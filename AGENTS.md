@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 19:15 +08:00 - Codex
+
+- Request: Clarify that the Mini Program Force Impact "one-line" requirement means the same full-width row treatment as the web layout screenshot, rather than a narrow left-aligned button.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Moved the PVP Force Impact action into the same skill grid structure as a dedicated full-width row item.
+  - Added a `force-action-row` layout hook so the action spans both columns and centers its content like the web version while remaining single-line.
+  - Updated static regression coverage so the Force Impact action must remain a full-width grid row with centered content.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before `force-action-row` existed, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed all Mini Program JavaScript and JSON files; ran `git diff --check`; confirmed the upload-readiness package check at `1,826,909` bytes, still under 2 MiB.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools and real-device visual confirmation remain manual/external checks.
+
 ### 2026-06-16 19:09 +08:00 - Codex
 
 - Request: Finish the next PVP Mini Program polish items by highlighting the default-build note in red, making Force Impact occupy a full-width single line, moving energy into the compact control grid to fill the empty slot beside hit count, and showing separate two-line Force Impact damage results for response-fail versus response-success outcomes.
