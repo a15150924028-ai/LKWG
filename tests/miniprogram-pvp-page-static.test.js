@@ -147,6 +147,18 @@ assert(pageWxss.includes("linear-gradient(135deg, #607089, #4DA3FF)"), "PVP sele
 assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "PVP damage card should use the blue/teal result gradient.");
 assert(pageWxss.includes("font-size: 64rpx"), "PVP damage result should use a large numeric display.");
 assert(pageWxss.includes("position: sticky"), "PVP sticky calculate action should stay above the tab bar.");
+assert(
+  /\.weather-button\s*{[^}]*box-sizing:\s*border-box;[^}]*width:\s*100%;[^}]*overflow:\s*hidden;/s.test(pageWxss),
+  "PVP weather buttons must be independent segmented cells that cannot overlap adjacent cells."
+);
+assert(
+  /\.weather-button\.active\s*{[^}]*box-shadow:\s*inset 0 0 0 1rpx rgba\(255, 255, 255, 0\.35\)/s.test(pageWxss),
+  "PVP selected weather buttons should use an internal highlight instead of an overlapping outer glow."
+);
+assert(
+  !/\.weather-button\.active\s*{[^}]*box-shadow:\s*0 /s.test(pageWxss),
+  "PVP selected weather buttons must not use external glow shadows that bleed into neighboring buttons."
+);
 assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
 assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
 for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {

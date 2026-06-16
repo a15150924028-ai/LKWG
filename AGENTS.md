@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 01:01 +08:00 - Codex
+
+- Request: Fix the Mini Program UI overlap shown in the supplied screenshots by making overlapping visual language independent.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Made team overview slots independent grid boxes with `border-box`, fixed full-cell width, clipped overflow, larger gaps, and an internal active ring instead of an outer glow that could bleed into neighboring slots.
+  - Made PVP weather segmented buttons independent full-width cells with clipped overflow, larger gaps, and internal selected highlights instead of external glow.
+  - Changed shared field-picker selection emphasis from an outer blue glow to an internal ring so two-column and three-column picker layouts do not create overlap-like edges.
+  - Added static regression coverage for independent team slots, independent weather buttons, and non-overlapping field-picker focus styling.
+- Verification: Watched the focused team-page, PVP-page, and search-picker tests fail before implementation on the new non-overlap assertions, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings. Manual WeChat Developer Tools simulator and real-device visual checks remain external.
+- Status: Complete for local implementation and automated verification; pending commit/push to `main`.
+
 ### 2026-06-17 00:28 +08:00 - Codex
 
 - Request: Use `style.md` and Product Design guidance to update the WeChat Mini Program UI toward a light Liquid Glass tactical-panel style.

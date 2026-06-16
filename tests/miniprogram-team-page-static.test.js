@@ -85,6 +85,14 @@ assert(pageWxss.includes("linear-gradient(90deg, #46D8CF, #6C63FF)"), "team prog
 assert(pageWxss.includes("border-radius: 999rpx"), "team action buttons and chips should be pill shaped");
 assert(pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"), "team passive/detail panels should use soft Liquid Glass highlight");
 assert(
+  /\.team-slot\s*{[^}]*box-sizing:\s*border-box;[^}]*width:\s*100%;[^}]*overflow:\s*hidden;/s.test(pageWxss),
+  "team overview slots must be independent grid boxes that cannot overflow into adjacent slots"
+);
+assert(
+  /\.team-slot\.active\s*{[^}]*box-shadow:\s*inset 0 0 0 2rpx rgba\(77, 163, 255, 0\.45\)/s.test(pageWxss),
+  "active team slots should use an internal selection ring instead of an overlapping outer glow"
+);
+assert(
   pageWxml.includes('src="/assets/roller-skill.png"'),
   "roller action must show the synchronized web icon"
 );

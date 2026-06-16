@@ -202,7 +202,10 @@ assert(pickerWxss.includes(".edit-trigger"));
 assert(pickerWxss.includes("min-height: 40rpx"));
 assert(pickerWxss.includes("rgba(255, 255, 255, 0.68)"), "field picker controls should use translucent glass input backgrounds");
 assert(pickerWxss.includes("border-radius: 28rpx"), "field picker controls should use rounded Liquid Glass input corners");
-assert(pickerWxss.includes("box-shadow: 0 0 0 6rpx rgba(77, 163, 255, 0.12)"), "field picker selected/focused affordance should use a soft blue glow");
+assert(
+  pickerWxss.includes("box-shadow: inset 0 0 0 2rpx rgba(77, 163, 255, 0.16)"),
+  "field picker selected/focused affordance should stay inside the control instead of overlapping neighboring fields"
+);
 assert(pickerWxss.includes(".stat-atk-icon"));
 assert(pickerWxss.includes("transform: translate"));
 

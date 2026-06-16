@@ -19,12 +19,15 @@
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8rpx;
+  gap: 14rpx;
   margin-top: 0;
 }
 
 .weather-button,
 .clear-side {
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
   margin: 0;
   padding: 0 10rpx;
   border-radius: 999rpx;
@@ -34,9 +37,12 @@
 }
 
 .weather-button {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  overflow: hidden;
   gap: 8rpx;
   min-height: 58rpx;
 }
@@ -62,12 +68,13 @@
 
 .preset-button.active {
   background: linear-gradient(135deg, #7C6DFF 0%, #4DA3FF 100%);
-  box-shadow: 0 8rpx 20rpx rgba(108, 99, 255, 0.28);
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.35);
   color: #ffffff;
 }
 
 .weather-button.active {
   color: #ffffff;
+  box-shadow: inset 0 0 0 1rpx rgba(255, 255, 255, 0.35);
 }
 
 .weather-button.weather-none.active {
