@@ -133,7 +133,9 @@ assert(pageWxss.includes("color: #d92d20"), "Default build note should be highli
 assert(pageWxss.includes(".preset-button"), "Enemy preset buttons must keep dedicated styling.");
 assert(pageWxss.includes("border-radius: 999rpx"), "Enemy preset buttons should use full pill corners instead of small rounded corners.");
 assert(pageWxss.includes("width: 100%"), "Enemy preset buttons should stretch to fill their grid cells.");
-assert(pageWxss.includes("justify-content: center"), "Enemy preset button labels should stay centered.");
+assert(pageWxss.includes("height: 58rpx"), "Enemy preset buttons should keep a fixed height for stable centering.");
+assert(pageWxss.includes("line-height: 58rpx"), "Enemy preset button labels should be vertically centered with explicit line-height.");
+assert(pageWxss.includes("text-align: center"), "Enemy preset button labels should stay horizontally centered.");
 assert(pageWxss.includes("min-height: 58rpx"), "Enemy preset buttons should keep stable button height.");
 assert(pageJs.includes("未应对成功"));
 assert(pageJs.includes("应对成功"));

@@ -63,7 +63,8 @@ function learnerSummaryForSkill(skillId, catalog) {
       learnerCount: 0,
       learnerPreview: "先选择目标技能",
       learnerFullText: "先选择目标技能",
-      learnerHasMore: false
+      learnerHasMore: false,
+      learnerExpandable: false
     };
   }
   const learnerNames = catalog.bundle.monsters
@@ -81,7 +82,10 @@ function learnerSummaryForSkill(skillId, catalog) {
       ? learnerNames.slice(0, 12).join("、")
       : "暂无可学习精灵",
     learnerFullText,
-    learnerHasMore: learnerNames.length > 12
+    learnerHasMore: learnerNames.length > 12,
+    learnerExpandable: learnerNames.length > 0 && (
+      learnerNames.length > 12 || learnerFullText.length > 24
+    )
   };
 }
 

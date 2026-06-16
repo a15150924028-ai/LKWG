@@ -145,7 +145,7 @@ Page({
   onToggleLearners(event) {
     const slot = Number(event.currentTarget.dataset.slot);
     const currentSlot = (this.data.rollerSlots || [])[slot];
-    if (!currentSlot?.learnerHasMore) return;
+    if (!currentSlot?.learnerExpandable) return;
     const expandedLearnerSlots = {
       ...(this.data.expandedLearnerSlots || {}),
       [slot]: !(this.data.expandedLearnerSlots || {})[slot]

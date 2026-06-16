@@ -39,7 +39,7 @@
           bind:open="onPickerOpen"
         />
         <view
-          class="roller-learner-card {{slot.learnerHasMore ? 'expandable' : ''}}"
+          class="roller-learner-card {{slot.learnerExpandable ? 'expandable' : ''}}"
           data-slot="{{slot.slot}}"
           bindtap="onToggleLearners"
         >

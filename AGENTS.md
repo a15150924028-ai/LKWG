@@ -2771,3 +2771,22 @@ Use this entry format:
   - Added static regression coverage for full-width preset buttons, centered labels, stable height, and full pill corners.
 - Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the pill-button style existed, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,828,972` bytes.
 - Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.
+
+### 2026-06-16 20:01 +08:00 - Codex
+
+- Request: Fix the Mini Program preset buttons so their labels are truly centered, and make analysis-page `谁能学` expand even when learner count is 12 or fewer but the learner text is still visually truncated.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/analysis.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added `learnerExpandable` to roller-target analysis so learner expansion depends on likely visual truncation, not only on learner count exceeding 12.
+  - Switched the analysis-page learner-card expansion gate from `learnerHasMore` to `learnerExpandable`, which fixes cases like 11 long learner names still being clamped to two lines with no expansion path.
+  - Changed enemy preset buttons from the flex-centered style to fixed `height + line-height + text-align` centering, which is more reliable in WeChat's button renderer and keeps `最肉 / 最速 / 最高攻击` visually centered.
+  - Added regression coverage for visually long learner text with 12-or-fewer learners and for explicit preset-button centering geometry.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before `learnerExpandable` existed, then pass after implementation. Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the explicit preset-button centering styles existed, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,121` bytes.
+- Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.

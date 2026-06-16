@@ -131,6 +131,23 @@ assert(
   "roller target analysis must expose when learner preview is truncated"
 );
 
+const visuallyLongSkillId = [...learnerCounts.entries()].find(([skillId, count]) => {
+  if (count < 2 || count > 12) return false;
+  const learnerNames = catalog.bundle.monsters
+    .filter((bundleMonster) => bundleMonster.skillIds.includes(skillId))
+    .map((bundleMonster) => bundleMonster.name);
+  return learnerNames.join("、").length > 24;
+})?.[0];
+assert(visuallyLongSkillId, "analysis fixture requires a skill whose learner text is visually long even with 12 or fewer learners");
+const visuallyLongSkillResult = analysis.analyzeTeam([{
+  ...teamRules.emptyPet(0),
+  rollerSkillId: visuallyLongSkillId
+}], catalog);
+assert(
+  visuallyLongSkillResult.rollerSlots[0].learnerExpandable,
+  "roller target analysis must allow expansion for visually long learner text even when learner count is 12 or fewer"
+);
+
 const pageJs = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"),
   "utf8"
@@ -165,13 +182,14 @@ assert(pageJs.includes("onPickerOpen("));
 assert(pageJs.includes("onFloatingPickerSelect("));
 assert(pageJs.includes("expandedLearnerSlots"));
 assert(pageJs.includes("onToggleLearners("));
+assert(pageJs.includes("learnerExpandable"));
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
 assert(pageWxml.includes("learnerPreview"));
 assert(pageWxml.includes("learnerCount"));
 assert(pageWxml.includes("learnerFullText"));
-assert(pageWxml.includes("learnerHasMore"));
+assert(pageWxml.includes("learnerExpandable"));
 assert(pageWxml.includes('class="roller-learner-card'));
 assert(pageWxml.includes('bindtap="onToggleLearners"'));
 assert(!pageWxml.includes("roller-learner-toggle"));
