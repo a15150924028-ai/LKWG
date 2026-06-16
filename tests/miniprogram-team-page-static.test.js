@@ -12,6 +12,10 @@ const pageWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "team", "index.wxml"),
   "utf8"
 );
+const pageWxss = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "pages", "team", "index.wxss"),
+  "utf8"
+);
 const pageJson = JSON.parse(fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "team", "index.json"),
   "utf8"
@@ -25,6 +29,7 @@ assert.strictEqual(
   "/components/floating-picker/index"
 );
 assert(pageJs.includes("activeTeamIndex: 0"));
+assert(pageJs.includes("progressPercent: 0"));
 assert(pageJs.includes("selectTeamSlot("));
 assert(pageWxml.includes('wx:for="{{teamOverview}}"'));
 assert(pageWxml.includes('data-team-slot="{{slot.slot}}"'));
@@ -72,6 +77,13 @@ for (const binding of [
 
 assert(pageWxml.includes("配置完成"));
 assert(pageWxml.includes("撤回过山车"));
+assert(pageWxml.includes("team-progress-track"), "team page should render a Liquid Glass progress track");
+assert(pageWxml.includes("team-progress-fill"), "team page should render a gradient progress fill");
+assert(pageWxml.includes("progressPercent"), "team progress fill should be driven by view data");
+assert(pageWxss.includes("rgba(255, 255, 255, 0.62)"), "team toolbar/cards should use translucent glass cards");
+assert(pageWxss.includes("linear-gradient(90deg, #46D8CF, #6C63FF)"), "team progress fill should use teal to purple gradient");
+assert(pageWxss.includes("border-radius: 999rpx"), "team action buttons and chips should be pill shaped");
+assert(pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"), "team passive/detail panels should use soft Liquid Glass highlight");
 assert(
   pageWxml.includes('src="/assets/roller-skill.png"'),
   "roller action must show the synchronized web icon"
@@ -100,6 +112,7 @@ assert(
   "team cards must render selected skill descriptions"
 );
 assert(pageJs.includes("storage.saveTeam"));
+assert(pageJs.includes("progressPercent: Math.round((configuredCount / 6) * 100)"));
 assert(pageJs.includes("wx.showModal"));
 assert(!pageWxml.includes("rollerSelection"));
 assert(!pageWxml.includes('data-picker-handler="onRollerSkillChange"'));

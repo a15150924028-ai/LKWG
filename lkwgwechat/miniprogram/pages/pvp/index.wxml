@@ -95,7 +95,15 @@
       <text class="default-note">{{side.defaultNote}}</text>
       <stat-grid rows="{{side.statRows}}" />
 
-      <view class="compact-control-grid">
+      <view class="advanced-toggle" data-side="{{side.side}}" bindtap="onToggleAdvanced">
+        <view>
+          <text class="advanced-toggle-title">高级修正</text>
+          <text class="advanced-toggle-subtitle">当前有 {{side.advancedModifierCount}} 项修正</text>
+        </view>
+        <text class="advanced-toggle-icon">{{side.advancedOpen ? '收起' : '展开'}}</text>
+      </view>
+
+      <view wx:if="{{side.advancedOpen}}" class="compact-control-grid">
         <view wx:if="{{side.showTraitLayers}}" class="counter-block">
           <text class="counter-label">{{side.traitName}}</text>
           <view class="stepper">
@@ -170,6 +178,9 @@
         </block>
         <block wx:else>
           <view class="damage-line-card">
+            <text class="damage-card-title">伤害结果</text>
+            <text class="damage-main-number">{{side.result.damage}}</text>
+            <text class="damage-subtitle">扣除目标 {{side.result.hpPercent}}% 生命</text>
             <text class="damage-line-title">{{side.result.resultTitle}}</text>
             <view wx:if="{{side.result.responseVariants.length}}" class="damage-response-variants">
               <block wx:for="{{side.result.responseVariants}}" wx:key="label" wx:for-item="variant">
@@ -183,6 +194,7 @@
       </view>
     </view>
   </block>
+  <button class="sticky-calculate-button" bindtap="scrollToResults">立即计算伤害</button>
   <floating-picker
     visible="{{floatingPicker.visible}}"
     label="{{floatingPicker.label}}"

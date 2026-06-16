@@ -200,6 +200,8 @@ assert(
   "Learner preview text should sit directly below the title without an extra top gap."
 );
 assert(pageWxml.includes("过山车目标"));
+assert(pageWxml.includes("阵容总结"));
+assert(pageWxml.includes("team-score-grid"), "analysis page should include a tactical summary score grid");
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));
 assert(pageJs.includes("learnerPreview"));
@@ -215,10 +217,17 @@ assert(!pageWxml.includes("收起"));
 assert(!pageWxml.includes('disabled="{{!slot.hasMonster}}"'));
 assert(pageWxml.includes("<floating-picker"));
 assert(pageWxml.includes("当前克制面"));
+assert(pageWxml.includes("高风险属性"));
+assert(pageWxml.includes("优势属性"));
+assert(pageWxml.includes("缺口属性"));
 assert(pageWxml.includes("主要弱点"));
 assert(pageWxml.includes("type-chip-list"));
 assert(pageWxml.includes("type-chip-icon"));
 assert(pageWxml.includes("{{type.icon}}"));
+assert(pageWxss.includes("rgba(255, 255, 255, 0.62)"), "analysis cards should use translucent glass cards");
+assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "analysis summary cards should use soft gradient glass fills");
+assert(pageWxss.includes("border-radius: 999rpx"), "analysis type chips and state badges should be pill shaped");
+assert(pageWxss.includes("box-shadow:"), "analysis page should use soft Liquid Glass shadows");
 assert(pageWxml.includes("暂无队伍配置"));
 assert(pageWxml.includes('wx:if="{{result.configuredCount > 0}}"'));
 assert(

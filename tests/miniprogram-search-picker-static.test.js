@@ -200,6 +200,9 @@ assert(pickerWxss.includes(".field-frame"));
 assert(pickerWxss.includes(".field-content-row"));
 assert(pickerWxss.includes(".edit-trigger"));
 assert(pickerWxss.includes("min-height: 40rpx"));
+assert(pickerWxss.includes("rgba(255, 255, 255, 0.68)"), "field picker controls should use translucent glass input backgrounds");
+assert(pickerWxss.includes("border-radius: 28rpx"), "field picker controls should use rounded Liquid Glass input corners");
+assert(pickerWxss.includes("box-shadow: 0 0 0 6rpx rgba(77, 163, 255, 0.12)"), "field picker selected/focused affordance should use a soft blue glow");
 assert(pickerWxss.includes(".stat-atk-icon"));
 assert(pickerWxss.includes("transform: translate"));
 
@@ -245,6 +248,9 @@ assert(floatingWxss.includes("position: fixed"));
 assert(floatingWxss.includes("z-index"));
 assert(floatingWxss.includes("max-height: 360rpx"));
 assert(floatingWxss.includes("floating-picker-panel"));
+assert(floatingWxss.includes("border-radius: 56rpx 56rpx 0 0"), "floating picker should look like a rounded bottom glass drawer");
+assert(floatingWxss.includes("rgba(255, 255, 255, 0.86)"), "floating picker drawer should use strong glass white");
+assert(floatingWxss.includes("backdrop-filter: blur(22rpx)"), "floating picker drawer should use blur");
 
 const skillWithIcon = catalog.skillOptions.find(
   (option) => option.icon && option.icon.startsWith("/assets/type-icons/")

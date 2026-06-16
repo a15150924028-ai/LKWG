@@ -133,6 +133,7 @@ function teamView(team) {
 Page({
   data: {
     configuredCount: 0,
+    progressPercent: 0,
     team: [],
     teamOverview: [],
     activeTeamIndex: 0,
@@ -162,6 +163,7 @@ Page({
       0,
       Math.min(view.length - 1, Number(this.data.activeTeamIndex) || 0)
     );
+    const configuredCount = normalized.filter(teamRules.isPetComplete).length;
     this.setData({
       team: view,
       teamOverview: view.map((pet) => ({
@@ -172,7 +174,8 @@ Page({
       })),
       activeTeamIndex,
       activePet: view[activeTeamIndex] || null,
-      configuredCount: normalized.filter(teamRules.isPetComplete).length,
+      configuredCount,
+      progressPercent: Math.round((configuredCount / 6) * 100),
       canUndo: Boolean(this.undoTeam)
     });
   },

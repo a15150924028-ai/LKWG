@@ -14,13 +14,14 @@
   box-sizing: border-box;
   min-width: 0;
   padding: 10rpx 14rpx;
-  border: 1rpx solid #dfe6ef;
-  border-radius: 16rpx;
-  background: #ffffff;
+  border: 1rpx solid rgba(190, 205, 225, 0.55);
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 0 0 6rpx rgba(77, 163, 255, 0.12), inset 0 1rpx 0 rgba(255, 255, 255, 0.85);
 }
 
 .field-picker.disabled .field-frame {
-  background: #f2f4f7;
+  background: rgba(138, 150, 168, 0.12);
   opacity: 0.66;
 }
 
@@ -30,8 +31,9 @@
   left: 16rpx;
   z-index: 1;
   padding: 0 8rpx;
-  background: #ffffff;
-  color: #667085;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.86);
+  color: #5F6B7A;
   font-size: 21rpx;
   line-height: 1.2;
 }
@@ -57,8 +59,8 @@
   display: block;
   box-sizing: border-box;
   padding: 3rpx;
-  border: 1rpx solid #e4e7ec;
-  background: #f8fafc;
+  border: 1rpx solid rgba(190, 205, 225, 0.55);
+  background: rgba(255, 255, 255, 0.58);
   object-fit: contain;
   object-position: center;
   align-self: center;
@@ -87,9 +89,9 @@
 }
 
 .option-icon-text {
-  border: 1rpx solid #e4e7ec;
-  background: #f8fafc;
-  color: #475467;
+  border: 1rpx solid rgba(190, 205, 225, 0.55);
+  background: rgba(255, 255, 255, 0.58);
+  color: #5F6B7A;
   font-size: 20rpx;
   font-weight: 700;
   line-height: 32rpx;
@@ -100,7 +102,7 @@
   flex: 1;
   min-width: 0;
   height: 40rpx;
-  color: #172033;
+  color: #1F2633;
   font-size: 25rpx;
   font-weight: 560;
   line-height: 40rpx;
@@ -110,7 +112,7 @@
 }
 
 .field-value.placeholder {
-  color: #98a2b3;
+  color: #8A96A8;
   font-weight: 400;
 }
 
@@ -120,7 +122,7 @@
   flex: none;
   width: 36rpx;
   margin-left: 6rpx;
-  color: #98a2b3;
+  color: #8A96A8;
   font-size: 25rpx;
   line-height: 36rpx;
   text-align: center;

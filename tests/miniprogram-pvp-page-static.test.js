@@ -90,6 +90,9 @@ assert(
 assert(pageJs.includes("forceImpactSkill("));
 assert(pageJs.includes("forceImpactOption("));
 assert(pageJs.includes("onSkillActionTap("));
+assert(pageJs.includes("advancedExpanded: { ally: false, enemy: false }"));
+assert(pageJs.includes("onToggleAdvanced("));
+assert(pageJs.includes("advancedModifierCount("));
 assert(pageJs.includes("showTraitLayers"));
 assert(pageJs.includes("resultTitle"));
 assert(pageJs.includes("resultMeta"));
@@ -121,8 +124,16 @@ assert(pageWxml.includes("weatherItem.icon"));
 assert(pageWxml.includes("{{weatherItem.weatherClass}}"));
 assert(pageWxml.includes("side.forceImpact.label"));
 assert(pageWxml.includes("side.result.resultTitle"));
+assert(pageWxml.includes("side.result.damage"));
+assert(pageWxml.includes("side.result.hpPercent"));
 assert(pageWxml.includes("side.result.resultMeta"));
 assert(pageWxml.includes("side.result.responseVariants"));
+assert(pageWxml.includes("advanced-toggle"));
+assert(pageWxml.includes("side.advancedOpen"));
+assert(pageWxml.includes("side.advancedModifierCount"));
+assert(pageWxml.includes("wx:if=\"{{side.advancedOpen}}\""), "PVP advanced modifiers must be collapsed by default and expand on demand.");
+assert(pageWxml.includes("damage-main-number"), "PVP result should promote the final damage as a large number.");
+assert(pageWxml.includes("sticky-calculate-button"), "PVP page should include a bottom sticky calculate/result action.");
 assert(pageWxml.includes("清空{{side.title}}"), "PVP clear button should say 清空我方 or 清空敌方 according to the side card.");
 assert(!pageWxml.includes("清空本方"), "Enemy PVP side must not show the ally-only 清空本方 label.");
 assert(pageWxml.includes("compact-control-grid"), "PVP manual controls should share one compact three-column grid.");
@@ -131,6 +142,11 @@ assert(pageWxml.includes('<text class="counter-label">{{side.traitName}}</text>'
 assert(!pageWxml.includes("特性层数 ·"), "Trait layer control must not spend compact-grid width on the four-character prefix.");
 assert(pageWxss.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"), "PVP manual controls should fit three items per row.");
 assert(pageWxss.includes("text-overflow: ellipsis"), "Compact PVP control labels must truncate instead of pushing into steppers.");
+assert(pageWxss.includes("rgba(255, 255, 255, 0.62)"), "PVP cards should use translucent glass cards.");
+assert(pageWxss.includes("linear-gradient(135deg, #607089, #4DA3FF)"), "PVP selected weather should use the Liquid Glass segmented gradient.");
+assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "PVP damage card should use the blue/teal result gradient.");
+assert(pageWxss.includes("font-size: 64rpx"), "PVP damage result should use a large numeric display.");
+assert(pageWxss.includes("position: sticky"), "PVP sticky calculate action should stay above the tab bar.");
 assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
 assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
 for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {

@@ -56,6 +56,40 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 00:28 +08:00 - Codex
+
+- Request: Use `style.md` and Product Design guidance to update the WeChat Mini Program UI toward a light Liquid Glass tactical-panel style.
+- Files changed:
+  - `lkwgwechat/miniprogram/app.json`
+  - `lkwgwechat/miniprogram/app.wxss`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/stat-grid/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-shell-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the Mini Program shell to a light Liquid Glass visual system with soft page gradient, glass hero/status cards, blue-purple primary buttons, updated tab colors, and safe bottom spacing.
+  - Updated shared field picker, floating picker, and stat grid styles to use translucent glass inputs, rounded drawer surfaces, pill labels, soft blue glow, and lighter number blocks.
+  - Restyled the team page with a progress card, gradient progress bar, glass six-slot overview, pill actions, glass detail sections, and highlighted passive/skill detail panels.
+  - Added an analysis-page tactical summary card, changed coverage into high-risk/advantage/gap chip rows, and restyled analysis cards, roller targets, chips, badges, and stat cells.
+  - Changed the PVP page to use glass weather/side/skill/result cards, default-collapsed advanced modifiers with modifier counts, a large damage number result card, and a sticky result action while preserving existing damage logic.
+  - Added static regression coverage for the new Liquid Glass UI constraints and PVP advanced-collapse behavior.
+- Verification: Watched the focused shell, team, analysis, PVP, and search-picker tests fail before implementation on the new UI assertions, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings. Manual WeChat Developer Tools simulator and real-device visual checks remain external.
+- Status: Complete for local implementation and automated verification; pending commit/push to `main`.
+
 ### 2026-06-17 00:14 +08:00 - Codex
 
 - Request: Add the same boss-monster `首领血脉` auto-fill mechanism to the Mini Program team module.

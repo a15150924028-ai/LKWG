@@ -277,7 +277,19 @@ function statRows(statResult) {
   }));
 }
 
-function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId = "") {
+function advancedModifierCount(state, showTraitLayers) {
+  let count = 0;
+  if (showTraitLayers && Number(state.traitLayers)) count += 1;
+  count += Object.values(state.manualStatMods || {})
+    .filter((value) => Math.abs(Number(value) || 0) > 0.0001).length;
+  if (Number(state.manualDamageBonus)) count += 1;
+  if (Math.abs(Number(state.manualPowerPercentBonus) || 0) > 0.0001) count += 1;
+  if (Number(state.manualHitCountBonus)) count += 1;
+  if (Number(state.energy) !== pvpStateRules.DEFAULT_ENERGY) count += 1;
+  return count;
+}
+
+function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId = "", advancedExpanded = {}) {
   const monster = catalog.getMonster(state.monsterId);
   const skillOptions = allSkillOptions;
   const action = pvpActionFromState(state);
@@ -303,6 +315,7 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
   const monsterSelectionId = state.side === "ally" && selectedTeamPetId
     ? selectedTeamPetId
     : state.monsterId;
+  const showTraitLayers = Boolean(monster && pvpEffects.trait.resolveTraitRule(monster));
   return {
     ...state,
     title: state.side === "ally" ? "我方" : "敌方",
@@ -326,7 +339,9 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
     forceImpact: forceImpactOption(state),
     statRows: statRows(result),
     traitName: traitName || "无层数特性",
-    showTraitLayers: Boolean(monster && pvpEffects.trait.resolveTraitRule(monster)),
+    showTraitLayers,
+    advancedOpen: Boolean(advancedExpanded[state.side]),
+    advancedModifierCount: advancedModifierCount(state, showTraitLayers),
     controls,
     presets: buildRules.PRESETS.map((preset) => ({
       ...preset,
@@ -542,6 +557,7 @@ function calculateDamageFor(side, state, views, options = {}) {
     hitCount: result.hitCount,
     singleDamage: result.singleDamage,
     damage: result.damage,
+    hpPercent: result.hpPercent,
     effectiveness: effectivenessText(typeMultiplier),
     orderText: order.first
       ? `${order.first === "ally" ? "我方" : "敌方"}先手`
@@ -560,6 +576,7 @@ Page({
     weather: "",
     pickerScrollLocked: false,
     floatingPicker: closedFloatingPicker(),
+    advancedExpanded: { ally: false, enemy: false },
     sides: []
   },
 
@@ -588,9 +605,10 @@ Page({
     normalized.enemy = sanitizeSide(normalized.enemy, "enemy");
     this.pvpState = normalized;
     const allyMonsterOptions = this.allyMonsterOptions || monsterOptions;
+    const advancedExpanded = this.data?.advancedExpanded || { ally: false, enemy: false };
     const sides = [
-      sideView(normalized.ally, allyMonsterOptions, this.selectedTeamPetId || ""),
-      sideView(normalized.enemy, allyMonsterOptions, "")
+      sideView(normalized.ally, allyMonsterOptions, this.selectedTeamPetId || "", advancedExpanded),
+      sideView(normalized.enemy, allyMonsterOptions, "", advancedExpanded)
     ];
     const sidesWithResults = sides.map((side) => ({
       ...side,
@@ -710,6 +728,25 @@ Page({
       if (!skillId) return;
       state.action = skillId;
       state.forceImpact = false;
+    });
+  },
+
+  onToggleAdvanced(event) {
+    const side = event.currentTarget.dataset.side;
+    const advancedExpanded = {
+      ...(this.data.advancedExpanded || { ally: false, enemy: false }),
+      [side]: !(this.data.advancedExpanded || {})[side]
+    };
+    this.data.advancedExpanded = advancedExpanded;
+    this.setData({ advancedExpanded });
+    this.applyState(this.currentState(), false);
+  },
+
+  scrollToResults() {
+    if (!wx.pageScrollTo) return;
+    wx.pageScrollTo({
+      selector: ".damage-card",
+      duration: 240
     });
   },
 

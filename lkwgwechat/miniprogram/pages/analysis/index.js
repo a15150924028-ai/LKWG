@@ -84,6 +84,8 @@ Page({
   applyTeam(team, save = true) {
     const normalized = teamRules.normalizeTeam(team, catalog);
     const result = analysis.analyzeTeam(normalized, catalog);
+    result.completePercent = Math.min(100, Math.round((result.completeCount / 6) * 100));
+    result.coveragePercent = Math.min(100, Math.round((result.coveredTypeChips.length / 18) * 100));
     const expandedLearnerSlots = this.data?.expandedLearnerSlots || {};
     this.teamState = normalized;
     if (save) storage.saveTeam(normalized);

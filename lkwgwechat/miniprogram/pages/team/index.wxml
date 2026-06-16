@@ -6,7 +6,13 @@
   </view>
 
   <view class="team-toolbar">
-    <text class="team-count">配置完成 {{configuredCount}}/6</text>
+    <view class="team-progress-head">
+      <text class="team-count">配置完成 {{configuredCount}}/6</text>
+      <text class="team-progress-percent">进度 {{progressPercent}}%</text>
+    </view>
+    <view class="team-progress-track">
+      <view class="team-progress-fill" style="width: {{progressPercent}}%;"></view>
+    </view>
     <view class="toolbar-actions">
       <button class="small-button primary" bindtap="rotateSkills">
         <image

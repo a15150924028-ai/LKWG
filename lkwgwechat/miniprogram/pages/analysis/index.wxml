@@ -68,9 +68,36 @@
       </view>
     </view>
 
+    <view class="analysis-card team-score-card">
+      <text class="card-title">阵容总结</text>
+      <view class="team-score-grid">
+        <view class="team-score-row">
+          <text>配置进度</text>
+          <view class="team-score-bar"><view class="team-score-fill strong" style="width: {{result.completePercent}}%;"></view></view>
+          <text>{{result.completeCount}}/6</text>
+        </view>
+        <view class="team-score-row">
+          <text>属性覆盖</text>
+          <view class="team-score-bar"><view class="team-score-fill" style="width: {{result.coveragePercent}}%;"></view></view>
+          <text>{{result.coveredTypeChips.length}}项</text>
+        </view>
+      </view>
+    </view>
+
     <view class="analysis-card">
       <text class="card-title">当前克制面</text>
-      <view class="type-chip-list">
+      <text class="card-title secondary">高风险属性</text>
+      <view class="type-chip-list warning">
+        <block wx:for="{{result.missingTypeChips}}" wx:key="id" wx:for-item="type">
+          <view class="type-chip">
+            <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
+            <text>{{type.name}}</text>
+          </view>
+        </block>
+        <text wx:if="{{!result.missingTypeChips.length}}" class="tag-text good">暂无明显高风险</text>
+      </view>
+      <text class="card-title secondary">优势属性</text>
+      <view class="type-chip-list good">
         <block wx:for="{{result.coveredTypeChips}}" wx:key="id" wx:for-item="type">
           <view class="type-chip">
             <image class="type-chip-icon {{type.iconClass}}" src="{{type.icon}}" mode="aspectFit" />
@@ -79,7 +106,7 @@
         </block>
         <text wx:if="{{!result.coveredTypeChips.length}}" class="tag-text">暂无</text>
       </view>
-      <text class="card-title secondary">尚未覆盖</text>
+      <text class="card-title secondary">缺口属性</text>
       <view class="type-chip-list warning">
         <block wx:for="{{result.missingTypeChips}}" wx:key="id" wx:for-item="type">
           <view class="type-chip">
