@@ -33,6 +33,14 @@ assert(pageJs.includes("progressPercent: 0"));
 assert(pageJs.includes("selectTeamSlot("));
 assert(pageWxml.includes('wx:for="{{teamOverview}}"'));
 assert(pageWxml.includes('data-team-slot="{{slot.slot}}"'));
+assert(
+  pageWxml.includes('<view\n      wx:for="{{teamOverview}}"'),
+  "team overview slots should be view-based cards, not native buttons with WeChat button layout quirks"
+);
+assert(
+  !pageWxml.includes('<button\n      wx:for="{{teamOverview}}"'),
+  "team overview slots must not use native button elements because they can overlap adjacent grid cells"
+);
 assert(pageWxml.includes("activePet"));
 assert(!pageWxml.includes('wx:for="{{team}}"'));
 assert(pageWxml.includes("<page-meta"));

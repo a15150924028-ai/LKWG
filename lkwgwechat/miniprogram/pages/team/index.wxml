@@ -28,7 +28,7 @@
   </view>
 
   <view class="team-overview">
-    <button
+    <view
       wx:for="{{teamOverview}}"
       wx:key="slot"
       wx:for-item="slot"
@@ -50,7 +50,7 @@
         >{{typeName}}</text>
         <text wx:if="{{!slot.typeNames.length}}" class="team-slot-empty">等待配置</text>
       </view>
-    </button>
+    </view>
   </view>
 
   <view wx:if="{{activePet}}" class="pet-card {{activePet.complete ? 'complete' : ''}}">

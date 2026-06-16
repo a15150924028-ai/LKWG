@@ -8,7 +8,7 @@
   <view class="weather-card">
     <view class="weather-grid">
       <block wx:for="{{weatherOptions}}" wx:key="id" wx:for-item="weatherItem">
-        <button
+        <view
           class="weather-button {{weatherItem.weatherClass}} {{weatherItem.active ? 'active' : ''}}"
           data-weather="{{weatherItem.id}}"
           bindtap="selectWeather"
@@ -16,7 +16,7 @@
           <image wx:if="{{weatherItem.icon}}" class="weather-icon" src="{{weatherItem.icon}}" mode="aspectFit" />
           <text wx:elif="{{weatherItem.iconText}}" class="weather-icon-text">{{weatherItem.iconText}}</text>
           <text>{{weatherItem.label}}</text>
-        </button>
+        </view>
       </block>
     </view>
   </view>

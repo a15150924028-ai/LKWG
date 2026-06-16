@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 01:06 +08:00 - Codex
+
+- Request: Continue fixing the Mini Program UI overlap shown in the latest screenshots so grid-card controls render as independent cells.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Converted the team overview slot cards from native `button` elements to `view` cells with the same `bindtap` behavior, avoiding WeChat button default layout and pseudo-element overflow inside the six-slot grid.
+  - Converted the PVP weather segmented cells from native `button` elements to `view` cells with the same tap handling, so selected weather pills stay within their own grid cells.
+  - Added static regression coverage that prevents these two grid-card surfaces from reverting to native buttons.
+- Verification: Watched the focused team-page and PVP-page static tests fail before the WXML conversion, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings. Manual WeChat Developer Tools simulator and real-device visual checks remain external.
+- Status: Complete for local implementation and automated verification; pending commit/push to `main`.
+
 ### 2026-06-17 01:01 +08:00 - Codex
 
 - Request: Fix the Mini Program UI overlap shown in the supplied screenshots by making overlapping visual language independent.

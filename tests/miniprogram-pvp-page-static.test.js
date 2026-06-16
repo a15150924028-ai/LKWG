@@ -122,6 +122,14 @@ assert(pageWxml.includes('show-edit-trigger="{{!!skillCard.skillId}}"'));
 assert(pageWxml.includes("wx:if=\"{{side.showTraitLayers}}\""));
 assert(pageWxml.includes("weatherItem.icon"));
 assert(pageWxml.includes("{{weatherItem.weatherClass}}"));
+assert(
+  pageWxml.includes('<view\n          class="weather-button'),
+  "PVP weather choices should be view-based segmented cells, not native buttons with WeChat button layout quirks."
+);
+assert(
+  !pageWxml.includes('<button\n          class="weather-button'),
+  "PVP weather choices must not use native button elements because they can overlap adjacent segmented cells."
+);
 assert(pageWxml.includes("side.forceImpact.label"));
 assert(pageWxml.includes("side.result.resultTitle"));
 assert(pageWxml.includes("side.result.damage"));
