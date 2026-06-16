@@ -245,7 +245,8 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
       label: "技能威力%",
       value: `${Math.round((Number(state.manualPowerPercentBonus) || 0) * 100)}%`
     },
-    { key: "hitCount", label: "连击数", value: Number(state.manualHitCountBonus) || 0 }
+    { key: "hitCount", label: "连击数", value: Number(state.manualHitCountBonus) || 0 },
+    { key: "energy", label: "能量", value: Number(state.energy) || 0 }
   ];
   const currentMonsterOptions = state.side === "ally" ? allyMonsterOptions : monsterOptions;
   const monsterSelectionId = state.side === "ally" && selectedTeamPetId
@@ -394,31 +395,48 @@ function calculateDamageFor(side, state, views) {
   const powerBuffPercent = (Number(attackerTrait.powerMultiplier) || 1) - 1
     + (Number(attackerState.manualPowerPercentBonus) || 0);
   const stabMultiplier = attacker.types.includes(damageType) ? 1.25 : 1;
-  const result = damageCore.calculateDamage({
+  const baseSkillPower = Math.max(
+    1,
+    Number(responseOnly ? variable.responsePower : variable.power)
+      || Number(action.power)
+      || 1
+  );
+  const weatherMultiplier = pvpTurn.weather.weatherPowerMultiplier(state.weather, {
+    ...action,
+    type: damageType
+  });
+  const hitCount = Math.max(1, baseHitCount + hitCountBonus);
+  const calculateSettledDamage = (forceImpactResponded = response.success) => damageCore.calculateDamage({
     attack: attackerStats[attackKey],
     defense: defenderStats[defenseKey],
-    skillPower: Math.max(
-      1,
-      Number(responseOnly ? variable.responsePower : variable.power)
-        || Number(action.power)
-        || 1
-    ),
+    skillPower: baseSkillPower,
     flatPowerAdd,
     abilityLevel,
     powerBuffPercent,
     stabMultiplier,
     typeMultiplier,
-    weatherMultiplier: pvpTurn.weather.weatherPowerMultiplier(state.weather, {
-      ...action,
-      type: damageType
-    }),
-    skillDamageMultiplier: action.id === "pvp-force-impact" && response.success
-      ? 2.5
+    weatherMultiplier,
+    skillDamageMultiplier: action.id === "pvp-force-impact"
+      ? (forceImpactResponded ? 2.5 : 1)
       : (Number(responseOnly ? variable.responseDamageMultiplier : variable.damageMultiplier) || 1),
-    hitCount: Math.max(1, baseHitCount + hitCountBonus)
+    hitCount
   });
   const defenderMaxHp = Math.max(1, Number(defenderStats.hp) || 1);
-  const hpPercent = Math.max(0, Math.min(100, Math.round((result.damage / defenderMaxHp) * 100)));
+  const summarizeDamage = (settled) => {
+    const hpPercent = Math.max(0, Math.min(100, Math.round((settled.damage / defenderMaxHp) * 100)));
+    return {
+      ...settled,
+      hpPercent,
+      summaryText: `${settled.damage}（扣除${hpPercent}%生命）`
+    };
+  };
+  const result = summarizeDamage(calculateSettledDamage(response.success));
+  const responseVariants = action.id === "pvp-force-impact"
+    ? [
+      { label: "未应对成功", ...summarizeDamage(calculateSettledDamage(false)) },
+      { label: "应对成功", ...summarizeDamage(calculateSettledDamage(true)) }
+    ]
+    : [];
   const bonusParts = [];
   if (flatPowerAdd) bonusParts.push(`威力${flatPowerAdd > 0 ? "+" : ""}${flatPowerAdd}`);
   if (Math.abs(powerBuffPercent) > 0.0001) {
@@ -438,8 +456,11 @@ function calculateDamageFor(side, state, views) {
 
   return {
     actionName: action.name,
-    resultTitle: `${action.name}：${result.damage}（扣除${hpPercent}%生命）`,
+    resultTitle: action.id === "pvp-force-impact"
+      ? action.name
+      : `${action.name}：${result.summaryText}`,
     resultMeta: resultMetaParts.join(" / "),
+    responseVariants,
     description: action.description || "暂无技能描述",
     modeLabel,
     power: result.effectivePower,

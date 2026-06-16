@@ -96,21 +96,13 @@
       <text class="default-note">{{side.defaultNote}}</text>
       <stat-grid rows="{{side.statRows}}" />
 
-      <view class="counter-row">
-        <view wx:if="{{side.showTraitLayers}}" class="counter-block">
+      <view wx:if="{{side.showTraitLayers}}" class="counter-row">
+        <view class="counter-block">
           <text class="counter-label">特性层数 · {{side.traitName}}</text>
           <view class="stepper">
             <button data-side="{{side.side}}" data-key="traitLayers" data-delta="-1" bindtap="adjustValue">−</button>
             <text>{{side.traitLayers}}</text>
             <button data-side="{{side.side}}" data-key="traitLayers" data-delta="1" bindtap="adjustValue">＋</button>
-          </view>
-        </view>
-        <view class="counter-block">
-          <text class="counter-label">能量</text>
-          <view class="stepper">
-            <button data-side="{{side.side}}" data-key="energy" data-delta="-1" bindtap="adjustValue">−</button>
-            <text>{{side.energy}}</text>
-            <button data-side="{{side.side}}" data-key="energy" data-delta="1" bindtap="adjustValue">＋</button>
           </view>
         </view>
       </view>
@@ -183,6 +175,11 @@
         <block wx:else>
           <view class="damage-line-card">
             <text class="damage-line-title">{{side.result.resultTitle}}</text>
+            <view wx:if="{{side.result.responseVariants.length}}" class="damage-response-variants">
+              <block wx:for="{{side.result.responseVariants}}" wx:key="label" wx:for-item="variant">
+                <text class="damage-response-line">{{variant.label}}：{{variant.summaryText}}</text>
+              </block>
+            </view>
             <text class="damage-line-meta">{{side.result.resultMeta}}</text>
             <text class="damage-line-description">技能描述：{{side.result.description}}</text>
           </view>

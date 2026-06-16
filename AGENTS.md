@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 19:09 +08:00 - Codex
+
+- Request: Finish the next PVP Mini Program polish items by highlighting the default-build note in red, making Force Impact occupy a full-width single line, moving energy into the compact control grid to fill the empty slot beside hit count, and showing separate two-line Force Impact damage results for response-fail versus response-success outcomes.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Highlighted the PVP default-build note in red so the fallback nature/talent hint stands out more clearly.
+  - Moved `能量` into the compact two-column control grid after `连击数`, removing the separate energy block row and filling the previous blank space.
+  - Forced the Force Impact action row to stretch full width while staying left-aligned and single-line.
+  - Added Force Impact response variants to the PVP result data so the card now shows both `未应对成功` and `应对成功` damage lines in order, while keeping the shared meta and description below.
+  - Expanded the static PVP page regression to lock in response-variant rendering, energy-grid ordering, removal of the standalone energy row, full-width Force Impact styling, and the red default note.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before `responseVariants` and the new layout hooks existed, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed all Mini Program JavaScript and JSON files; ran `git diff --check`; confirmed the upload-readiness package check at `1,826,804` bytes, still under 2 MiB.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools and real-device visual confirmation remain manual/external checks.
+
 ### 2026-06-16 18:57 +08:00 - Codex
 
 - Request: Further tighten the Mini Program PVP UI so Force Impact stays left-aligned on one line, selector labels embed into the border like the web layout, and tapping an already selected skill means "release this skill" without opening the floating picker; opening the picker should happen only for empty skill cards or the dedicated edit trigger.

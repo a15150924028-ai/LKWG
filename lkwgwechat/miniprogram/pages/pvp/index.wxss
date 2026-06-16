@@ -122,9 +122,18 @@
 .order-text {
   display: block;
   margin-top: 8rpx;
-  color: #667085;
   font-size: 22rpx;
   line-height: 1.45;
+}
+
+.default-note {
+  color: #d92d20;
+  font-weight: 600;
+}
+
+.skill-description,
+.order-text {
+  color: #667085;
 }
 
 .counter-row {
@@ -228,6 +237,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  width: 100%;
   gap: 10rpx;
   min-height: 60rpx;
   margin-top: 10rpx;
@@ -281,6 +291,19 @@
   color: #1d2939;
   font-size: 26rpx;
   font-weight: 720;
+}
+
+.damage-response-variants {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.damage-response-line {
+  color: #1d2939;
+  font-size: 23rpx;
+  font-weight: 650;
+  line-height: 1.45;
 }
 
 .damage-line-meta,

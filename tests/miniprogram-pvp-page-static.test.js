@@ -77,8 +77,10 @@ assert(pageJs.includes("onSkillActionTap("));
 assert(pageJs.includes("showTraitLayers"));
 assert(pageJs.includes("resultTitle"));
 assert(pageJs.includes("resultMeta"));
+assert(pageJs.includes("responseVariants"));
 assert(pageJs.includes("weatherClass"));
 assert(pageJs.includes("icon: \"/assets/type-icons/water.png\""));
+assert(pageJs.indexOf('key: "hitCount"') < pageJs.indexOf('key: "energy"'), "Energy must be placed after hit count in the compact control grid.");
 assert(pageJs.includes("storage.loadTeam"));
 assert(!pageWxml.includes('label="从队伍导入"'), "PVP ally team import must be merged into the monster selector.");
 assert(!pageWxml.includes("teamPetOptions"), "PVP page must not render a separate team-pet selector.");
@@ -103,6 +105,8 @@ assert(pageWxml.includes("{{weatherItem.weatherClass}}"));
 assert(pageWxml.includes("side.forceImpact.label"));
 assert(pageWxml.includes("side.result.resultTitle"));
 assert(pageWxml.includes("side.result.resultMeta"));
+assert(pageWxml.includes("side.result.responseVariants"));
+assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
 assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
 for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {
   assert(!pageWxml.includes(removedResultLabel), `PVP result must not render large-card label: ${removedResultLabel}`);
@@ -120,6 +124,11 @@ assert(statGridWxml.includes("talent-mark"));
 assert(statGridWxml.includes("stat-inline-row"), "Stat labels and values must share one inline row to reduce vertical height.");
 assert(pageWxss.includes("justify-content: flex-start"), "Force Impact row must left-align instead of centering.");
 assert(pageWxss.includes("white-space: nowrap"), "Force Impact row text must stay on one line.");
+assert(pageWxss.includes("width: 100%"), "Force Impact row should stretch full width instead of staying as a centered narrow button.");
+assert(pageWxss.includes(".default-note"));
+assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
+assert(pageJs.includes("未应对成功"));
+assert(pageJs.includes("应对成功"));
 
 for (const handler of [
   "onMonsterChange",
@@ -137,11 +146,12 @@ for (const handler of [
 }
 
 for (const text of [
-  "最肉", "最速", "最高攻击", "特性层数", "能量",
+  "最肉", "最速", "最高攻击", "特性层数",
   "技能描述", "清空本方"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);
 }
+assert(pageJs.includes('label: "能量"'), "Energy must still be available as a compact control item.");
 
 assert(pageJs.includes("damageCore.calculateDamage"));
 assert(pageJs.includes("damageRules.resolvePvpVariableDamage"));
