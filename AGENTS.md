@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 18:40 +08:00 - Codex
+
+- Request: Finish the previously approved Mini Program PVP UI brief by implementing compact 2x2 weather buttons with icons/colors, reducing vertical spacing, making stat labels and values inline, hiding trait layers when unsupported, keeping the 2x2 skill grid plus separate Force Impact row, and replacing the large damage metric card with a one-line compact result summary.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/stat-grid/index.wxml`
+  - `lkwgwechat/miniprogram/components/stat-grid/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added weather icon/color metadata and rendered the PVP weather picker as a permanent compact 2x2 grid with per-weather selected backgrounds.
+  - Compressed PVP card spacing and control heights, kept the skill area as a 2x2 grid, and preserved Force Impact as a separate single-row action.
+  - Hid the trait-layer stepper unless the current monster actually has a layer-based trait.
+  - Changed the stat grid to render labels and numeric values on one line to reduce vertical height in PVP.
+  - Replaced the large multi-card damage result block with a compact summary line showing skill name, total damage, HP-loss percentage, type, category, effective power, effectiveness, STAB, bonuses, and skill description.
+  - Expanded the static PVP page regression to lock in the compact-result layout, weather icon/color hooks, trait-layer visibility gate, and inline stat-row structure.
+- Verification: Ran `node tests/miniprogram-pvp-page-static.test.js`; ran all `tests/*.test.js` scripts successfully; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; parsed all Mini Program JavaScript and JSON files; ran `git diff --check`; confirmed the upload-readiness package check at `1,824,306` bytes, still under 2 MiB.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools and real-device visual confirmation remain manual/external checks.
+
 ### 2026-06-16 18:00 +08:00 - Codex
 
 - Request: Remove the visible current-turn badge/label from PVP skill cards, remove the secondary helper line under Force Impact, and remove the weather section title text from the Mini Program PVP page.

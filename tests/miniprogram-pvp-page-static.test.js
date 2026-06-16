@@ -70,6 +70,11 @@ assert(pageJs.includes("source: \"team\""));
 assert(pageJs.includes("forceImpactSkill("));
 assert(pageJs.includes("forceImpactOption("));
 assert(pageJs.includes("onSkillActionTap("));
+assert(pageJs.includes("showTraitLayers"));
+assert(pageJs.includes("resultTitle"));
+assert(pageJs.includes("resultMeta"));
+assert(pageJs.includes("weatherClass"));
+assert(pageJs.includes("icon: \"/assets/type-icons/water.png\""));
 assert(pageJs.includes("storage.loadTeam"));
 assert(!pageWxml.includes('label="从队伍导入"'), "PVP ally team import must be merged into the monster selector.");
 assert(!pageWxml.includes("teamPetOptions"), "PVP page must not render a separate team-pet selector.");
@@ -84,8 +89,18 @@ assert(!pageJs.includes("actionOptions"));
 assert(!pageJs.includes("actionSelection"));
 assert(pageWxml.includes("side.monsterOptions"));
 assert(pageWxml.includes("side.skillCards"));
+assert(pageWxml.includes("skill-action-grid"));
 assert(pageWxml.includes("data-action-skill-id"));
+assert(pageWxml.includes("wx:if=\"{{side.showTraitLayers}}\""));
+assert(pageWxml.includes("weatherItem.icon"));
+assert(pageWxml.includes("{{weatherItem.weatherClass}}"));
 assert(pageWxml.includes("side.forceImpact.label"));
+assert(pageWxml.includes("side.result.resultTitle"));
+assert(pageWxml.includes("side.result.resultMeta"));
+assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
+for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {
+  assert(!pageWxml.includes(removedResultLabel), `PVP result must not render large-card label: ${removedResultLabel}`);
+}
 assert(pageJs.includes("愿力冲击"));
 assert(pageJs.includes("原力冲击"));
 assert(!pickerWxml.includes("<input"), "PVP field-picker must be read-only");
@@ -94,6 +109,7 @@ assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker
 assert(statGridWxml.includes("nature-up"));
 assert(statGridWxml.includes("nature-down"));
 assert(statGridWxml.includes("talent-mark"));
+assert(statGridWxml.includes("stat-inline-row"), "Stat labels and values must share one inline row to reduce vertical height.");
 
 for (const handler of [
   "onMonsterChange",
@@ -112,7 +128,7 @@ for (const handler of [
 
 for (const text of [
   "最肉", "最速", "最高攻击", "特性层数", "能量",
-  "技能描述", "单段伤害", "总伤害", "清空本方"
+  "技能描述", "清空本方"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);
 }

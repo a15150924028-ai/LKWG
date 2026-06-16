@@ -9,10 +9,14 @@
     <view class="weather-grid">
       <block wx:for="{{weatherOptions}}" wx:key="id" wx:for-item="weatherItem">
         <button
-          class="weather-button {{weatherItem.active ? 'active' : ''}}"
+          class="weather-button {{weatherItem.weatherClass}} {{weatherItem.active ? 'active' : ''}}"
           data-weather="{{weatherItem.id}}"
           bindtap="selectWeather"
-        >{{weatherItem.label}}</button>
+        >
+          <image wx:if="{{weatherItem.icon}}" class="weather-icon" src="{{weatherItem.icon}}" mode="aspectFit" />
+          <text wx:elif="{{weatherItem.iconText}}" class="weather-icon-text">{{weatherItem.iconText}}</text>
+          <text>{{weatherItem.label}}</text>
+        </button>
       </block>
     </view>
   </view>
@@ -93,7 +97,7 @@
       <stat-grid rows="{{side.statRows}}" />
 
       <view class="counter-row">
-        <view class="counter-block">
+        <view wx:if="{{side.showTraitLayers}}" class="counter-block">
           <text class="counter-label">特性层数 · {{side.traitName}}</text>
           <view class="stepper">
             <button data-side="{{side.side}}" data-key="traitLayers" data-delta="-1" bindtap="adjustValue">−</button>
@@ -175,19 +179,11 @@
           <text wx:if="{{side.result.description}}" class="skill-description">技能描述：{{side.result.description}}</text>
         </block>
         <block wx:else>
-          <view class="damage-head">
-            <text class="damage-name">{{side.result.actionName}}</text>
-            <text class="effectiveness">{{side.result.effectiveness}}</text>
+          <view class="damage-line-card">
+            <text class="damage-line-title">{{side.result.resultTitle}}</text>
+            <text class="damage-line-meta">{{side.result.resultMeta}}</text>
+            <text class="damage-line-description">技能描述：{{side.result.description}}</text>
           </view>
-          <view class="damage-grid">
-            <view><text>计算模式</text><text class="damage-strong">{{side.result.modeLabel}}</text></view>
-            <view><text>最终威力</text><text class="damage-strong">{{side.result.power}}</text></view>
-            <view><text>连击数</text><text class="damage-strong">{{side.result.hitCount}}</text></view>
-            <view><text>单段伤害</text><text class="damage-strong">{{side.result.singleDamage}}</text></view>
-            <view class="total"><text>总伤害</text><text class="damage-strong">{{side.result.damage}}</text></view>
-          </view>
-          <text class="order-text">{{side.result.orderText}}</text>
-          <text class="skill-description">技能描述：{{side.result.description}}</text>
         </block>
       </view>
     </view>

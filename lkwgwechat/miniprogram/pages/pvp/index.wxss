@@ -1,9 +1,9 @@
 .weather-card,
 .side-card {
-  margin-top: 18rpx;
-  padding: 20rpx;
+  margin-top: 12rpx;
+  padding: 16rpx;
   border: 1rpx solid #dfe6ef;
-  border-radius: 22rpx;
+  border-radius: 20rpx;
   background: #ffffff;
 }
 
@@ -16,8 +16,8 @@
 .weather-grid,
 .preset-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10rpx;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8rpx;
   margin-top: 0;
 }
 
@@ -25,11 +25,31 @@
 .preset-button,
 .clear-side {
   margin: 0;
-  padding: 0 8rpx;
+  padding: 0 10rpx;
   border-radius: 14rpx;
   background: #eef2f7;
   color: #475467;
   font-size: 23rpx;
+}
+
+.weather-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  min-height: 58rpx;
+}
+
+.weather-icon {
+  width: 28rpx;
+  height: 28rpx;
+  flex: 0 0 auto;
+}
+
+.weather-icon-text {
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .weather-button::after,
@@ -39,14 +59,32 @@
   border: 0;
 }
 
-.weather-button.active,
 .preset-button.active {
   background: #1677ff;
   color: #ffffff;
 }
 
-.side-head,
-.damage-head {
+.weather-button.active {
+  color: #ffffff;
+}
+
+.weather-button.weather-none.active {
+  background: #64748b;
+}
+
+.weather-button.weather-rain.active {
+  background: #3b82f6;
+}
+
+.weather-button.weather-sandstorm.active {
+  background: #b0893f;
+}
+
+.weather-button.weather-blizzard.active {
+  background: #4baed8;
+}
+
+.side-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -68,7 +106,7 @@
 
 .talent-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 14rpx;
+  margin-top: 10rpx;
 }
 
 .preset-grid {
@@ -83,19 +121,19 @@
 .skill-description,
 .order-text {
   display: block;
-  margin-top: 14rpx;
+  margin-top: 8rpx;
   color: #667085;
-  font-size: 23rpx;
-  line-height: 1.55;
+  font-size: 22rpx;
+  line-height: 1.45;
 }
 
 .counter-row {
-  margin-top: 18rpx;
+  margin-top: 12rpx;
 }
 
 .counter-block,
 .buff-control {
-  padding: 10rpx;
+  padding: 8rpx 10rpx;
   border-radius: 14rpx;
   background: #f5f7fb;
 }
@@ -112,7 +150,7 @@
   grid-template-columns: 42rpx minmax(48rpx, 1fr) 42rpx;
   align-items: center;
   gap: 6rpx;
-  margin-top: 8rpx;
+  margin-top: 6rpx;
   text-align: center;
 }
 
@@ -132,14 +170,14 @@
 .buff-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10rpx;
-  margin-top: 12rpx;
+  gap: 8rpx;
+  margin-top: 10rpx;
 }
 
 .skills-card,
 .damage-card {
-  margin-top: 18rpx;
-  padding: 16rpx;
+  margin-top: 12rpx;
+  padding: 12rpx;
   border: 1rpx solid #e1e7f0;
   border-radius: 18rpx;
 }
@@ -147,8 +185,8 @@
 .skill-action-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10rpx;
-  margin-top: 12rpx;
+  gap: 8rpx;
+  margin-top: 10rpx;
 }
 
 .skill-action-row {
@@ -190,8 +228,8 @@
   display: flex;
   align-items: center;
   gap: 10rpx;
-  min-height: 68rpx;
-  margin-top: 12rpx;
+  min-height: 60rpx;
+  margin-top: 10rpx;
   text-align: left;
 }
 
@@ -220,58 +258,30 @@
   font-weight: 650;
 }
 
-.damage-name {
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.effectiveness {
-  color: #1677ff;
-  font-size: 22rpx;
-  font-weight: 650;
-}
-
-.damage-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10rpx;
-  margin-top: 16rpx;
-}
-
-.damage-grid view {
-  padding: 12rpx;
+.damage-line-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding: 10rpx 12rpx;
   border-radius: 14rpx;
-  background: #ffffff;
+  background: #eef6ff;
 }
 
-.damage-grid text,
-.damage-grid .damage-strong {
-  display: block;
+.damage-line-title {
+  color: #1d2939;
+  font-size: 26rpx;
+  font-weight: 720;
 }
 
-.damage-grid text {
-  color: #667085;
-  font-size: 20rpx;
-}
-
-.damage-grid .damage-strong {
-  margin-top: 4rpx;
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.damage-grid .total {
-  grid-column: 1 / -1;
-  background: #eaf3ff;
+.damage-line-meta,
+.damage-line-description {
+  color: #475467;
+  font-size: 22rpx;
+  line-height: 1.45;
 }
 
 @media (max-width: 430px) {
-  .weather-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .identity-grid,
-  .skill-action-grid {
+  .identity-grid {
     grid-template-columns: 1fr;
   }
 }

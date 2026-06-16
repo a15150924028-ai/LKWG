@@ -1,16 +1,23 @@
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 9rpx;
-  margin-top: 16rpx;
+  gap: 8rpx;
+  margin-top: 10rpx;
 }
 
 .stat-cell {
   min-width: 0;
-  padding: 11rpx 8rpx;
+  padding: 9rpx 8rpx;
   border-radius: 13rpx;
   background: #f5f7fb;
   text-align: center;
+}
+
+.stat-inline-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
 }
 
 .stat-cell.nature-up {
@@ -31,9 +38,7 @@
 }
 
 .stat-value {
-  display: block;
-  margin-top: 3rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 720;
 }
 

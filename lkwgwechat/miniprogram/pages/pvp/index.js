@@ -1,5 +1,5 @@
 const catalog = require("../../data/catalog");
-const { BLOODLINES, NATURES, TALENTS } = require("../../domain/constants");
+const { BLOODLINES, NATURES, TALENTS, TYPES } = require("../../domain/constants");
 const statsRules = require("../../domain/stats");
 const typeRules = require("../../domain/type-rules");
 const teamRules = require("../../domain/team");
@@ -85,10 +85,10 @@ const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
 const weatherOptions = [
-  { id: "", label: "无天气", type: "" },
-  { id: "rain", label: "雨天", type: "water" },
-  { id: "sandstorm", label: "沙暴", type: "ground" },
-  { id: "blizzard", label: "雪天", type: "ice" }
+  { id: "", label: "无天气", type: "", iconText: "·", weatherClass: "weather-none" },
+  { id: "rain", label: "雨天", type: "water", icon: "/assets/type-icons/water.png", weatherClass: "weather-rain" },
+  { id: "sandstorm", label: "沙暴", type: "ground", icon: "/assets/type-icons/ground.png", weatherClass: "weather-sandstorm" },
+  { id: "blizzard", label: "雪天", type: "ice", icon: "/assets/type-icons/ice.png", weatherClass: "weather-blizzard" }
 ];
 const statLabels = {
   hp: "生命",
@@ -98,6 +98,7 @@ const statLabels = {
   spd: "魔防",
   spe: "速度"
 };
+const typeLabels = new Map(TYPES.map((item) => [item.id, item.name]));
 
 function selection(options, id) {
   const index = Math.max(0, options.findIndex((option) => option.id === id));
@@ -273,6 +274,7 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
     forceImpact: forceImpactOption(state),
     statRows: statRows(result),
     traitName: traitName || "无层数特性",
+    showTraitLayers: Boolean(monster && pvpEffects.trait.resolveTraitRule(monster)),
     controls,
     presets: buildRules.PRESETS.map((preset) => ({
       ...preset,
@@ -302,6 +304,11 @@ function effectivenessText(multiplier) {
   if (multiplier > 1) return `克制 ×${multiplier}`;
   if (multiplier < 1) return `抵抗 ×${multiplier}`;
   return "普通效果";
+}
+
+function multiplierText(value) {
+  const rounded = Math.round(Number(value || 0) * 100) / 100;
+  return `${rounded}x`;
 }
 
 function calculateDamageFor(side, state, views) {
@@ -382,6 +389,11 @@ function calculateDamageFor(side, state, views) {
   const hitCountBonus = variable.canReceiveHitCountBonus
     ? (Number(attackerTrait.hitCountAdd) || 0) + (Number(attackerState.manualHitCountBonus) || 0)
     : 0;
+  const flatPowerAdd = (Number(attackerTrait.flatPower) || 0)
+    + (Number(attackerState.manualDamageBonus) || 0);
+  const powerBuffPercent = (Number(attackerTrait.powerMultiplier) || 1) - 1
+    + (Number(attackerState.manualPowerPercentBonus) || 0);
+  const stabMultiplier = attacker.types.includes(damageType) ? 1.25 : 1;
   const result = damageCore.calculateDamage({
     attack: attackerStats[attackKey],
     defense: defenderStats[defenseKey],
@@ -391,12 +403,10 @@ function calculateDamageFor(side, state, views) {
         || Number(action.power)
         || 1
     ),
-    flatPowerAdd: (Number(attackerTrait.flatPower) || 0)
-      + (Number(attackerState.manualDamageBonus) || 0),
+    flatPowerAdd,
     abilityLevel,
-    powerBuffPercent: (Number(attackerTrait.powerMultiplier) || 1) - 1
-      + (Number(attackerState.manualPowerPercentBonus) || 0),
-    stabMultiplier: attacker.types.includes(damageType) ? 1.25 : 1,
+    powerBuffPercent,
+    stabMultiplier,
     typeMultiplier,
     weatherMultiplier: pvpTurn.weather.weatherPowerMultiplier(state.weather, {
       ...action,
@@ -407,9 +417,29 @@ function calculateDamageFor(side, state, views) {
       : (Number(responseOnly ? variable.responseDamageMultiplier : variable.damageMultiplier) || 1),
     hitCount: Math.max(1, baseHitCount + hitCountBonus)
   });
+  const defenderMaxHp = Math.max(1, Number(defenderStats.hp) || 1);
+  const hpPercent = Math.max(0, Math.min(100, Math.round((result.damage / defenderMaxHp) * 100)));
+  const bonusParts = [];
+  if (flatPowerAdd) bonusParts.push(`威力${flatPowerAdd > 0 ? "+" : ""}${flatPowerAdd}`);
+  if (Math.abs(powerBuffPercent) > 0.0001) {
+    bonusParts.push(`技能威力${powerBuffPercent > 0 ? "+" : ""}${Math.round(powerBuffPercent * 100)}%`);
+  }
+  if (hitCountBonus) bonusParts.push(`连击+${hitCountBonus}`);
+  const resultMetaParts = [
+    typeLabels.get(damageType) || damageType || "无属性",
+    modeLabel,
+    `威力${result.effectivePower}`,
+    effectivenessText(typeMultiplier),
+    `本系${multiplierText(stabMultiplier)}`
+  ];
+  if (bonusParts.length) {
+    resultMetaParts.push(`增益：${bonusParts.join(" / ")}`);
+  }
 
   return {
     actionName: action.name,
+    resultTitle: `${action.name}：${result.damage}（扣除${hpPercent}%生命）`,
+    resultMeta: resultMetaParts.join(" / "),
     description: action.description || "暂无技能描述",
     modeLabel,
     power: result.effectivePower,
