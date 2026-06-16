@@ -56,6 +56,27 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 01:14 +08:00 - Codex
+
+- Request: Remove the earthy-looking background colors shown in the latest screenshots and update `style.md` to forbid that background language.
+- Files changed:
+  - `lkwgwechat/miniprogram/app.json`
+  - `lkwgwechat/miniprogram/app.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-shell-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `style.md`
+  - `AGENTS.md`
+- Changes:
+  - Removed the global blue, purple, and green decorative glow backgrounds from the Mini Program shell and changed the page/window background to a neutral glass gray-white gradient.
+  - Changed the team passive/detail panel and the PVP advanced toggle from blue-green gradient fills to independent white glass panels with neutral borders.
+  - Updated `style.md` so future Mini Program UI work explicitly avoids large pale blue, purple, or cyan-green background blocks and glow blobs inside hero cards, description cards, trait cards, and configuration cards.
+  - Added static regression coverage for the neutral shell background, removed decorative glow pseudo-elements, and non-colored detail/advanced panels.
+- Verification: Watched the focused shell, team-page, and PVP-page static tests fail before implementation on the new neutral-background assertions, then pass after implementation. Scanned for the removed old background colors and confirmed they remain only inside test assertions that prevent regressions. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,844,551` bytes.
+- Status: Complete for local implementation and automated verification; publishing through the repository procedure.
+
 ### 2026-06-17 01:06 +08:00 - Codex
 
 - Request: Continue fixing the Mini Program UI overlap shown in the latest screenshots so grid-card controls render as independent cells.

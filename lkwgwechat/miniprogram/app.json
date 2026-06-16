@@ -6,9 +6,9 @@
   ],
   "window": {
     "navigationBarTitleText": "精灵PVP策略助手",
-    "navigationBarBackgroundColor": "#f7f8ff",
+    "navigationBarBackgroundColor": "#f8fafc",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#eef7ff",
+    "backgroundColor": "#f4f7fb",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {

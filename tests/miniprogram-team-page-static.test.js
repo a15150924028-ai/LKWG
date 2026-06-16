@@ -91,7 +91,14 @@ assert(pageWxml.includes("progressPercent"), "team progress fill should be drive
 assert(pageWxss.includes("rgba(255, 255, 255, 0.62)"), "team toolbar/cards should use translucent glass cards");
 assert(pageWxss.includes("linear-gradient(90deg, #46D8CF, #6C63FF)"), "team progress fill should use teal to purple gradient");
 assert(pageWxss.includes("border-radius: 999rpx"), "team action buttons and chips should be pill shaped");
-assert(pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"), "team passive/detail panels should use soft Liquid Glass highlight");
+assert(
+  /\.detail-panel\s*{[^}]*background:\s*rgba\(255, 255, 255, 0\.58\);/s.test(pageWxss),
+  "team passive/detail panels should use independent white glass, not a blue-green colored fill"
+);
+assert(
+  !pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"),
+  "team passive/detail panels must not keep the old blue-green gradient background"
+);
 assert(
   /\.team-slot\s*{[^}]*box-sizing:\s*border-box;[^}]*width:\s*100%;[^}]*overflow:\s*hidden;/s.test(pageWxss),
   "team overview slots must be independent grid boxes that cannot overflow into adjacent slots"

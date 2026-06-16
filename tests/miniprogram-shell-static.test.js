@@ -37,12 +37,26 @@ assert.deepStrictEqual(
   appJson.tabBar.list.map((item) => item.text),
   ["队伍", "分析", "PVP"]
 );
-assert.strictEqual(appJson.window.navigationBarBackgroundColor, "#f7f8ff");
-assert.strictEqual(appJson.window.backgroundColor, "#eef7ff");
+assert.strictEqual(appJson.window.navigationBarBackgroundColor, "#f8fafc");
+assert.strictEqual(appJson.window.backgroundColor, "#f4f7fb");
 assert.strictEqual(appJson.tabBar.selectedColor, "#4DA3FF");
 assert(
-  appWxss.includes("linear-gradient(180deg, #F7F8FF 0%, #EEF7FF 45%, #F8FFFB 100%)"),
-  "Mini Program global background should use the Liquid Glass page gradient from style.md"
+  appWxss.includes("linear-gradient(180deg, #F8FAFC 0%, #F4F7FB 100%)"),
+  "Mini Program global background should use a neutral glass background without blue-green-purple wash"
+);
+for (const disallowedBackground of [
+  "rgba(120, 190, 255, 0.28)",
+  "rgba(80, 230, 200, 0.18)",
+  "rgba(170, 130, 255, 0.22)"
+]) {
+  assert(
+    !appWxss.includes(disallowedBackground),
+    `global shell must not keep the old colored glow background ${disallowedBackground}`
+  );
+}
+assert(
+  !appWxss.includes(".page::before") && !appWxss.includes(".page::after") && !appWxss.includes(".hero::after"),
+  "global shell should not render decorative colored background glow pseudo-elements"
 );
 assert(appWxss.includes("backdrop-filter: blur(18rpx)"), "global glass cards should use blur");
 assert(appWxss.includes("rgba(255, 255, 255, 0.62)"), "global cards should use translucent glass white");

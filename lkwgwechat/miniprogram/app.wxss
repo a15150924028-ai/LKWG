@@ -1,6 +1,6 @@
 page {
   min-height: 100%;
-  background: linear-gradient(180deg, #F7F8FF 0%, #EEF7FF 45%, #F8FFFB 100%);
+  background: linear-gradient(180deg, #F8FAFC 0%, #F4F7FB 100%);
   color: #1F2633;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 }
@@ -14,30 +14,6 @@ page {
   padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
 }
 
-.page::before,
-.page::after {
-  content: "";
-  position: fixed;
-  z-index: 0;
-  width: 360rpx;
-  height: 360rpx;
-  border-radius: 50%;
-  filter: blur(44rpx);
-  pointer-events: none;
-}
-
-.page::before {
-  top: 18rpx;
-  right: -130rpx;
-  background: rgba(120, 190, 255, 0.28);
-}
-
-.page::after {
-  left: -140rpx;
-  bottom: 90rpx;
-  background: rgba(80, 230, 200, 0.18);
-}
-
 .hero {
   position: relative;
   overflow: hidden;
@@ -47,19 +23,6 @@ page {
   background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(18rpx);
   box-shadow: 0 10rpx 28rpx rgba(80, 110, 160, 0.14), inset 0 1rpx 0 rgba(255, 255, 255, 0.85);
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  right: 24rpx;
-  top: 18rpx;
-  width: 150rpx;
-  height: 150rpx;
-  border-radius: 50%;
-  background: rgba(170, 130, 255, 0.22);
-  filter: blur(30rpx);
-  pointer-events: none;
 }
 
 .hero-title {

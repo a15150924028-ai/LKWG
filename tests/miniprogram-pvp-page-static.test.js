@@ -190,6 +190,14 @@ assert(pageWxss.includes("white-space: nowrap"), "Force Impact row text must sta
 assert(pageWxss.includes("width: 100%"), "Force Impact row should stretch full width instead of staying as a centered narrow button.");
 assert(pageWxss.includes(".default-note"));
 assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
+assert(
+  /\.advanced-toggle\s*{[^}]*background:\s*rgba\(255, 255, 255, 0\.58\);/s.test(pageWxss),
+  "PVP advanced toggle should use neutral white glass, not a blue-green colored fill"
+);
+assert(
+  !pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"),
+  "PVP surfaces must not keep the old blue-green gradient background"
+);
 assert(pageWxss.includes(".preset-button"), "Enemy preset buttons must keep dedicated styling.");
 assert(pageWxml.includes("preset-button-label"), "Enemy preset buttons should render an explicit label wrapper for reliable centering.");
 assert(!pageWxml.includes("preset-hidden-labels"), "Enemy preset labels should come from the real segmented control, not hidden fallback text.");
