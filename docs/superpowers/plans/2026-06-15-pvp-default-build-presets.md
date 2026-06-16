@@ -238,7 +238,6 @@ tests/pvp-compact-side-layout-static.test.js
 docs/superpowers/plans/2026-06-15-pvp-default-build-presets.md
 ```
 
-Do not stage the unrelated deleted simplified HTML or WeChat project config
 files.
 
 - [x] **Step 4: Commit and push**

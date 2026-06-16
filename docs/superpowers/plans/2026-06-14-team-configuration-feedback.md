@@ -189,5 +189,3 @@ git add -- index.html tests/team-configuration-feedback-static.test.js docs/supe
 git commit -m "Add team configuration completion feedback"
 git push origin main
 ```
-
-Do not stage the unrelated existing deletion of `克制面查询-简洁版.html`.

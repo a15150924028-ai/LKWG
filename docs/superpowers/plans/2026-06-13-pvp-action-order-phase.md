@@ -88,5 +88,3 @@ Open `http://localhost:8000/`, verify the action preview renders without overflo
 Record files, behavior, tests, browser result, and status.
 
 - [x] **Step 3: Commit and push**
-
-Stage only `index.html`, `tests/pvp-turn-rules-static.test.js`, this plan, and `AGENTS.md`. Leave the unrelated deletion of `克制面查询-简洁版.html` unstaged. Commit with `Implement PVP action order preview` and push `main`.

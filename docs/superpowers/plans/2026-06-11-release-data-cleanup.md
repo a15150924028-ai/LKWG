@@ -21,7 +21,6 @@ Run a PowerShell check that confirms the source resolves to `C:\codex-work\codex
 
 - [ ] **Step 2: Create the ZIP**
 
-Use `Compress-Archive` over the repository root contents, excluding the existing unrelated missing simplified copy because it is not present on disk.
 
 - [ ] **Step 3: Verify the ZIP**
 
@@ -130,7 +129,6 @@ Serve the repository locally and confirm `index.html` and `data/local-bundle.jso
 
 - [ ] **Step 4: Append the work log**
 
-Record backup path/hash, deleted files, release changes, retained core logic, test results, and browser limitations without mentioning the ignored simplified copy.
 
 - [ ] **Step 5: Inspect and publish**
 

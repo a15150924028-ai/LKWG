@@ -164,5 +164,3 @@ git commit -m "Repair PVP skill source data"
 ```powershell
 git push origin main
 ```
-
-Expected: `main` is updated on GitHub while the unrelated deleted simplified HTML file remains unstaged.

@@ -56,6 +56,26 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 11:46 +08:00 - Codex
+
+- Request: Permanently retire the obsolete duplicate HTML build, delete it locally and from GitHub, and stop preserving or tracking its old references.
+- Files changed:
+  - obsolete duplicate HTML file, deleted
+  - `docs/superpowers/plans/2026-06-11-release-data-cleanup.md`
+  - `docs/superpowers/plans/2026-06-13-pvp-action-order-phase.md`
+  - `docs/superpowers/plans/2026-06-13-pvp-skill-data-phase.md`
+  - `docs/superpowers/plans/2026-06-13-pvp-weather-phase.md`
+  - `docs/superpowers/plans/2026-06-14-compact-team-editor.md`
+  - `docs/superpowers/plans/2026-06-14-team-configuration-feedback.md`
+  - `docs/superpowers/plans/2026-06-15-pvp-default-build-presets.md`
+  - `AGENTS.md`
+- Changes:
+  - Promoted the existing local deletion of the obsolete duplicate HTML file into the scoped repository change so it will be removed from GitHub on push.
+  - Removed stale plan instructions that previously told agents to preserve or ignore that old deletion.
+  - Removed older work-log lines that mentioned the retired duplicate or its old sync test, reducing future context noise.
+- Verification: Confirmed no tracked files with the old duplicate or sync-test names remain; searched the repository and project note for the retired duplicate references after cleanup; ran `git diff --check`.
+- Status: Complete for local cleanup; commit and push follow immediately.
+
 ### 2026-06-16 11:40 +08:00 - Codex
 
 - Request: Add type icons to the Mini Program analysis weakness/resistance display and fix the mobile bug where the autocomplete selector disappears while swiping down through options, including keyboard-covered selectors.
@@ -1007,13 +1027,10 @@ Use this entry format:
 
 - Request: Redesign the UI/UX in a duplicate file only, keeping the current app files unchanged.
 - Files changed:
-  - `克制面查询-简洁版.html`
   - `AGENTS.md`
 - Changes:
-  - Created `克制面查询-简洁版.html` from the current working copy of `克制面查询.html`.
   - Added a CSS-only redesign override block to the duplicate for a simpler sticky command bar, clearer section hierarchy, cleaner cards and controls, improved spacing, and responsive mobile layout.
   - Left the original app HTML behavior, data refresh, team storage, calculations, and PVP logic unchanged.
-- Verification: Parsed all inline scripts in `克制面查询-简洁版.html` with `new Function`; ran `node tests/default-build-static.test.js`; ran `git diff --check`; confirmed Playwright and standard browser commands were unavailable, so rendered browser verification was not run.
 - Status: Complete.
 
 ### 2026-06-08 20:05 +08:00 - Codex
@@ -1025,7 +1042,6 @@ Use this entry format:
 - Changes:
   - Removed 39 dead `LCX_SKILL_POOL_OVERRIDES` entries whose top-level pool names do not match any current BWiki monster name or alias.
   - Kept the 336 matching skill pool overrides intact, including partially matching pools where at least one skill still resolves.
-  - Left the duplicate simplified HTML file unchanged after restoring an accidental intermediate edit.
 - Verification: Ran `node tests/default-build-static.test.js`; parsed all inline scripts in `克制面查询.html` with `new Function`; ran a BWiki monster-name/alias reconciliation check confirming 336 remaining pools and 0 invalid pool names.
 - Status: Complete.
 
@@ -1316,15 +1332,8 @@ Use this entry format:
 
 - Request: Find the root cause for the PVP selected-skill damage issue still appearing, without special-value patches.
 - Files changed:
-  - `克制面查询-简洁版.html`
-  - `tests/simple-html-sync-static.test.js`
   - `AGENTS.md`
 - Changes:
-  - Identified that the reported `阿米亚特`/`缠丝劲` UI was coming from the stale simplified HTML duplicate, not the main HTML that had received the recent BWiki/PVP fixes.
-  - Synced `克制面查询-简洁版.html` to reuse the current main app script/data logic while preserving the simplified page shell and CSS.
-  - Removed the simplified duplicate's stale local skill-pool overrides, S2 skill overrides, local stat overrides, and old `过山车` patch by replacing its script tail with the main file's current script tail.
-  - Added a regression test to keep the simplified HTML script/data logic identical to the main HTML and reject stale local override code from returning.
-- Verification: Confirmed BWiki `缠丝劲` has `技能类别=物攻`, `威力=25`, and `效果=造成物伤，2连击。`; ran `node tests/simple-html-sync-static.test.js`; ran `node tests/pvp-selected-skill-damage-static.test.js`; ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warning for `克制面查询-简洁版.html`.
 - Status: Complete.
 
 ### 2026-06-09 17:01 +08:00 - Codex
@@ -1332,7 +1341,6 @@ Use this entry format:
 - Request: Re-check the main app root cause for PVP selected skills still showing no damage, using the prior skill-pool/stat-pool context and avoiding special-value patches.
 - Files changed:
   - `克制面查询.html`
-  - `克制面查询-简洁版.html`
   - `tests/pvp-selected-skill-damage-static.test.js`
   - `AGENTS.md`
 - Changes:
@@ -1340,7 +1348,6 @@ Use this entry format:
   - Extended cached skill power repair to read nested BWiki raw/rendered fields such as `raw.raw["威力"]`, fixing stale normalized cache entries without hardcoded skill-name patches.
   - Applied cached category repair before cached power repair, because PVP damage rejects non-attack categories before checking numeric power.
   - Passed the selected PVP skill slot from the action object into variable damage rules, matching where `pvpActionFromState()` stores the slot.
-  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired data and PVP logic.
 - Verification: Watched `node tests/pvp-selected-skill-damage-static.test.js` fail before the production change because `repairCachedSkillCategory` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1349,14 +1356,12 @@ Use this entry format:
 - Request: Fix PVP battle hero traits not displaying for examples including 音速犬、火神、蹦床松鼠、波普鹿、风暴战犬、梦想三三.
 - Files changed:
   - `克制面查询.html`
-  - `克制面查询-简洁版.html`
   - `tests/pvp-hero-trait-display-static.test.js`
   - `AGENTS.md`
 - Changes:
   - Changed PVP hero-trait matching so named rules can resolve by monster name, aliases, BWiki title/name fields, and boss/form suffixes even when BWiki/cache data does not provide a usable evolution-chain ID.
   - Added generic matching from BWiki raw and nested cached `特性` / `英雄特性` fields back to the hero-trait rule table, so chain-ID-only rules can still display when the source data has the trait name.
   - Added 蹦床松鼠 and its line names to the existing 囤积 rule.
-  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired PVP trait logic.
   - Added a static regression test covering the reported examples, named boss/form suffix matching, and raw/nested BWiki trait-name matching.
 - Verification: Watched `node tests/pvp-hero-trait-display-static.test.js` fail before the production change on 音速犬 without a chain ID, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
@@ -1366,7 +1371,6 @@ Use this entry format:
 - Request: Fix PVP issues where 水泡盾减伤词条 was missing and clicking 羽化加速 did not add 技能威力+20, without special-value patches.
 - Files changed:
   - `克制面查询.html`
-  - `克制面查询-简洁版.html`
   - `tests/pvp-support-defense-effects-static.test.js`
   - `AGENTS.md`
 - Changes:
@@ -1374,26 +1378,22 @@ Use this entry format:
   - Changed PVP support skill clicks to record those parsed support effects into the existing later-damage state fields and show them in the recorded support text.
   - Reworked defense skill reduction parsing into a generic effect object that supports 减伤N%、伤害降低N%、伤害减少N%、伤害减免N%, and exposes a visible reduction label in damage details.
   - Kept the old `defenseReductionMultiplier()` wrapper for existing callers while using the richer reduction effect in PVP damage output.
-  - Synced the simplified duplicate's script tail from the main app so both HTML entries use the same repaired PVP support/defense logic.
   - Added a static regression test covering 水泡盾-style compact 减伤80% labels and 羽化加速-style 全技能威力+20 support-state application.
 - Verification: Watched `node tests/pvp-support-defense-effects-static.test.js` fail before the production change because `supportSkillEffects` was missing, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
 ### 2026-06-09 20:21 +08:00 - Codex
 
-- Request: First fix Dimo's PVP trait to 20% per layer, then fix Water Shield damage reduction; stop maintaining the simplified HTML version.
 - Files changed:
   - `克制面查询.html`
   - `tests/pvp-hero-trait-display-static.test.js`
   - `tests/pvp-support-defense-effects-static.test.js`
-  - `tests/simple-html-sync-static.test.js`
   - `AGENTS.md`
 - Changes:
   - Updated the PVP `最好的伙伴` trait rule so Dimo gains 20% per layer to physical attack, physical defense, magic attack, magic defense, and speed.
   - Added a regression check proving Dimo resolves `最好的伙伴` at 20% per layer.
   - Fixed the root cause for Water Shield by keeping defense-category skills selectable as PVP actions instead of consuming them as support buffs, allowing the existing defense-reduction rule to apply and display.
   - Added a regression check proving defense skills with response buffs are not swallowed by support-skill handling.
-  - Removed the obsolete simplified-HTML sync test because the simplified version is no longer maintained.
 - Verification: Ran `node tests/pvp-hero-trait-display-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1426,7 +1426,6 @@ Use this entry format:
   - Added post-use PVP effect handling so successful Super Candy use snapshots the pre-use monster/layer state for damage, then applies `萌化+1` and switches to the next lower form.
   - Added PVP cute-layer state, non-negative normalization, buff-panel controls, and form up/down switching while preserving nature, talents, skills, and existing buffs.
   - Added rendered BWiki evolution-chain parsing so pages such as `风暴战犬` can populate shared chain IDs and evolution stages from the online `进化链` section instead of local special patches.
-  - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js`, `node tests/pvp-special-power-rules-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because no Browser control tool was exposed in this turn.
 - Status: Complete.
 
@@ -1455,7 +1454,6 @@ Use this entry format:
   - Identified the root cause as stale PVP action snapshots: after a successful cute-layer form shift, the panel showed the new lower form but damage calculation still reused the previous form's `actionMonsterId` and `actionCuteLayers`.
   - Changed the generic cute-layer form switching path to clear the selected action, action monster snapshot, cute-layer snapshot, and force-impact flag after any successful form shift.
   - Added a regression test proving Sonic Dog switching into Guard Dog clears the stale pre-use action snapshot instead of continuing to show the old 160-power Super Candy result.
-  - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before the production change on the stale action snapshot assertion, then reran it after the change and it passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-selected-skill-damage-static.test.js`; `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1475,7 +1473,6 @@ Use this entry format:
   - Bumped the rendered BWiki profile cache key/version to v3 so old cached monster profiles without parsed evolution lines are ignored and reparsed.
   - Bumped the normalized dex data cache key to v2 so old complete dex caches generated before the evolution-chain parser fix are ignored and rebuilt.
   - Added a stale-action snapshot guard so PVP damage and Super Candy post-use checks only use the pre-use snapshot while it still matches the current panel monster; after a form change, current monster data is used.
-  - Kept the simplified HTML version untouched.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js`, `node tests/bwiki-rendered-cache-progress-static.test.js`, and `node tests/pvp-special-power-rules-static.test.js` fail before the production changes, including the dex-cache v2 assertion, then reran them after the changes and they passed. Live-checked the current parser against the BWiki `加油蟹` page and confirmed `加油海葵>加油蟹`. Ran all non-live Node tests in `tests`; parsed all inline scripts in both HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1491,7 +1488,6 @@ Use this entry format:
   - Added a retry path that clears the rebuildable current rendered profile cache if browser storage is still over quota.
   - Changed online update so freshly fetched BWiki data is still applied to the current page even if persistent localStorage caching remains unavailable after cleanup.
   - Added regression coverage for obsolete cache cleanup, rendered profile cache cleanup, and non-throwing behavior when quota remains exceeded.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-rendered-cache-progress-static.test.js` fail before implementation on the missing quota-aware storage path, then reran it after the change and it passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1510,7 +1506,6 @@ Use this entry format:
   - Changed the BWiki update path to fetch missing evolution form pages, parse them as normal monster records, merge them into the bundle, then apply rendered evolution stages.
   - Bumped the normalized dex cache key to v3 so old v2 data without supplemental evolution forms is ignored and rebuilt.
   - Updated BWiki tests to cover split evolution chains with missing lower forms and the new cache invalidation.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation because `missingBwikiEvolutionFormNames` was missing, then reran it after the change and it passed. Ran `node tests/bwiki-rendered-cache-progress-static.test.js`; `node tests/pvp-cute-layer-static.test.js`; `node tests/pvp-special-power-rules-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1526,7 +1521,6 @@ Use this entry format:
   - Changed supplemental learner parsing to skip failed single skill pages with a warning instead of failing the whole BWiki update.
   - Added the same non-fatal guard around supplemental skill wikitext page fetching so optional supplemental pages cannot abort the update.
   - Added regression coverage for a failing `过山车` supplemental learner page.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-empty-supplemental-learner-static.test.js` fail before implementation on `BWiki 过山车 JSONP 请求失败`, then reran it after the change and it passed. Ran `node tests/bwiki-wikitext-batch-resilience-static.test.js`; `node tests/roller-icon-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1544,13 +1538,11 @@ Use this entry format:
   - Added a generic PVP post-use effect resolver for skills whose text grants cute +1, keeping status skills as status skills while still applying cute-layer post-use behavior.
   - Added flat post-use stat storage and final-stat application so success-bound bonuses such as speed +150 are calculated only after successful cute gain.
   - Kept Super Candy's independent special power rule as the higher-priority rule so its cute +1 effect is not duplicated by generic text parsing.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `rawEvolutionLineNames` was missing, and watched `node tests/pvp-special-power-rules-static.test.js` fail because `resolvePvpPostUseEffects` was missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-support-defense-effects-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
 ### 2026-06-10 11:25 +08:00 - Codex
 
-- Request: Fix PVP cute-layer rules according to the confirmed requirements, restore boss monster selection, and keep simplified HTML untouched.
 - Files changed:
   - `克制面查询.html`
   - `tests/pvp-cute-layer-static.test.js`
@@ -1562,7 +1554,6 @@ Use this entry format:
   - Added generated boss forms in `withBossForms()` from the existing boss-name pool, using exact source monsters or trait-rule family sources when the boss page is missing from BWiki data.
   - Kept generated boss forms searchable by their base boss name and marked them as generated boss variants for PVP display/counting.
   - Added the confirmed `菊花梨`/`菊花里` exception so it can gain cute +1 without a lower form while ordinary single-form monsters still cannot.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before implementation because `风暴战犬` was excluded from its normal evolution line, and watched `node tests/pvp-boss-forms-static.test.js` fail because boss-form generation helpers were missing. After implementation, ran both tests and they passed. Ran `node tests/pvp-special-power-rules-static.test.js`; `node tests/pvp-hero-trait-display-static.test.js`; all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1582,7 +1573,6 @@ Use this entry format:
   - Changed generated boss-form creation to use BWiki-discovered boss-capable forms in addition to the older local fallback names, then bumped dex and rendered-profile cache keys to rebuild stale local data.
   - Changed PVP cute evolution lookup so generated boss forms resolve through their source monster, allowing manual `萌化 +` to move to the correct lower form.
   - Filtered BWiki rendered evolution file links such as `文件:Head 5018.png` so they do not pollute evolution chains.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-boss-forms-static.test.js`, `node tests/pvp-cute-layer-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked the BWiki `风暴战犬` rendered page parses boss names as `风暴战犬` and evolution line as `护主犬 > 音速犬 > 风暴战犬`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. Browser visual verification was not run because the Browser navigation/screenshot tool was not exposed in this turn.
 - Status: Complete.
 
@@ -1604,7 +1594,6 @@ Use this entry format:
   - Treated BWiki `精灵形态=首领形态` as a direct boss variant and avoided generating duplicate `（首领）` copies for direct boss pages.
   - Parsed rendered monster images from supplemental pages and applied them to records that do not have index-card image URLs.
   - Bumped the normalized dex cache key to v5 so the browser rebuilds the local monster list, while keeping the rendered-page cache reusable to avoid another full slow rendered-page refetch.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/bwiki-supplemental-boss-monsters-static.test.js`, `node tests/pvp-boss-forms-static.test.js`, and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; live-checked BWiki and confirmed `精灵图鉴` does not contain `彩虹独角兽`, while the `彩虹独角兽` page exists with `精灵形态=首领形态`, `主属性=光`, `特性=夺目`, and a rendered image URL; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only.
 - Status: Complete.
 
@@ -1623,7 +1612,6 @@ Use this entry format:
   - Changed rendered BWiki monster image parsing to ignore the known placeholder URL and prefer real boss portrait image tags, then fall back only to a single unambiguous head icon.
   - Bumped normalized dex data cache to v6 and rendered BWiki profile cache to v5 so old cached duplicate/placeholder-image data is rebuilt.
   - Added regression tests for duplicate direct boss pages, placeholder boss image parsing, and the cache invalidation keys.
-  - Left the existing simplified HTML deletion in the working tree untouched.
 - Verification: Watched `node tests/pvp-boss-forms-static.test.js` and `node tests/bwiki-rendered-monster-profile-static.test.js` fail before implementation, then reran them after the change and they passed. Ran all non-live Node tests in `tests`; parsed inline scripts in the currently present HTML files with `new Function`; ran `git diff --check`, which exited 0 with Git's LF-to-CRLF warnings only. A live BWiki parser check for `黑猫密探` was blocked by the site returning HTML instead of JSON; Browser screenshot verification was not run because the in-app Browser control tool was not exposed in this turn.
 - Status: Complete.
 
@@ -1661,7 +1649,6 @@ Use this entry format:
   - Added a disk-based comparison report that detects missing, extra, and changed records; the generated files currently have 0 mismatches against the normalized HTML pools from the same BWiki run.
   - Added per-record stat provenance. BWiki rendered pages were confirmed for 322 monster stat records; 172 records retain the HTML updater's normalized wikitext fallback because BWiki rejected those rendered-page requests.
   - Added regression coverage for file names, evolution chains, images, skill-only pools, stat provenance, full skill fields, order drift, changed records, and extra records.
-  - Left unrelated workspace changes, including the existing deletion of `克制面查询-简洁版.html`, untouched and unstaged.
 - Verification: Watched `node tests/bwiki-data-pool-exports-static.test.js` fail before the exporter existed, fail again on skill order, rendered-stat provenance, and extra-record detection, then pass after each implementation fix. Ran the live exporter successfully; validated all five JSON files; confirmed 494 monster records, 499 skill records, all 494 stat records contain six stats, and the comparison report contains 0 mismatches. Ran the 20 scoped non-live Node tests (the tracked suite plus the exporter test); parsed executable inline scripts with `new Function`; ran `node tests/bwiki-rendered-monster-skills-live.test.js`, which confirmed `机幕方舟` includes `过山车`; ran scoped `git diff --check`. The unrelated untracked `tests/local-bundle-maintenance-static.test.js` was excluded from this task's verification and remains unstaged.
 - Status: Complete with documented BWiki rendered-page coverage limitation.
 
@@ -1678,7 +1665,6 @@ Use this entry format:
   - Replaced the main online update control with import, export, clear-local-data, and maintenance controls.
   - Added an in-page maintenance dialog for monster, skill, passive, and PVP preset CRUD, name-based relationship selection, Chinese validation results, CSV auxiliary import, browser persistence, JSON export, and regenerated single-file HTML export.
   - Kept BWiki fetching only in the collapsed advanced maintenance section, behind the required confirmation, and made fetched data draft-only until explicitly saved or exported.
-  - Kept the existing simplified HTML deletion untouched and left `克制面查询.html` unchanged.
 - Verification: Added a regression test and confirmed it failed before implementation on the missing embedded bundle, then passed after implementation. Ran all non-live Node tests in `tests`; parsed all executable script blocks in `克制面查询_无图低风险版.html` with `new Function`; validated the embedded JSON counts and confirmed it contains no HTTP URL, third-party domain, or image path; confirmed no `patchwiki.biligame.com`, `rocomwiki.app`, `<img>`, element icon path, PNG, SVG, or WebP reference is rendered. Browser-tested offline startup, the 494-monster maintenance count, search, editing `迪莫`, name-based skill association, adding a skill, and data validation with no console errors. Ran scoped `git diff --check`, which exited 0 with Git's LF-to-CRLF warning only.
 - Status: Complete.
 ### 2026-06-11 12:44 +08:00 - Codex
@@ -2042,7 +2028,6 @@ Use this entry format:
   - Removed the top action-bar `显示结果` button, its `calculateBtn` DOM reference, and its click listener.
   - Kept automatic result rendering, the results section, roller output, and PVP damage output intact.
   - Updated the action-bar contract test to expect the remaining three controls and added a regression test that rejects reintroducing the deleted button while requiring the results renderer to remain.
-  - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
 - Verification: Watched `node tests/no-display-result-button-static.test.js` fail before the UI removal and pass after it. Ran all 19 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed `calculateBtn` and the `显示结果` button are absent, the action bar still has `rollerBtn`, `undoRollerBtn`, and `clearBtn`, the results section still renders, PVP damage simulation remains present, and console warnings/errors are empty.
 - Status: Complete.
 
@@ -2059,7 +2044,6 @@ Use this entry format:
   - Removed the stale `matrixWrap` DOM reference, `renderMatrix()` UI renderer, and its startup/data-refresh calls.
   - Kept attribute/type badges, `relationMultiplier()`, analysis output, and PVP damage logic intact for the remaining UI.
   - Updated the Apple layout test and added a regression test that rejects reintroducing the deleted attribute matrix UI.
-  - Left the pre-existing unrelated deletion of `克制面查询-简洁版.html` untouched.
 - Verification: Watched `node tests/no-attribute-matrix-ui-static.test.js` fail before the UI removal and pass after it. Ran all 20 retained Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. Browser-reloaded `http://localhost:8000/` and confirmed navigation is now only `队伍`, `分析`, and `伤害`, `matrixSection` and `matrixWrap` are absent, `属性关系表` is not visible, results and PVP damage simulation remain present, and console warnings/errors are empty.
 - Status: Complete.
 
@@ -2198,7 +2182,6 @@ Use this entry format:
   - Kept the existing structured evolution chain, raw rendered evolution line, and PVP trait-rule fallback paths ahead of the new local inference.
   - Added a regression case for local-bundle-style monsters such as `爆焰仔` / `爆焰喷喷`, where manual `萌化+1` previously could not find the lower form.
 - Verification: Watched `node tests/pvp-cute-layer-static.test.js` fail before the helper implementation, then pass after the fix. Ran all 22 Node tests successfully; parsed all 3 inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files. In-app Browser verification of the current `file://` page was blocked by Browser Use URL policy and was not bypassed.
-- Status: Complete locally; GitHub publish still needs the unrelated pre-existing deletion of `克制面查询-简洁版.html` to be included or excluded explicitly.
 
 ### 2026-06-13 11:26 +08:00 - Codex
 
@@ -2234,7 +2217,6 @@ Use this entry format:
   - Added a regression test requiring representative chains such as `爆焰仔 > 爆焰喷喷`, `贝瑟 > 贝加尔 > 贝古斯`, `波波螺 > 消波螺 > 嗜波螺`, and `呆小路 > 舞动路路 > 白发路路` to carry shared `chainId` and ordered `evolutionStage`.
   - Updated the PVP cute-layer test to stop depending on the removed runtime fallback helper.
 - Verification: Watched `node tests/local-bundle-evolution-static.test.js` fail before the data update, then pass after adding formal evolution metadata. Ran all 23 Node tests successfully; parsed all 3 executable inline scripts with `new Function`; ran `git diff --check` with only line-ending normalization warnings for touched files.
-- Status: Complete locally; GitHub publish still needs the unrelated pre-existing deletion of `克制面查询-简洁版.html` to be included or excluded explicitly.
 
 ### 2026-06-13 12:11 +08:00 - Codex
 

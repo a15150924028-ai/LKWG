@@ -83,7 +83,6 @@ Record the weather behavior, files, tests, browser verification status, and comp
 
 - [ ] **Step 3: Commit only scoped files**
 
-Stage `index.html`, `tests/pvp-weather-static.test.js`, this plan, and `AGENTS.md`. Keep the unrelated deletion of `克制面查询-简洁版.html` unstaged.
 
 - [ ] **Step 4: Push main**
 

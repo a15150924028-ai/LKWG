@@ -55,4 +55,3 @@
 - [ ] Parse every inline script in `index.html` with `new Function`.
 - [ ] Run `git diff --check`.
 - [ ] Reload the existing in-app Browser page and visually compare the editor against the supplied screenshot when Browser policy permits; otherwise document the blocked visual gate in `design-qa.md`.
-- [ ] Append the work-log entry, stage only scoped files, commit, and push `main`. Preserve the unrelated existing deletion of `克制面查询-简洁版.html`.
