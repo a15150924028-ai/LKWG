@@ -29,6 +29,7 @@ function optionsWithBlank(options) {
 }
 
 const monsterOptions = optionsWithBlank(catalog.monsterOptions);
+const allSkillOptions = optionsWithBlank(catalog.skillOptions);
 const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
@@ -65,7 +66,7 @@ function selectedSkillDetail(skillId, index) {
 function teamView(team) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
-    const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));
+    const skillOptions = allSkillOptions;
     return {
       ...pet,
       slot,

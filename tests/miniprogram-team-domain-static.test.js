@@ -12,6 +12,10 @@ const monster = catalog.bundle.monsters.find(
   (candidate) => candidate.skillIds.length >= 5
 );
 assert(monster, "fixture monster with at least five skills is required");
+const offPoolSkill = catalog.bundle.skills.find(
+  (skill) => !monster.skillIds.includes(skill.id)
+);
+assert(offPoolSkill, "fixture skill outside the monster's native pool is required");
 
 const valid = {
   name: "测试精灵",
@@ -37,6 +41,23 @@ assert.strictEqual(
   teamRules.isPetComplete(withoutRoller),
   true,
   "roller target must not be required for completion"
+);
+
+const withAnyCatalogSkill = teamRules.normalizePet(
+  {
+    ...valid,
+    skills: [
+      { skillId: offPoolSkill.id },
+      ...monster.skillIds.slice(1, 4).map((skillId) => ({ skillId }))
+    ]
+  },
+  0,
+  catalog
+);
+assert.strictEqual(
+  withAnyCatalogSkill.skills[0].skillId,
+  offPoolSkill.id,
+  "team skill configuration must preserve any valid catalog skill, even when the selected monster cannot naturally learn it"
 );
 
 const invalid = teamRules.normalizePet({

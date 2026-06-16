@@ -81,6 +81,7 @@ function buildMergedMonsterOptions(team) {
 }
 
 const monsterOptions = optionsWithBlank(catalog.monsterOptions);
+const allSkillOptions = optionsWithBlank(catalog.skillOptions);
 const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
@@ -163,7 +164,6 @@ function sanitizeSide(source, side) {
       defaultBuildPreset: state.defaultBuildPreset
     };
   }
-  const availableSkills = new Set(monster.skillIds);
   const usedTalents = new Set();
   state.bloodlineId = bloodlineIds.has(state.bloodlineId) ? state.bloodlineId : "";
   state.natureId = natureIds.has(state.natureId) ? state.natureId : "";
@@ -172,7 +172,7 @@ function sanitizeSide(source, side) {
     usedTalents.add(id);
     return id;
   });
-  state.skillIds = state.skillIds.map((id) => availableSkills.has(id) ? id : "");
+  state.skillIds = state.skillIds.map((id) => catalog.getSkill(id) ? id : "");
   state.action = state.action === "force" || state.skillIds.includes(state.action)
     ? state.action
     : "";
@@ -242,7 +242,7 @@ function statRows(statResult) {
 
 function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId = "") {
   const monster = catalog.getMonster(state.monsterId);
-  const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(state.monsterId));
+  const skillOptions = allSkillOptions;
   const action = pvpActionFromState(state);
   const result = displayedStats(monster, state, action);
   const build = result?.build;

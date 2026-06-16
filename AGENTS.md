@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 21:14 +08:00 - Codex
+
+- Request: Let Mini Program pet skill configuration choose from all skills instead of only the currently selected monster's native skill pool.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/team.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-team-domain-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the PVP skill configuration picker to use the full skill catalog and preserve any valid catalog skill during PVP state sanitization.
+  - Changed the team skill configuration picker to use the full skill catalog.
+  - Updated team normalization so configured skills are validated against the full catalog instead of the selected monster's native skill list.
+  - Added regression coverage for full-catalog skill pickers and preserving off-pool but valid catalog skills.
+- Verification: Watched the focused team-page, team-domain, and PVP-page tests fail before implementation, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed Mini Program JavaScript and JSON files; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+
 ### 2026-06-16 21:01 +08:00 - Codex
 
 - Request: Investigate and fix Mini Program PVP damage mismatch where 音速犬 vs 音速犬 using 灼伤 with 开朗、生命/物攻/速度 should match the web result of 370 damage.

@@ -75,6 +75,18 @@ assert(pageJs.includes("pickerHandler"));
 assert(pageJs.includes("allyMonsterOptions"));
 assert(pageJs.includes("buildMergedMonsterOptions("));
 assert(pageJs.includes("source: \"team\""));
+assert(
+  pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
+  "PVP skill configuration must expose the full skill catalog"
+);
+assert(
+  !pageJs.includes("const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(state.monsterId));"),
+  "PVP skill configuration must not limit the picker to the selected monster's native skill list"
+);
+assert(
+  pageJs.includes("state.skillIds = state.skillIds.map((id) => catalog.getSkill(id) ? id : \"\");"),
+  "PVP state sanitization must preserve any valid catalog skill selected in the skill configuration"
+);
 assert(pageJs.includes("forceImpactSkill("));
 assert(pageJs.includes("forceImpactOption("));
 assert(pageJs.includes("onSkillActionTap("));

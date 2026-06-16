@@ -79,6 +79,14 @@ assert(
 assert(pageWxml.includes('class="roller-button-icon"'));
 assert(pageJs.includes("catalog.getPassive"), "team view must resolve monster passives");
 assert(pageJs.includes("catalog.getSkill"), "team view must resolve selected skill details");
+assert(
+  pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
+  "team skill configuration must expose the full skill catalog, not only the selected monster's native skill list"
+);
+assert(
+  !pageJs.includes("const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));"),
+  "team skill configuration must not rebuild its picker from monsterSkillOptions"
+);
 assert(pageJs.includes("passives:"), "team view must expose passive details");
 assert(pageJs.includes("skillDetails:"), "team view must expose selected skill details");
 assert(pageWxml.includes("特性"), "team cards must show passive details");
