@@ -95,6 +95,7 @@ Page({
     bloodlineOptions,
     natureOptions,
     talentOptions,
+    pickerScrollLocked: false,
     canUndo: false
   },
 
@@ -208,6 +209,12 @@ Page({
     this.mutatePet(petIndex, (pet) => {
       pet.rollerSkillId = option.id;
     });
+  },
+
+  onPickerScrollLock(event) {
+    const locked = Boolean(event.detail.locked);
+    if (this.data.pickerScrollLocked === locked) return;
+    this.setData({ pickerScrollLocked: locked });
   },
 
   rotateSkills() {

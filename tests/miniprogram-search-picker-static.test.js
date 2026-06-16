@@ -174,7 +174,8 @@ for (const method of [
   "onSuggestionTouchStart",
   "onSuggestionTouchEnd",
   "onKeyboardHeightChange",
-  "updateDropDirection"
+  "updateDropDirection",
+  "setPageScrollLocked"
 ]) {
   assert(pickerJs.includes(`${method}(`), `field picker is missing ${method}`);
 }
@@ -186,6 +187,7 @@ assert(pickerJs.includes("suggestionTouching"));
 assert(pickerJs.includes("if (this.suggestionTouching)"));
 assert(pickerJs.includes("keyboardHeight"));
 assert(pickerJs.includes("wx.getWindowInfo"));
+assert(pickerJs.includes('this.triggerEvent("lockscroll"'));
 assert(!pickerJs.includes("getSystemInfo"));
 assert(!pickerJs.includes("searchOptions(this.properties.options, query, 20)"));
 assert(pickerJs.includes('this.triggerEvent("change", {'));

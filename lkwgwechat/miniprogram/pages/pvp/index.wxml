@@ -1,3 +1,4 @@
+<page-meta page-style="{{pickerScrollLocked ? 'overflow: hidden;' : ''}}" />
 <view class="page">
   <view class="hero">
     <text class="hero-title">PVP伤害模拟</text>
@@ -32,6 +33,7 @@
           value-label="{{side.monsterSelection.label}}"
           data-side="{{side.side}}"
           bind:change="onMonsterChange"
+          bind:lockscroll="onPickerScrollLock"
         />
         <field-picker
           label="血脉"
@@ -40,6 +42,7 @@
           value-label="{{side.bloodlineSelection.label}}"
           data-side="{{side.side}}"
           bind:change="onBloodlineChange"
+          bind:lockscroll="onPickerScrollLock"
         />
       </view>
 
@@ -50,6 +53,7 @@
         value-label="{{side.natureSelection.label}}"
         data-side="{{side.side}}"
         bind:change="onNatureChange"
+        bind:lockscroll="onPickerScrollLock"
       />
 
       <view class="talent-grid">
@@ -63,6 +67,7 @@
             data-side="{{side.side}}"
             data-talent-index="{{talentIndex}}"
             bind:change="onTalentChange"
+            bind:lockscroll="onPickerScrollLock"
           />
         </block>
       </view>
@@ -128,6 +133,7 @@
             data-side="{{side.side}}"
             data-skill-index="{{skillIndex}}"
             bind:change="onSkillChange"
+            bind:lockscroll="onPickerScrollLock"
           />
         </block>
         <field-picker
@@ -138,6 +144,7 @@
           disabled="{{!side.monsterId}}"
           data-side="{{side.side}}"
           bind:change="onActionChange"
+          bind:lockscroll="onPickerScrollLock"
         />
       </view>
 

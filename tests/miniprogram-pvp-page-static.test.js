@@ -38,6 +38,16 @@ assert.strictEqual(
   6,
   "PVP must route every selector template through field-picker"
 );
+assert(pageWxml.includes("<page-meta"));
+assert(pageWxml.includes("pickerScrollLocked"));
+assert(pageWxml.includes("overflow: hidden"));
+assert.strictEqual(
+  (pageWxml.match(/bind:lockscroll="onPickerScrollLock"/g) || []).length,
+  (pageWxml.match(/<field-picker/g) || []).length,
+  "every PVP field-picker must lock page scroll while focused"
+);
+assert(pageJs.includes("pickerScrollLocked: false"));
+assert(pageJs.includes("onPickerScrollLock("));
 assert(pickerWxml.includes("<input"), "PVP field-picker must support text input");
 assert(pickerWxml.includes("suggestion-list"), "PVP field-picker must show suggestions");
 assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
@@ -52,6 +62,7 @@ for (const handler of [
   "onTalentChange",
   "onSkillChange",
   "onActionChange",
+  "onPickerScrollLock",
   "selectPreset",
   "selectWeather",
   "adjustValue",

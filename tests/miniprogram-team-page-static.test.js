@@ -26,6 +26,16 @@ assert(pageWxml.includes('wx:for="{{teamOverview}}"'));
 assert(pageWxml.includes('data-team-slot="{{slot.slot}}"'));
 assert(pageWxml.includes("activePet"));
 assert(!pageWxml.includes('wx:for="{{team}}"'));
+assert(pageWxml.includes("<page-meta"));
+assert(pageWxml.includes("pickerScrollLocked"));
+assert(pageWxml.includes("overflow: hidden"));
+assert.strictEqual(
+  (pageWxml.match(/bind:lockscroll="onPickerScrollLock"/g) || []).length,
+  (pageWxml.match(/<field-picker/g) || []).length,
+  "every team field-picker must lock page scroll while focused"
+);
+assert(pageJs.includes("pickerScrollLocked: false"));
+assert(pageJs.includes("onPickerScrollLock("));
 
 for (const binding of [
   "selectTeamSlot",
@@ -35,6 +45,7 @@ for (const binding of [
   "onTalentChange",
   "onSkillChange",
   "onRollerSkillChange",
+  "onPickerScrollLock",
   "rotateSkills",
   "undoRotation",
   "clearTeam"

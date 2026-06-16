@@ -1,3 +1,4 @@
+<page-meta page-style="{{pickerScrollLocked ? 'overflow: hidden;' : ''}}" />
 <view class="page">
   <view class="hero">
     <text class="hero-title">我的队伍</text>
@@ -60,6 +61,7 @@
         value-label="{{activePet.monsterSelection.label}}"
         data-pet-index="{{activePet.slot}}"
         bind:change="onMonsterChange"
+        bind:lockscroll="onPickerScrollLock"
       />
       <field-picker
         label="血脉"
@@ -68,6 +70,7 @@
         value-label="{{activePet.bloodlineSelection.label}}"
         data-pet-index="{{activePet.slot}}"
         bind:change="onBloodlineChange"
+        bind:lockscroll="onPickerScrollLock"
       />
     </view>
 
@@ -88,6 +91,7 @@
       value-label="{{activePet.natureSelection.label}}"
       data-pet-index="{{activePet.slot}}"
       bind:change="onNatureChange"
+      bind:lockscroll="onPickerScrollLock"
     />
 
     <view class="field-group">
@@ -103,6 +107,7 @@
             data-pet-index="{{activePet.slot}}"
             data-talent-index="{{talentIndex}}"
             bind:change="onTalentChange"
+            bind:lockscroll="onPickerScrollLock"
           />
         </block>
       </view>
@@ -120,6 +125,7 @@
           data-pet-index="{{activePet.slot}}"
           data-skill-index="{{skillIndex}}"
           bind:change="onSkillChange"
+          bind:lockscroll="onPickerScrollLock"
         />
       </block>
     </view>
@@ -145,6 +151,7 @@
       disabled="{{!activePet.monsterId}}"
       data-pet-index="{{activePet.slot}}"
       bind:change="onRollerSkillChange"
+      bind:lockscroll="onPickerScrollLock"
     />
   </view>
 </view>

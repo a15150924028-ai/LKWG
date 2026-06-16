@@ -320,6 +320,7 @@ Page({
     talentOptions,
     weatherOptions,
     weather: "",
+    pickerScrollLocked: false,
     sides: []
   },
 
@@ -417,6 +418,12 @@ Page({
     this.mutateSide(side, (state) => {
       state.action = option.id;
     });
+  },
+
+  onPickerScrollLock(event) {
+    const locked = Boolean(event.detail.locked);
+    if (this.data.pickerScrollLocked === locked) return;
+    this.setData({ pickerScrollLocked: locked });
   },
 
   selectPreset(event) {

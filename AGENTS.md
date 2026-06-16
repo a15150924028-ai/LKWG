@@ -56,6 +56,26 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 12:22 +08:00 - Codex
+
+- Request: Continue fixing Mini Program mobile selector behavior by preventing page scrolling while autocomplete suggestions are open.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a `lockscroll` event from the shared field picker when suggestions open and close.
+  - Added `page-meta` scroll locking to the team and PVP pages so page scrolling is disabled while a picker suggestion overlay is active.
+  - Bound every team and PVP `field-picker` to the shared page scroll-lock handler.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` and `node tests/miniprogram-pvp-page-static.test.js` fail before page-level scroll locking was wired, then pass after implementation. Ran the three Mini Program synchronization checks, all 53 Node tests, parsed 33 Mini Program JavaScript files and 7 JSON files plus `project.config.json`, passed the WXML compatibility scan, ran `git diff --check`, and measured the runtime package at 1,804,477 bytes (1.721 MiB), leaving 292,675 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; phone confirmation of scroll locking remains pending manual real-device validation.
+
 ### 2026-06-16 11:46 +08:00 - Codex
 
 - Request: Permanently retire the obsolete duplicate HTML build, delete it locally and from GitHub, and stop preserving or tracking its old references.

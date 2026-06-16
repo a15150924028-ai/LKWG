@@ -58,6 +58,7 @@ Component({
       this.ignoreNextBlur = false;
       this.suggestionTouching = false;
       this.suggestionTouchTimer = null;
+      this.pageScrollLocked = false;
       this.setData({
         query: Number(this.properties.valueIndex) > 0
           ? this.properties.valueLabel
@@ -77,6 +78,13 @@ Component({
       return Number(this.properties.valueIndex) > 0
         ? this.properties.valueLabel
         : "";
+    },
+
+    setPageScrollLocked(locked) {
+      const next = Boolean(locked);
+      if (this.pageScrollLocked === next) return;
+      this.pageScrollLocked = next;
+      this.triggerEvent("lockscroll", { locked: next });
     },
 
     optionView(index) {
@@ -130,6 +138,7 @@ Component({
       if (this.properties.disabled) return;
       if (this.blurTimer) clearTimeout(this.blurTimer);
       this.setData({ focused: true });
+      this.setPageScrollLocked(true);
       this.refreshSuggestions(this.data.query);
       this.updateDropDirection(this.data.keyboardHeight);
     },
@@ -155,6 +164,7 @@ Component({
           dropUp: false,
           suggestions: []
         });
+        this.setPageScrollLocked(false);
       }, 120);
     },
 
@@ -170,6 +180,7 @@ Component({
         dropUp: false,
         suggestions: []
       });
+      this.setPageScrollLocked(false);
       this.triggerEvent("change", { index });
     },
 
@@ -183,6 +194,7 @@ Component({
         dropUp: false,
         suggestions: []
       });
+      this.setPageScrollLocked(false);
       this.triggerEvent("change", { index: 0 });
     },
 
