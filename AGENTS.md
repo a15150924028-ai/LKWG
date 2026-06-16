@@ -2757,3 +2757,17 @@ Use this entry format:
   - Kept expansion gated to slots that actually have truncated learner lists, and added regression coverage so the right-side toggle markup/text cannot come back accidentally.
 - Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before removing the right-side toggle, then pass after the implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,828,678` bytes.
 - Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.
+
+### 2026-06-16 19:52 +08:00 - Codex
+
+- Request: Fix the Mini Program enemy preset buttons (`最肉 / 最速 / 最高攻击`) so they no longer drift to the right and instead render as three balanced pill-style buttons with full rounded corners.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Split enemy preset buttons out from the shared button-radius rule so they can use their own dedicated layout.
+  - Made each preset button stretch to its full grid cell width, keep a stable height, center its label, and use large `999rpx` pill corners for the Apple-like rounded shape requested.
+  - Added static regression coverage for full-width preset buttons, centered labels, stable height, and full pill corners.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail before the pill-button style existed, then pass after implementation. Ran full `Get-ChildItem tests -Filter *.test.js | Sort-Object Name | ForEach-Object { node $_.FullName }`; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,828,972` bytes.
+- Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device confirmation remains pending.

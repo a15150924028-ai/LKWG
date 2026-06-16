@@ -22,7 +22,6 @@
 }
 
 .weather-button,
-.preset-button,
 .clear-side {
   margin: 0;
   padding: 0 10rpx;
@@ -111,6 +110,23 @@
 
 .preset-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.preset-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 58rpx;
+  margin: 0;
+  padding: 0 12rpx;
+  box-sizing: border-box;
+  border-radius: 999rpx;
+  background: #eef2f7;
+  color: #475467;
+  font-size: 23rpx;
+  font-weight: 650;
+  text-align: center;
 }
 
 .preset-hidden-labels {

@@ -130,6 +130,11 @@ assert(pageWxss.includes("white-space: nowrap"), "Force Impact row text must sta
 assert(pageWxss.includes("width: 100%"), "Force Impact row should stretch full width instead of staying as a centered narrow button.");
 assert(pageWxss.includes(".default-note"));
 assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
+assert(pageWxss.includes(".preset-button"), "Enemy preset buttons must keep dedicated styling.");
+assert(pageWxss.includes("border-radius: 999rpx"), "Enemy preset buttons should use full pill corners instead of small rounded corners.");
+assert(pageWxss.includes("width: 100%"), "Enemy preset buttons should stretch to fill their grid cells.");
+assert(pageWxss.includes("justify-content: center"), "Enemy preset button labels should stay centered.");
+assert(pageWxss.includes("min-height: 58rpx"), "Enemy preset buttons should keep stable button height.");
 assert(pageJs.includes("未应对成功"));
 assert(pageJs.includes("应对成功"));
 
