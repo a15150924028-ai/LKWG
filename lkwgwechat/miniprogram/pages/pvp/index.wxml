@@ -6,7 +6,6 @@
   </view>
 
   <view class="weather-card">
-    <text class="section-title">天气</text>
     <view class="weather-grid">
       <block wx:for="{{weatherOptions}}" wx:key="id" wx:for-item="weatherItem">
         <button
@@ -127,8 +126,14 @@
 
       <view class="skills-card">
         <text class="section-title">技能配置</text>
-        <block wx:for="{{side.skillCards}}" wx:key="index" wx:for-item="skillCard" wx:for-index="skillIndex">
-          <view class="skill-action-row {{skillCard.active ? 'active' : ''}}">
+        <view class="skill-action-grid">
+          <block wx:for="{{side.skillCards}}" wx:key="index" wx:for-item="skillCard" wx:for-index="skillIndex">
+            <view
+              class="skill-action-row {{skillCard.active ? 'active' : ''}}"
+              data-side="{{side.side}}"
+              data-action-skill-id="{{skillCard.skillId}}"
+              bindtap="onSkillActionTap"
+            >
             <field-picker
               compact
               label="技能 {{skillIndex + 1}}"
@@ -142,15 +147,9 @@
               bind:change="onSkillChange"
               bind:open="onPickerOpen"
             />
-            <button
-              class="skill-action-button {{skillCard.active ? 'active' : ''}}"
-              disabled="{{!skillCard.skillId}}"
-              data-side="{{side.side}}"
-              data-action-skill-id="{{skillCard.skillId}}"
-              bindtap="onSkillActionTap"
-            >{{skillCard.active ? '本回合' : '设为本回合'}}</button>
-          </view>
-        </block>
+            </view>
+          </block>
+        </view>
         <button
           class="force-action-button {{side.forceImpact.active ? 'active' : ''}}"
           disabled="{{side.forceImpact.locked}}"
@@ -166,9 +165,7 @@
           />
           <view class="force-action-text">
             <text>{{side.forceImpact.label}}</text>
-            <text>{{side.forceImpact.hint}}</text>
           </view>
-          <text class="force-action-state">{{side.forceImpact.active ? '本回合' : ''}}</text>
         </button>
       </view>
 

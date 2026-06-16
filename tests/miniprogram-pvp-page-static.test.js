@@ -74,6 +74,10 @@ assert(pageJs.includes("storage.loadTeam"));
 assert(!pageWxml.includes('label="从队伍导入"'), "PVP ally team import must be merged into the monster selector.");
 assert(!pageWxml.includes("teamPetOptions"), "PVP page must not render a separate team-pet selector.");
 assert(!pageWxml.includes('label="本回合技能"'), "PVP page must use skill-card taps instead of a separate current-skill selector.");
+assert(!pageWxml.includes("设为本回合"), "Skill cards must not show a separate current-turn button label.");
+assert(!pageWxml.includes("本回合"), "Skill cards and Force Impact must use visual selection without current-turn text.");
+assert(!pageWxml.includes("side.forceImpact.hint"), "Force Impact must not render secondary helper text below the button.");
+assert(!pageWxml.includes('<text class="section-title">天气</text>'), "Weather card must not render the weather section title.");
 assert(!pageJs.includes("onTeamPetChange("));
 assert(!pageJs.includes("onActionChange("));
 assert(!pageJs.includes("actionOptions"));
@@ -107,7 +111,7 @@ for (const handler of [
 }
 
 for (const text of [
-  "最肉", "最速", "最高攻击", "天气", "特性层数", "能量",
+  "最肉", "最速", "最高攻击", "特性层数", "能量",
   "技能描述", "单段伤害", "总伤害", "清空本方"
 ]) {
   assert(pageWxml.includes(text), `PVP page is missing visible text: ${text}`);

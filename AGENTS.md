@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 18:00 +08:00 - Codex
+
+- Request: Remove the visible current-turn badge/label from PVP skill cards, remove the secondary helper line under Force Impact, and remove the weather section title text from the Mini Program PVP page.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed skill selection so each skill card itself handles the current-turn tap, using the active border/background as feedback instead of showing `本回合` or `设为本回合` text.
+  - Removed the Force Impact secondary helper text line and the active-state text, leaving only the single compact Force Impact row.
+  - Removed the visible weather section title and pulled the weather grid upward to reduce vertical height.
+  - Added static assertions so these removed labels do not come back in the PVP WXML.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail on the old `设为本回合` label, then pass after implementation. Ran all 54 Node tests, all three Mini Program synchronization checks, parsed all Mini Program JavaScript and JSON files, ran `git diff --check`, and confirmed the upload-readiness package check at 1,822,794 bytes, still under the 2 MiB Mini Program limit. WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+- Status: Complete for implementation and automated verification; manual Mini Program preview remains pending.
+
 ### 2026-06-16 17:27 +08:00 - Codex
 
 - Request: Adjust the Mini Program PVP compact design so no manual controls are removed, merge ally team import into the pet selector, remove the separate current-turn skill selector, and restore the web-only Force Impact action that users search as `原力冲击`.
