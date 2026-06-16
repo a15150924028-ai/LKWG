@@ -50,9 +50,7 @@
               class="roller-learner-chevron {{slot.learnerExpanded ? 'expanded' : ''}}"
             ></view>
           </view>
-          <text class="roller-learner-text {{slot.learnerExpanded ? 'expanded' : ''}}">
-            {{slot.learnerDisplayText}}
-          </text>
+          <text class="roller-learner-text {{slot.learnerExpanded ? 'expanded' : ''}}">{{slot.learnerDisplayText}}</text>
         </view>
       </view>
     </view>

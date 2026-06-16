@@ -191,6 +191,14 @@ assert(pageWxml.includes("learnerDisplayText"));
 assert(pageWxml.includes("roller-learner-chevron"));
 assert(pageWxss.includes(".roller-learner-chevron"));
 assert(pageWxss.includes("-webkit-line-clamp: 1"), "Collapsed learner preview should stay to one line and avoid extra blank height.");
+assert(
+  pageWxml.includes('<text class="roller-learner-text {{slot.learnerExpanded ? \'expanded\' : \'\'}}">{{slot.learnerDisplayText}}</text>'),
+  "Learner preview text must stay inline in WXML so Mini Program text nodes do not render an empty line before the names."
+);
+assert(
+  /\.roller-learner-text\s*{[^}]*margin-top:\s*0;/s.test(pageWxss),
+  "Learner preview text should sit directly below the title without an extra top gap."
+);
 assert(pageWxml.includes("过山车目标"));
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
 assert(pageWxml.includes('data-picker-handler="onRollerSkillChange"'));

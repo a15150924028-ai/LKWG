@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 20:41 +08:00 - Codex
+
+- Request: Remove the blank-looking extra line below the Mini Program analysis-page `谁能学` learner heading.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Kept `learnerDisplayText` inline inside the `roller-learner-text` WXML node so Mini Program text rendering does not preserve the template newline/indentation as an empty-looking line before learner names.
+  - Removed the learner preview top margin and tightened its line height so the names sit directly below `谁能学`.
+  - Added static regression coverage for the inline learner text node and zero top gap.
+- Verification: Watched `node tests/miniprogram-analysis-static.test.js` fail before the WXML/CSS fix and pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; parsed 43 Mini Program JavaScript/JSON files; ran `git diff --check`; confirmed upload-readiness static test still passes at `1,829,792` bytes.
+- Status: Complete for implementation and automated verification; manual WeChat Developer Tools / real-device visual confirmation remains pending.
+
 ### 2026-06-16 19:15 +08:00 - Codex
 
 - Request: Clarify that the Mini Program Force Impact "one-line" requirement means the same full-width row treatment as the web layout screenshot, rather than a narrow left-aligned button.
