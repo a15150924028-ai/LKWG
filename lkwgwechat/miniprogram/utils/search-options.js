@@ -102,7 +102,7 @@ function resultItem(option, index) {
   return item;
 }
 
-function searchOptions(options, query, limit = 20) {
+function searchOptions(options, query, limit = Infinity) {
   const cappedLimit = Math.max(0, Number(limit) || 0);
   const source = validOptions(options);
   const normalizedQuery = normalizeQuery(query);

@@ -1,11 +1,16 @@
 .field-picker {
   box-sizing: border-box;
+  position: relative;
   min-width: 0;
   margin-top: 14rpx;
   padding: 12rpx 16rpx 10rpx;
   border: 1rpx solid #dfe6ef;
   border-radius: 16rpx;
   background: #ffffff;
+}
+
+.field-picker.focused {
+  z-index: 30;
 }
 
 .identity-grid .field-picker,
@@ -103,10 +108,18 @@
 }
 
 .suggestion-list {
-  max-height: 440rpx;
-  margin: 8rpx -4rpx 2rpx;
+  position: absolute;
+  top: 100%;
+  left: 16rpx;
+  right: 16rpx;
+  z-index: 31;
+  max-height: 520rpx;
+  margin: 4rpx 0 0;
   overflow-y: auto;
-  border-top: 1rpx solid #edf0f5;
+  border: 1rpx solid #edf0f5;
+  border-radius: 14rpx;
+  background: #ffffff;
+  box-shadow: 0 16rpx 36rpx rgba(16, 24, 40, 0.14);
 }
 
 .suggestion-item,
@@ -150,6 +163,11 @@
 .compact {
   padding-right: 10rpx;
   padding-left: 10rpx;
+}
+
+.compact .suggestion-list {
+  left: 10rpx;
+  right: 10rpx;
 }
 
 .compact .field-label {

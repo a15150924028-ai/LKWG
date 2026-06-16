@@ -60,6 +60,7 @@ const manyOptions = [
   }))
 ];
 assert.strictEqual(searchOptions(manyOptions, "", 20).length, 20);
+assert.strictEqual(searchOptions(manyOptions, "").length, 30);
 
 const fuzzyOptions = [
   {
@@ -168,10 +169,15 @@ assert(pickerJs.includes("selectedOption"));
 assert(pickerJs.includes("optionView("));
 assert(pickerJs.includes("iconClass"));
 assert(pickerJs.includes('require("../../utils/search-options")'));
+assert(!pickerJs.includes("searchOptions(this.properties.options, query, 20)"));
 assert(pickerJs.includes('this.triggerEvent("change", {'));
 assert(pickerJs.includes("index"));
 
 const pickerWxss = fs.readFileSync(path.join(componentRoot, "index.wxss"), "utf8");
+assert(pickerWxss.includes("position: relative"));
+assert(pickerWxss.includes("position: absolute"));
+assert(pickerWxss.includes("z-index"));
+assert(pickerWxss.includes("top: 100%"));
 assert(pickerWxss.includes(".stat-atk-icon"));
 assert(pickerWxss.includes("transform: translate"));
 

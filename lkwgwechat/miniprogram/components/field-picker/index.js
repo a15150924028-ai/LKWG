@@ -89,7 +89,7 @@ Component({
 
     refreshSuggestions(query) {
       this.setData({
-        suggestions: searchOptions(this.properties.options, query, 20)
+        suggestions: searchOptions(this.properties.options, query)
       });
     },
 

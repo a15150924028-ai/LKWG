@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 11:12 +08:00 - Codex
+
+- Request: Remove the 20-result selector display limit and make Mini Program autocomplete suggestions overlay the page instead of pushing lower fields down.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/utils/search-options.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed `searchOptions` to return all valid matches when no explicit limit is supplied, preserving explicit limit support for callers/tests that need it.
+  - Removed the component-level `20` cap so every searchable selector can expose the full matched candidate set.
+  - Changed the shared suggestion list to an absolute-positioned overlay with its own scroll area, z-index, background, border, and shadow so it no longer increases layout height or pushes later fields down.
+- Verification: Watched `node tests/miniprogram-search-picker-static.test.js` fail before implementation because the default search still returned 20 of 30 records, then pass after implementation. Ran the three Mini Program synchronization checks, all 53 Node tests, parsed 33 Mini Program JavaScript files and 7 JSON files plus `project.config.json`, passed the WXML compatibility scan, ran `git diff --check`, and measured the runtime package at 1,797,635 bytes (1.714 MiB), leaving 299,517 bytes before 2 MiB. The official WeChat `preview` CLI timed out after 60 seconds because the IDE service did not respond.
+- Status: Complete for implementation and automated verification; WeChat Developer Tools compile and real-device preview remain pending manual/external validation.
+
 ### 2026-06-16 10:52 +08:00 - Codex
 
 - Request: Remove the extra small subtitle line in Mini Program selector suggestions, center and resize stat icons such as physical attack, and show skill type icons in skill selectors.

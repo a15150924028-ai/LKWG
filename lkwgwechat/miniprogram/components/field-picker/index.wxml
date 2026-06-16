@@ -1,4 +1,4 @@
-<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}">
+<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}} {{focused ? 'focused' : ''}}">
   <text class="field-label">{{label}}</text>
   <view class="search-control">
     <image
