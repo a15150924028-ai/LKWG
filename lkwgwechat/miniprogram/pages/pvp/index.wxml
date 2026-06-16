@@ -25,22 +25,10 @@
         <button class="clear-side" data-side="{{side.side}}" bindtap="clearSide">清空本方</button>
       </view>
 
-      <field-picker
-        wx:if="{{side.side === 'ally'}}"
-        label="从队伍导入"
-        options="{{teamPetOptions}}"
-        value-index="{{side.teamPetSelection.index}}"
-        value-label="{{side.teamPetSelection.label}}"
-        data-side="{{side.side}}"
-        data-picker-handler="onTeamPetChange"
-        bind:change="onTeamPetChange"
-        bind:open="onPickerOpen"
-      />
-
       <view class="identity-grid">
         <field-picker
           label="精灵"
-          options="{{monsterOptions}}"
+          options="{{side.monsterOptions}}"
           value-index="{{side.monsterSelection.index}}"
           value-label="{{side.monsterSelection.label}}"
           data-side="{{side.side}}"
@@ -139,31 +127,49 @@
 
       <view class="skills-card">
         <text class="section-title">技能配置</text>
-        <block wx:for="{{side.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
-          <field-picker
-            label="技能 {{skillIndex + 1}}"
-            options="{{side.skillOptions}}"
-            value-index="{{skillSelection.index}}"
-            value-label="{{skillSelection.label}}"
-            disabled="{{!side.monsterId}}"
-            data-side="{{side.side}}"
-            data-skill-index="{{skillIndex}}"
-            data-picker-handler="onSkillChange"
-            bind:change="onSkillChange"
-            bind:open="onPickerOpen"
-          />
+        <block wx:for="{{side.skillCards}}" wx:key="index" wx:for-item="skillCard" wx:for-index="skillIndex">
+          <view class="skill-action-row {{skillCard.active ? 'active' : ''}}">
+            <field-picker
+              compact
+              label="技能 {{skillIndex + 1}}"
+              options="{{side.skillOptions}}"
+              value-index="{{skillCard.selection.index}}"
+              value-label="{{skillCard.selection.label}}"
+              disabled="{{!side.monsterId}}"
+              data-side="{{side.side}}"
+              data-skill-index="{{skillIndex}}"
+              data-picker-handler="onSkillChange"
+              bind:change="onSkillChange"
+              bind:open="onPickerOpen"
+            />
+            <button
+              class="skill-action-button {{skillCard.active ? 'active' : ''}}"
+              disabled="{{!skillCard.skillId}}"
+              data-side="{{side.side}}"
+              data-action-skill-id="{{skillCard.skillId}}"
+              bindtap="onSkillActionTap"
+            >{{skillCard.active ? '本回合' : '设为本回合'}}</button>
+          </view>
         </block>
-        <field-picker
-          label="本回合技能"
-          options="{{side.actionOptions}}"
-          value-index="{{side.actionSelection.index}}"
-          value-label="{{side.actionSelection.label}}"
-          disabled="{{!side.monsterId}}"
+        <button
+          class="force-action-button {{side.forceImpact.active ? 'active' : ''}}"
+          disabled="{{side.forceImpact.locked}}"
           data-side="{{side.side}}"
-          data-picker-handler="onActionChange"
-          bind:change="onActionChange"
-          bind:open="onPickerOpen"
-        />
+          data-action-skill-id="force"
+          bindtap="onSkillActionTap"
+        >
+          <image
+            wx:if="{{side.forceImpact.icon}}"
+            class="force-action-icon {{side.forceImpact.iconClass}}"
+            src="{{side.forceImpact.icon}}"
+            mode="aspectFit"
+          />
+          <view class="force-action-text">
+            <text>{{side.forceImpact.label}}</text>
+            <text>{{side.forceImpact.hint}}</text>
+          </view>
+          <text class="force-action-state">{{side.forceImpact.active ? '本回合' : ''}}</text>
+        </button>
       </view>
 
       <view class="damage-card">

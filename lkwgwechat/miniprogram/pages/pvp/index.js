@@ -11,6 +11,7 @@ const pvpStateRules = require("../../domain/pvp-state");
 const { createStorageAdapter } = require("../../utils/storage");
 
 const storage = createStorageAdapter();
+const FORCE_IMPACT_POWER = 80;
 function closedFloatingPicker() {
   return {
     visible: false,
@@ -38,18 +39,23 @@ function optionsWithBlank(options) {
   }))];
 }
 
-function buildTeamPetOptions(team) {
+function buildMergedMonsterOptions(team) {
   const normalized = teamRules.normalizeTeam(team, catalog);
   const choices = normalized
     .map((pet, index) => {
       const monster = catalog.getMonster(pet.monsterId);
       if (!monster) return null;
+      const monsterOption = catalog.monsterOptions.find((item) => item.id === monster.id) || {};
       return {
         id: `team-pet-${index}`,
+        source: "team",
         slot: index,
         pet,
         label: `${index + 1}号位 ${monster.name}`,
-        detail: teamRules.isPetComplete(pet) ? "已配置完整" : "配置未完整"
+        aliases: [monster.name, pet.name, `${index + 1}号位`, `${index + 1}号`].filter(Boolean),
+        detail: teamRules.isPetComplete(pet) ? "已配置完整" : "配置未完整",
+        icon: monsterOption.icon,
+        iconClass: monsterOption.iconClass
       };
     })
     .filter(Boolean);
@@ -59,9 +65,16 @@ function buildTeamPetOptions(team) {
       blankOption,
       ...choices.map((choice) => ({
         id: choice.id,
+        source: "team",
         label: choice.label,
-        aliases: [choice.pet.name].filter(Boolean),
-        detail: choice.detail
+        aliases: choice.aliases,
+        detail: choice.detail,
+        icon: choice.icon,
+        iconClass: choice.iconClass
+      })),
+      ...monsterOptions.slice(1).map((option) => ({
+        ...option,
+        source: "catalog"
       }))
     ]
   };
@@ -91,6 +104,48 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
+function bloodlineForState(state) {
+  return BLOODLINES.find((item) => item.id === state?.bloodlineId) || null;
+}
+
+function forceImpactLocked(state) {
+  const bloodline = bloodlineForState(state);
+  return !bloodline?.type || bloodline.id === "bloodline-boss";
+}
+
+function forceImpactSkill(state) {
+  const bloodline = bloodlineForState(state);
+  if (forceImpactLocked(state)) return null;
+  return {
+    id: "pvp-force-impact",
+    name: "愿力冲击",
+    aliases: ["原力冲击"],
+    type: bloodline.type,
+    category: "attack",
+    power: FORCE_IMPACT_POWER,
+    description: "仅在选择属性血脉后可用，按血脉属性估算；敌方使用状态技能时伤害×2.5。"
+  };
+}
+
+function forceImpactOption(state) {
+  const skill = forceImpactSkill(state);
+  const bloodline = bloodlineForState(state);
+  return {
+    id: "force",
+    locked: !skill,
+    active: state?.action === "force",
+    label: "愿力冲击 / 原力冲击",
+    hint: skill ? "按当前血脉属性" : "选择属性血脉后可用",
+    icon: bloodline?.icon || "",
+    iconClass: bloodline?.iconClass || ""
+  };
+}
+
+function pvpActionFromState(state) {
+  if (state?.action === "force" || state?.forceImpact) return forceImpactSkill(state);
+  return catalog.getSkill(state?.action) || null;
+}
+
 function mergeStatMods(...groups) {
   return Object.fromEntries(Object.keys(statLabels).map((key) => [
     key,
@@ -117,7 +172,11 @@ function sanitizeSide(source, side) {
     return id;
   });
   state.skillIds = state.skillIds.map((id) => availableSkills.has(id) ? id : "");
-  state.action = state.skillIds.includes(state.action) ? state.action : "";
+  state.action = state.action === "force" || state.skillIds.includes(state.action)
+    ? state.action
+    : "";
+  if (forceImpactLocked(state) && state.action === "force") state.action = "";
+  state.forceImpact = state.action === "force";
   return state;
 }
 
@@ -166,12 +225,10 @@ function statRows(statResult) {
   }));
 }
 
-function sideView(state, teamPetOptions = [blankOption], selectedTeamPetId = "") {
+function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId = "") {
   const monster = catalog.getMonster(state.monsterId);
-  const selectedSkills = state.skillIds.map((id) => catalog.getSkill(id)).filter(Boolean);
   const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(state.monsterId));
-  const actionOptions = optionsWithBlank(selectedSkills);
-  const action = catalog.getSkill(state.action);
+  const action = pvpActionFromState(state);
   const result = displayedStats(monster, state, action);
   const build = result?.build;
   const traitName = monster ? pvpEffects.trait.traitName(monster) : "";
@@ -189,20 +246,31 @@ function sideView(state, teamPetOptions = [blankOption], selectedTeamPetId = "")
     },
     { key: "hitCount", label: "连击数", value: Number(state.manualHitCountBonus) || 0 }
   ];
+  const currentMonsterOptions = state.side === "ally" ? allyMonsterOptions : monsterOptions;
+  const monsterSelectionId = state.side === "ally" && selectedTeamPetId
+    ? selectedTeamPetId
+    : state.monsterId;
   return {
     ...state,
     title: state.side === "ally" ? "我方" : "敌方",
-    teamPetSelection: state.side === "ally"
-      ? selection(teamPetOptions, selectedTeamPetId)
-      : selection([blankOption], ""),
-    monsterSelection: selection(monsterOptions, state.monsterId),
+    monsterOptions: currentMonsterOptions,
+    monsterSelection: selection(currentMonsterOptions, monsterSelectionId),
     bloodlineSelection: selection(bloodlineOptions, state.bloodlineId),
     natureSelection: selection(natureOptions, state.natureId),
     talentSelections: state.talentIds.map((id) => selection(talentOptions, id)),
     skillOptions,
     skillSelections: state.skillIds.map((id) => selection(skillOptions, id)),
-    actionOptions,
-    actionSelection: selection(actionOptions, state.action),
+    skillCards: state.skillIds.map((id, index) => {
+      const skill = catalog.getSkill(id);
+      return {
+        index,
+        skillId: id,
+        name: skill?.name || "",
+        active: Boolean(id && state.action === id),
+        selection: selection(skillOptions, id)
+      };
+    }),
+    forceImpact: forceImpactOption(state),
     statRows: statRows(result),
     traitName: traitName || "无层数特性",
     controls,
@@ -242,8 +310,8 @@ function calculateDamageFor(side, state, views) {
   const defenderState = state[defenderSide];
   const attacker = catalog.getMonster(attackerState.monsterId);
   const defender = catalog.getMonster(defenderState.monsterId);
-  const action = catalog.getSkill(attackerState.action);
-  const defenderAction = catalog.getSkill(defenderState.action);
+  const action = pvpActionFromState(attackerState);
+  const defenderAction = pvpActionFromState(defenderState);
   const attackerView = views.find((view) => view.side === side);
   const defenderView = views.find((view) => view.side === defenderSide);
 
@@ -334,9 +402,9 @@ function calculateDamageFor(side, state, views) {
       ...action,
       type: damageType
     }),
-    skillDamageMultiplier: Number(
-      responseOnly ? variable.responseDamageMultiplier : variable.damageMultiplier
-    ) || 1,
+    skillDamageMultiplier: action.id === "pvp-force-impact" && response.success
+      ? 2.5
+      : (Number(responseOnly ? variable.responseDamageMultiplier : variable.damageMultiplier) || 1),
     hitCount: Math.max(1, baseHitCount + hitCountBonus)
   });
 
@@ -362,7 +430,7 @@ Page({
     natureOptions,
     talentOptions,
     weatherOptions,
-    teamPetOptions: [blankOption],
+    allyMonsterOptions: monsterOptions,
     weather: "",
     pickerScrollLocked: false,
     floatingPicker: closedFloatingPicker(),
@@ -370,15 +438,15 @@ Page({
   },
 
   onShow() {
-    this.refreshTeamPetOptions();
+    this.refreshAllyMonsterOptions();
     const saved = storage.loadPvp(pvpStateRules.normalizePvpState);
     this.applyState(saved || pvpStateRules.defaultPvpState(), false);
   },
 
-  refreshTeamPetOptions() {
-    const { choices, options } = buildTeamPetOptions(storage.loadTeam(catalog));
+  refreshAllyMonsterOptions() {
+    const { choices, options } = buildMergedMonsterOptions(storage.loadTeam(catalog));
     this.teamPetChoices = choices;
-    this.teamPetOptions = options;
+    this.allyMonsterOptions = options;
     if (!choices.some((choice) => choice.id === this.selectedTeamPetId)) {
       this.selectedTeamPetId = "";
     }
@@ -393,10 +461,10 @@ Page({
     normalized.ally = sanitizeSide(normalized.ally, "ally");
     normalized.enemy = sanitizeSide(normalized.enemy, "enemy");
     this.pvpState = normalized;
-    const teamPetOptions = this.teamPetOptions || [blankOption];
+    const allyMonsterOptions = this.allyMonsterOptions || monsterOptions;
     const sides = [
-      sideView(normalized.ally, teamPetOptions, this.selectedTeamPetId || ""),
-      sideView(normalized.enemy, teamPetOptions, "")
+      sideView(normalized.ally, allyMonsterOptions, this.selectedTeamPetId || ""),
+      sideView(normalized.enemy, allyMonsterOptions, "")
     ];
     const sidesWithResults = sides.map((side) => ({
       ...side,
@@ -409,7 +477,7 @@ Page({
         ...item,
         active: item.id === normalized.weather
       })),
-      teamPetOptions,
+      allyMonsterOptions,
       sides: sidesWithResults
     });
   },
@@ -424,32 +492,31 @@ Page({
     if (side === "ally") this.selectedTeamPetId = "";
   },
 
-  onTeamPetChange(event) {
-    const option = (this.teamPetOptions || [blankOption])[event.detail.index] || blankOption;
-    const choice = (this.teamPetChoices || []).find((item) => item.id === option.id);
-    this.selectedTeamPetId = choice?.id || "";
-    if (!choice) {
-      this.applyState(this.currentState());
-      return;
-    }
-    this.mutateSide("ally", (state) => {
-      const previousPreset = state.defaultBuildPreset;
-      const monster = catalog.getMonster(choice.pet.monsterId);
-      Object.assign(state, pvpStateRules.defaultSide("ally"), {
-        monsterId: choice.pet.monsterId,
-        bloodlineId: choice.pet.bloodlineId,
-        natureId: choice.pet.natureId,
-        talentIds: [...choice.pet.talentIds],
-        skillIds: choice.pet.skills.map((skill) => skill.skillId),
-        defaultBuildPreset: previousPreset,
-        traitLayers: monster ? pvpEffects.trait.defaultTraitLayers(monster) : 0
-      });
-    });
-  },
-
   onMonsterChange(event) {
     const side = event.currentTarget.dataset.side;
-    const option = monsterOptions[event.detail.index] || blankOption;
+    const view = this.data.sides.find((item) => item.side === side);
+    const options = view?.monsterOptions || monsterOptions;
+    const option = options[event.detail.index] || blankOption;
+    const choice = side === "ally"
+      ? (this.teamPetChoices || []).find((item) => item.id === option.id)
+      : null;
+    this.selectedTeamPetId = choice?.id || "";
+    if (choice) {
+      this.mutateSide("ally", (state) => {
+        const previousPreset = state.defaultBuildPreset;
+        const monster = catalog.getMonster(choice.pet.monsterId);
+        Object.assign(state, pvpStateRules.defaultSide("ally"), {
+          monsterId: choice.pet.monsterId,
+          bloodlineId: choice.pet.bloodlineId,
+          natureId: choice.pet.natureId,
+          talentIds: [...choice.pet.talentIds],
+          skillIds: choice.pet.skills.map((skill) => skill.skillId),
+          defaultBuildPreset: previousPreset,
+          traitLayers: monster ? pvpEffects.trait.defaultTraitLayers(monster) : 0
+        });
+      });
+      return;
+    }
     this.clearImportedTeamPet(side);
     this.mutateSide(side, (state) => {
       Object.assign(state, pvpStateRules.defaultSide(side), {
@@ -499,16 +566,23 @@ Page({
     this.clearImportedTeamPet(side);
     this.mutateSide(side, (state) => {
       state.skillIds[skillIndex] = option.id;
-      if (!state.skillIds.includes(state.action)) state.action = "";
+      if (state.action !== "force" && !state.skillIds.includes(state.action)) state.action = "";
     });
   },
 
-  onActionChange(event) {
+  onSkillActionTap(event) {
     const side = event.currentTarget.dataset.side;
-    const view = this.data.sides.find((item) => item.side === side);
-    const option = view.actionOptions[event.detail.index] || blankOption;
+    const skillId = event.currentTarget.dataset.actionSkillId;
     this.mutateSide(side, (state) => {
-      state.action = option.id;
+      if (skillId === "force") {
+        if (forceImpactLocked(state)) return;
+        state.action = "force";
+        state.forceImpact = true;
+        return;
+      }
+      if (!skillId) return;
+      state.action = skillId;
+      state.forceImpact = false;
     });
   },
 

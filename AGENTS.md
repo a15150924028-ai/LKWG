@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 17:27 +08:00 - Codex
+
+- Request: Adjust the Mini Program PVP compact design so no manual controls are removed, merge ally team import into the pet selector, remove the separate current-turn skill selector, and restore the web-only Force Impact action that users search as `原力冲击`.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Merged configured ally team slots into the PVP `精灵` selector so selecting a configured slot imports monster, bloodline, nature, talents, skills, and trait defaults, while enemy pet selection remains manual catalog search.
+  - Removed the separate `从队伍导入` and `本回合技能` selectors from the PVP page; selected skills now have compact `设为本回合` buttons beside the skill picker.
+  - Added the web-equivalent virtual `愿力冲击 / 原力冲击` PVP action, unlocked by attribute bloodlines, typed from the selected bloodline, and applying the status-response damage multiplier.
+  - Compressed PVP spacing, steppers, skill rows, and manual adjustment controls while preserving every manual field: trait layers, energy, six stat modifiers, flat skill power, percent skill power, and hit-count bonus.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail on the old seven-selector structure, then pass after implementation. Ran all 54 Node tests, all three Mini Program synchronization checks, parsed all Mini Program JavaScript and JSON files, ran `git diff --check`, and confirmed the upload-readiness package check at 1,823,620 bytes, still under the 2 MiB Mini Program limit. WeChat Developer Tools simulator and real-device confirmation remain manual/external checks.
+- Status: Complete for implementation and automated verification; manual Mini Program preview remains pending.
+
 ### 2026-06-16 17:02 +08:00 - Codex
 
 - Request: Treat the WeChat Mini Program as upload-ready except remaining WeChat runtime checks, inspect for Developer Tools, preview, or review blockers, fix what can be fixed locally, and leave a minimal simulator/device checklist.

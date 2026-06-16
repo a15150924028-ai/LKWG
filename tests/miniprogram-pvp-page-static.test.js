@@ -39,8 +39,8 @@ assert.strictEqual(
 );
 assert.strictEqual(
   (pageWxml.match(/<field-picker/g) || []).length,
-  7,
-  "PVP must route every selector template through field-picker"
+  5,
+  "PVP must keep only the compact selector templates: monster/team, bloodline, nature, talents, and skill picker"
 );
 assert(pageWxml.includes("<page-meta"));
 assert(pageWxml.includes("pickerScrollLocked"));
@@ -64,13 +64,26 @@ assert(pageJs.includes("onPickerOpen("));
 assert(pageJs.includes("onFloatingPickerSelect("));
 assert(pageJs.includes("onFloatingPickerClose("));
 assert(pageJs.includes("pickerHandler"));
-assert(pageJs.includes("teamPetOptions"));
-assert(pageJs.includes("buildTeamPetOptions("));
-assert(pageJs.includes("onTeamPetChange("));
+assert(pageJs.includes("allyMonsterOptions"));
+assert(pageJs.includes("buildMergedMonsterOptions("));
+assert(pageJs.includes("source: \"team\""));
+assert(pageJs.includes("forceImpactSkill("));
+assert(pageJs.includes("forceImpactOption("));
+assert(pageJs.includes("onSkillActionTap("));
 assert(pageJs.includes("storage.loadTeam"));
-assert(pageWxml.includes('wx:if="{{side.side === \'ally\'}}"'));
-assert(pageWxml.includes('data-picker-handler="onTeamPetChange"'));
-assert(pageWxml.includes("teamPetOptions"));
+assert(!pageWxml.includes('label="从队伍导入"'), "PVP ally team import must be merged into the monster selector.");
+assert(!pageWxml.includes("teamPetOptions"), "PVP page must not render a separate team-pet selector.");
+assert(!pageWxml.includes('label="本回合技能"'), "PVP page must use skill-card taps instead of a separate current-skill selector.");
+assert(!pageJs.includes("onTeamPetChange("));
+assert(!pageJs.includes("onActionChange("));
+assert(!pageJs.includes("actionOptions"));
+assert(!pageJs.includes("actionSelection"));
+assert(pageWxml.includes("side.monsterOptions"));
+assert(pageWxml.includes("side.skillCards"));
+assert(pageWxml.includes("data-action-skill-id"));
+assert(pageWxml.includes("side.forceImpact.label"));
+assert(pageJs.includes("愿力冲击"));
+assert(pageJs.includes("原力冲击"));
 assert(!pickerWxml.includes("<input"), "PVP field-picker must be read-only");
 assert(!pickerWxml.includes("suggestion-list"), "PVP field-picker must not inline suggestions");
 assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
@@ -84,8 +97,7 @@ for (const handler of [
   "onNatureChange",
   "onTalentChange",
   "onSkillChange",
-  "onActionChange",
-  "onTeamPetChange",
+  "onSkillActionTap",
   "selectPreset",
   "selectWeather",
   "adjustValue",
