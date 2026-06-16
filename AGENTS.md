@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 17:02 +08:00 - Codex
+
+- Request: Treat the WeChat Mini Program as upload-ready except remaining WeChat runtime checks, inspect for Developer Tools, preview, or review blockers, fix what can be fixed locally, and leave a minimal simulator/device checklist.
+- Files changed:
+  - `lkwgwechat/project.config.json`
+  - `tests/miniprogram-upload-readiness-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Preserved and tracked the current Developer Tools upload/base-library settings in `project.config.json`, including the `3.16.1` base library pin and minification/SWC-related upload flags.
+  - Added a Mini Program upload-readiness static test that verifies project config basics, app pages, page component files, sitemap presence, source parseability, missing local references, WXML tag/binding compatibility, replacement-character absence, and the 2 MiB package budget.
+  - Confirmed the local audit found no additional code defect that could be fixed without running WeChat Developer Tools or a real-device preview.
+- Verification: Ran all three Mini Program synchronization `--check` commands, all 54 Node tests, parsed 43 Mini Program JavaScript/JSON files including `project.config.json`, ran `git diff --check`, and measured the runtime package at 1,819,181 bytes (1.735 MiB), leaving 277,971 bytes before 2 MiB. WeChat Developer Tools simulator compile, preview QR flow, upload, and real-device confirmation remain manual/external runtime checks.
+- Status: Complete for local code/config audit and automated verification; remaining checks are the WeChat runtime checks requested for the final checklist.
+
 ### 2026-06-16 15:17 +08:00 - Codex
 
 - Request: Close more Mini Program parity gaps by showing who can learn each roller target skill on the analysis page, and let PVP ally import already configured team pets with their configured build while keeping enemy setup manual.
