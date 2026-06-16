@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-16 10:26 +08:00 - Codex
+
+- Request: Design and plan Mini Program selector icons for bloodline, talent, and nature fields, including nature stat up/down labels.
+- Files changed:
+  - `docs/superpowers/specs/2026-06-16-wechat-selector-icons-design.md`
+  - `docs/superpowers/plans/2026-06-16-wechat-selector-icons.md`
+  - `AGENTS.md`
+- Changes:
+  - Defined reuse of existing web type, boss bloodline, and stat icon assets without adding monster images.
+  - Planned option metadata propagation through the shared `field-picker`, so team and PVP selectors stay consistent.
+  - Estimated the package growth at roughly 310-325 KiB, leaving the Mini Program below 2 MiB.
+- Verification: Measured current asset sizes, confirmed the web uses only the boss bloodline PNG plus type/stat icons for selector UI, and checked the current Mini Program package at 1.416 MiB before implementation.
+- Status: Complete; implementation follows immediately.
+
 ### 2026-06-15 21:40 +08:00 - Codex
 
 - Request: Add the web roller icon to the Mini Program and restore web-equivalent fuzzy autocomplete for all team and PVP selectors.
