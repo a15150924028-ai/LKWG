@@ -51,7 +51,7 @@ Create valid page files and configure:
     "pages/pvp/index"
   ],
   "window": {
-    "navigationBarTitleText": "精灵PVP策略助手",
+    "navigationBarTitleText": "rock工具",
     "navigationBarBackgroundColor": "#f5f7fb",
     "navigationBarTextStyle": "black"
   },

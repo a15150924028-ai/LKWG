@@ -15,8 +15,8 @@ function expectAbsent(pattern, message) {
   }
 }
 
-expect(/<title>洛克PVP配对模拟器<\/title>/, "页面标题必须改为洛克PVP配对模拟器");
-expect(/<h1>洛克PVP配对模拟器<\/h1>/, "页头标题必须改为洛克PVP配对模拟器");
+expect(/<title>rock工具<\/title>/, "页面标题必须改为rock工具");
+expect(/<h1>rock工具<\/h1>/, "页头标题必须改为rock工具");
 expect(/data-scroll-target="teamSection"[^>]*>队伍</, "缺少队伍导航");
 expect(/data-scroll-target="resultsSection"[^>]*>分析</, "缺少分析导航");
 expect(/data-scroll-target="pvpDamageSim"[^>]*>伤害</, "缺少伤害导航");
