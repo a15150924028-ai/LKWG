@@ -128,12 +128,14 @@
       <block wx:for="{{activePet.skillSelections}}" wx:key="index" wx:for-item="skillSelection" wx:for-index="skillIndex">
         <field-picker
           label="技能 {{skillIndex + 1}}"
-          options="{{activePet.skillOptions}}"
-          value-index="{{skillSelection.index}}"
+          options="{{skillSelection.displayOptions}}"
+          value-index="{{skillSelection.displayIndex}}"
           value-label="{{skillSelection.label}}"
           disabled="{{!activePet.monsterId}}"
           data-pet-index="{{activePet.slot}}"
           data-skill-index="{{skillIndex}}"
+          data-picker-options="allSkillOptions"
+          data-value-index="{{skillSelection.index}}"
           data-picker-handler="onSkillChange"
           bind:change="onSkillChange"
           bind:open="onPickerOpen"

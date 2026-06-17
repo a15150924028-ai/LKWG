@@ -33,6 +33,11 @@ assert.deepStrictEqual(appJson.pages, [
   "pages/analysis/index",
   "pages/pvp/index"
 ]);
+assert.strictEqual(
+  appJson.lazyCodeLoading,
+  "requiredComponents",
+  "Mini Program should enable requiredComponents lazy loading to reduce startup work in WeChat Developer Tools"
+);
 assert.deepStrictEqual(
   appJson.tabBar.list.map((item) => item.text),
   ["队伍", "分析", "PVP"]

@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 21:15 +08:00 - Codex
+
+- Request: Continue fixing the WeChat Developer Tools `Error: timeout` after the previous component warning fix still left the debugger timeout visible.
+- Files changed:
+  - `lkwgwechat/miniprogram/app.json`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `tests/miniprogram-shell-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Treated the remaining `WAServiceMainContext` timeout as a Mini Program startup/debugger weight issue, not a missing-backend issue.
+  - Enabled Mini Program `requiredComponents` lazy code loading so DevTools has less startup work before the active page renders.
+  - Changed the team skill field-pickers to receive compact visible options containing only the blank item and current skill, instead of binding the full 499-skill catalog into every visible picker component.
+  - Kept full-catalog skill selection by injecting `allSkillOptions` only into the shared floating picker when a skill picker opens, preserving the real full-catalog index.
+  - Added regression coverage for lazy loading, compact visible skill picker options, and full-catalog floating picker behavior.
+- Verification: Watched focused shell and team-page tests fail before implementation on missing `lazyCodeLoading` and compact skill picker data, then pass after implementation. Ran focused shell, team-page, and upload-readiness tests. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools should be recompiled manually to confirm the internal timeout is reduced or gone.
+
 ### 2026-06-17 21:07 +08:00 - Codex
 
 - Request: Explain and fix the Mini Program `field-picker` `options` non-array warning and determine whether it is caused by having no backend.

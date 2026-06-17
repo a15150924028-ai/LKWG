@@ -121,8 +121,36 @@ assert(
   "team skill configuration must expose the full skill catalog, not only the selected monster's native skill list"
 );
 assert(
+  pageJs.includes("function skillSelection("),
+  "team skill selection view data should build compact display options for visible field-pickers"
+);
+assert(
+  pageJs.includes('const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";'),
+  "team picker open path must opt into the full skill catalog only when opening the floating picker"
+);
+assert(
   !pageJs.includes("const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));"),
   "team skill configuration must not rebuild its picker from monsterSkillOptions"
+);
+assert(
+  pageWxml.includes('options="{{skillSelection.displayOptions}}"'),
+  "visible team skill field-pickers should receive compact display options instead of the full skill catalog"
+);
+assert(
+  pageWxml.includes('value-index="{{skillSelection.displayIndex}}"'),
+  "visible team skill field-pickers should use a compact display index"
+);
+assert(
+  pageWxml.includes('data-picker-options="allSkillOptions"'),
+  "team skill field-pickers should request the full catalog only for the floating picker"
+);
+assert(
+  pageWxml.includes('data-value-index="{{skillSelection.index}}"'),
+  "team skill field-pickers should pass the real full-catalog index to the floating picker"
+);
+assert(
+  !pageWxml.includes('options="{{activePet.skillOptions}}"'),
+  "team skill field-pickers must not bind the full skill catalog into every visible component"
 );
 assert(pageJs.includes("passives:"), "team view must expose passive details");
 assert(pageJs.includes("skillDetails:"), "team view must expose selected skill details");
@@ -237,18 +265,49 @@ assert(
   payloadPage.data.team.every((pet) => !Object.prototype.hasOwnProperty.call(pet, "skillOptions")),
   "team page must not duplicate the full skill catalog into every team pet"
 );
-assert.strictEqual(
-  payloadPage.data.activePet.skillOptions.length,
-  catalog.skillOptions.length + 1,
-  "active team pet should still expose the full skill catalog to the skill picker"
+assert(
+  payloadPage.data.activePet.skillSelections.every((skillSelection) => (
+    Array.isArray(skillSelection.displayOptions) && skillSelection.displayOptions.length <= 2
+  )),
+  "active team pet should expose only compact skill display options to visible field-pickers"
+);
+assert(
+  !Object.prototype.hasOwnProperty.call(payloadPage.data.activePet, "skillOptions"),
+  "active team pet must not bind the full skill catalog into visible field-pickers"
 );
 payloadPage.selectTeamSlot({
   currentTarget: { dataset: { teamSlot: 1 } }
 });
+assert(
+  payloadPage.data.activePet.skillSelections.every((skillSelection) => (
+    Array.isArray(skillSelection.displayOptions) && skillSelection.displayOptions.length <= 2
+  )),
+  "switching team slots must keep compact skill display options for field-picker"
+);
+payloadPage.onPickerOpen({
+  currentTarget: {
+    dataset: {
+      pickerOptions: "allSkillOptions",
+      valueIndex: 3,
+      pickerHandler: "onSkillChange"
+    }
+  },
+  detail: {
+    label: "技能 1",
+    options: payloadPage.data.activePet.skillSelections[0].displayOptions,
+    valueIndex: payloadPage.data.activePet.skillSelections[0].displayIndex,
+    valueLabel: payloadPage.data.activePet.skillSelections[0].label
+  }
+});
 assert.strictEqual(
-  payloadPage.data.activePet.skillOptions.length,
+  payloadPage.data.floatingPicker.options.length,
   catalog.skillOptions.length + 1,
-  "switching team slots must keep activePet.skillOptions as an array for field-picker"
+  "opening a team skill picker should still load the full skill catalog into the shared floating picker"
+);
+assert.strictEqual(
+  payloadPage.data.floatingPicker.valueIndex,
+  3,
+  "opening a team skill picker should preserve the real full-catalog index"
 );
 
 for (const bossName of bossMonsterNames) {

@@ -99,6 +99,16 @@ function selectedSkillDetail(skillId, index) {
   };
 }
 
+function skillSelection(skillId) {
+  const selected = selection(allSkillOptions, skillId);
+  const option = allSkillOptions[selected.index] || blankOption;
+  return {
+    ...selected,
+    displayIndex: option.id ? 1 : 0,
+    displayOptions: option.id ? [blankOption, option] : [blankOption]
+  };
+}
+
 function teamView(team) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
@@ -120,7 +130,7 @@ function teamView(team) {
           name: passive.name,
           description: passive.description || "暂无特性说明"
         })),
-      skillSelections: pet.skills.map((skill) => selection(allSkillOptions, skill.skillId)),
+      skillSelections: pet.skills.map((skill) => skillSelection(skill.skillId)),
       skillDetails: pet.skills
         .map((skill, index) => selectedSkillDetail(skill.skillId, index))
         .filter(Boolean)
@@ -171,10 +181,7 @@ Page({
         typeNames: pet.typeNames
       })),
       activeTeamIndex,
-      activePet: view[activeTeamIndex] ? {
-        ...view[activeTeamIndex],
-        skillOptions: allSkillOptions
-      } : null,
+      activePet: view[activeTeamIndex] || null,
       configuredCount,
       progressPercent: Math.round((configuredCount / 6) * 100),
       canUndo: Boolean(this.undoTeam)
@@ -198,10 +205,7 @@ Page({
     if (!Number.isInteger(index) || index < 0 || index >= this.data.team.length) return;
     this.setData({
       activeTeamIndex: index,
-      activePet: {
-        ...this.data.team[index],
-        skillOptions: allSkillOptions
-      }
+      activePet: this.data.team[index]
     });
   },
 
@@ -259,15 +263,17 @@ Page({
 
   onPickerOpen(event) {
     const detail = event.detail || {};
+    const dataset = event.currentTarget.dataset || {};
+    const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";
     this.setData({
       pickerScrollLocked: true,
       floatingPicker: {
         visible: true,
         label: detail.label || "",
-        options: detail.options || [],
-        valueIndex: Number(detail.valueIndex) || 0,
+        options: useAllSkillOptions ? allSkillOptions : (detail.options || []),
+        valueIndex: useAllSkillOptions ? Number(dataset.valueIndex) || 0 : Number(detail.valueIndex) || 0,
         valueLabel: detail.valueLabel || blankOption.label,
-        dataset: { ...(event.currentTarget.dataset || {}) }
+        dataset: { ...dataset }
       }
     });
   },
