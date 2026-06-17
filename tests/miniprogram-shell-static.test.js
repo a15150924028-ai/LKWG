@@ -55,13 +55,12 @@ for (const disallowedBackground of [
   );
 }
 assert(
-  appWxss.includes(".page::before") && appWxss.includes(".page::after") && appWxss.includes(".hero::after"),
-  "global shell should restore restrained low-opacity blue-purple glow layers for Liquid Glass depth"
+  !appWxss.includes(".page::before") && !appWxss.includes(".page::after") && !appWxss.includes(".hero::after"),
+  "global shell must avoid pseudo-element glow layers that can destabilize the WeChat render layer"
 );
-assert(appWxss.includes("rgba(77, 163, 255, 0.12)"), "global blue glow should stay very low opacity");
-assert(appWxss.includes("rgba(108, 99, 255, 0.10)"), "global purple glow should stay very low opacity");
-assert(appWxss.includes("rgba(70, 216, 207, 0.07)"), "global cyan glow should stay extremely subtle");
-assert(appWxss.includes("backdrop-filter: blur(24rpx)"), "global glass cards should use stronger blur");
+assert(!appWxss.includes("backdrop-filter"), "global glass cards must not use runtime backdrop blur in Mini Program WXSS");
+assert(!appWxss.includes("filter: blur"), "global shell must not use CSS blur filters in Mini Program WXSS");
+assert(appWxss.includes("linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.44))"), "global glass cards should use static translucent gradients for depth");
 assert(appWxss.includes("rgba(255, 255, 255, 0.52)"), "global cards should lower opacity for a wetter glass feel without losing readability");
 assert(appWxss.includes("0 16rpx 40rpx rgba(80, 110, 160, 0.16)"), "global cards should use a softer deeper Liquid Glass shadow");
 assert(appWxss.includes("inset 0 -1rpx 0 rgba(255, 255, 255, 0.36)"), "global cards should include an inner lower highlight edge");

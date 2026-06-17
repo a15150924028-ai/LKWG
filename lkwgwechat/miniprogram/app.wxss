@@ -14,31 +14,6 @@ page {
   padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
 }
 
-.page::before,
-.page::after {
-  content: "";
-  position: fixed;
-  z-index: 0;
-  width: 320rpx;
-  height: 320rpx;
-  border-radius: 50%;
-  filter: blur(56rpx);
-  opacity: 1;
-  pointer-events: none;
-}
-
-.page::before {
-  top: 12rpx;
-  right: -150rpx;
-  background: rgba(77, 163, 255, 0.12);
-}
-
-.page::after {
-  left: -150rpx;
-  bottom: 120rpx;
-  background: rgba(70, 216, 207, 0.07);
-}
-
 .hero {
   position: relative;
   overflow: hidden;
@@ -46,21 +21,8 @@ page {
   border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 48rpx;
   background: rgba(255, 255, 255, 0.52);
-  backdrop-filter: blur(24rpx);
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.44)), radial-gradient(circle at 88% 12%, rgba(108, 99, 255, 0.10), rgba(108, 99, 255, 0) 42%), radial-gradient(circle at 4% 100%, rgba(70, 216, 207, 0.07), rgba(70, 216, 207, 0) 46%);
   box-shadow: 0 16rpx 40rpx rgba(80, 110, 160, 0.16), inset 0 1rpx 0 rgba(255, 255, 255, 0.90), inset 0 -1rpx 0 rgba(255, 255, 255, 0.36);
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  right: 24rpx;
-  top: 20rpx;
-  width: 150rpx;
-  height: 150rpx;
-  border-radius: 50%;
-  background: rgba(108, 99, 255, 0.10);
-  filter: blur(38rpx);
-  pointer-events: none;
 }
 
 .hero-title {
@@ -88,7 +50,7 @@ page {
   border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 40rpx;
   background: rgba(255, 255, 255, 0.52);
-  backdrop-filter: blur(24rpx);
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.44)), radial-gradient(circle at 92% 0%, rgba(77, 163, 255, 0.08), rgba(77, 163, 255, 0) 42%);
   box-shadow: 0 16rpx 40rpx rgba(80, 110, 160, 0.16), inset 0 1rpx 0 rgba(255, 255, 255, 0.90), inset 0 -1rpx 0 rgba(255, 255, 255, 0.36);
 }
 

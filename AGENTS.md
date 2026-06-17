@@ -56,6 +56,33 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 11:43 +08:00 - Codex
+
+- Request: Fix the WeChat Developer Tools debugger render-layer bug showing `Error: timeout` and `[渲染层错误] unknown removedNode`.
+- Files changed:
+  - `lkwgwechat/miniprogram/app.wxss`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/stat-grid/index.wxss`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `style.md`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `tests/miniprogram-shell-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-upload-readiness-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed Mini Program runtime `backdrop-filter`, CSS `filter: blur(...)`, and page-level glow pseudo-elements that can destabilize the WeChat render layer during DevTools inspection/hot reload.
+  - Replaced those effects with static translucent gradients, subtle radial light, inner highlight edges, and soft shadows so the Liquid Glass direction remains readable without runtime blur.
+  - Updated `style.md` to document the Mini Program-specific rule against runtime blur/filter/page glow pseudo-elements.
+  - Added upload-readiness coverage that rejects risky WXSS render-layer effects, and updated visual static tests to expect static glass treatment.
+- Verification: Watched `node tests/miniprogram-upload-readiness-static.test.js` fail before the WXSS fix because `app.wxss` still used `backdrop-filter`, then pass after implementation. Ran focused Mini Program shell/search/team/analysis/PVP tests; ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; verified `rg -n "backdrop-filter|filter:\s*blur|\.page::before|\.page::after|\.hero::after" lkwgwechat/miniprogram` returns no matches; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools simulator confirmation should be rerun manually to confirm the debugger no longer reports the render-layer timeout.
+
 ### 2026-06-17 11:12 +08:00 - Codex
 
 - Request: Keep the current Mini Program UI direction but make the Liquid Glass effect more translucent, glossy, and luminous without hurting readability.

@@ -89,13 +89,13 @@ assert(pageWxml.includes("team-progress-track"), "team page should render a Liqu
 assert(pageWxml.includes("team-progress-fill"), "team page should render a gradient progress fill");
 assert(pageWxml.includes("progressPercent"), "team progress fill should be driven by view data");
 assert(pageWxss.includes("rgba(255, 255, 255, 0.52)"), "team toolbar/cards should use wetter translucent glass cards");
-assert(pageWxss.includes("backdrop-filter: blur(24rpx)"), "team large cards should use stronger glass blur");
+assert(!pageWxss.includes("backdrop-filter"), "team page must not use runtime backdrop blur in Mini Program WXSS");
 assert(pageWxss.includes("0 16rpx 40rpx rgba(80, 110, 160, 0.16)"), "team large cards should use softer deeper glass shadows");
 assert(pageWxss.includes("linear-gradient(90deg, #46D8CF, #6C63FF)"), "team progress fill should use teal to purple gradient");
 assert(pageWxss.includes("border-radius: 999rpx"), "team action buttons and chips should be pill shaped");
 assert(
-  /\.detail-panel\s*{[^}]*background:\s*rgba\(255, 255, 255, 0\.46\);[^}]*backdrop-filter:\s*blur\(18rpx\);/s.test(pageWxss),
-  "team passive/detail panels should use softer independent glass with blur, not a solid white fill"
+  /\.detail-panel\s*{[^}]*background:\s*linear-gradient\(135deg, rgba\(255, 255, 255, 0\.50\), rgba\(255, 255, 255, 0\.38\)\);/s.test(pageWxss),
+  "team passive/detail panels should use independent static glass gradients, not a solid white fill"
 );
 assert(
   !pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"),

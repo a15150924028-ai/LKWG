@@ -66,6 +66,10 @@ for (const file of sourceFiles) {
     JSON.parse(source);
   } else if (file.endsWith(".js")) {
     new Function(source);
+  } else if (file.endsWith(".wxss")) {
+    assert(!/backdrop-filter\s*:/.test(source), `WXSS backdrop-filter can timeout WeChat render layer: ${file}`);
+    assert(!/filter\s*:\s*blur\(/.test(source), `WXSS filter blur can timeout WeChat render layer: ${file}`);
+    assert(!/\.(?:page|hero)::(?:before|after)\b/.test(source), `WXSS pseudo-element glow can destabilize Mini Program render layer: ${file}`);
   }
 
   const localReferences = source.matchAll(

@@ -121,13 +121,15 @@
 
 ```css
 background: rgba(255,255,255,0.52);
-backdrop-filter: blur(24px);
+background-image: linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.44));
 border: 1px solid rgba(255,255,255,0.85);
 box-shadow:
   0 16px 40px rgba(80, 110, 160, 0.16),
   inset 0 1px 0 rgba(255,255,255,0.90),
   inset 0 -1px 0 rgba(255,255,255,0.36);
 ```
+
+Mini Program implementation note: do not use `backdrop-filter`, `filter: blur(...)`, or page-level pseudo-element glow layers in WXSS. Use translucent gradients, inner highlight edges, subtle radial background light, and soft shadows to simulate Liquid Glass while keeping text crisp and avoiding WeChat DevTools render-layer timeout / removedNode errors.
 
 ---
 

@@ -165,7 +165,7 @@ assert(pageWxss.includes("grid-template-columns: 48rpx minmax(42rpx, 1fr) 48rpx"
 assert(pageWxss.includes("height: 48rpx"), "PVP advanced +/- buttons should be tall enough to tap comfortably.");
 assert(pageWxss.includes("font-size: 34rpx"), "PVP advanced +/- symbols should be visibly larger.");
 assert(pageWxss.includes("rgba(255, 255, 255, 0.52)"), "PVP cards should use wetter translucent glass cards.");
-assert(pageWxss.includes("backdrop-filter: blur(24rpx)"), "PVP large cards should use stronger glass blur.");
+assert(!pageWxss.includes("backdrop-filter"), "PVP page must not use runtime backdrop blur in Mini Program WXSS.");
 assert(pageWxss.includes("0 16rpx 40rpx rgba(80, 110, 160, 0.16)"), "PVP large cards should use softer deeper Liquid Glass shadows.");
 assert(pageWxss.includes("linear-gradient(135deg, #607089, #4DA3FF)"), "PVP selected weather should use the Liquid Glass segmented gradient.");
 assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "PVP damage card should use the blue/teal result gradient.");
@@ -235,8 +235,8 @@ assert(
 assert(pageWxss.includes(".default-note"));
 assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
 assert(
-  /\.advanced-toggle\s*{[^}]*background:\s*rgba\(255, 255, 255, 0\.46\);[^}]*backdrop-filter:\s*blur\(18rpx\);/s.test(pageWxss),
-  "PVP advanced toggle should use softer blurred white glass, not a solid white fill"
+  /\.advanced-toggle\s*{[^}]*background:\s*linear-gradient\(135deg, rgba\(255, 255, 255, 0\.50\), rgba\(255, 255, 255, 0\.38\)\);/s.test(pageWxss),
+  "PVP advanced toggle should use softer static white glass, not a solid white fill"
 );
 assert(
   !pageWxss.includes("linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(70, 216, 207, 0.08))"),

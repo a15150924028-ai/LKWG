@@ -225,7 +225,7 @@ assert(pageWxml.includes("type-chip-list"));
 assert(pageWxml.includes("type-chip-icon"));
 assert(pageWxml.includes("{{type.icon}}"));
 assert(pageWxss.includes("rgba(255, 255, 255, 0.52)"), "analysis cards should use wetter translucent glass cards");
-assert(pageWxss.includes("backdrop-filter: blur(24rpx)"), "analysis cards should use stronger glass blur");
+assert(!pageWxss.includes("backdrop-filter"), "analysis page must not use runtime backdrop blur in Mini Program WXSS");
 assert(pageWxss.includes("0 16rpx 40rpx rgba(80, 110, 160, 0.16)"), "analysis cards should use softer deeper Liquid Glass shadows");
 assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "analysis summary cards should use soft gradient glass fills");
 assert(pageWxss.includes("border-radius: 999rpx"), "analysis type chips and state badges should be pill shaped");
