@@ -211,6 +211,7 @@ function createPageInstance() {
     ...capturedPage,
     data: JSON.parse(JSON.stringify(capturedPage.data)),
     setData(update) {
+      this.lastSetDataBytes = Buffer.byteLength(JSON.stringify(update));
       this.data = {
         ...this.data,
         ...update
@@ -218,6 +219,23 @@ function createPageInstance() {
     }
   };
 }
+
+const payloadPage = createPageInstance();
+payloadPage.onLoad();
+payloadPage.applyTeam(undefined, false);
+assert(
+  payloadPage.lastSetDataBytes < 200000,
+  `team page initial setData payload should stay below 200 KB, got ${payloadPage.lastSetDataBytes}`
+);
+assert(
+  payloadPage.data.team.every((pet) => !Object.prototype.hasOwnProperty.call(pet, "skillOptions")),
+  "team page must not duplicate the full skill catalog into every team pet"
+);
+assert.strictEqual(
+  payloadPage.data.activePet.skillOptions.length,
+  catalog.skillOptions.length + 1,
+  "active team pet should still expose the full skill catalog to the skill picker"
+);
 
 for (const bossName of bossMonsterNames) {
   const representative = representativeMonster(bossName);

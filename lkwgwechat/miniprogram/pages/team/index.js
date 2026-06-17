@@ -102,7 +102,6 @@ function selectedSkillDetail(skillId, index) {
 function teamView(team) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
-    const skillOptions = allSkillOptions;
     return {
       ...pet,
       slot,
@@ -121,8 +120,7 @@ function teamView(team) {
           name: passive.name,
           description: passive.description || "暂无特性说明"
         })),
-      skillOptions,
-      skillSelections: pet.skills.map((skill) => selection(skillOptions, skill.skillId)),
+      skillSelections: pet.skills.map((skill) => selection(allSkillOptions, skill.skillId)),
       skillDetails: pet.skills
         .map((skill, index) => selectedSkillDetail(skill.skillId, index))
         .filter(Boolean)
@@ -173,7 +171,10 @@ Page({
         typeNames: pet.typeNames
       })),
       activeTeamIndex,
-      activePet: view[activeTeamIndex] || null,
+      activePet: view[activeTeamIndex] ? {
+        ...view[activeTeamIndex],
+        skillOptions: allSkillOptions
+      } : null,
       configuredCount,
       progressPercent: Math.round((configuredCount / 6) * 100),
       canUndo: Boolean(this.undoTeam)
@@ -246,7 +247,7 @@ Page({
   onSkillChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
     const skillIndex = Number(event.currentTarget.dataset.skillIndex);
-    const options = this.data.team[petIndex].skillOptions;
+    const options = allSkillOptions;
     const option = options[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.skills[skillIndex].skillId = option.id;

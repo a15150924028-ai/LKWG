@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 12:04 +08:00 - Codex
+
+- Request: Continue fixing the WeChat Developer Tools debugger `Error: timeout` shown on `pages/team/index`.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Root caused the remaining timeout to the team page sending a very large initial `setData` payload: the full 499-item skill catalog was duplicated into every one of the six team pets.
+  - Kept full-skill selection behavior, but stopped storing `skillOptions` on every team pet and attached the full skill catalog only to the currently active pet used by the picker.
+  - Changed skill selection to use the shared `allSkillOptions` directly instead of reading duplicated options from page data.
+  - Added a regression check that the initial team-page `setData` payload stays under 200 KB, that the team array does not contain duplicated `skillOptions`, and that the active pet still exposes the full skill catalog.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` fail before the fix with a 443,059-byte initial `setData` payload, then pass after the fix with a 67,903-byte payload. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools should be recompiled manually to confirm the remaining internal `WAServiceMainContext` timeout is gone.
+
 ### 2026-06-17 11:43 +08:00 - Codex
 
 - Request: Fix the WeChat Developer Tools debugger render-layer bug showing `Error: timeout` and `[渲染层错误] unknown removedNode`.
