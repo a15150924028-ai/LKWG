@@ -111,7 +111,7 @@ function skillSelection(skillId) {
 
 function teamView(team) {
   return team.map((pet, slot) => {
-    const monster = catalog.getMonster(pet.monsterId);
+    const monster = catalog.getMonsterSummary(pet.monsterId);
     return {
       ...pet,
       slot,
@@ -218,7 +218,7 @@ Page({
   onMonsterChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
     const option = monsterOptions[event.detail.index] || blankOption;
-    const monster = catalog.getMonster(option.id);
+    const monster = catalog.getMonsterSummary(option.id);
     this.mutatePet(petIndex, (pet) => {
       pet.monsterId = option.id;
       pet.bloodlineId = isBossMonster(monster) ? "bloodline-boss" : "";

@@ -32,13 +32,16 @@ function uniqueValidTalents(values) {
 
 function normalizePet(pet, index = 0, catalog) {
   const source = pet && typeof pet === "object" ? pet : {};
-  const monster = catalog?.getMonster(source.monsterId);
-  const allowedSkills = new Set(monster?.skillIds || []);
+  const monster = catalog?.getMonsterSummary
+    ? catalog.getMonsterSummary(source.monsterId)
+    : catalog?.getMonster(source.monsterId);
   const monsterId = monster?.id || "";
 
   function validSkillId(value, { allowAny = false } = {}) {
     if (!catalog?.getSkill(value)) return "";
     if (allowAny) return value;
+    const fullMonster = catalog?.getMonster(monsterId);
+    const allowedSkills = new Set(fullMonster?.skillIds || []);
     if (!monsterId || !allowedSkills.has(value)) return "";
     return value;
   }

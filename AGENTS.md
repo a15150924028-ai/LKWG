@@ -56,6 +56,36 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 21:53 +08:00 - Codex
+
+- Request: Use Computer Use to investigate and fix the WeChat Developer Tools Mini Program `Error: timeout` shown while clicking around the UI.
+- Files changed:
+  - `lkwgwechat/miniprogram/data/catalog.js`
+  - `lkwgwechat/miniprogram/data/local-bundle.js`
+  - `lkwgwechat/miniprogram/data/local-meta.js`
+  - `lkwgwechat/miniprogram/data/local-monsters.js`
+  - `lkwgwechat/miniprogram/data/local-passives.js`
+  - `lkwgwechat/miniprogram/data/local-skills.js`
+  - `lkwgwechat/miniprogram/data/monster-summaries.js`
+  - `lkwgwechat/miniprogram/domain/team.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/project.config.json`
+  - `lkwgwechat/project.private.config.json` (local ignored Developer Tools config)
+  - `lkwgwechat/scripts/sync-miniprogram-data.js`
+  - `tests/miniprogram-data-sync-static.test.js`
+  - `tests/miniprogram-shell-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Used Computer Use to inspect the live WeChat Developer Tools console and confirm the error was an internal `WAServiceMainContext` timeout during Mini Program startup/interactions, not a missing backend call.
+  - Changed the tracked WeChat base library pin from gray `3.16.1` to non-gray `3.15.2`, matching the Developer Tools vendor `notGrayList`; also updated the local ignored private config so the open tool session reloads with the same library.
+  - Replaced the old Mini Program monolithic generated `local-bundle.js` startup module with split generated data modules for meta, monster summaries, full monsters, skills, and passives.
+  - Reworked `catalog.js` to lazy-load full monster data and use lightweight monster summaries for monster options and team-page display.
+  - Updated team normalization, team page rendering, and PVP imported-team option rendering to use monster summaries where full battle data is not required.
+  - Updated data sync tests to enforce the split data structure and prove monster options do not load full monster data.
+- Verification: Used Computer Use to confirm WeChat Developer Tools changed from `Errors: 1` with `Error: timeout` to `Errors: 0, Warnings: 0` after the split, then opened a team selection control and confirmed it stayed at `Errors: 0, Warnings: 0`. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test passes at `1,864,995` bytes.
+- Status: Complete for local implementation and live Developer Tools verification; publishing through the repository procedure.
+
 ### 2026-06-17 21:31 +08:00 - Codex
 
 - Request: Continue fixing the WeChat Developer Tools timeout that appears only after clicking around in the Mini Program UI.

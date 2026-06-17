@@ -43,7 +43,7 @@ function buildMergedMonsterOptions(team) {
   const normalized = teamRules.normalizeTeam(team, catalog);
   const choices = normalized
     .map((pet, index) => {
-      const monster = catalog.getMonster(pet.monsterId);
+      const monster = catalog.getMonsterSummary(pet.monsterId);
       if (!monster) return null;
       const monsterOption = catalog.monsterOptions.find((item) => item.id === monster.id) || {};
       return {

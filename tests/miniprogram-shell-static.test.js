@@ -7,6 +7,10 @@ const packageRoot = path.join(root, "lkwgwechat");
 const projectConfig = JSON.parse(
   fs.readFileSync(path.join(packageRoot, "project.config.json"), "utf8")
 );
+const projectPrivateConfigPath = path.join(packageRoot, "project.private.config.json");
+const projectPrivateConfig = fs.existsSync(projectPrivateConfigPath)
+  ? JSON.parse(fs.readFileSync(projectPrivateConfigPath, "utf8"))
+  : null;
 
 assert.strictEqual(
   projectConfig.miniprogramRoot,
@@ -38,6 +42,18 @@ assert.strictEqual(
   "requiredComponents",
   "Mini Program should enable requiredComponents lazy loading to reduce startup work in WeChat Developer Tools"
 );
+assert.strictEqual(
+  projectConfig.libVersion,
+  "3.15.2",
+  "WeChat Developer Tools must use the latest non-gray base library instead of gray 3.16.x builds"
+);
+if (projectPrivateConfig) {
+  assert.strictEqual(
+    projectPrivateConfig.libVersion,
+    "3.15.2",
+    "local Developer Tools settings must match the non-gray base library pin"
+  );
+}
 assert.deepStrictEqual(
   appJson.tabBar.list.map((item) => item.text),
   ["队伍", "分析", "PVP"]
