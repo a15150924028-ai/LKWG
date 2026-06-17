@@ -179,6 +179,12 @@ for (const name of bossMonsterNames) {
 assert(pageJs.includes('bloodlineId = isBossMonster(monster) ? "bloodline-boss" : "";'));
 
 const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
+const constants = require(path.join(packageRoot, "miniprogram", "domain", "constants.js"));
+
+const cuteType = constants.TYPES.find((type) => type.id === "cute");
+assert.strictEqual(cuteType?.name, "萌", "Mini Program cute type should display as 萌, not 可爱.");
+assert(pageJs.includes('cute: "萌"'), "team skill category label for cute must display as 萌.");
+assert(!pageJs.includes('cute: "可爱"'), "team page must not label cute type/category as 可爱.");
 
 function representativeMonster(baseName) {
   return catalog.monsterOptions.find((option) => {

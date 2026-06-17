@@ -1,7 +1,7 @@
 const TYPES = [
   ["grass", "草"], ["water", "水"], ["fire", "火"], ["electric", "电"],
   ["poison", "毒"], ["fantasy", "萌"], ["ice", "冰"], ["fighting", "武"],
-  ["cute", "可爱"], ["light", "光"], ["dragon", "龙"], ["mechanical", "机械"],
+  ["cute", "萌"], ["light", "光"], ["dragon", "龙"], ["mechanical", "机械"],
   ["ghost", "幽灵"], ["demon", "恶魔"], ["bug", "虫"], ["normal", "普通"],
   ["wing", "翼"], ["ground", "土"]
 ].map(([id, name]) => ({

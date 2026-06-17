@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 13:31 +08:00 - Codex
+
+- Request: Correct the Mini Program type label shown as `可爱` so it uses the proper `萌系` wording.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/constants.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the Mini Program `cute` type display name from `可爱` to `萌`, matching the web app's type label and the game's `萌系` terminology.
+  - Changed the team-page skill category label for `cute` from `可爱` to `萌`.
+  - Added regression coverage so the Mini Program cannot label the `cute` type/category as `可爱` again.
+- Verification: Ran focused Mini Program team, analysis, picker, type-icon, and search-asset checks; ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete.
+
 ### 2026-06-17 12:04 +08:00 - Codex
 
 - Request: Continue fixing the WeChat Developer Tools debugger `Error: timeout` shown on `pages/team/index`.

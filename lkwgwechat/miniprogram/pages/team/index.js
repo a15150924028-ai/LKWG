@@ -65,7 +65,7 @@ const categoryNames = {
   special: "魔法",
   status: "状态",
   defense: "防御",
-  cute: "可爱"
+  cute: "萌"
 };
 
 function selection(options, id) {
