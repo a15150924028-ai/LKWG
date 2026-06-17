@@ -242,6 +242,14 @@ assert.strictEqual(
   catalog.skillOptions.length + 1,
   "active team pet should still expose the full skill catalog to the skill picker"
 );
+payloadPage.selectTeamSlot({
+  currentTarget: { dataset: { teamSlot: 1 } }
+});
+assert.strictEqual(
+  payloadPage.data.activePet.skillOptions.length,
+  catalog.skillOptions.length + 1,
+  "switching team slots must keep activePet.skillOptions as an array for field-picker"
+);
 
 for (const bossName of bossMonsterNames) {
   const representative = representativeMonster(bossName);

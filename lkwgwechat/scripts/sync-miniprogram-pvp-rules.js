@@ -47,7 +47,7 @@ function main() {
 
     if (checkOnly) {
       if (current !== next) {
-        console.error(`${path.relative(root, outputPath)} is out of date.`);
+        console.error(`${path.relative(repositoryRoot, outputPath)} is out of date.`);
         stale = true;
       }
     } else {

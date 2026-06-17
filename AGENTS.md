@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 21:07 +08:00 - Codex
+
+- Request: Explain and fix the Mini Program `field-picker` `options` non-array warning and determine whether it is caused by having no backend.
+- Files changed:
+  - `.gitattributes`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/scripts/sync-miniprogram-pvp-rules.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Confirmed the warning is a frontend component property issue, not a missing-backend issue.
+  - Root caused the warning to the team page slot switch path: after the earlier payload reduction, `selectTeamSlot` set `activePet` from `team[index]`, which no longer carried `skillOptions`, so the four skill `field-picker` components received `undefined` for `options`.
+  - Made `selectTeamSlot` attach the shared full skill option array to the activated pet, matching the initial `applyTeam` path while still avoiding duplicated skill catalogs in every team entry.
+  - Added regression coverage that fails if switching team slots loses `activePet.skillOptions`.
+  - Fixed the PVP rule synchronization script's stale-file message to use `repositoryRoot` instead of an undefined `root`, and added a narrow `.gitattributes` rule so generated PVP rule modules keep LF endings and `--check` remains stable on Windows.
+- Verification: Watched `node tests/miniprogram-team-page-static.test.js` fail before the fix because switched `activePet.skillOptions` was undefined, then pass after implementation. Confirmed a static harness reports `activePet.skillOptions` is an array before and after switching team slots. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools should be recompiled to confirm the component warning is gone.
+
 ### 2026-06-17 20:39 +08:00 - Codex
 
 - Request: Revert the mistaken app/page rename because the intended request was to edit the supplied image, not project text.

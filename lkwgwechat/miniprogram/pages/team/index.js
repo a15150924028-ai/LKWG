@@ -198,7 +198,10 @@ Page({
     if (!Number.isInteger(index) || index < 0 || index >= this.data.team.length) return;
     this.setData({
       activeTeamIndex: index,
-      activePet: this.data.team[index]
+      activePet: {
+        ...this.data.team[index],
+        skillOptions: allSkillOptions
+      }
     });
   },
 
