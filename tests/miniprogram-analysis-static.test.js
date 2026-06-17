@@ -181,6 +181,14 @@ assert(pageJs.includes("rollerSlots:"));
 assert(pageJs.includes("buildRollerSlots("));
 assert(pageJs.includes("catalog.skillOptions"));
 assert(!pageJs.includes("catalog.monsterSkillOptions("));
+assert(
+  pageJs.includes("function skillSelection("),
+  "analysis roller target view data should build compact display options for visible field-pickers"
+);
+assert(
+  pageJs.includes('const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";'),
+  "analysis picker open path must opt into the full skill catalog only when opening the floating picker"
+);
 assert(pageJs.includes("onRollerSkillChange("));
 assert(pageJs.includes("onPickerOpen("));
 assert(pageJs.includes("onFloatingPickerSelect("));
@@ -200,6 +208,14 @@ assert(
   "Learner preview text should sit directly below the title without an extra top gap."
 );
 assert(pageWxml.includes("过山车目标"));
+assert(pageWxml.includes('options="{{slot.rollerSelection.displayOptions}}"'));
+assert(pageWxml.includes('value-index="{{slot.rollerSelection.displayIndex}}"'));
+assert(pageWxml.includes('data-picker-options="allSkillOptions"'));
+assert(pageWxml.includes('data-value-index="{{slot.rollerSelection.index}}"'));
+assert(
+  !pageWxml.includes('options="{{slot.skillOptions}}"'),
+  "analysis roller field-pickers must not bind the full skill catalog into every visible slot"
+);
 assert(pageWxml.includes("阵容总结"));
 assert(pageWxml.includes("team-score-grid"), "analysis page should include a tactical summary score grid");
 assert(pageWxml.includes('wx:for="{{rollerSlots}}"'));
@@ -235,6 +251,69 @@ assert(pageWxml.includes('wx:if="{{result.configuredCount > 0}}"'));
 assert(
   pageWxml.indexOf("roller-target-card") < pageWxml.indexOf('wx:if="{{result.configuredCount > 0}}"'),
   "roller target card must stay visible even when no team monster is configured"
+);
+
+let capturedPage = null;
+global.Page = (config) => {
+  capturedPage = config;
+};
+global.wx = {
+  getStorageSync() { return null; },
+  setStorageSync() {},
+  removeStorageSync() {},
+  switchTab() {}
+};
+delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"))];
+require(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"));
+assert(capturedPage, "analysis page config must be loadable in the static harness");
+
+const pageInstance = {
+  ...capturedPage,
+  data: JSON.parse(JSON.stringify(capturedPage.data)),
+  setData(update) {
+    this.lastSetDataBytes = Buffer.byteLength(JSON.stringify(update));
+    this.data = { ...this.data, ...update };
+  }
+};
+pageInstance.onShow();
+assert(
+  pageInstance.lastSetDataBytes < 100000,
+  `analysis page initial setData payload should stay below 100 KB, got ${pageInstance.lastSetDataBytes}`
+);
+assert(
+  pageInstance.data.rollerSlots.every((slot) => !Object.prototype.hasOwnProperty.call(slot, "skillOptions")),
+  "analysis roller slots must not duplicate the full skill catalog"
+);
+assert(
+  pageInstance.data.rollerSlots.every((slot) => (
+    Array.isArray(slot.rollerSelection.displayOptions) && slot.rollerSelection.displayOptions.length <= 2
+  )),
+  "analysis roller slots should expose only compact skill display options to visible field-pickers"
+);
+pageInstance.onPickerOpen({
+  currentTarget: {
+    dataset: {
+      pickerOptions: "allSkillOptions",
+      valueIndex: 2,
+      pickerHandler: "onRollerSkillChange"
+    }
+  },
+  detail: {
+    label: "目标技能",
+    options: pageInstance.data.rollerSlots[0].rollerSelection.displayOptions,
+    valueIndex: pageInstance.data.rollerSlots[0].rollerSelection.displayIndex,
+    valueLabel: pageInstance.data.rollerSlots[0].rollerSelection.label
+  }
+});
+assert.strictEqual(
+  pageInstance.data.floatingPicker.options.length,
+  catalog.skillOptions.length + 1,
+  "opening an analysis roller picker should load the full skill catalog into the shared floating picker"
+);
+assert.strictEqual(
+  pageInstance.data.floatingPicker.valueIndex,
+  2,
+  "opening an analysis roller picker should preserve the real full-catalog index"
 );
 
 console.log("miniprogram analysis checks passed");

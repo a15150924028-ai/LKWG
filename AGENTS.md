@@ -56,6 +56,25 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 21:24 +08:00 - Codex
+
+- Request: Continue fixing the remaining WeChat Developer Tools `WAServiceMainContext Error: timeout` after lazy loading was enabled but the error still appeared.
+- Files changed:
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Measured the remaining heavy Mini Program page updates and found analysis initial `setData` was about 382 KB and PVP was about 294 KB, while team was already about 7 KB.
+  - Changed analysis roller target field-pickers to bind only compact visible skill options and load the full skill catalog only when the shared floating picker opens.
+  - Changed PVP monster and skill field-pickers to bind compact visible options, removed duplicated full monster/skill option arrays from side view data, and kept full-catalog selection through the shared floating picker.
+  - Added regression coverage that keeps analysis and PVP initial payloads below 100 KB and verifies full lists still load into the floating picker on demand.
+- Verification: Watched focused analysis and PVP tests fail before implementation on missing compact picker data, then pass after implementation. Measured post-fix initial payloads as team 7,225 bytes, analysis 7,123 bytes, and PVP 6,821 bytes. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools should be recompiled manually to confirm whether the internal timeout is now gone.
+
 ### 2026-06-17 21:15 +08:00 - Codex
 
 - Request: Continue fixing the WeChat Developer Tools `Error: timeout` after the previous component warning fix still left the debugger timeout visible.

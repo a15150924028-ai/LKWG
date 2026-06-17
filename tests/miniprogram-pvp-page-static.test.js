@@ -84,6 +84,18 @@ assert(
   "PVP skill configuration must expose the full skill catalog"
 );
 assert(
+  pageJs.includes("function compactSelection("),
+  "PVP view data should build compact display options for visible field-pickers"
+);
+assert(
+  pageJs.includes('dataset.pickerOptions === "allSkillOptions"'),
+  "PVP picker open path must opt into the full skill catalog only when opening the floating picker"
+);
+assert(
+  pageJs.includes('dataset.pickerOptions === "monsterOptions"'),
+  "PVP picker open path must opt into full monster options only when opening the floating picker"
+);
+assert(
   !pageJs.includes("const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(state.monsterId));"),
   "PVP skill configuration must not limit the picker to the selected monster's native skill list"
 );
@@ -116,7 +128,21 @@ assert(!pageJs.includes("onTeamPetChange("));
 assert(!pageJs.includes("onActionChange("));
 assert(!pageJs.includes("actionOptions"));
 assert(!pageJs.includes("actionSelection"));
-assert(pageWxml.includes("side.monsterOptions"));
+assert(pageWxml.includes("side.monsterSelection.displayOptions"));
+assert(pageWxml.includes("side.monsterSelection.displayIndex"));
+assert(pageWxml.includes('data-picker-options="monsterOptions"'));
+assert(
+  !pageWxml.includes('options="{{side.monsterOptions}}"'),
+  "PVP monster field-pickers must not bind full monster options into every visible side card"
+);
+assert(
+  !pageWxml.includes('options="{{side.skillOptions}}"'),
+  "PVP skill field-pickers must not bind the full skill catalog into every visible skill card"
+);
+assert(pageWxml.includes('options="{{skillCard.selection.displayOptions}}"'));
+assert(pageWxml.includes('value-index="{{skillCard.selection.displayIndex}}"'));
+assert(pageWxml.includes('data-picker-options="allSkillOptions"'));
+assert(pageWxml.includes('data-value-index="{{skillCard.selection.index}}"'));
 assert(pageWxml.includes("side.skillCards"));
 assert(pageWxml.includes("skill-action-grid"));
 assert(pageWxml.includes("data-action-skill-id"));
@@ -342,6 +368,7 @@ const pageInstance = {
   ...capturedPage,
   data: JSON.parse(JSON.stringify(capturedPage.data)),
   setData(update) {
+    this.lastSetDataBytes = Buffer.byteLength(JSON.stringify(update));
     this.data = { ...this.data, ...update };
   }
 };
@@ -362,6 +389,56 @@ pageInstance.applyState({
   ally: dogSide("ally"),
   enemy: dogSide("enemy")
 }, false);
+assert(
+  pageInstance.lastSetDataBytes < 100000,
+  `PVP page setData payload should stay below 100 KB, got ${pageInstance.lastSetDataBytes}`
+);
+assert(
+  pageInstance.data.sides.every((side) => !Object.prototype.hasOwnProperty.call(side, "skillOptions")),
+  "PVP side view data must not duplicate the full skill catalog"
+);
+assert(
+  pageInstance.data.sides.every((side) => !Object.prototype.hasOwnProperty.call(side, "monsterOptions")),
+  "PVP side view data must not duplicate full monster options"
+);
+assert(
+  pageInstance.data.sides.every((side) => (
+    Array.isArray(side.monsterSelection.displayOptions) && side.monsterSelection.displayOptions.length <= 2
+  )),
+  "PVP monster selectors should expose only compact display options to visible field-pickers"
+);
+assert(
+  pageInstance.data.sides.every((side) => side.skillCards.every((skillCard) => (
+    Array.isArray(skillCard.selection.displayOptions) && skillCard.selection.displayOptions.length <= 2
+  ))),
+  "PVP skill selectors should expose only compact display options to visible field-pickers"
+);
+pageInstance.onPickerOpen({
+  currentTarget: {
+    dataset: {
+      side: "ally",
+      pickerOptions: "allSkillOptions",
+      valueIndex: 4,
+      pickerHandler: "onSkillChange"
+    }
+  },
+  detail: {
+    label: "技能 1",
+    options: pageInstance.data.sides[0].skillCards[0].selection.displayOptions,
+    valueIndex: pageInstance.data.sides[0].skillCards[0].selection.displayIndex,
+    valueLabel: pageInstance.data.sides[0].skillCards[0].selection.label
+  }
+});
+assert.strictEqual(
+  pageInstance.data.floatingPicker.options.length,
+  catalog.skillOptions.length + 1,
+  "opening a PVP skill picker should load the full skill catalog into the shared floating picker"
+);
+assert.strictEqual(
+  pageInstance.data.floatingPicker.valueIndex,
+  4,
+  "opening a PVP skill picker should preserve the real full-catalog index"
+);
 assert.strictEqual(
   pageInstance.data.sides[0].result.damage,
   370,
@@ -442,8 +519,7 @@ for (const bossName of bossMonsterNames) {
   const monster = representativeMonster(bossName);
   assert(monster, `${bossName} boss representative must exist in the local bundle.`);
   pageInstance.applyState(pvpState.defaultPvpState(), false);
-  const enemyView = pageInstance.data.sides.find((side) => side.side === "enemy");
-  const monsterIndex = enemyView.monsterOptions.findIndex((option) => option.id === monster.id);
+  const monsterIndex = catalog.monsterOptions.findIndex((option) => option.id === monster.id) + 1;
   assert(monsterIndex > 0, `${monster.name} must be selectable from the enemy monster picker.`);
   pageInstance.onMonsterChange({
     currentTarget: { dataset: { side: "enemy" } },
@@ -457,8 +533,7 @@ for (const bossName of bossMonsterNames) {
 }
 
 pageInstance.applyState(pvpState.defaultPvpState(), false);
-const enemyView = pageInstance.data.sides.find((side) => side.side === "enemy");
-const speedDogIndex = enemyView.monsterOptions.findIndex((option) => option.id === speedDog.id);
+const speedDogIndex = catalog.monsterOptions.findIndex((option) => option.id === speedDog.id) + 1;
 pageInstance.onMonsterChange({
   currentTarget: { dataset: { side: "enemy" } },
   detail: { index: speedDogIndex }

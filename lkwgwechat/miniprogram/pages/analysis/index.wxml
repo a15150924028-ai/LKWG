@@ -30,10 +30,12 @@
         <field-picker
           compact
           label="目标技能"
-          options="{{slot.skillOptions}}"
-          value-index="{{slot.rollerSelection.index}}"
+          options="{{slot.rollerSelection.displayOptions}}"
+          value-index="{{slot.rollerSelection.displayIndex}}"
           value-label="{{slot.rollerSelection.label}}"
           data-pet-index="{{slot.slot}}"
+          data-picker-options="allSkillOptions"
+          data-value-index="{{slot.rollerSelection.index}}"
           data-picker-handler="onRollerSkillChange"
           bind:change="onRollerSkillChange"
           bind:open="onPickerOpen"

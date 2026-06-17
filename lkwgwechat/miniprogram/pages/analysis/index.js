@@ -35,11 +35,20 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
+function skillSelection(skillId) {
+  const selected = selection(allSkillOptions, skillId);
+  const option = allSkillOptions[selected.index] || blankOption;
+  return {
+    ...selected,
+    displayIndex: option.id ? 1 : 0,
+    displayOptions: option.id ? [blankOption, option] : [blankOption]
+  };
+}
+
 function buildRollerSlots(team, analyzedSlots = [], expandedLearnerSlots = {}) {
   return team.map((pet, slot) => {
     const monster = catalog.getMonster(pet.monsterId);
-    const skillOptions = allSkillOptions;
-    const rollerSelection = selection(skillOptions, pet.rollerSkillId);
+    const rollerSelection = skillSelection(pet.rollerSkillId);
     const analyzed = analyzedSlots[slot] || {};
     const learnerExpanded = Boolean(expandedLearnerSlots[slot]);
     return {
@@ -48,7 +57,6 @@ function buildRollerSlots(team, analyzedSlots = [], expandedLearnerSlots = {}) {
       title: `${slot + 1}号位`,
       monsterName: monster?.name || "未选择精灵",
       hasMonster: Boolean(monster),
-      skillOptions,
       rollerSelection,
       learnerExpanded,
       learnerDisplayText: learnerExpanded
@@ -103,8 +111,7 @@ Page({
 
   onRollerSkillChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
-    const slot = this.data.rollerSlots[petIndex];
-    const option = slot?.skillOptions?.[event.detail.index] || blankOption;
+    const option = allSkillOptions[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.rollerSkillId = option.id;
     });
@@ -112,15 +119,17 @@ Page({
 
   onPickerOpen(event) {
     const detail = event.detail || {};
+    const dataset = event.currentTarget.dataset || {};
+    const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";
     this.setData({
       pickerScrollLocked: true,
       floatingPicker: {
         visible: true,
         label: detail.label || "",
-        options: detail.options || [],
-        valueIndex: Number(detail.valueIndex) || 0,
+        options: useAllSkillOptions ? allSkillOptions : (detail.options || []),
+        valueIndex: useAllSkillOptions ? Number(dataset.valueIndex) || 0 : Number(detail.valueIndex) || 0,
         valueLabel: detail.valueLabel || blankOption.label,
-        dataset: { ...(event.currentTarget.dataset || {}) }
+        dataset: { ...dataset }
       }
     });
   },
