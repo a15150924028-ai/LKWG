@@ -25,6 +25,11 @@
   opacity: 0.66;
 }
 
+.field-picker.active .field-frame {
+  border-color: rgba(77, 163, 255, 0.65);
+  box-shadow: inset 0 0 0 2rpx rgba(77, 163, 255, 0.45), inset 0 1rpx 0 rgba(255, 255, 255, 0.85);
+}
+
 .field-label-chip {
   position: absolute;
   top: -11rpx;

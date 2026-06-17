@@ -129,13 +129,14 @@
         <view class="skill-action-grid">
           <block wx:for="{{side.skillCards}}" wx:key="index" wx:for-item="skillCard" wx:for-index="skillIndex">
             <view
-              class="skill-action-row {{skillCard.active ? 'active' : ''}}"
+              class="skill-action-row"
               data-side="{{side.side}}"
               data-action-skill-id="{{skillCard.skillId}}"
               bindtap="onSkillActionTap"
             >
             <field-picker
               compact
+              active="{{skillCard.active}}"
               label="技能 {{skillIndex + 1}}"
               options="{{side.skillOptions}}"
               value-index="{{skillCard.selection.index}}"
@@ -151,9 +152,8 @@
             />
             </view>
           </block>
-          <button
-            class="force-action-button force-action-row {{side.forceImpact.active ? 'active' : ''}}"
-            disabled="{{side.forceImpact.locked}}"
+          <view
+            class="force-action-button force-action-row {{side.forceImpact.active ? 'active' : ''}} {{side.forceImpact.locked ? 'disabled' : ''}}"
             data-side="{{side.side}}"
             data-action-skill-id="force"
             bindtap="onSkillActionTap"
@@ -167,7 +167,7 @@
             <view class="force-action-text">
               <text>{{side.forceImpact.label}}</text>
             </view>
-          </button>
+          </view>
         </view>
       </view>
 
@@ -181,7 +181,6 @@
             <text class="damage-card-title">伤害结果</text>
             <text class="damage-main-number">{{side.result.damage}}</text>
             <text class="damage-subtitle">扣除目标 {{side.result.hpPercent}}% 生命</text>
-            <text class="damage-line-title">{{side.result.resultTitle}}</text>
             <view wx:if="{{side.result.responseVariants.length}}" class="damage-response-variants">
               <block wx:for="{{side.result.responseVariants}}" wx:key="label" wx:for-item="variant">
                 <text class="damage-response-line">{{variant.label}}：{{variant.summaryText}}</text>
@@ -194,7 +193,6 @@
       </view>
     </view>
   </block>
-  <button class="sticky-calculate-button" bindtap="scrollToResults">立即计算伤害</button>
   <floating-picker
     visible="{{floatingPicker.visible}}"
     label="{{floatingPicker.label}}"

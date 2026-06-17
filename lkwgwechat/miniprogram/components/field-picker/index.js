@@ -28,6 +28,10 @@ Component({
       type: Boolean,
       value: false
     },
+    active: {
+      type: Boolean,
+      value: false
+    },
     compact: {
       type: Boolean,
       value: false

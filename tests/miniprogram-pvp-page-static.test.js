@@ -24,6 +24,10 @@ const pickerWxml = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "components", "field-picker", "index.wxml"),
   "utf8"
 );
+const pickerWxss = fs.readFileSync(
+  path.join(packageRoot, "miniprogram", "components", "field-picker", "index.wxss"),
+  "utf8"
+);
 const pageWxss = fs.readFileSync(
   path.join(packageRoot, "miniprogram", "pages", "pvp", "index.wxss"),
   "utf8"
@@ -117,6 +121,10 @@ assert(pageWxml.includes("side.skillCards"));
 assert(pageWxml.includes("skill-action-grid"));
 assert(pageWxml.includes("data-action-skill-id"));
 assert(pageWxml.includes("force-action-row"));
+assert(
+  pageWxml.includes('active="{{skillCard.active}}"'),
+  "PVP selected skill cards should apply the selected frame directly to the field-picker, not an outer wrapper."
+);
 assert(pageWxml.includes('open-on-tap="{{!skillCard.skillId}}"'));
 assert(pageWxml.includes('show-edit-trigger="{{!!skillCard.skillId}}"'));
 assert(pageWxml.includes("wx:if=\"{{side.showTraitLayers}}\""));
@@ -131,7 +139,8 @@ assert(
   "PVP weather choices must not use native button elements because they can overlap adjacent segmented cells."
 );
 assert(pageWxml.includes("side.forceImpact.label"));
-assert(pageWxml.includes("side.result.resultTitle"));
+assert(!pageWxml.includes("side.result.resultTitle"), "PVP result card must not repeat the damage summary as a black text line.");
+assert(!pageWxml.includes("damage-line-title"), "PVP result card should keep only the colored damage number and subtitle.");
 assert(pageWxml.includes("side.result.damage"));
 assert(pageWxml.includes("side.result.hpPercent"));
 assert(pageWxml.includes("side.result.resultMeta"));
@@ -141,7 +150,9 @@ assert(pageWxml.includes("side.advancedOpen"));
 assert(pageWxml.includes("side.advancedModifierCount"));
 assert(pageWxml.includes("wx:if=\"{{side.advancedOpen}}\""), "PVP advanced modifiers must be collapsed by default and expand on demand.");
 assert(pageWxml.includes("damage-main-number"), "PVP result should promote the final damage as a large number.");
-assert(pageWxml.includes("sticky-calculate-button"), "PVP page should include a bottom sticky calculate/result action.");
+assert(!pageWxml.includes("sticky-calculate-button"), "PVP page should not show the bottom immediate-calculate sticky window.");
+assert(!pageWxml.includes("立即计算伤害"), "PVP page should remove the bottom immediate-calculate text.");
+assert(!pageJs.includes("scrollToResults("), "PVP page should remove the now-unused sticky calculate scroll handler.");
 assert(pageWxml.includes("清空{{side.title}}"), "PVP clear button should say 清空我方 or 清空敌方 according to the side card.");
 assert(!pageWxml.includes("清空本方"), "Enemy PVP side must not show the ally-only 清空本方 label.");
 assert(pageWxml.includes("compact-control-grid"), "PVP manual controls should share one compact three-column grid.");
@@ -150,11 +161,14 @@ assert(pageWxml.includes('<text class="counter-label">{{side.traitName}}</text>'
 assert(!pageWxml.includes("特性层数 ·"), "Trait layer control must not spend compact-grid width on the four-character prefix.");
 assert(pageWxss.includes("grid-template-columns: repeat(3, minmax(0, 1fr))"), "PVP manual controls should fit three items per row.");
 assert(pageWxss.includes("text-overflow: ellipsis"), "Compact PVP control labels must truncate instead of pushing into steppers.");
+assert(pageWxss.includes("grid-template-columns: 48rpx minmax(42rpx, 1fr) 48rpx"), "PVP advanced steppers should use larger +/- controls.");
+assert(pageWxss.includes("height: 48rpx"), "PVP advanced +/- buttons should be tall enough to tap comfortably.");
+assert(pageWxss.includes("font-size: 34rpx"), "PVP advanced +/- symbols should be visibly larger.");
 assert(pageWxss.includes("rgba(255, 255, 255, 0.62)"), "PVP cards should use translucent glass cards.");
 assert(pageWxss.includes("linear-gradient(135deg, #607089, #4DA3FF)"), "PVP selected weather should use the Liquid Glass segmented gradient.");
 assert(pageWxss.includes("linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12))"), "PVP damage card should use the blue/teal result gradient.");
 assert(pageWxss.includes("font-size: 64rpx"), "PVP damage result should use a large numeric display.");
-assert(pageWxss.includes("position: sticky"), "PVP sticky calculate action should stay above the tab bar.");
+assert(!pageWxss.includes(".sticky-calculate-button"), "PVP stylesheet should not keep the removed sticky calculate button.");
 assert(
   /\.weather-button\s*{[^}]*box-sizing:\s*border-box;[^}]*width:\s*100%;[^}]*overflow:\s*hidden;/s.test(pageWxss),
   "PVP weather buttons must be independent segmented cells that cannot overlap adjacent cells."
@@ -169,16 +183,32 @@ assert(
 );
 assert(!pageWxml.includes('<text class="counter-label">能量</text>'), "Energy must move into the compact control grid instead of its own row.");
 assert(!pageWxml.includes("damage-grid"), "PVP result must use the compact line-style result instead of the large metric grid.");
+assert(!pageWxss.includes(".damage-line-title"), "PVP result should not keep styles for the removed duplicate black summary line.");
 for (const removedResultLabel of ["计算模式", "最终威力", "连击数", "单段伤害", "总伤害"]) {
   assert(!pageWxml.includes(removedResultLabel), `PVP result must not render large-card label: ${removedResultLabel}`);
 }
-assert(pageJs.includes("愿力冲击"));
 assert(pageJs.includes("原力冲击"));
+assert(
+  !pageJs.includes('label: "愿力冲击 / 原力冲击"'),
+  "PVP Force Impact action row should display only 原力冲击, not two names."
+);
 assert(!pickerWxml.includes("<input"), "PVP field-picker must be read-only");
 assert(!pickerWxml.includes("suggestion-list"), "PVP field-picker must not inline suggestions");
 assert(!pickerWxml.includes("<picker"), "PVP must not fall back to native picker");
 assert(pickerWxml.includes("field-label-chip"), "PVP selectors must use embedded border labels to reduce height.");
 assert(pickerWxml.includes("field-frame"), "PVP selectors must render the compact inner frame.");
+assert(
+  pickerWxml.includes("{{active ? 'active' : ''}}"),
+  "field-picker should expose an active class so selected skill frames can merge with the picker frame."
+);
+assert(
+  /\.field-picker\.active \.field-frame\s*{[^}]*border-color:\s*rgba\(77, 163, 255, 0\.65\);/s.test(pickerWxss),
+  "field-picker selected state should draw the blue frame on the inner field itself."
+);
+assert(
+  !/\.skill-action-row\.active\s*{[^}]*padding:\s*3rpx/s.test(pageWxss),
+  "PVP skill selection must not add an outer active frame with padding around the picker."
+);
 assert(statGridWxml.includes("nature-up"));
 assert(statGridWxml.includes("nature-down"));
 assert(statGridWxml.includes("talent-mark"));
@@ -188,6 +218,18 @@ assert(pageWxss.includes("grid-column: 1 / -1"), "Force Impact row must span the
 assert(pageWxss.includes("justify-content: center"), "Force Impact row should center its content inside the full-width bar.");
 assert(pageWxss.includes("white-space: nowrap"), "Force Impact row text must stay on one line.");
 assert(pageWxss.includes("width: 100%"), "Force Impact row should stretch full width instead of staying as a centered narrow button.");
+assert(
+  pageWxml.includes('<view\n            class="force-action-button force-action-row'),
+  "Force Impact row should be a view-based full-row control, not a native button that can shrink visually."
+);
+assert(
+  !pageWxml.includes('<button\n            class="force-action-button'),
+  "Force Impact row must not use a native button for the full-width row."
+);
+assert(
+  /\.force-action-button\s*{[^}]*box-sizing:\s*border-box;[^}]*width:\s*100%;[^}]*border:\s*1rpx solid rgba\(190, 205, 225, 0\.55\);/s.test(pageWxss),
+  "Force Impact full-width row should draw a full-row border."
+);
 assert(pageWxss.includes(".default-note"));
 assert(pageWxss.includes("color: #d92d20"), "Default build note should be highlighted in red.");
 assert(

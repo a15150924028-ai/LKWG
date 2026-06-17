@@ -56,6 +56,28 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 10:14 +08:00 - Codex
+
+- Request: Apply five Mini Program PVP UI polish fixes from the latest screenshots: larger advanced +/- controls, remove the immediate-calculate sticky window, remove duplicated black damage summary text, merge skill picker selected frames, and make Force Impact a full-row single-name action.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/field-picker/index.js`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxml`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxml`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a direct active state to the shared `field-picker` so selected PVP skill cards draw one merged picker frame instead of an outer frame around an inner frame.
+  - Enlarged PVP advanced modifier +/- stepper controls for clearer tap targets.
+  - Removed the bottom sticky `立即计算伤害` action and its unused scroll handler.
+  - Removed the duplicated black damage summary line from the result card while keeping the large colored damage number and colored HP-loss subtitle.
+  - Changed the Force Impact action into a view-based full-row control with a full-width border and simplified its visible label to `原力冲击` while preserving `愿力冲击` as an internal alias.
+  - Added static regression coverage for each requested PVP UI rule.
+- Verification: Watched `node tests/miniprogram-pvp-page-static.test.js` fail on the new assertions before implementation, then pass after implementation. Ran `node tests/miniprogram-search-picker-static.test.js`; ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,843,861` bytes.
+- Status: Complete for local implementation and automated verification; publishing through the repository procedure.
+
 ### 2026-06-17 01:14 +08:00 - Codex
 
 - Request: Remove the earthy-looking background colors shown in the latest screenshots and update `style.md` to forbid that background language.

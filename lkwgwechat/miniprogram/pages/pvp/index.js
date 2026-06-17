@@ -157,8 +157,8 @@ function forceImpactSkill(state) {
   if (forceImpactLocked(state)) return null;
   return {
     id: "pvp-force-impact",
-    name: "愿力冲击",
-    aliases: ["原力冲击"],
+    name: "原力冲击",
+    aliases: ["愿力冲击"],
     type: bloodline.type,
     category: "attack",
     power: FORCE_IMPACT_POWER,
@@ -173,7 +173,7 @@ function forceImpactOption(state) {
     id: "force",
     locked: !skill,
     active: state?.action === "force",
-    label: "愿力冲击 / 原力冲击",
+    label: "原力冲击",
     hint: skill ? "按当前血脉属性" : "选择属性血脉后可用",
     icon: bloodline?.icon || "",
     iconClass: bloodline?.iconClass || ""
@@ -740,14 +740,6 @@ Page({
     this.data.advancedExpanded = advancedExpanded;
     this.setData({ advancedExpanded });
     this.applyState(this.currentState(), false);
-  },
-
-  scrollToResults() {
-    if (!wx.pageScrollTo) return;
-    wx.pageScrollTo({
-      selector: ".damage-card",
-      duration: 240
-    });
   },
 
   onPickerOpen(event) {

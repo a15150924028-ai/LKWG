@@ -1,4 +1,4 @@
-<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}}" bindtap="onOpen">
+<view class="field-picker {{compact ? 'compact' : ''}} {{disabled ? 'disabled' : ''}} {{active ? 'active' : ''}}" bindtap="onOpen">
   <text class="field-label-chip">{{label}}</text>
   <view class="field-frame">
     <view class="search-control field-content-row">
