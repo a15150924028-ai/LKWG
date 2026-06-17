@@ -242,6 +242,14 @@ for (const method of [
   assert(floatingJs.includes(`${method}(`), `floating picker is missing ${method}`);
 }
 assert(floatingJs.includes('require("../../utils/search-options")'));
+assert(
+  floatingJs.includes("const SUGGESTION_LIMIT = 40;"),
+  "floating picker should cap rendered suggestions to avoid heavy WXML updates after repeated taps."
+);
+assert(
+  floatingJs.includes("searchOptions(this.properties.options, query, SUGGESTION_LIMIT)"),
+  "floating picker must pass the suggestion render limit into searchOptions."
+);
 assert(floatingJs.includes('this.triggerEvent("select"'));
 assert(floatingJs.includes('this.triggerEvent("close"'));
 assert(!floatingJs.includes("commitFreeText"));
@@ -260,5 +268,30 @@ const skillWithIcon = catalog.skillOptions.find(
   (option) => option.icon && option.icon.startsWith("/assets/type-icons/")
 );
 assert(skillWithIcon, "skill options must expose type icons");
+
+let capturedFloatingPicker = null;
+global.Component = (config) => {
+  capturedFloatingPicker = config;
+};
+delete require.cache[require.resolve(path.join(floatingComponentRoot, "index.js"))];
+require(path.join(floatingComponentRoot, "index.js"));
+assert(capturedFloatingPicker, "floating picker component must be loadable in the static harness");
+const floatingInstance = {
+  properties: {
+    options: catalog.skillOptions,
+    valueIndex: 0,
+    valueLabel: "请选择"
+  },
+  data: JSON.parse(JSON.stringify(capturedFloatingPicker.data)),
+  setData(update) {
+    this.data = { ...this.data, ...update };
+  },
+  ...capturedFloatingPicker.methods
+};
+floatingInstance.refreshSuggestions("");
+assert(
+  floatingInstance.data.suggestions.length <= 40,
+  `floating picker should render at most 40 suggestions for an empty query, got ${floatingInstance.data.suggestions.length}`
+);
 
 console.log("miniprogram searchable picker static checks passed");

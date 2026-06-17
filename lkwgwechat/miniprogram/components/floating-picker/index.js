@@ -1,6 +1,7 @@
 const { searchOptions } = require("../../utils/search-options");
 
 const KEYBOARD_HEIGHT_COMPENSATION = 96;
+const SUGGESTION_LIMIT = 40;
 
 function calibrateKeyboardHeight(height) {
   const raw = Number(height) || 0;
@@ -66,7 +67,7 @@ Component({
   methods: {
     refreshSuggestions(query) {
       this.setData({
-        suggestions: searchOptions(this.properties.options, query)
+        suggestions: searchOptions(this.properties.options, query, SUGGESTION_LIMIT)
       });
     },
 

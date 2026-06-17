@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 21:31 +08:00 - Codex
+
+- Request: Continue fixing the WeChat Developer Tools timeout that appears only after clicking around in the Mini Program UI.
+- Files changed:
+  - `lkwgwechat/miniprogram/components/floating-picker/index.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Root caused the click-triggered timeout path to the shared floating picker rendering every matched option when opened, including hundreds of skill or monster options for empty queries.
+  - Added a `SUGGESTION_LIMIT` of 40 so the floating picker still searches the full option source but only renders a bounded result list into WXML.
+  - Added regression coverage that loads the floating picker component in the static harness and verifies an empty full-skill query renders no more than 40 suggestions.
+- Verification: Watched `node tests/miniprogram-search-picker-static.test.js` fail before the limit existed, then pass after implementation. Measured a full-skill empty floating picker query rendering 40 suggestions with about 4,959 bytes of suggestion `setData`. Ran focused team, analysis, PVP, and search-picker checks. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; WeChat Developer Tools should be recompiled and tested by opening several pickers to confirm the timeout no longer appears.
+
 ### 2026-06-17 21:24 +08:00 - Codex
 
 - Request: Continue fixing the remaining WeChat Developer Tools `WAServiceMainContext Error: timeout` after lazy loading was enabled but the error still appeared.
