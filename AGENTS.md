@@ -56,6 +56,34 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 11:12 +08:00 - Codex
+
+- Request: Keep the current Mini Program UI direction but make the Liquid Glass effect more translucent, glossy, and luminous without hurting readability.
+- Files changed:
+  - `lkwgwechat/miniprogram/app.wxss`
+  - `lkwgwechat/miniprogram/components/field-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/floating-picker/index.wxss`
+  - `lkwgwechat/miniprogram/components/stat-grid/index.wxss`
+  - `lkwgwechat/miniprogram/pages/team/index.wxss`
+  - `lkwgwechat/miniprogram/pages/analysis/index.wxss`
+  - `lkwgwechat/miniprogram/pages/pvp/index.wxss`
+  - `style.md`
+  - `tests/miniprogram-shell-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-search-picker-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Reduced main glass-card opacity from solid white toward wetter translucent glass while keeping dark text unchanged for readability.
+  - Increased blur on global, page, input, drawer, and small stat surfaces.
+  - Added restrained low-opacity blue, purple, and cyan glow layers plus inner highlight edges and deeper soft shadows.
+  - Tuned team, analysis, and PVP cards, small panels, stat cells, field pickers, and floating picker drawer to share the same Liquid Glass material language.
+  - Updated `style.md` so future work allows only subtle, low-opacity, edge-positioned glow layers and still forbids large colored background blocks.
+  - Updated static UI tests to lock in the more translucent glass tokens, blur, inner highlights, and restrained glow opacity.
+- Verification: Watched focused shell, team, analysis, PVP, and search-picker tests fail on the old white-card material assertions, then pass after implementation. Ran all `tests/*.test.js` scripts successfully; ran all three Mini Program synchronization `--check` commands successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed upload-readiness static test still passes at `1,846,004` bytes.
+- Status: Complete for local implementation and automated verification; publishing through the repository procedure.
+
 ### 2026-06-17 10:14 +08:00 - Codex
 
 - Request: Apply five Mini Program PVP UI polish fixes from the latest screenshots: larger advanced +/- controls, remove the immediate-calculate sticky window, remove duplicated black damage summary text, merge skill picker selected frames, and make Force Impact a full-row single-name action.

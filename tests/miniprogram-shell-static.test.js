@@ -55,11 +55,16 @@ for (const disallowedBackground of [
   );
 }
 assert(
-  !appWxss.includes(".page::before") && !appWxss.includes(".page::after") && !appWxss.includes(".hero::after"),
-  "global shell should not render decorative colored background glow pseudo-elements"
+  appWxss.includes(".page::before") && appWxss.includes(".page::after") && appWxss.includes(".hero::after"),
+  "global shell should restore restrained low-opacity blue-purple glow layers for Liquid Glass depth"
 );
-assert(appWxss.includes("backdrop-filter: blur(18rpx)"), "global glass cards should use blur");
-assert(appWxss.includes("rgba(255, 255, 255, 0.62)"), "global cards should use translucent glass white");
+assert(appWxss.includes("rgba(77, 163, 255, 0.12)"), "global blue glow should stay very low opacity");
+assert(appWxss.includes("rgba(108, 99, 255, 0.10)"), "global purple glow should stay very low opacity");
+assert(appWxss.includes("rgba(70, 216, 207, 0.07)"), "global cyan glow should stay extremely subtle");
+assert(appWxss.includes("backdrop-filter: blur(24rpx)"), "global glass cards should use stronger blur");
+assert(appWxss.includes("rgba(255, 255, 255, 0.52)"), "global cards should lower opacity for a wetter glass feel without losing readability");
+assert(appWxss.includes("0 16rpx 40rpx rgba(80, 110, 160, 0.16)"), "global cards should use a softer deeper Liquid Glass shadow");
+assert(appWxss.includes("inset 0 -1rpx 0 rgba(255, 255, 255, 0.36)"), "global cards should include an inner lower highlight edge");
 assert(appWxss.includes("border-radius: 48rpx"), "global hero cards should use large Liquid Glass radii");
 assert(appWxss.includes("linear-gradient(135deg, #7C6DFF 0%, #4DA3FF 100%)"), "global primary buttons should use blue-purple gradient");
 assert(appWxss.includes("padding-bottom: calc(120rpx + env(safe-area-inset-bottom))"), "pages should reserve space for the glass tab bar");

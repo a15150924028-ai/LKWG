@@ -200,10 +200,11 @@ assert(pickerWxss.includes(".field-frame"));
 assert(pickerWxss.includes(".field-content-row"));
 assert(pickerWxss.includes(".edit-trigger"));
 assert(pickerWxss.includes("min-height: 40rpx"));
-assert(pickerWxss.includes("rgba(255, 255, 255, 0.68)"), "field picker controls should use translucent glass input backgrounds");
+assert(pickerWxss.includes("rgba(255, 255, 255, 0.56)"), "field picker controls should use wetter translucent glass input backgrounds");
+assert(pickerWxss.includes("backdrop-filter: blur(16rpx)"), "field picker controls should blur the background without making text fuzzy");
 assert(pickerWxss.includes("border-radius: 28rpx"), "field picker controls should use rounded Liquid Glass input corners");
 assert(
-  pickerWxss.includes("box-shadow: inset 0 0 0 2rpx rgba(77, 163, 255, 0.16)"),
+  pickerWxss.includes("box-shadow: inset 0 0 0 2rpx rgba(77, 163, 255, 0.14)"),
   "field picker selected/focused affordance should stay inside the control instead of overlapping neighboring fields"
 );
 assert(pickerWxss.includes(".stat-atk-icon"));
@@ -252,8 +253,8 @@ assert(floatingWxss.includes("z-index"));
 assert(floatingWxss.includes("max-height: 360rpx"));
 assert(floatingWxss.includes("floating-picker-panel"));
 assert(floatingWxss.includes("border-radius: 56rpx 56rpx 0 0"), "floating picker should look like a rounded bottom glass drawer");
-assert(floatingWxss.includes("rgba(255, 255, 255, 0.86)"), "floating picker drawer should use strong glass white");
-assert(floatingWxss.includes("backdrop-filter: blur(22rpx)"), "floating picker drawer should use blur");
+assert(floatingWxss.includes("rgba(255, 255, 255, 0.76)"), "floating picker drawer should use strong but still translucent glass white");
+assert(floatingWxss.includes("backdrop-filter: blur(28rpx)"), "floating picker drawer should use stronger blur");
 
 const skillWithIcon = catalog.skillOptions.find(
   (option) => option.icon && option.icon.startsWith("/assets/type-icons/")
