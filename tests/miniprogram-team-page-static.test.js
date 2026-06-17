@@ -117,8 +117,16 @@ assert(pageWxml.includes('class="roller-button-icon"'));
 assert(pageJs.includes("catalog.getPassive"), "team view must resolve monster passives");
 assert(pageJs.includes("catalog.getSkill"), "team view must resolve selected skill details");
 assert(
-  pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
-  "team skill configuration must expose the full skill catalog, not only the selected monster's native skill list"
+  pageJs.includes("function getAllSkillOptions()"),
+  "team skill configuration must expose the full skill catalog lazily when the floating picker opens"
+);
+assert(
+  !pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
+  "team page startup must not build the full skill catalog before a picker opens"
+);
+assert(
+  !pageJs.includes("const monsterOptions = optionsWithBlank(catalog.monsterOptions);"),
+  "team page startup must not build the full monster catalog before a picker opens"
 );
 assert(
   pageJs.includes("function skillSelection("),
@@ -316,7 +324,7 @@ for (const bossName of bossMonsterNames) {
   const pageInstance = createPageInstance();
   pageInstance.onLoad();
   pageInstance.applyTeam(undefined, false);
-  const optionIndex = pageInstance.data.monsterOptions.findIndex((option) => option.id === representative.id);
+  const optionIndex = catalog.monsterOptions.findIndex((option) => option.id === representative.id) + 1;
   assert(optionIndex > 0, `missing team monster option for ${bossName}`);
   pageInstance.onMonsterChange({
     currentTarget: { dataset: { petIndex: 0 } },
@@ -337,7 +345,7 @@ assert(nonBoss, "missing non-boss 音速犬 fixture");
 const nonBossPage = createPageInstance();
 nonBossPage.onLoad();
 nonBossPage.applyTeam(undefined, false);
-const nonBossIndex = nonBossPage.data.monsterOptions.findIndex((option) => option.id === nonBoss.id);
+const nonBossIndex = catalog.monsterOptions.findIndex((option) => option.id === nonBoss.id) + 1;
 assert(nonBossIndex > 0, "missing team monster option for 音速犬");
 nonBossPage.onMonsterChange({
   currentTarget: { dataset: { petIndex: 0 } },

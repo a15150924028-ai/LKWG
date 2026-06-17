@@ -26,6 +26,8 @@ const blankOption = { id: "", label: "请选择" };
 const bloodlineIds = new Set(BLOODLINES.map((item) => item.id));
 const natureIds = new Set(NATURES.map((item) => item.id));
 const talentIds = new Set(TALENTS.map((item) => item.id));
+let monsterOptionsCache;
+let allSkillOptionsCache;
 
 function optionsWithBlank(options) {
   return [blankOption, ...options.map((item) => ({
@@ -39,13 +41,42 @@ function optionsWithBlank(options) {
   }))];
 }
 
+function getMonsterOptions() {
+  if (!monsterOptionsCache) monsterOptionsCache = optionsWithBlank(catalog.monsterOptions);
+  return monsterOptionsCache;
+}
+
+function getAllSkillOptions() {
+  if (!allSkillOptionsCache) allSkillOptionsCache = optionsWithBlank(catalog.skillOptions);
+  return allSkillOptionsCache;
+}
+
+function getAllyMonsterPickerOptions(choices = []) {
+  return [
+    blankOption,
+    ...choices.map((choice) => ({
+      id: choice.id,
+      source: "team",
+      label: choice.label,
+      aliases: choice.aliases,
+      detail: choice.detail,
+      icon: choice.icon,
+      iconClass: choice.iconClass
+    })),
+    ...getMonsterOptions().slice(1).map((option) => ({
+      ...option,
+      source: "catalog"
+    }))
+  ];
+}
+
 function buildMergedMonsterOptions(team) {
   const normalized = teamRules.normalizeTeam(team, catalog);
   const choices = normalized
     .map((pet, index) => {
       const monster = catalog.getMonsterSummary(pet.monsterId);
       if (!monster) return null;
-      const monsterOption = catalog.monsterOptions.find((item) => item.id === monster.id) || {};
+      const primaryType = monster.types?.[0] || "";
       return {
         id: `team-pet-${index}`,
         source: "team",
@@ -54,8 +85,8 @@ function buildMergedMonsterOptions(team) {
         label: `${index + 1}号位 ${monster.name}`,
         aliases: [monster.name, pet.name, `${index + 1}号位`, `${index + 1}号`].filter(Boolean),
         detail: teamRules.isPetComplete(pet) ? "已配置完整" : "配置未完整",
-        icon: monsterOption.icon,
-        iconClass: monsterOption.iconClass
+        icon: primaryType ? `/assets/type-icons/${primaryType}.png` : "",
+        iconClass: primaryType ? "type-icon-image" : ""
       };
     })
     .filter(Boolean);
@@ -71,17 +102,11 @@ function buildMergedMonsterOptions(team) {
         detail: choice.detail,
         icon: choice.icon,
         iconClass: choice.iconClass
-      })),
-      ...monsterOptions.slice(1).map((option) => ({
-        ...option,
-        source: "catalog"
       }))
     ]
   };
 }
 
-const monsterOptions = optionsWithBlank(catalog.monsterOptions);
-const allSkillOptions = optionsWithBlank(catalog.skillOptions);
 const bloodlineOptions = optionsWithBlank(BLOODLINES);
 const natureOptions = optionsWithBlank(NATURES);
 const talentOptions = optionsWithBlank(TALENTS);
@@ -133,13 +158,29 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
-function compactSelection(options, id) {
-  const selected = selection(options, id);
-  const option = options[selected.index] || blankOption;
+function compactSelectionFromRecord(record, id, fullOptions) {
+  if (!id || !record) {
+    return {
+      index: 0,
+      label: blankOption.label,
+      displayIndex: 0,
+      displayOptions: [blankOption]
+    };
+  }
+  const option = {
+    id: record.id,
+    label: record.label || record.name,
+    aliases: [...(record.aliases || [])],
+    icon: record.icon || (record.type ? `/assets/type-icons/${record.type}.png` : ""),
+    iconClass: record.iconClass || (record.type ? "type-icon-image" : ""),
+    iconText: record.iconText,
+    detail: record.detail
+  };
   return {
-    ...selected,
-    displayIndex: option.id ? 1 : 0,
-    displayOptions: option.id ? [blankOption, option] : [blankOption]
+    index: Math.max(0, fullOptions().findIndex((item) => item.id === id)),
+    label: option.label,
+    displayIndex: 1,
+    displayOptions: [blankOption, option]
   };
 }
 
@@ -299,7 +340,7 @@ function advancedModifierCount(state, showTraitLayers) {
   return count;
 }
 
-function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId = "", advancedExpanded = {}) {
+function sideView(state, allyMonsterOptions = [blankOption], selectedTeamPetId = "", advancedExpanded = {}) {
   const monster = catalog.getMonster(state.monsterId);
   const action = pvpActionFromState(state);
   const result = displayedStats(monster, state, action);
@@ -320,19 +361,37 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
     { key: "hitCount", label: "连击数", value: Number(state.manualHitCountBonus) || 0 },
     { key: "energy", label: "能量", value: Number(state.energy) || 0 }
   ];
-  const currentMonsterOptions = state.side === "ally" ? allyMonsterOptions : monsterOptions;
+  const currentMonsterOptions = state.side === "ally" ? allyMonsterOptions : [blankOption];
   const monsterSelectionId = state.side === "ally" && selectedTeamPetId
     ? selectedTeamPetId
     : state.monsterId;
+  const teamChoice = state.side === "ally" && selectedTeamPetId
+    ? currentMonsterOptions.find((option) => option.id === selectedTeamPetId)
+    : null;
+  const monsterSelection = teamChoice
+    ? compactSelectionFromRecord(
+      teamChoice,
+      selectedTeamPetId,
+      () => getAllyMonsterPickerOptions(currentMonsterOptions.slice(1))
+    )
+    : compactSelectionFromRecord(
+      monster,
+      monsterSelectionId,
+      getMonsterOptions
+    );
   const showTraitLayers = Boolean(monster && pvpEffects.trait.resolveTraitRule(monster));
   return {
     ...state,
     title: state.side === "ally" ? "我方" : "敌方",
-    monsterSelection: compactSelection(currentMonsterOptions, monsterSelectionId),
+    monsterSelection,
     bloodlineSelection: selection(bloodlineOptions, state.bloodlineId),
     natureSelection: selection(natureOptions, state.natureId),
     talentSelections: state.talentIds.map((id) => selection(talentOptions, id)),
-    skillSelections: state.skillIds.map((id) => compactSelection(allSkillOptions, id)),
+    skillSelections: state.skillIds.map((id) => compactSelectionFromRecord(
+      catalog.getSkillSummary(id),
+      id,
+      getAllSkillOptions
+    )),
     skillCards: state.skillIds.map((id, index) => {
       const skill = catalog.getSkill(id);
       return {
@@ -340,7 +399,11 @@ function sideView(state, allyMonsterOptions = monsterOptions, selectedTeamPetId 
         skillId: id,
         name: skill?.name || "",
         active: Boolean(id && state.action === id),
-        selection: compactSelection(allSkillOptions, id)
+        selection: compactSelectionFromRecord(
+          catalog.getSkillSummary(id),
+          id,
+          getAllSkillOptions
+        )
       };
     }),
     forceImpact: forceImpactOption(state),
@@ -609,7 +672,7 @@ Page({
     normalized.ally = sanitizeSide(normalized.ally, "ally");
     normalized.enemy = sanitizeSide(normalized.enemy, "enemy");
     this.pvpState = normalized;
-    const allyMonsterOptions = this.allyMonsterOptions || monsterOptions;
+    const allyMonsterOptions = this.allyMonsterOptions || [blankOption];
     const advancedExpanded = this.data?.advancedExpanded || { ally: false, enemy: false };
     const sides = [
       sideView(normalized.ally, allyMonsterOptions, this.selectedTeamPetId || "", advancedExpanded),
@@ -643,8 +706,8 @@ Page({
   onMonsterChange(event) {
     const side = event.currentTarget.dataset.side;
     const options = side === "ally"
-      ? (this.allyMonsterOptions || monsterOptions)
-      : monsterOptions;
+      ? getAllyMonsterPickerOptions(this.teamPetChoices || [])
+      : getMonsterOptions();
     const option = options[event.detail.index] || blankOption;
     const choice = side === "ally"
       ? (this.teamPetChoices || []).find((item) => item.id === option.id)
@@ -711,7 +774,7 @@ Page({
   onSkillChange(event) {
     const side = event.currentTarget.dataset.side;
     const skillIndex = Number(event.currentTarget.dataset.skillIndex);
-    const option = allSkillOptions[event.detail.index] || blankOption;
+    const option = getAllSkillOptions()[event.detail.index] || blankOption;
     this.clearImportedTeamPet(side);
     this.mutateSide(side, (state) => {
       state.skillIds[skillIndex] = option.id;
@@ -750,9 +813,9 @@ Page({
     const detail = event.detail || {};
     const dataset = event.currentTarget.dataset || {};
     const options = dataset.pickerOptions === "allSkillOptions"
-      ? allSkillOptions
+      ? getAllSkillOptions()
       : dataset.pickerOptions === "monsterOptions"
-        ? (dataset.side === "ally" ? (this.allyMonsterOptions || monsterOptions) : monsterOptions)
+        ? (dataset.side === "ally" ? getAllyMonsterPickerOptions(this.teamPetChoices || []) : getMonsterOptions())
         : (detail.options || []);
     const useFullOptions = dataset.pickerOptions === "allSkillOptions"
       || dataset.pickerOptions === "monsterOptions";

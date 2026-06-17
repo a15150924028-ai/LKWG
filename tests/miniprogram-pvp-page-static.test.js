@@ -80,11 +80,23 @@ assert(pageJs.includes("allyMonsterOptions"));
 assert(pageJs.includes("buildMergedMonsterOptions("));
 assert(pageJs.includes("source: \"team\""));
 assert(
-  pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
-  "PVP skill configuration must expose the full skill catalog"
+  pageJs.includes("function getAllSkillOptions()"),
+  "PVP skill configuration must expose the full skill catalog through a lazy getter"
 );
 assert(
-  pageJs.includes("function compactSelection("),
+  !pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
+  "PVP must not build the full skill catalog at module load"
+);
+assert(
+  pageJs.includes("function getMonsterOptions()"),
+  "PVP monster picker must expose the full monster catalog through a lazy getter"
+);
+assert(
+  !pageJs.includes("const monsterOptions = optionsWithBlank(catalog.monsterOptions);"),
+  "PVP must not build the full monster catalog at module load"
+);
+assert(
+  pageJs.includes("function compactSelectionFromRecord("),
   "PVP view data should build compact display options for visible field-pickers"
 );
 assert(
@@ -348,6 +360,48 @@ assert(
   "PVP core damage attack/defense inputs must use base battle stats so passive percentage boosts are not double-counted."
 );
 
+const pvpPagePath = path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js");
+const dataModulePaths = [
+  "monster-summaries.js",
+  "skill-summaries.js",
+  "local-monsters.js",
+  "local-skills.js",
+  "local-passives.js"
+].map((file) => path.join(packageRoot, "miniprogram", "data", file));
+
+let capturedStartupPage = null;
+global.Page = (config) => {
+  capturedStartupPage = config;
+};
+global.wx = {
+  getStorageSync() { return null; },
+  setStorageSync() {},
+  removeStorageSync() {}
+};
+for (const file of [
+  ...dataModulePaths,
+  path.join(packageRoot, "miniprogram", "data", "catalog.js"),
+  pvpPagePath
+]) {
+  delete require.cache[require.resolve(file)];
+}
+require(pvpPagePath);
+assert(capturedStartupPage, "PVP page config must be loadable for empty startup");
+const startupPageInstance = {
+  ...capturedStartupPage,
+  data: JSON.parse(JSON.stringify(capturedStartupPage.data)),
+  setData(update) {
+    this.data = { ...this.data, ...update };
+  }
+};
+startupPageInstance.onShow();
+for (const file of dataModulePaths) {
+  assert(
+    !require.cache[require.resolve(file)],
+    `empty PVP startup must not load ${path.basename(file)}`
+  );
+}
+
 const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
 const pvpState = require(path.join(packageRoot, "miniprogram", "domain", "pvp-state.js"));
 
@@ -360,8 +414,8 @@ global.wx = {
   setStorageSync() {},
   removeStorageSync() {}
 };
-delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"))];
-require(path.join(packageRoot, "miniprogram", "pages", "pvp", "index.js"));
+delete require.cache[require.resolve(pvpPagePath)];
+require(pvpPagePath);
 assert(capturedPage, "PVP page config must be loadable in the static harness");
 
 const pageInstance = {

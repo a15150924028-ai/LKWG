@@ -56,6 +56,34 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 22:28 +08:00 - Codex
+
+- Request: Continue fixing the WeChat Developer Tools `Error: timeout` that still appears after the prior attempt, without using computer-use automation.
+- Files changed:
+  - `lkwgwechat/miniprogram/data/catalog.js`
+  - `lkwgwechat/miniprogram/data/local-monsters.js`
+  - `lkwgwechat/miniprogram/data/local-passives.js`
+  - `lkwgwechat/miniprogram/data/local-skills.js`
+  - `lkwgwechat/miniprogram/data/skill-summaries.js`
+  - `lkwgwechat/miniprogram/pages/analysis/index.js`
+  - `lkwgwechat/miniprogram/pages/pvp/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `lkwgwechat/scripts/sync-miniprogram-data.js`
+  - `tests/miniprogram-analysis-static.test.js`
+  - `tests/miniprogram-data-sync-static.test.js`
+  - `tests/miniprogram-pvp-page-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Root caused the remaining timeout risk to Mini Program startup and page preload paths still constructing large monster/skill picker data before the user opens a picker.
+  - Changed full monster, skill, and passive generated modules to export JSON strings that are parsed only when full records are actually needed, reducing compile-time module evaluation cost.
+  - Added generated skill summaries and changed `catalog.skillOptions` / `getSkillSummary` to use those lightweight summaries without loading full skill data.
+  - Made Team, Analysis, and PVP pages keep visible field pickers on compact current-value options and lazily load full picker options only when the floating picker opens.
+  - Added regression coverage proving empty Team, Analysis, and PVP startup do not load monster summaries, skill summaries, or full local data modules.
+- Verification: Ran all `tests/*.test.js` scripts successfully; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `node --check` over Mini Program JS files; ran an explicit startup probe showing `team`, `analysis`, and `pvp` load no data modules on empty startup; ran `git diff --check` with only Windows LF-to-CRLF warnings. Manual WeChat Developer Tools confirmation remains pending because computer-use automation was intentionally not used.
+- Status: Complete for local implementation and automated verification; needs manual recompile in WeChat Developer Tools to confirm the debugger timeout is gone.
+
 ### 2026-06-17 21:53 +08:00 - Codex
 
 - Request: Use Computer Use to investigate and fix the WeChat Developer Tools Mini Program `Error: timeout` shown while clicking around the UI.

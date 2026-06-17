@@ -178,6 +178,51 @@ assert.strictEqual(
 assert(pageWxml.includes("<page-meta"));
 assert(pageWxml.includes("pickerScrollLocked"));
 assert(pageJs.includes("rollerSlots:"));
+
+const dataDir = path.join(packageRoot, "miniprogram", "data");
+const catalogModulePath = path.join(packageRoot, "miniprogram", "data", "catalog.js");
+const fullDataModules = [
+  path.join(dataDir, "local-monsters.js"),
+  path.join(dataDir, "local-skills.js")
+];
+for (const modulePath of [
+  ...fullDataModules,
+  catalogModulePath,
+  path.join(packageRoot, "miniprogram", "domain", "analysis.js"),
+  path.join(packageRoot, "miniprogram", "domain", "team.js"),
+  path.join(packageRoot, "miniprogram", "utils", "storage.js")
+]) {
+  delete require.cache[require.resolve(modulePath)];
+}
+let capturedPage = null;
+global.Page = (config) => {
+  capturedPage = config;
+};
+global.wx = {
+  getStorageSync() {
+    return null;
+  },
+  setStorageSync() {},
+  removeStorageSync() {},
+  switchTab() {}
+};
+delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"))];
+require(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"));
+assert(capturedPage, "analysis page must register a Page config");
+const emptyPage = {
+  ...capturedPage,
+  data: JSON.parse(JSON.stringify(capturedPage.data)),
+  setData(update) {
+    this.data = { ...this.data, ...update };
+  }
+};
+emptyPage.onShow();
+for (const modulePath of fullDataModules) {
+  assert(
+    !require.cache[require.resolve(modulePath)],
+    `empty analysis page startup must not load full data module ${path.basename(modulePath)}`
+  );
+}
 assert(pageJs.includes("buildRollerSlots("));
 assert(pageJs.includes("catalog.skillOptions"));
 assert(!pageJs.includes("catalog.monsterSkillOptions("));
@@ -253,9 +298,9 @@ assert(
   "roller target card must stay visible even when no team monster is configured"
 );
 
-let capturedPage = null;
+let capturedPayloadPage = null;
 global.Page = (config) => {
-  capturedPage = config;
+  capturedPayloadPage = config;
 };
 global.wx = {
   getStorageSync() { return null; },
@@ -265,11 +310,11 @@ global.wx = {
 };
 delete require.cache[require.resolve(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"))];
 require(path.join(packageRoot, "miniprogram", "pages", "analysis", "index.js"));
-assert(capturedPage, "analysis page config must be loadable in the static harness");
+assert(capturedPayloadPage, "analysis page config must be loadable in the static harness");
 
 const pageInstance = {
-  ...capturedPage,
-  data: JSON.parse(JSON.stringify(capturedPage.data)),
+  ...capturedPayloadPage,
+  data: JSON.parse(JSON.stringify(capturedPayloadPage.data)),
   setData(update) {
     this.lastSetDataBytes = Buffer.byteLength(JSON.stringify(update));
     this.data = { ...this.data, ...update };

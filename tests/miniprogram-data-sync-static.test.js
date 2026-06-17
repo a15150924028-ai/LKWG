@@ -30,6 +30,7 @@ const generatedPaths = {
   monsters: path.join(dataDir, "local-monsters.js"),
   monsterSummaries: path.join(dataDir, "monster-summaries.js"),
   skills: path.join(dataDir, "local-skills.js"),
+  skillSummaries: path.join(dataDir, "skill-summaries.js"),
   passives: path.join(dataDir, "local-passives.js")
 };
 for (const [name, generatedPath] of Object.entries(generatedPaths)) {
@@ -38,16 +39,18 @@ for (const [name, generatedPath] of Object.entries(generatedPaths)) {
 }
 const generated = {
   ...require(generatedPaths.meta),
-  monsters: require(generatedPaths.monsters),
+  monsters: JSON.parse(require(generatedPaths.monsters)),
   monsterSummaries: require(generatedPaths.monsterSummaries),
-  skills: require(generatedPaths.skills),
-  passives: require(generatedPaths.passives)
+  skills: JSON.parse(require(generatedPaths.skills)),
+  skillSummaries: require(generatedPaths.skillSummaries),
+  passives: JSON.parse(require(generatedPaths.passives))
 };
 
 assert.strictEqual(generated.schemaVersion, 1);
 assert.strictEqual(generated.monsters.length, source.monsters.length);
 assert.strictEqual(generated.monsterSummaries.length, source.monsters.length);
 assert.strictEqual(generated.skills.length, source.skills.length);
+assert.strictEqual(generated.skillSummaries.length, source.skills.length);
 assert.strictEqual(generated.passives.length, source.passives.length);
 
 const skillIds = new Set(generated.skills.map((skill) => skill.id));
@@ -62,16 +65,27 @@ for (const monster of generated.monsters) {
 }
 
 delete require.cache[require.resolve(generatedPaths.monsters)];
+delete require.cache[require.resolve(generatedPaths.skills)];
 const catalog = require(path.join(packageRoot, "miniprogram", "data", "catalog.js"));
 assert.strictEqual(catalog.monsterOptions.length, generated.monsterSummaries.length);
 assert(
   !require.cache[require.resolve(generatedPaths.monsters)],
   "catalog.monsterOptions must use lightweight summaries without loading full monster data"
 );
+assert.strictEqual(catalog.skillOptions.length, generated.skillSummaries.length);
+assert(
+  !require.cache[require.resolve(generatedPaths.skills)],
+  "catalog.skillOptions must use lightweight summaries without loading full skill data"
+);
 assert.strictEqual(catalog.getMonsterSummary(generated.monsters[0].id).id, generated.monsters[0].id);
 assert(
   !require.cache[require.resolve(generatedPaths.monsters)],
   "catalog.getMonsterSummary must not load full monster data"
+);
+assert.strictEqual(catalog.getSkillSummary(generated.skills[0].id).id, generated.skills[0].id);
+assert(
+  !require.cache[require.resolve(generatedPaths.skills)],
+  "catalog.getSkillSummary must not load full skill data"
 );
 assert.strictEqual(catalog.monsterById.size, generated.monsters.length);
 assert.strictEqual(catalog.skillById.size, generated.skills.length);

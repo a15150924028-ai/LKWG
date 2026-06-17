@@ -5,7 +5,7 @@ const { createStorageAdapter } = require("../../utils/storage");
 
 const storage = createStorageAdapter();
 const blankOption = { id: "", label: "请选择" };
-const allSkillOptions = optionsWithBlank(catalog.skillOptions);
+let allSkillOptionsCache;
 
 function closedFloatingPicker() {
   return {
@@ -35,13 +35,33 @@ function selection(options, id) {
   return { index, label: options[index].label };
 }
 
+function getAllSkillOptions() {
+  if (!allSkillOptionsCache) allSkillOptionsCache = optionsWithBlank(catalog.skillOptions);
+  return allSkillOptionsCache;
+}
+
 function skillSelection(skillId) {
-  const selected = selection(allSkillOptions, skillId);
-  const option = allSkillOptions[selected.index] || blankOption;
+  const skill = catalog.getSkillSummary(skillId);
+  if (!skillId || !skill) {
+    return {
+      index: 0,
+      label: blankOption.label,
+      displayIndex: 0,
+      displayOptions: [blankOption]
+    };
+  }
+  const option = {
+    id: skill.id,
+    label: skill.name,
+    aliases: [...(skill.aliases || [])],
+    icon: skill.type ? `/assets/type-icons/${skill.type}.png` : "",
+    iconClass: skill.type ? "type-icon-image" : ""
+  };
   return {
-    ...selected,
-    displayIndex: option.id ? 1 : 0,
-    displayOptions: option.id ? [blankOption, option] : [blankOption]
+    index: Math.max(0, getAllSkillOptions().findIndex((item) => item.id === skillId)),
+    label: option.label,
+    displayIndex: 1,
+    displayOptions: [blankOption, option]
   };
 }
 
@@ -111,7 +131,7 @@ Page({
 
   onRollerSkillChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
-    const option = allSkillOptions[event.detail.index] || blankOption;
+    const option = getAllSkillOptions()[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.rollerSkillId = option.id;
     });
@@ -126,7 +146,7 @@ Page({
       floatingPicker: {
         visible: true,
         label: detail.label || "",
-        options: useAllSkillOptions ? allSkillOptions : (detail.options || []),
+        options: useAllSkillOptions ? getAllSkillOptions() : (detail.options || []),
         valueIndex: useAllSkillOptions ? Number(dataset.valueIndex) || 0 : Number(detail.valueIndex) || 0,
         valueLabel: detail.valueLabel || blankOption.label,
         dataset: { ...dataset }
