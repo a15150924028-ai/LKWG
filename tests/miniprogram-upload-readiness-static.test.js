@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, "..");
 const packageRoot = path.join(root, "lkwgwechat");
 const miniRoot = path.join(packageRoot, "miniprogram");
 const maxMainPackageBytes = 2 * 1024 * 1024;
+const maxMediaAssetBytes = 200 * 1024;
 
 function walk(dir, filter = () => true) {
   const files = [];
@@ -118,14 +119,23 @@ for (const file of wxmlFiles) {
 }
 
 let packageBytes = 0;
+let mediaAssetBytes = 0;
 for (const file of walk(miniRoot)) {
-  packageBytes += fs.statSync(file).size;
+  const bytes = fs.statSync(file).size;
+  packageBytes += bytes;
+  if (/\.(?:png|jpe?g|gif|webp|mp3|wav|aac|m4a)$/i.test(file)) {
+    mediaAssetBytes += bytes;
+  }
 }
 assert(
   packageBytes < maxMainPackageBytes,
   `Mini Program package ${packageBytes} bytes exceeds 2 MiB main-package limit`
 );
+assert(
+  mediaAssetBytes < maxMediaAssetBytes,
+  `Mini Program image/audio assets ${mediaAssetBytes} bytes exceed 200 KiB code-quality limit`
+);
 
 console.log(
-  `miniprogram upload readiness checks passed (${packageBytes} bytes, ${wxmlFiles.length} WXML files)`
+  `miniprogram upload readiness checks passed (${packageBytes} bytes, ${Math.round(mediaAssetBytes / 1024)} KiB media, ${wxmlFiles.length} WXML files)`
 );

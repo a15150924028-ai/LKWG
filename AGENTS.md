@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 23:08 +08:00 - Codex
+
+- Request: Fix the WeChat Developer Tools code-quality failure where Mini Program image/audio resources exceed the 200 KB recommendation.
+- Files changed:
+  - `assets/type-icons/*.png`
+  - `index.html`
+  - `lkwgwechat/miniprogram/assets/roller-skill.png`
+  - `lkwgwechat/miniprogram/assets/type-icons/*.png`
+  - `tests/miniprogram-upload-readiness-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Recompressed the shared 96x96 RGBA type icon PNGs while preserving the required dimensions and transparency format.
+  - Recompressed the roller button PNG and updated the web embedded data URI plus the synchronized Mini Program asset so byte-sync remains valid.
+  - Left the approved boss bloodline PNG unchanged because tests lock its exact hash.
+  - Added a Mini Program upload-readiness assertion that image/audio assets must stay below 200 KiB.
+- Verification: Ran all `tests/*.test.js` scripts successfully; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check` with only Windows LF-to-CRLF warnings; confirmed `miniprogram upload readiness` reports `1532543` package bytes and `184 KiB` media assets.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-17 22:44 +08:00 - Codex
 
 - Request: Fix the Mini Program team editor regression where configuring a monster's skills shows the full skill catalog instead of that monster's native skill pool.
