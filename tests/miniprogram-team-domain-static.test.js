@@ -43,7 +43,7 @@ assert.strictEqual(
   "roller target must not be required for completion"
 );
 
-const withAnyCatalogSkill = teamRules.normalizePet(
+const withOffPoolSkill = teamRules.normalizePet(
   {
     ...valid,
     skills: [
@@ -55,9 +55,9 @@ const withAnyCatalogSkill = teamRules.normalizePet(
   catalog
 );
 assert.strictEqual(
-  withAnyCatalogSkill.skills[0].skillId,
-  offPoolSkill.id,
-  "team skill configuration must preserve any valid catalog skill, even when the selected monster cannot naturally learn it"
+  withOffPoolSkill.skills[0].skillId,
+  "",
+  "team skill configuration must reject catalog skills outside the selected monster's native skill pool"
 );
 
 const invalid = teamRules.normalizePet({

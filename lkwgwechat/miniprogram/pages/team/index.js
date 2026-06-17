@@ -17,7 +17,7 @@ function closedFloatingPicker() {
 const blankOption = { id: "", label: "请选择" };
 
 let monsterOptionsCache;
-let allSkillOptionsCache;
+const skillOptionsByMonsterId = new Map();
 
 function optionsWithBlank(options) {
   return [blankOption, ...options.map((item) => ({
@@ -79,9 +79,12 @@ function getMonsterOptions() {
   return monsterOptionsCache;
 }
 
-function getAllSkillOptions() {
-  if (!allSkillOptionsCache) allSkillOptionsCache = optionsWithBlank(catalog.skillOptions);
-  return allSkillOptionsCache;
+function getSkillOptionsForMonster(monsterId) {
+  if (!monsterId) return [blankOption];
+  if (!skillOptionsByMonsterId.has(monsterId)) {
+    skillOptionsByMonsterId.set(monsterId, optionsWithBlank(catalog.monsterSkillOptions(monsterId)));
+  }
+  return skillOptionsByMonsterId.get(monsterId);
 }
 
 function compactSelectionFromRecord(record, id, fullOptions) {
@@ -136,11 +139,11 @@ function selectedSkillDetail(skillId, index) {
   };
 }
 
-function skillSelection(skillId) {
+function skillSelection(skillId, monsterId) {
   return compactSelectionFromRecord(
     catalog.getSkillSummary(skillId),
     skillId,
-    getAllSkillOptions
+    () => getSkillOptionsForMonster(monsterId)
   );
 }
 
@@ -169,7 +172,7 @@ function teamView(team) {
           name: passive.name,
           description: passive.description || "暂无特性说明"
         })),
-      skillSelections: pet.skills.map((skill) => skillSelection(skill.skillId)),
+      skillSelections: pet.skills.map((skill) => skillSelection(skill.skillId, pet.monsterId)),
       skillDetails: pet.skills
         .map((skill, index) => selectedSkillDetail(skill.skillId, index))
         .filter(Boolean)
@@ -292,7 +295,8 @@ Page({
   onSkillChange(event) {
     const petIndex = Number(event.currentTarget.dataset.petIndex);
     const skillIndex = Number(event.currentTarget.dataset.skillIndex);
-    const options = getAllSkillOptions();
+    const pet = this.data.team[petIndex] || {};
+    const options = getSkillOptionsForMonster(pet.monsterId);
     const option = options[event.detail.index] || blankOption;
     this.mutatePet(petIndex, (pet) => {
       pet.skills[skillIndex].skillId = option.id;
@@ -302,21 +306,27 @@ Page({
   onPickerOpen(event) {
     const detail = event.detail || {};
     const dataset = event.currentTarget.dataset || {};
-    const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";
+    const useMonsterSkillOptions = dataset.pickerOptions === "monsterSkillOptions";
     const useMonsterOptions = dataset.pickerOptions === "monsterOptions";
+    const petIndex = Number.isFinite(Number(dataset.petIndex))
+      ? Number(dataset.petIndex)
+      : Number(this.data.activeTeamIndex) || 0;
+    const pet = this.data.team[petIndex] || {};
+    const options = useMonsterSkillOptions
+      ? getSkillOptionsForMonster(pet.monsterId)
+      : useMonsterOptions
+        ? getMonsterOptions()
+        : (detail.options || []);
+    const requestedIndex = (useMonsterSkillOptions || useMonsterOptions)
+      ? Number(dataset.valueIndex) || 0
+      : Number(detail.valueIndex) || 0;
     this.setData({
       pickerScrollLocked: true,
       floatingPicker: {
         visible: true,
         label: detail.label || "",
-        options: useAllSkillOptions
-          ? getAllSkillOptions()
-          : useMonsterOptions
-            ? getMonsterOptions()
-            : (detail.options || []),
-        valueIndex: (useAllSkillOptions || useMonsterOptions)
-          ? Number(dataset.valueIndex) || 0
-          : Number(detail.valueIndex) || 0,
+        options,
+        valueIndex: Math.max(0, Math.min(options.length - 1, requestedIndex)),
         valueLabel: detail.valueLabel || blankOption.label,
         dataset: { ...dataset }
       }

@@ -55,7 +55,7 @@ function normalizePet(pet, index = 0, catalog) {
     rollerSkillId: validSkillId(source.rollerSkillId, { allowAny: true }),
     skills: Array.from({ length: 4 }, (_, skillIndex) => {
       const skill = source.skills?.[skillIndex] || {};
-      return { skillId: validSkillId(skill.skillId || skill.id || "", { allowAny: true }) };
+      return { skillId: validSkillId(skill.skillId || skill.id || "") };
     })
   };
 }

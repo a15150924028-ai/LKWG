@@ -136,7 +136,7 @@
           disabled="{{!activePet.monsterId}}"
           data-pet-index="{{activePet.slot}}"
           data-skill-index="{{skillIndex}}"
-          data-picker-options="allSkillOptions"
+          data-picker-options="monsterSkillOptions"
           data-value-index="{{skillSelection.index}}"
           data-picker-handler="onSkillChange"
           bind:change="onSkillChange"

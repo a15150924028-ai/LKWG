@@ -117,8 +117,8 @@ assert(pageWxml.includes('class="roller-button-icon"'));
 assert(pageJs.includes("catalog.getPassive"), "team view must resolve monster passives");
 assert(pageJs.includes("catalog.getSkill"), "team view must resolve selected skill details");
 assert(
-  pageJs.includes("function getAllSkillOptions()"),
-  "team skill configuration must expose the full skill catalog lazily when the floating picker opens"
+  pageJs.includes("function getSkillOptionsForMonster("),
+  "team skill configuration must expose the selected monster's native skill pool when the floating picker opens"
 );
 assert(
   !pageJs.includes("const allSkillOptions = optionsWithBlank(catalog.skillOptions);"),
@@ -133,12 +133,12 @@ assert(
   "team skill selection view data should build compact display options for visible field-pickers"
 );
 assert(
-  pageJs.includes('const useAllSkillOptions = dataset.pickerOptions === "allSkillOptions";'),
-  "team picker open path must opt into the full skill catalog only when opening the floating picker"
+  pageJs.includes('const useMonsterSkillOptions = dataset.pickerOptions === "monsterSkillOptions";'),
+  "team picker open path must opt into the selected monster's skill pool only when opening the floating picker"
 );
 assert(
-  !pageJs.includes("const skillOptions = optionsWithBlank(catalog.monsterSkillOptions(pet.monsterId));"),
-  "team skill configuration must not rebuild its picker from monsterSkillOptions"
+  pageJs.includes("catalog.monsterSkillOptions(monsterId)"),
+  "team skill configuration must rebuild its picker from the selected monster's native skill pool"
 );
 assert(
   pageWxml.includes('options="{{skillSelection.displayOptions}}"'),
@@ -149,8 +149,8 @@ assert(
   "visible team skill field-pickers should use a compact display index"
 );
 assert(
-  pageWxml.includes('data-picker-options="allSkillOptions"'),
-  "team skill field-pickers should request the full catalog only for the floating picker"
+  pageWxml.includes('data-picker-options="monsterSkillOptions"'),
+  "team skill field-pickers should request only the current monster's skill pool for the floating picker"
 );
 assert(
   pageWxml.includes('data-value-index="{{skillSelection.index}}"'),
@@ -295,7 +295,7 @@ assert(
 payloadPage.onPickerOpen({
   currentTarget: {
     dataset: {
-      pickerOptions: "allSkillOptions",
+      pickerOptions: "monsterSkillOptions",
       valueIndex: 3,
       pickerHandler: "onSkillChange"
     }
@@ -309,13 +309,47 @@ payloadPage.onPickerOpen({
 });
 assert.strictEqual(
   payloadPage.data.floatingPicker.options.length,
-  catalog.skillOptions.length + 1,
-  "opening a team skill picker should still load the full skill catalog into the shared floating picker"
+  1,
+  "opening a team skill picker with no selected monster should expose only the blank option"
 );
 assert.strictEqual(
   payloadPage.data.floatingPicker.valueIndex,
+  0,
+  "opening a team skill picker with no selected monster should fall back to the blank index"
+);
+
+const skillPoolPage = createPageInstance();
+skillPoolPage.onLoad();
+const nativeSkillMonster = catalog.bundle.monsters.find((monster) => monster.skillIds.length >= 4);
+assert(nativeSkillMonster, "fixture monster with at least four native skills is required");
+skillPoolPage.applyTeam([{
+  monsterId: nativeSkillMonster.id,
+  skills: [{ skillId: nativeSkillMonster.skillIds[2] }]
+}], false);
+skillPoolPage.onPickerOpen({
+  currentTarget: {
+    dataset: {
+      pickerOptions: "monsterSkillOptions",
+      valueIndex: skillPoolPage.data.activePet.skillSelections[0].index,
+      pickerHandler: "onSkillChange"
+    }
+  },
+  detail: {
+    label: "鎶€鑳?1",
+    options: skillPoolPage.data.activePet.skillSelections[0].displayOptions,
+    valueIndex: skillPoolPage.data.activePet.skillSelections[0].displayIndex,
+    valueLabel: skillPoolPage.data.activePet.skillSelections[0].label
+  }
+});
+assert.deepStrictEqual(
+  skillPoolPage.data.floatingPicker.options.slice(1).map((option) => option.id),
+  nativeSkillMonster.skillIds,
+  "opening a team skill picker must show the selected monster's native skill pool, not every catalog skill"
+);
+assert.strictEqual(
+  skillPoolPage.data.floatingPicker.valueIndex,
   3,
-  "opening a team skill picker should preserve the real full-catalog index"
+  "opening a team skill picker should preserve the real native-pool index"
 );
 
 for (const bossName of bossMonsterNames) {

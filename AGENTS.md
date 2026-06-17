@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-17 22:44 +08:00 - Codex
+
+- Request: Fix the Mini Program team editor regression where configuring a monster's skills shows the full skill catalog instead of that monster's native skill pool.
+- Files changed:
+  - `lkwgwechat/miniprogram/domain/team.js`
+  - `lkwgwechat/miniprogram/pages/team/index.js`
+  - `lkwgwechat/miniprogram/pages/team/index.wxml`
+  - `tests/miniprogram-team-domain-static.test.js`
+  - `tests/miniprogram-team-page-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Restored team-editor skill pickers to open the selected monster's native `catalog.monsterSkillOptions(monsterId)` pool instead of the full global skill catalog.
+  - Kept visible field pickers compact by showing only the current value until the floating picker opens.
+  - Changed team normalization so the four configured battle skills reject valid catalog skills that are outside the selected monster's native skill pool, while keeping roller target validation as a full-catalog skill.
+  - Added regression coverage for native skill pool picker contents, blank behavior before a monster is selected, native-pool index preservation, and off-pool skill rejection.
+- Verification: Watched the focused team page and team domain tests fail on the new native-skill-pool assertions before implementation, then pass after the fix. Ran all `tests/*.test.js` scripts successfully; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-17 22:28 +08:00 - Codex
 
 - Request: Continue fixing the WeChat Developer Tools `Error: timeout` that still appears after the prior attempt, without using computer-use automation.
