@@ -27,10 +27,6 @@ const appJsonPath = path.join(packageRoot, "miniprogram", "app.json");
 assert(fs.existsSync(appJsonPath), "miniprogram/app.json must exist");
 
 const appJson = JSON.parse(fs.readFileSync(appJsonPath, "utf8"));
-const appJs = fs.readFileSync(path.join(packageRoot, "miniprogram", "app.js"), "utf8");
-const sitemapJson = JSON.parse(
-  fs.readFileSync(path.join(packageRoot, "miniprogram", "sitemap.json"), "utf8")
-);
 const appWxss = fs.readFileSync(path.join(packageRoot, "miniprogram", "app.wxss"), "utf8");
 assert.deepStrictEqual(appJson.pages, [
   "pages/team/index",
@@ -41,12 +37,6 @@ assert.deepStrictEqual(
   appJson.tabBar.list.map((item) => item.text),
   ["队伍", "分析", "PVP"]
 );
-assert.strictEqual(appJson.window.navigationBarTitleText, "rock工具");
-assert(appJs.includes('appName: "rock工具"'), "Mini Program global appName must be rock工具");
-assert.strictEqual(sitemapJson.desc, "rock工具页面索引");
-assert(!appJs.includes("精灵PVP策略助手"), "Mini Program app.js must not keep the old strategy-assistant name");
-assert(!JSON.stringify(appJson).includes("精灵PVP策略助手"), "Mini Program app.json must not keep the old strategy-assistant name");
-assert(!JSON.stringify(sitemapJson).includes("精灵PVP策略助手"), "Mini Program sitemap must not keep the old strategy-assistant name");
 assert.strictEqual(appJson.window.navigationBarBackgroundColor, "#f8fafc");
 assert.strictEqual(appJson.window.backgroundColor, "#f4f7fb");
 assert.strictEqual(appJson.tabBar.selectedColor, "#4DA3FF");

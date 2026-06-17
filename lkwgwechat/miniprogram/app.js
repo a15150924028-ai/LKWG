@@ -1,5 +1,5 @@
 App({
   globalData: {
-    appName: "rock工具"
+    appName: "精灵PVP策略助手"
   }
 });

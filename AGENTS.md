@@ -56,9 +56,9 @@ Use this entry format:
 
 ## Development Work Log
 
-### 2026-06-17 20:35 +08:00 - Codex
+### 2026-06-17 20:39 +08:00 - Codex
 
-- Request: Remove the `精灵PVP策略助手` naming and rename the tool to `rock工具`.
+- Request: Revert the mistaken app/page rename because the intended request was to edit the supplied image, not project text.
 - Files changed:
   - `index.html`
   - `lkwgwechat/miniprogram/app.js`
@@ -69,11 +69,9 @@ Use this entry format:
   - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
   - `AGENTS.md`
 - Changes:
-  - Renamed the web page title and header from `洛克PVP配对模拟器` to `rock工具`.
-  - Renamed the WeChat Mini Program app name, navigation bar title, and sitemap description from `精灵PVP策略助手` to `rock工具`.
-  - Updated the Mini Program migration plan example to use the new name.
-  - Added regression checks for the new web and Mini Program names and for removal of the old Mini Program name from active shell files.
-- Verification: Watched `node tests/apple-layout-static.test.js` and `node tests/miniprogram-shell-static.test.js` fail before the app-name changes, then pass after implementation. Ran all 54 Node static tests; parsed all 13 executable inline scripts; ran `git diff --check` with only CRLF line-ending warnings. Searched active app, Mini Program, docs, and tests for the old names; only negative test assertions still contain `精灵PVP策略助手`. Browser runtime was not exposed in the current Node REPL, so in-app Browser verification was not run.
+  - Reverted commit `dc10d25`, restoring the previous web and Mini Program naming and related tests/docs.
+  - Added this work-log entry to document the correction.
+- Verification: Ran focused web and Mini Program shell tests, parsed inline scripts, and checked the revert diff before commit.
 - Status: Complete.
 
 ### 2026-06-17 13:31 +08:00 - Codex
