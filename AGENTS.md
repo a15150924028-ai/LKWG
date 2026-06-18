@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 18:15 +08:00 - Codex
+
+- Request: Fix web PVP `愿力冲击` so it displays both normal damage and response-success damage.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-turn-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed `愿力冲击` damage calculation to always preview the response-success damage variant while keeping `responseTriggered` unchanged for real turn settlement.
+  - Updated the PVP damage result renderer so `愿力冲击` shows separate `正常伤害` and `应对成功` result lines.
+  - Added static regression coverage for Force Impact response-success preview and dual-label rendering.
+- Verification: Watched `node tests/pvp-turn-rules-static.test.js` fail on the new Force Impact preview assertions before implementation, then pass after the fix; ran focused PVP damage/response tests; ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings. In-app browser screenshot verification was not run because browser/computer control tools were not exposed in this turn.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 18:08 +08:00 - Codex
 
 - Request: Use `style.md` and apply option A so the web PVP `高级修正` collapsed control has a stronger click affordance.

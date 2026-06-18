@@ -9,6 +9,21 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function extractFunction(name) {
+  const start = html.indexOf(`function ${name}(`);
+  if (start < 0) throw new Error(`${name} is missing.`);
+  const open = html.indexOf("{", html.indexOf(")", start));
+  let depth = 0;
+  for (let index = open; index < html.length; index += 1) {
+    if (html[index] === "{") depth += 1;
+    if (html[index] === "}") {
+      depth -= 1;
+      if (depth === 0) return html.slice(start, index + 1);
+    }
+  }
+  throw new Error(`${name} source is incomplete.`);
+}
+
 const turnScript = scripts.find((script) => script.includes("LKWG_PVP_TURN_RULES"));
 assert(turnScript, "PVP turn-rule module is missing.");
 
@@ -87,9 +102,19 @@ assert(
   html.includes("canRespondToAction(damageAction, defenderAction)"),
   "PVP damage must use turn rules to decide whether response damage triggers."
 );
+const calcDamageSource = extractFunction("calcPvpDamage");
+const damageResultSource = extractFunction("renderPvpDamageResult");
 assert(
-  html.includes("responseTriggered ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage"),
-  "Response damage must only be calculated when response is triggered."
+  calcDamageSource.includes('const isForceImpact = battleAction.id === "pvp-force-impact";') &&
+    calcDamageSource.includes("const shouldPreviewResponseDamage = responseTriggered || isForceImpact;") &&
+    calcDamageSource.includes("shouldPreviewResponseDamage ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage"),
+  "Force Impact must preview response-success damage while other response damage still depends on a trigger."
+);
+assert(
+  damageResultSource.includes('const forceImpactResult = damage.action.id === "pvp-force-impact";') &&
+    damageResultSource.includes('forceImpactResult ? "正常伤害" : ""') &&
+    damageResultSource.includes('forceImpactResult ? "应对成功" : "应对状态"'),
+  "Force Impact result must label both normal damage and response-success damage."
 );
 assert(html.includes("resolveTurnOrder({"), "The PVP preview must resolve action order through the shared turn rules.");
 

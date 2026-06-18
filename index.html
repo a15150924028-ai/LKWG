@@ -7790,30 +7790,32 @@
       const singleEstimate = normalDamage.singleDamage;
       const estimate = normalDamage.damage;
       const responseDamageMultiplier = Number(variableDamage.responseDamageMultiplier) || 1;
-      const hasResponseDamage = battleAction.id === "pvp-force-impact"
+      const isForceImpact = battleAction.id === "pvp-force-impact";
+      const hasResponseDamage = isForceImpact
         || variableDamage.responsePower != null
         || responseDamageMultiplier !== 1;
       const responseOnly = !isAttackSkill(battleAction) && variableDamage.responsePower != null;
       const responseTriggered = hasResponseDamage && (
         responseStatus.type === "attack-status" || responseStatus.type === "defense-attack"
       );
+      const shouldPreviewResponseDamage = responseTriggered || isForceImpact;
       if (responseOnly && !responseTriggered) {
         return { error: `${action.name} 需要应对攻击后计算伤害` };
       }
       const responseSkillPower = variableDamage.responsePower != null
         ? Math.max(1, Number(variableDamage.responsePower) || variablePower)
         : variablePower;
-      const responseMultiplier = battleAction.id === "pvp-force-impact"
+      const responseMultiplier = isForceImpact
         ? FORCE_IMPACT_RESPONSE_MULTIPLIER
         : 1;
-      const responseDamage = responseTriggered ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
+      const responseDamage = shouldPreviewResponseDamage ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
             ...damageInput,
             skillPower: responseSkillPower,
             responseMultiplier,
             typeMultiplier: responseTypeMultiplier,
             skillDamageMultiplier: (Number(variableDamage.damageMultiplier) || 1) * responseDamageMultiplier
           }) : null;
-      const responsePreSkillReductionDamage = responseTriggered ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
+      const responsePreSkillReductionDamage = shouldPreviewResponseDamage ? window.LKWG_PVP_DAMAGE_CORE.calculateDamage({
             ...damageInput,
             skillPower: responseSkillPower,
             responseMultiplier,
@@ -7967,8 +7969,9 @@
       const powerText = damage.basePower !== damage.power ? `${damage.basePower}→${damage.power}` : damage.power;
       const descriptionText = pvpSkillDescriptionText(damage.action);
       if (damage.responseEstimate != null) {
-        const responseReason = damage.action.id === "pvp-force-impact"
-          ? `敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
+        const forceImpactResult = damage.action.id === "pvp-force-impact";
+        const responseReason = forceImpactResult
+          ? `应对成功：敌方使用状态技能时 ×${FORCE_IMPACT_RESPONSE_MULTIPLIER}`
           : `${damage.responseReason || "应对状态"}威力${damage.responsePower}${damage.responseDamageMultiplier && damage.responseDamageMultiplier !== 1 ? ` / 伤害×${damage.responseDamageMultiplier}` : ""}`;
         if (damage.responseOnly) {
           return `
@@ -7988,12 +7991,12 @@
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">
               <div class="pvp-damage-line">
-                ${renderPvpDamageHero(damage)}
+                ${renderPvpDamageHero(damage, damage.estimate, damage.singleEstimate, damage.percent, forceImpactResult ? "正常伤害" : "")}
                 <span class="pvp-damage-meta">${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
               </div>
               ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
               <div class="pvp-damage-line">
-                ${renderPvpDamageHero(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate, damage.responsePercent, "应对状态")}
+                ${renderPvpDamageHero(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate, damage.responsePercent, forceImpactResult ? "应对成功" : "应对状态")}
                 <span class="pvp-damage-meta">${responseReason}</span>
               </div>
               <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
