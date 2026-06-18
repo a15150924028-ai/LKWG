@@ -56,6 +56,23 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 18:43 +08:00 - Codex
+
+- Request: Prepare the web app for production deployment for mainland China users.
+- Files changed:
+  - `.gitignore`
+  - `scripts/build-web-dist.mjs`
+  - `docs/deploy-web-mainland.md`
+  - `tests/web-mainland-deploy-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a cross-platform Node build script that packages only the web static runtime files into `dist/web`.
+  - Ignored generated `dist/` output so release artifacts do not get committed accidentally.
+  - Documented a mainland-oriented deployment path using Tencent COS or Alibaba OSS with CDN, ICP filing, HTTPS, cache policy, and post-upload checks.
+  - Added regression coverage that builds a test release package and verifies it includes the web app files while excluding tests and Mini Program source.
+- Verification: Ran `node tests/web-mainland-deploy-static.test.js`, `node scripts/build-web-dist.mjs`, and all `tests/*.test.js` scripts successfully. Direct upload to Tencent COS or Alibaba OSS was not run because no domestic cloud CLI or credentials are configured in this environment.
+- Status: Partial for live production: local release package and deployment runbook are ready; actual mainland upload needs cloud credentials, bucket/domain, and ICP-ready custom domain.
+
 ### 2026-06-18 18:15 +08:00 - Codex
 
 - Request: Fix web PVP `愿力冲击` so it displays both normal damage and response-success damage.
