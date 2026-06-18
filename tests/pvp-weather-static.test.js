@@ -40,6 +40,14 @@ assert(
   /\.pvp-weather-button\.active\s*\{[^}]*var\(--weather-color/s.test(html),
   "Selected weather button background must be driven by the current weather color."
 );
+assert(
+  /\.pvp-weather-options\s*\{[^}]*border-radius:\s*18px;[^}]*overflow:\s*visible;/s.test(html),
+  "Weather option tray must not clip independent pill corners."
+);
+assert(
+  /\.pvp-weather-button\s*\{[^}]*border-radius:\s*var\(--radius-pill\);[^}]*overflow:\s*hidden;/s.test(html),
+  "Weather buttons must own their rounded-corner clipping."
+);
 assert(html.includes("setPvpWeatherFromSkill"), "Selecting or using a weather skill must update shared weather.");
 assert(
   html.includes("weatherPowerMultiplier(pvpSimState.weather, damageAction)"),

@@ -911,10 +911,10 @@
     .pvp-weather-options {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 4px;
+      gap: 8px;
       border: 1px solid rgba(255, 255, 255, 0.85);
-      border-radius: var(--radius-pill);
-      overflow: hidden;
+      border-radius: 18px;
+      overflow: visible;
       background: rgba(255, 255, 255, 0.58);
       padding: 4px;
     }
@@ -928,6 +928,7 @@
       gap: 6px;
       border: 0;
       border-radius: var(--radius-pill);
+      overflow: hidden;
       background: transparent;
       color: var(--ink);
       cursor: pointer;
@@ -2898,14 +2899,6 @@
 
       .pvp-weather-options {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .pvp-weather-button:nth-child(2) {
-        border-right: 0;
-      }
-
-      .pvp-weather-button:nth-child(-n + 2) {
-        border-bottom: 0;
       }
 
       .pvp-sim-grid {

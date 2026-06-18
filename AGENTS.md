@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 17:52 +08:00 - Codex
+
+- Request: Fix the defective rounded corners in the web PVP weather selector shown in the screenshot.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-weather-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the PVP weather option tray from a clipped pill-shaped segmented container into a normal rounded glass tray so narrow two-column layouts no longer crop individual weather pill corners.
+  - Increased weather option spacing, made each weather button own its pill clipping, and removed stale mobile segmented-border rules.
+  - Added static regression coverage that prevents the weather tray from clipping independent pill corners.
+- Verification: Watched `node tests/pvp-weather-static.test.js` fail on the new rounded-corner regression before implementation, then pass after the fix; ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings. In-app browser screenshot verification was not run because browser/computer control tools were not exposed in this turn.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 17:41 +08:00 - Codex
 
 - Request: Execute the first-priority `style.md` web UI migration after the previous visual-skin pass, without repeating already completed skin work.
