@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 17:27 +08:00 - Codex
+
+- Request: Add first-letter pinyin initial search to all web fuzzy search, for example `yctk` should find `隐藏条款`.
+- Files changed:
+  - `index.html`
+  - `lkwgwechat/miniprogram/utils/generated/pinyin-map.js`
+  - `tests/web-search-initials-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a shared web fuzzy option scorer that matches Chinese names and aliases by normalized text, full pinyin, and pinyin initials, then reused it for skill, monster, and generic combo filtering.
+  - Added missing `藏` and `款` pinyin mappings so `隐藏条款` resolves to `yincangtiaokuan` / `yctk`.
+  - Synchronized the Mini Program generated pinyin map from the web map so existing asset sync checks stay current.
+  - Added a web regression test covering `yctk` matching `隐藏条款` for skill, monster, and generic combo search.
+- Verification: Watched `node tests/web-search-initials-static.test.js` fail before implementation because `fuzzyItemScore` was missing, then pass after implementation; ran `node tests/miniprogram-search-picker-static.test.js`, `node tests/miniprogram-search-assets-static.test.js`, all `tests/*.test.js` scripts, `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`, and `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 17:17 +08:00 - Codex
 
 - Request: Fix the web PVP weather selector so the selected background color is tied to the selected weather.

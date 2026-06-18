@@ -5966,10 +5966,10 @@
     }
 
     function renderComboOptions(menu, items, query, onSelect, options = {}) {
-      const q = query.trim().toLowerCase();
+      const q = normalizeSearchText(query);
       const filtered = (options.skipFilter ? items : items.filter((item) => {
         if (!q) return true;
-        return item.name.toLowerCase().includes(q) || (item.aliases || []).some((alias) => alias.toLowerCase().includes(q));
+        return fuzzyItemScore(item, q) > 0;
       })).slice(0, 80);
       menu.innerHTML = filtered.length ? filtered.map((item) => `
         <button class="combo-option" type="button" data-id="${escapeHtml(item.id)}">
@@ -6078,6 +6078,7 @@
       ["bu", "布不步补卜怖"],
       ["cai", "彩采菜才财裁"],
       ["can", "灿残参蚕餐"],
+      ["cang", "藏苍仓"],
       ["cao", "草曹槽操"],
       ["ce", "策测侧册"],
       ["cha", "茶查察叉差"],
@@ -6177,6 +6178,7 @@
       ["kong", "空孔恐控"],
       ["ku", "酷库哭枯苦"],
       ["kuang", "狂矿框旷"],
+      ["kuan", "款宽"],
       ["kui", "葵魁盔奎亏"],
       ["la", "拉辣蜡啦"],
       ["lai", "莱赖来濑"],
@@ -6403,12 +6405,12 @@
       return prev[b.length];
     }
 
-    function fuzzySkillScore(skill, query) {
+    function fuzzyItemScore(item, query) {
       const q = normalizeSearchText(query);
       if (!q) return 1;
       const qPy = pinyinText(q);
       const qInitials = pinyinInitials(q);
-      const names = [skill.name, ...(skill.aliases || [])];
+      const names = [item?.name, item?.label, ...(item?.aliases || [])].filter(Boolean);
       let best = 0;
       for (const name of names) {
         const key = normalizeSearchText(name);
@@ -6417,13 +6419,23 @@
         if (key.includes(q)) best = Math.max(best, 1000 - key.indexOf(q));
         const pinyinIndex = [keyPy.indexOf(q), keyPy.indexOf(qPy)].filter((index) => index >= 0).sort((a, b) => a - b)[0];
         if (pinyinIndex != null) best = Math.max(best, 920 - pinyinIndex);
-        if (keyInitials.includes(q) || keyInitials.includes(qInitials)) best = Math.max(best, 820);
+        if (keyInitials === q || keyInitials === qInitials) {
+          best = Math.max(best, 960);
+        } else if (keyInitials.startsWith(q) || keyInitials.startsWith(qInitials)) {
+          best = Math.max(best, 880);
+        } else if (keyInitials.includes(q) || keyInitials.includes(qInitials)) {
+          best = Math.max(best, 820);
+        }
         const target = qPy || q;
         const distanceLimit = Math.max(1, Math.floor(target.length * 0.28));
         const distance = levenshteinDistance(target, keyPy, distanceLimit);
         if (distance <= distanceLimit) best = Math.max(best, 760 - distance * 40);
       }
       return best;
+    }
+
+    function fuzzySkillScore(skill, query) {
+      return fuzzyItemScore(skill, query);
     }
 
     function fuzzySkillItems(query) {
@@ -6438,26 +6450,7 @@
     }
 
     function fuzzyMonsterScore(monster, query) {
-      const q = normalizeSearchText(query);
-      if (!q) return 1;
-      const qPy = pinyinText(q);
-      const qInitials = pinyinInitials(q);
-      const names = [monster.name, ...(monster.aliases || [])];
-      let best = 0;
-      for (const name of names) {
-        const key = normalizeSearchText(name);
-        const keyPy = pinyinText(name);
-        const keyInitials = pinyinInitials(name);
-        if (key.includes(q)) best = Math.max(best, 1000 - key.indexOf(q));
-        const pinyinIndex = [keyPy.indexOf(q), keyPy.indexOf(qPy)].filter((index) => index >= 0).sort((a, b) => a - b)[0];
-        if (pinyinIndex != null) best = Math.max(best, 920 - pinyinIndex);
-        if (keyInitials.includes(q) || keyInitials.includes(qInitials)) best = Math.max(best, 820);
-        const target = qPy || q;
-        const distanceLimit = Math.max(1, Math.floor(target.length * 0.28));
-        const distance = levenshteinDistance(target, keyPy, distanceLimit);
-        if (distance <= distanceLimit) best = Math.max(best, 760 - distance * 40);
-      }
-      return best;
+      return fuzzyItemScore(monster, query);
     }
 
     function fuzzyMonsterItems(query, monsters = dexData.monsters) {
