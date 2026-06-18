@@ -20,7 +20,7 @@ assert(
 );
 assert(
   crypto.createHash("sha256").update(bossIcon).digest("hex") ===
-    "a8ad70fc357a7ee72d90ce1dde24161da7d8ac1d271a858dae62190cd75e3f74",
+    "ecdde0b38de554eaee5c4c11e0eb2061a065212bc16cc05292d2f4bd7ad8997a",
   "The boss bloodline icon must use the approved background-removed asset."
 );
 assert(

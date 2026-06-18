@@ -56,6 +56,24 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 00:52 +08:00 - Codex
+
+- Request: Report current repository image sizes and compress image assets.
+- Files changed:
+  - `assets/bloodline-icons/boss.png`
+  - `assets/type-icons/any.svg`
+  - `assets/type-icons/boss.svg`
+  - `lkwgwechat/miniprogram/assets/bloodline-icons/boss.png`
+  - `tests/compact-team-editor-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Recompressed the shared boss bloodline PNG losslessly while preserving dimensions, RGBA mode, transparency, and byte synchronization between web and Mini Program assets.
+  - Minified the two fallback SVG type icons by removing layout whitespace.
+  - Updated the locked boss PNG SHA256 regression hash to the new smaller byte encoding.
+  - Confirmed tracked image assets are now 361,928 bytes total across 47 files, down from 369,236 bytes.
+- Verification: Ran image-focused checks `node tests/compact-team-editor-static.test.js`, `node tests/type-icons-static.test.js`, `node tests/stat-icons-static.test.js`, `node tests/miniprogram-search-assets-static.test.js`, `node tests/miniprogram-upload-readiness-static.test.js`, and `node tests/roller-runtime-static.test.js`; ran all `tests/*.test.js` scripts successfully; ran `node lkwgwechat/scripts/sync-miniprogram-data.js --check`, `node lkwgwechat/scripts/sync-miniprogram-pvp-rules.js --check`, and `node lkwgwechat/scripts/sync-miniprogram-search-assets.js --check`.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 00:44 +08:00 - Codex
 
 - Request: Fix the mobile web PVP panel where race-stat talent markers overflow outside their stat boxes on `https://lkwg-bfo.pages.dev/`.
