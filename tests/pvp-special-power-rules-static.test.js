@@ -217,7 +217,7 @@ assert(
   "Defense response-damage skills must not show fake base damage when their response is not triggered."
 );
 assert(
-  /if \(damage\.responseOnly\)[\s\S]*pvpDamageAmountText\(damage, damage\.responseEstimate/.test(html),
+  /if \(damage\.responseOnly\)[\s\S]*renderPvpDamageHero\(damage, damage\.responseEstimate/.test(html),
   "Response-only damage results must render the triggered response damage as the primary damage line."
 );
 

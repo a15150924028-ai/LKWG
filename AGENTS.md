@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 17:41 +08:00 - Codex
+
+- Request: Execute the first-priority `style.md` web UI migration after the previous visual-skin pass, without repeating already completed skin work.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-first-priority-ui-static.test.js`
+  - `tests/pvp-special-power-rules-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a default-collapsed `高级修正` details panel for PVP manual modifiers so the PVP page no longer exposes all advanced +/- controls immediately.
+  - Added live advanced-modifier summary text that reports whether there are active manual corrections.
+  - Reworked PVP damage result markup so normal and response damage use a separate hero area with skill name, large gradient damage number, target HP-loss text, and metadata below.
+  - Updated the existing response-only static assertion to match the new damage hero helper, and added a focused first-priority UI regression test.
+- Verification: Watched `node tests/pvp-first-priority-ui-static.test.js` fail before implementation, then pass after the fix; ran focused PVP layout/damage tests; ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings. In-app browser screenshot verification was not run because browser/computer control tools were not exposed in this turn.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 17:27 +08:00 - Codex
 
 - Request: Add first-letter pinyin initial search to all web fuzzy search, for example `yctk` should find `隐藏条款`.

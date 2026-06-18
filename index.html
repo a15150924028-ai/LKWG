@@ -1377,14 +1377,67 @@
     }
 
 
-    .pvp-buff-panel {
+    .pvp-advanced {
       display: grid;
-      gap: 3px;
+      gap: 5px;
       margin-top: 4px;
       border: 1px solid var(--line);
       border-radius: var(--radius-input);
       background: rgba(255, 255, 255, 0.54);
-      padding: 5px;
+      overflow: hidden;
+    }
+
+    .pvp-advanced > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 10px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 900;
+      list-style: none;
+    }
+
+    .pvp-advanced > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .pvp-advanced-summary-copy {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .pvp-advanced-summary-copy span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .pvp-advanced-chevron {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.58);
+      color: var(--muted);
+      transition: transform 0.16s ease;
+    }
+
+    .pvp-advanced[open] .pvp-advanced-chevron {
+      transform: rotate(180deg);
+    }
+
+    .pvp-buff-panel {
+      display: grid;
+      gap: 3px;
+      border-top: 1px solid var(--line);
+      padding: 8px;
     }
 
     .pvp-buff-title {
@@ -1499,16 +1552,14 @@
     }
 
     .pvp-damage-result {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px;
+      display: grid;
+      gap: 7px;
       min-height: 32px;
       margin-top: 4px;
       border: 1px solid rgba(77, 163, 255, 0.35);
       border-radius: 16px;
       background: linear-gradient(135deg, rgba(77, 163, 255, 0.13), rgba(70, 216, 207, 0.12));
-      padding: 5px 6px;
+      padding: 9px 10px;
       color: #26326d;
       font-size: 11px;
       line-height: 1.25;
@@ -1518,6 +1569,44 @@
       color: #1F2633;
       font-size: 18px;
       font-weight: 900;
+    }
+
+    .pvp-damage-hero {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .pvp-damage-name {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .pvp-damage-number {
+      display: inline-block;
+      width: fit-content;
+      color: #6C63FF;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #6C63FF, #4DA3FF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pvp-damage-percent {
+      color: #1F2633;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .pvp-damage-meta {
+      color: #4b5680;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.45;
     }
 
     .pvp-trait-bonus {
@@ -7786,6 +7875,16 @@
       return String(value);
     }
 
+    function renderPvpDamageHero(damage, value = damage.estimate, singleValue = damage.singleEstimate, percent = damage.percent, suffix = "") {
+      return `
+        <div class="pvp-damage-hero">
+          <span class="pvp-damage-name">${escapeHtml(damage.action.name)}</span>
+          <strong class="pvp-damage-number">${escapeHtml(pvpDamageAmountText(damage, value, singleValue))}</strong>
+          <span class="pvp-damage-percent">扣除目标 ${Number(percent) || 0}% 生命${suffix ? ` · ${escapeHtml(suffix)}` : ""}</span>
+        </div>
+      `;
+    }
+
     function pvpSkillDescriptionText(action) {
       const text = String(action?.description || "").trim();
       if (!text || /^(?:耗能|能耗|能量|pp|PP)\s*[:：]?\s*\d*$/.test(text)) {
@@ -7840,8 +7939,8 @@
             <div class="pvp-damage-result" data-pvp-damage-result="${side}">
               <div class="pvp-damage-lines">
                 <div class="pvp-damage-line">
-                  <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate)}（扣除${damage.responsePercent}%生命，${escapeHtml(damage.responseReason || "应对")}）</strong>
-                  <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${damage.responsePower} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""} / ${responseReason}</span>
+                  ${renderPvpDamageHero(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate, damage.responsePercent, damage.responseReason || "应对")}
+                  <span class="pvp-damage-meta">${typeName(damage.action.type)} / ${damage.mode.label} / 威力${damage.responsePower} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""} / ${responseReason}</span>
                 </div>
                 ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
                 <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
@@ -7853,13 +7952,13 @@
           <div class="pvp-damage-result" data-pvp-damage-result="${side}">
             <div class="pvp-damage-lines">
               <div class="pvp-damage-line">
-                <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage)}（扣除${damage.percent}%生命）</strong>
-                <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
+                ${renderPvpDamageHero(damage)}
+                <span class="pvp-damage-meta">${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
               </div>
               ${traitText ? `<div class="pvp-damage-line pvp-damage-trait-line"><span>特性：${traitText}</span></div>` : ""}
               <div class="pvp-damage-line">
-                <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate)}（扣除${damage.responsePercent}%生命，应对状态）</strong>
-                <span>${responseReason}</span>
+                ${renderPvpDamageHero(damage, damage.responseEstimate, damage.responseSingleEstimate || damage.responseEstimate, damage.responsePercent, "应对状态")}
+                <span class="pvp-damage-meta">${responseReason}</span>
               </div>
               <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
             </div>
@@ -7868,8 +7967,8 @@
       }
       return `
         <div class="pvp-damage-result" data-pvp-damage-result="${side}">
-          <strong>${escapeHtml(damage.action.name)}：${pvpDamageAmountText(damage)}（扣除${damage.percent}%生命）</strong>
-          <span>${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
+          ${renderPvpDamageHero(damage)}
+          <span class="pvp-damage-meta">${typeName(damage.action.type)} / ${damage.mode.label} / 威力${powerText} / 克制${multiplierText(damage.typeMultiplier)}${stabText}${ruleTextPart}${bonusText ? ` / 增益：${bonusText}` : ""}</span>
           ${traitText ? `<span class="pvp-damage-trait-line">特性：${traitText}</span>` : ""}
           <div class="pvp-skill-description">技能描述：${escapeHtml(descriptionText)}</div>
         </div>
@@ -8639,6 +8738,29 @@
       return "";
     }
 
+    function pvpAdvancedAdjustmentCount(state, monster) {
+      const mods = mergeStatMods(state?.skillStatMods, state?.manualStatMods);
+      let count = 0;
+      PVP_MANUAL_BUFF_STATS.forEach((stat) => {
+        const value = manualBuffStatValue(state, mods, stat);
+        if (Math.abs(Number(value) || 0) > 0.0001) count += 1;
+      });
+      if (normalizePvpCuteLayers(state?.cuteLayers) > 0) count += 1;
+      const energy = Math.max(0, Math.round(Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
+      if (energy !== DEFAULT_PVP_ENERGY) count += 1;
+      const traitRule = window.LKWG_PVP_TRAIT_RULES.resolveTraitRule(monster);
+      if (traitRule) {
+        const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
+        const defaultTraitLayers = window.LKWG_PVP_TRAIT_RULES.defaultTraitLayers(monster);
+        if (traitLayers !== defaultTraitLayers) count += 1;
+      }
+      return count;
+    }
+
+    function pvpAdvancedAdjustmentText(count) {
+      return count > 0 ? `当前有 ${count} 项修正` : "暂无手动修正";
+    }
+
     function renderPvpManualBuffPanel(side, state) {
       const mods = mergeStatMods(state?.skillStatMods, state?.manualStatMods);
       const monster = monsterById.get(state?.monsterId);
@@ -8647,55 +8769,66 @@
       const traitLayers = window.LKWG_PVP_TRAIT_RULES.normalizeTraitLayers(state?.traitLayers);
       const cuteLayers = normalizePvpCuteLayers(state?.cuteLayers);
       const energy = Math.max(0, Math.round(Number(state?.energy ?? DEFAULT_PVP_ENERGY) || 0));
+      const adjustmentCount = pvpAdvancedAdjustmentCount(state, monster);
       return `
-        <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
-          <div class="pvp-buff-title">增益状态</div>
-          <div class="pvp-buff-grid">
-            ${PVP_MANUAL_BUFF_STATS.map((stat) => `
-              <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
-                <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
+        <details class="pvp-advanced" data-pvp-advanced="${side}">
+          <summary>
+            <span class="pvp-advanced-summary-copy">
+              <strong>高级修正</strong>
+              <span data-pvp-advanced-count="${side}">${escapeHtml(pvpAdvancedAdjustmentText(adjustmentCount))}</span>
+            </span>
+            <span class="pvp-advanced-chevron" aria-hidden="true">v</span>
+          </summary>
+          <div class="pvp-buff-panel" data-pvp-buff-panel="${side}">
+            <div class="pvp-buff-title">增益状态</div>
+            <div class="pvp-buff-grid">
+              ${PVP_MANUAL_BUFF_STATS.map((stat) => `
+                <div class="pvp-buff-item" data-pvp-buff-stat="${stat.key}">
+                  <div class="pvp-buff-label">${escapeHtml(stat.label)}</div>
+                  <div class="pvp-buff-controls">
+                    <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="-1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, -1)}">-</button>
+                    <span class="pvp-buff-value ${manualBuffClass(manualBuffStatValue(state, mods, stat))}" data-pvp-buff-value="${side}-${stat.key}">${manualBuffStatText(manualBuffStatValue(state, mods, stat), stat)}</span>
+                    <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, 1)}">+</button>
+                  </div>
+                </div>
+              `).join("")}
+              <div class="pvp-buff-item" data-pvp-buff-stat="cuteLayer">
+                <div class="pvp-buff-label">萌化</div>
                 <div class="pvp-buff-controls">
-                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="-1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, -1)}">-</button>
-                  <span class="pvp-buff-value ${manualBuffClass(manualBuffStatValue(state, mods, stat))}" data-pvp-buff-value="${side}-${stat.key}">${manualBuffStatText(manualBuffStatValue(state, mods, stat), stat)}</span>
-                  <button class="pvp-buff-button" type="button" data-pvp-buff="${side}" data-stat="${stat.key}" data-delta="1" title="${escapeHtml(stat.label)}${manualBuffStepText(stat, 1)}">+</button>
+                  <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="-1">-</button>
+                  <span class="pvp-buff-value" data-pvp-cute-layer-value="${side}">${cuteLayers}</span>
+                  <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="1">+</button>
                 </div>
               </div>
-            `).join("")}
-            <div class="pvp-buff-item" data-pvp-buff-stat="cuteLayer">
-              <div class="pvp-buff-label">萌化</div>
-              <div class="pvp-buff-controls">
-                <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="-1">-</button>
-                <span class="pvp-buff-value" data-pvp-cute-layer-value="${side}">${cuteLayers}</span>
-                <button class="pvp-buff-button" type="button" data-pvp-cute-layer="${side}" data-delta="1">+</button>
+              <div class="pvp-buff-item" data-pvp-buff-stat="energy">
+                <div class="pvp-buff-label">能量</div>
+                <div class="pvp-buff-controls">
+                  <button class="pvp-buff-button" type="button" data-pvp-energy="${side}" data-delta="-1">-</button>
+                  <span class="pvp-buff-value" data-pvp-energy-value="${side}">${energy}</span>
+                  <button class="pvp-buff-button" type="button" data-pvp-energy="${side}" data-delta="1">+</button>
+                </div>
               </div>
             </div>
-            <div class="pvp-buff-item" data-pvp-buff-stat="energy">
-              <div class="pvp-buff-label">能量</div>
-              <div class="pvp-buff-controls">
-                <button class="pvp-buff-button" type="button" data-pvp-energy="${side}" data-delta="-1">-</button>
-                <span class="pvp-buff-value" data-pvp-energy-value="${side}">${energy}</span>
-                <button class="pvp-buff-button" type="button" data-pvp-energy="${side}" data-delta="1">+</button>
+            ${traitRule ? `
+              <div class="pvp-trait-layer-row">
+                <div class="pvp-trait-layer-copy">
+                  <strong>特性层数 · ${escapeHtml(traitName)}</strong>
+                </div>
+                <div class="pvp-buff-controls">
+                  <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="-1">-</button>
+                  <span class="pvp-buff-value" data-pvp-trait-layer-value="${side}">${traitLayers}</span>
+                  <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="1">+</button>
+                </div>
               </div>
-            </div>
+            ` : ""}
           </div>
-          ${traitRule ? `
-            <div class="pvp-trait-layer-row">
-              <div class="pvp-trait-layer-copy">
-                <strong>特性层数 · ${escapeHtml(traitName)}</strong>
-              </div>
-              <div class="pvp-buff-controls">
-                <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="-1">-</button>
-                <span class="pvp-buff-value" data-pvp-trait-layer-value="${side}">${traitLayers}</span>
-                <button class="pvp-buff-button" type="button" data-pvp-trait-layer="${side}" data-delta="1">+</button>
-              </div>
-            </div>
-          ` : ""}
-        </div>
+        </details>
       `;
     }
 
     function refreshPvpManualBuffPanel(root, side) {
       const state = pvpSideState(side);
+      const monster = monsterById.get(state.monsterId);
       const mods = mergeStatMods(state.skillStatMods, state.manualStatMods);
       PVP_MANUAL_BUFF_STATS.forEach((stat) => {
         const valueEl = root.querySelector(`[data-pvp-buff-value="${side}-${stat.key}"]`);
@@ -8716,6 +8849,10 @@
       const energyValueEl = root.querySelector(`[data-pvp-energy-value="${side}"]`);
       if (energyValueEl) {
         energyValueEl.textContent = Math.max(0, Math.round(Number(state.energy) || 0));
+      }
+      const advancedCountEl = root.querySelector(`[data-pvp-advanced-count="${side}"]`);
+      if (advancedCountEl) {
+        advancedCountEl.textContent = pvpAdvancedAdjustmentText(pvpAdvancedAdjustmentCount(state, monster));
       }
     }
 
