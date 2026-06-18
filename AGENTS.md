@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 18:08 +08:00 - Codex
+
+- Request: Use `style.md` and apply option A so the web PVP `高级修正` collapsed control has a stronger click affordance.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-first-priority-ui-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Reworked the PVP `高级修正` collapsed header into a clearer Liquid Glass action row with a hint line explaining it opens layer, energy, and temporary modifier controls.
+  - Added a right-side pill CTA that reads `调整` while collapsed and switches to `收起` when expanded, with a small rotating chevron inside the pill.
+  - Strengthened the glass styling on the advanced header while keeping the advanced controls collapsed by default.
+  - Added static regression coverage for the click hint, CTA text swap, and collapsed/expanded CTA styling.
+- Verification: Watched `node tests/pvp-first-priority-ui-static.test.js` fail on the new click-affordance assertions before implementation, then pass after the fix; ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings. In-app browser screenshot verification was not run because browser/computer control tools were not exposed in this turn.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 17:52 +08:00 - Codex
 
 - Request: Fix the defective rounded corners in the web PVP weather selector shown in the screenshot.

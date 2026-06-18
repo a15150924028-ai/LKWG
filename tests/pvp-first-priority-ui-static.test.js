@@ -40,14 +40,27 @@ assert(
   "PVP advanced summary must show the current modifier count."
 );
 assert(
+  buffSource.includes('class="pvp-advanced-hint"') &&
+    buffSource.includes("点开修改层数、能量和临时加成"),
+  "PVP advanced summary must include a clear click hint."
+);
+assert(
+  buffSource.includes('class="pvp-advanced-action-open">调整') &&
+    buffSource.includes('class="pvp-advanced-action-close">收起'),
+  "PVP advanced summary must expose an adjustment CTA that changes when expanded."
+);
+assert(
   html.includes("function pvpAdvancedAdjustmentCount") &&
     refreshSource.includes('data-pvp-advanced-count="${side}"'),
   "PVP advanced modifier count must update when values change."
 );
 assert(
   /\.pvp-advanced\s*>\s*summary\s*\{[^}]*cursor:\s*pointer;/s.test(html) &&
+    /\.pvp-advanced-action\s*\{[^}]*border-radius:\s*var\(--radius-pill\);[^}]*linear-gradient\(135deg, rgba\(108, 99, 255, 0\.16\), rgba\(77, 163, 255, 0\.18\)\)/s.test(html) &&
+    /\.pvp-advanced\[open\]\s+\.pvp-advanced-action-open\s*\{[^}]*display:\s*none;/s.test(html) &&
+    /\.pvp-advanced\[open\]\s+\.pvp-advanced-action-close\s*\{[^}]*display:\s*inline;/s.test(html) &&
     /\.pvp-advanced\[open\]\s+\.pvp-advanced-chevron\s*\{[^}]*transform:\s*rotate\(180deg\);/s.test(html),
-  "PVP advanced details summary must have dedicated collapsed/expanded styling."
+  "PVP advanced details summary must look clickable and have collapsed/expanded CTA styling."
 );
 assert(
   damageHeroSource.includes('class="pvp-damage-hero"') &&
