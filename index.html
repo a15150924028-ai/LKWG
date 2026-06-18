@@ -429,8 +429,11 @@
       align-items: center;
       justify-content: center;
       gap: 2px;
+      min-width: 0;
+      max-width: 100%;
       margin-top: 1px;
       font-size: 12px;
+      white-space: nowrap;
     }
 
     .pvp-panel-stats .stat-cell.nature-up {
@@ -466,6 +469,11 @@
       line-height: 1;
       -webkit-text-stroke: 0.6px currentColor;
       text-shadow: 0.45px 0 currentColor, -0.45px 0 currentColor, 0 0.45px currentColor, 0 -0.45px currentColor;
+    }
+
+    .pvp-nature-arrow,
+    .pvp-talent-mark {
+      flex: 0 0 auto;
     }
 
     .pvp-default-note {
@@ -2961,6 +2969,15 @@
       .pvp-build-presets {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 3px;
+      }
+
+      .pvp-panel-stats .stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .pvp-panel-stats .stat-cell {
+        padding: 5px 4px;
       }
 
       .pvp-buff-grid {

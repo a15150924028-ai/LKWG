@@ -107,6 +107,15 @@ assert(
   "Phone-width PVP buff controls must show two items per row."
 );
 assert(
+  /\.pvp-panel-stats\s+\.stat-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\);[\s\S]*?gap:\s*6px;/.test(phoneBlock),
+  "Phone-width PVP race-stat cards must use three columns so value markers stay inside their cells."
+);
+assert(
+  /\.pvp-panel-stats\s+\.stat-value\s*\{[^}]*min-width:\s*0;[^}]*max-width:\s*100%;[^}]*white-space:\s*nowrap;/s.test(html) &&
+    /\.pvp-nature-arrow,\s*\.pvp-talent-mark\s*\{[^}]*flex:\s*0 0 auto;/s.test(html),
+  "PVP race-stat value markers must not force their cell wider than the stats grid."
+);
+assert(
   /\.pvp-buff-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/.test(narrowPhoneBlock),
   "Very narrow PVP buff controls must still keep two items per row."
 );

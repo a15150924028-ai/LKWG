@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 00:44 +08:00 - Codex
+
+- Request: Fix the mobile web PVP panel where race-stat talent markers overflow outside their stat boxes on `https://lkwg-bfo.pages.dev/`.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed phone-width PVP race-stat cards from six cramped columns to three columns so numbers and nature/talent markers stay inside each stat cell.
+  - Constrained PVP stat value rows to their cell width and made nature arrows / talent plus markers non-expanding flex items.
+  - Added mobile layout regression coverage for the three-column PVP stats grid and non-overflowing stat markers.
+- Verification: Watched `node tests/pvp-compact-side-layout-static.test.js` fail on the new mobile stat-grid assertion before implementation, then pass after the fix; ran `node tests/pvp-default-build-presets-static.test.js`; ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings. Direct mobile browser screenshot verification was not run because browser/computer control tools were not exposed in this turn.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 18:43 +08:00 - Codex
 
 - Request: Prepare the web app for production deployment for mainland China users.
