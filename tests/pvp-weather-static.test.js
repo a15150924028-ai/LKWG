@@ -36,6 +36,10 @@ assert(html.includes('{ key: "blizzard", name: "雪天", type: "ice"'), "The ice
 assert(html.includes('data-pvp-weather="${option.key}"'), "PVP must render a shared weather segmented control.");
 assert(html.includes('typeBadgeHtml(option.type)'), "Weather choices must use local attribute icons.");
 assert(html.includes('TYPE_COLORS[option.type]'), "Selected weather choices must use the matching attribute color.");
+assert(
+  /\.pvp-weather-button\.active\s*\{[^}]*var\(--weather-color/s.test(html),
+  "Selected weather button background must be driven by the current weather color."
+);
 assert(html.includes("setPvpWeatherFromSkill"), "Selecting or using a weather skill must update shared weather.");
 assert(
   html.includes("weatherPowerMultiplier(pvpSimState.weather, damageAction)"),

@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 17:17 +08:00 - Codex
+
+- Request: Fix the web PVP weather selector so the selected background color is tied to the selected weather.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-weather-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Changed the active web PVP weather pill to use the per-option `--weather-color` value already emitted from `TYPE_COLORS[option.type]`, instead of the fixed blue gradient.
+  - Added a regression assertion that selected weather button backgrounds must be driven by the current weather color.
+- Verification: Watched `node tests/pvp-weather-static.test.js` fail on the new assertion before the CSS fix, then pass after implementation; ran all `tests/*.test.js` scripts successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-18 17:11 +08:00 - Codex
 
 - Request: Use `style.md` to modify the web UI, scoped to visual skin changes only.
