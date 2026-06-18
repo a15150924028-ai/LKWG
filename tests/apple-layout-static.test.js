@@ -28,7 +28,10 @@ expect(/placeholder: "选择\/搜索血脉名称"/, "血脉占位文案不正确
 expect(/<span class="skill-meta-label">能耗<\/span>/, "技能信息必须显示能耗");
 expect(/hideIcon: true/, "精灵输入框必须隐藏首字占位图标");
 expect(/data:image\/png;base64,/, "使用过山车按钮必须保留内置图片");
-expect(/--primary: #0071e3;/, "界面必须使用确认稿的蓝色主色");
+expect(/--primary: #6C63FF;/, "界面必须使用 style.md 的蓝紫主色");
+expect(/--secondary: #46D8CF;/, "界面必须保留 Liquid Glass 青绿色辅助色");
+expect(/--radius-pill: 999px;/, "界面必须使用胶囊按钮圆角令牌");
+expect(/linear-gradient\(135deg, rgba\(255, 255, 255, 0\.58\), rgba\(255, 255, 255, 0\.44\)\)/, "主卡片必须使用半透明 Liquid Glass 渐变");
 expect(/\.type-badge\s*\{[\s\S]*border-radius: 999px;/, "属性徽章必须为圆形图标");
 expect(/function calculatePvpDamage|function renderPvpDamageResult/, "PVP 伤害逻辑必须保留");
 expect(/function applyPvpCuteLayerDelta/, "萌化逻辑必须保留");

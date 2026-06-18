@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-18 17:11 +08:00 - Codex
+
+- Request: Use `style.md` to modify the web UI, scoped to visual skin changes only.
+- Files changed:
+  - `index.html`
+  - `tests/apple-layout-static.test.js`
+  - `tests/pvp-compact-side-layout-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Replaced the web UI's old green/Apple-blue skin tokens with the `style.md` Liquid Glass palette, including blue-purple primary, cyan secondary, neutral light gradient background, translucent glass panels, larger radii, and softer shadows.
+  - Restyled the existing header, navigation tabs, action buttons, team overview slots, editor fields, combo menus, analysis cards, PVP weather control, PVP side cards, compact controls, and damage result cards without changing layout structure or business logic.
+  - Updated web static assertions so they protect the Liquid Glass tokens and pill preset controls instead of the previous Apple-blue skin.
+- Verification: Ran focused web checks `node tests/apple-layout-static.test.js`, `node tests/pvp-compact-side-layout-static.test.js`, `node tests/equal-layout-static.test.js`, and `node tests/team-configuration-feedback-static.test.js`; ran all `tests/*.test.js` scripts successfully; ran `git diff --check` with only Windows LF-to-CRLF warnings. Browser screenshot verification was not run because the local environment did not expose Playwright/Puppeteer or a callable Chrome/Edge path.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-17 23:08 +08:00 - Codex
 
 - Request: Fix the WeChat Developer Tools code-quality failure where Mini Program image/audio resources exceed the 200 KB recommendation.

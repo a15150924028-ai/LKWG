@@ -66,8 +66,8 @@ assert(
 );
 assert(
   /\.pvp-build-presets\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/s.test(html) &&
-    /\.pvp-build-preset\s*\{[^}]*min-height:\s*28px;[^}]*border-radius:\s*9px;/s.test(html),
-  "PVP default-build presets must use three equal compact Apple-style buttons."
+    /\.pvp-build-preset\s*\{[^}]*min-height:\s*28px;[^}]*border-radius:\s*var\(--radius-pill\);/s.test(html),
+  "PVP default-build presets must use three equal compact Liquid Glass pill buttons."
 );
 assert(
   /\.pvp-side-form\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\);/s.test(html),
