@@ -38,6 +38,17 @@ assert(
     html.includes(".bloodline-recommendation-pill.active"),
   "Bloodline recommendation UI should define its compact recommendation and active styles."
 );
+assert(
+  /\.bloodline-recommendation\s*\{[\s\S]*?white-space:\s*nowrap;/.test(html) &&
+    html.includes(".bloodline-recommendation-icons") &&
+    html.includes(".bloodline-counter-icon"),
+  "Bloodline recommendation UI should stay on one line and render attribute groups as icons."
+);
+assert(
+  !html.includes("bloodline-recommendation-title") &&
+    !html.includes("bloodline-recommendation-pills"),
+  "Bloodline recommendations should not use the old stacked title and pill-row layout."
+);
 
 const sandbox = {
   TYPES: [
@@ -90,7 +101,7 @@ sandbox.BLOODLINES = sandbox.TYPES.map((type) => ({
 })).concat({ id: "bloodline-boss", name: "首领血脉" });
 sandbox.escapeHtml = (value) => String(value);
 sandbox.typeName = (key) => sandbox.TYPE_MAP[key]?.name || key;
-sandbox.typeBadgeHtml = (key) => `<span class="type-badge">${key}</span>`;
+sandbox.typeBadgeHtml = (key) => `<span class="type-badge" title="${key}"><img alt="${key}"></span>`;
 sandbox.bloodlineShortLabel = (bloodline) => sandbox.typeName(bloodline.type);
 
 vm.createContext(sandbox);
@@ -136,6 +147,18 @@ assert(
     rendered.includes("bloodline-recommendation-pill active"),
   "Rendered recommendations should expose selectable pills and mark the selected bloodline active."
 );
+assert(
+  rendered.includes('class="bloodline-recommendation-label">推荐血脉') &&
+    rendered.includes('class="bloodline-recommendation-label">反制') &&
+    rendered.includes("bloodline-counter-icon"),
+  "Rendered recommendations should use one inline row with recommendation icons and counter icons."
+);
+["grass", "water", "ground"].forEach((type) => {
+  assert(
+    !rendered.includes(`>${sandbox.typeName(type)}<`),
+    `Visible type text for ${type} should be replaced by an icon.`
+  );
+});
 assert(!rendered.includes("bloodline-boss"), "Boss bloodline must not appear in attribute counter recommendations.");
 assert(
   sandbox.renderBloodlineRecommendation(null).includes("选择精灵后推荐血脉"),

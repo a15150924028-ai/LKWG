@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 13:56 +08:00 - Codex
+
+- Request: Change the web team bloodline recommendation row to one line and replace all visible attribute words with images.
+- Files changed:
+  - `index.html`
+  - `tests/team-bloodline-recommendation-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Reworked the bloodline recommendation UI into a single inline row: `推荐血脉` followed by recommendation icon buttons, then `反制` followed by weakness icons.
+  - Removed visible attribute text from recommendation buttons and counter targets while preserving hover titles and aria labels.
+  - Moved the recommendation row below the monster/bloodline controls so it can use the full team-card width without horizontal scrolling.
+  - Updated regression coverage to require the single-line icon layout and reject the old stacked title/pill layout.
+- Verification: Ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 13:46 +08:00 - Codex
 
 - Request: Add a web team feature that recommends bloodlines based on the selected monster's attribute weaknesses.
