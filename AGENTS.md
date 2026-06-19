@@ -56,6 +56,21 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 10:38 +08:00 - Codex
+
+- Request: Update the local HTML data bundle for the new BWiki `凡雀` evolution line and complete the three-form skill pool.
+- Files changed:
+  - `data/local-bundle.json`
+  - `tests/local-bundle-fanque-line-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Compared the rendered BWiki pages for `凡雀`, `紫翎鹰`, and `凡鹰` against the local bundle.
+  - Added the missing BWiki skills `飞箭` and `俯冲` with type, category, power, energy cost, and descriptions from the rendered skill list.
+  - Added `飞箭` and `俯冲` to all three local skill pools so the line now carries the complete 51-skill pool while preserving existing stats, `展翅`, and evolution metadata.
+  - Added static regression coverage for the three-form stats, shared evolution line, passive, complete skill pool, and the two newly backfilled skills.
+- Verification: Ran `node tests/local-bundle-fanque-line-static.test.js`, `node tests/local-bundle-import-validation.test.js`, `node tests/local-bundle-skill-descriptions-static.test.js`, `node tests/local-bundle-evolution-static.test.js`, `node tests/local-bundle-external-static.test.js`, `node tests/skill-meta-power-static.test.js`, and `node tests/roller-runtime-static.test.js`. Mini Program sync/page tests were not run because `lkwgwechat` has intentionally been moved out of this HTML repository.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 09:45 +08:00 - Codex
 
 - Request: Replace the daily update automation's ad hoc QQ SMTP sending with a fixed, reliable sender script.
