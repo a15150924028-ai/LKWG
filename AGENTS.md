@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 15:53 +08:00 - Codex
+
+- Request: Add inline +/- layer controls beside permanent-damage skills in the team skill box, keep them on one row, and save skill changes on the same monster.
+- Files changed:
+  - `index.html`
+  - `tests/team-skill-power-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a compact `- 0 +` layer control inside the same skill combo row, immediately to the right of eligible permanent-damage skill names.
+  - Detects permanent power, permanent hit-count, all-skill/adjacent-skill permanent power descriptions, and hides the layer control for ordinary skills.
+  - Persists `powerLayer` in team skill slots, resets the layer to `0` when a skill is changed on the same monster, and saves both skill changes and layer changes immediately.
+  - Feeds saved ally team layers into PVP damage calculation and maps the layer to the matching permanent-use, entry, response, position-change, defeat, no-damage, and hit-count contexts.
+  - Added regression coverage for same-row combo suffix rendering, layer clamping, saved-team priority in PVP, and skill-change reset behavior.
+- Verification: Ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the Windows LF-to-CRLF warning for `index.html`.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 13:56 +08:00 - Codex
 
 - Request: Change the web team bloodline recommendation row to one line and replace all visible attribute words with images.

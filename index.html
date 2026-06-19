@@ -533,6 +533,10 @@
       background: rgba(255, 255, 255, 0.68);
     }
 
+    .combo-control.with-suffix {
+      grid-template-columns: 31px minmax(0, 1fr) auto 24px;
+    }
+
     .combo-control:focus-within {
       border-color: rgba(77, 163, 255, 0.65);
       box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.12);
@@ -2879,6 +2883,45 @@
       color: var(--muted);
     }
 
+    .skill-layer-control {
+      display: inline-grid;
+      grid-template-columns: 20px 24px 20px;
+      align-items: center;
+      gap: 2px;
+      margin-right: 2px;
+      border: 1px solid rgba(77, 163, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 1px;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .skill-layer-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(77, 163, 255, 0.14);
+      color: #2364c8;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 1000;
+      line-height: 1;
+    }
+
+    .skill-layer-value {
+      min-width: 24px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
     .results-section {
       margin-top: 16px;
     }
@@ -3566,6 +3609,32 @@
     if (/连击数永久\+1/.test(text) && skillUseCount > 0) {
       hitCount += skillUseCount;
       addLabel(labels, `已使用${skillUseCount}次，连击+${skillUseCount}`);
+    }
+    const manualPowerLayer = Math.max(0, Math.round(numberValue(context.skillPowerLayer, 0)));
+    if (manualPowerLayer > 0) {
+      const manualLayerRules = {
+        "skill-\u9f7f\u8f6e\u626d\u77e9": { power: 20, label: "\u4f4d\u7f6e\u53d8\u5316" },
+        "skill-\u7ef5\u91cc\u85cf\u9488": { power: 20, label: "\u672a\u9020\u6210\u4f24\u5bb3" },
+        "skill-\u6492\u5a07": { power: 20, label: "\u840c\u5316" },
+        "skill-\u5fae\u578b\u65a5\u5019": { power: 20, label: "\u62b5\u6297\u4f24\u5bb3" }
+      };
+      const rule = manualLayerRules[action?.id];
+      if (rule) {
+        const powerAdd = rule.power * manualPowerLayer;
+        power += powerAdd;
+        addLabel(labels, `${rule.label}${manualPowerLayer}\u5c42\uff0c\u5a01\u529b+${powerAdd}`);
+      }
+      const manualHitRules = {
+        "skill-\u5b62\u5b50\u7206\u6563": 2,
+        "skill-\u8d81\u706b\u6253\u52ab": 2,
+        "skill-\u53e0\u52bf": 2
+      };
+      const hitAdd = manualHitRules[action?.id] || 0;
+      if (hitAdd) {
+        const totalHitAdd = hitAdd * manualPowerLayer;
+        hitCount += totalHitAdd;
+        addLabel(labels, `${manualPowerLayer}\u5c42\uff0c\u8fde\u51fb+${totalHitAdd}`);
+      }
     }
     const responseSuccessCount = Math.max(0, Math.round(numberValue(context.responseSuccessCount, 0)));
     const responseSuccessPowerMatch = text.match(/每应对成功1次.*威力永久\+(\d+)/);
@@ -5841,6 +5910,41 @@
       return Math.max(0, Number(action?.power) || 0);
     }
 
+    function normalizeSkillPowerLayer(value) {
+      return Math.max(0, Math.min(99, Math.round(Number(value) || 0)));
+    }
+
+    function skillPowerLayerRule(skill) {
+      const text = compactBattleText(`${skill?.name || ""} ${skill?.description || ""}`);
+      if (!skill || !text) return null;
+      const patterns = [
+        /本技能威力永久\+\d+/,
+        /本技能威力永久翻倍/,
+        /本技能每回合永久\+\d+威力/,
+        /威力每回合永久\+\d+/,
+        /威力永久\+\d+/,
+        /威力永久翻倍/,
+        /连击数永久\+\d+/,
+        /全技能威力永久\+\d+%?/,
+        /光系技能威力永久\+\d+%?/,
+        /两侧技能的威力永久\+\d+/,
+        /被动永久额外\+\d+威力/
+      ];
+      return patterns.some((pattern) => pattern.test(text)) ? { label: "层" } : null;
+    }
+
+    function renderSkillLayerControl(skillRef, skill) {
+      if (!skillPowerLayerRule(skill)) return "";
+      const value = normalizeSkillPowerLayer(skillRef?.powerLayer);
+      return `
+        <span class="skill-layer-control" data-skill-layer-control title="永久增伤层数">
+          <button class="skill-layer-button" type="button" data-skill-layer-delta="-1" aria-label="减少永久增伤层数">-</button>
+          <span class="skill-layer-value" data-skill-layer-value>${value}</span>
+          <button class="skill-layer-button" type="button" data-skill-layer-delta="1" aria-label="增加永久增伤层数">+</button>
+        </span>
+      `;
+    }
+
     function defaultTeam() {
       return Array.from({ length: 6 }, (_, index) => ({
         name: `精灵${index + 1}`,
@@ -5865,7 +5969,8 @@
           rollerSkillId: pet.rollerSkillId || "",
           skills: Array.from({ length: 4 }, (_, skillIndex) => {
             const skill = pet.skills?.[skillIndex] || {};
-            return { skillId: skill.skillId || skill.id || "" };
+            const skillId = skill.skillId || skill.id || "";
+            return { skillId, powerLayer: normalizeSkillPowerLayer(skill.powerLayer) };
           })
         };
       });
@@ -6163,18 +6268,35 @@
             items: skillItems,
             value: skill.skillId || "",
             selectedItem: selectedSkill || null,
+            suffixHtml: renderSkillLayerControl(skill, selectedSkill),
             placeholder: selectedMonster ? "搜索技能名称" : "请先选择精灵",
             emptyText: "未选择技能",
             disabled: !selectedMonster,
           onSelect: (item) => {
             const current = readTeam();
-            current[petIndex].skills[skillIndex].skillId = item?.id || "";
-            renderTeam(current);
+            current[petIndex].skills[skillIndex] = { skillId: item?.id || "", powerLayer: 0 };
             saveSpecificTeam(current);
+            renderTeam(current);
             updateRollerButton(current);
             renderResults();
           }
         });
+          const skillRow = card.querySelector(`[data-skill="${skillIndex}"]`);
+          skillRow?.querySelectorAll("[data-skill-layer-delta]").forEach((button) => {
+            button.addEventListener("click", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const valueEl = skillRow.querySelector("[data-skill-layer-value]");
+              const delta = Number(button.dataset.skillLayerDelta) || 0;
+              const next = normalizeSkillPowerLayer((Number(valueEl?.textContent) || 0) + delta);
+              if (valueEl) valueEl.textContent = String(next);
+              const current = readTeam();
+              activeTeamIndex = petIndex;
+              current[petIndex].skills[skillIndex].powerLayer = next;
+              saveSpecificTeam(current);
+              renderResults();
+            });
+          });
         });
       });
       bindTeamOverviewEvents();
@@ -6188,10 +6310,11 @@
       host.className = `combo${config.hideIcon ? " no-control-icon" : ""}`;
       host.dataset.value = config.value || "";
       host.innerHTML = `
-        <div class="combo-control">
+        <div class="combo-control${config.suffixHtml ? " with-suffix" : ""}">
           ${config.prefixHtml || ""}
           ${config.hideIcon ? "" : iconHtml(selected, "combo-icon")}
           <input type="text" value="${escapeHtml(selectedText)}" placeholder="${escapeHtml(placeholder)}" autocomplete="off" ${config.disabled ? "disabled" : ""} ${config.readonlyWhenSelected && selected ? "readonly" : ""}>
+          ${config.suffixHtml || ""}
           <button class="combo-clear" type="button" title="清空">x</button>
         </div>
         <div class="combo-menu"></div>
@@ -6797,7 +6920,8 @@
         const talentIds = [...card.querySelectorAll('[data-combo="talent"]')].map((combo) => combo.dataset.value || "");
         const rollerSkillId = card.querySelector('[data-combo="rollerSkill"]')?.dataset.value || "";
         const skills = [...card.querySelectorAll(".skill-row")].map((row) => ({
-          skillId: row.querySelector('[data-combo="skill"]').dataset.value || ""
+          skillId: row.querySelector('[data-combo="skill"]').dataset.value || "",
+          powerLayer: normalizeSkillPowerLayer(row.querySelector("[data-skill-layer-value]")?.textContent)
         }));
         return {
           name: monster?.name || `精灵${petIndex + 1}`,
@@ -7600,6 +7724,21 @@
       return (state?.skillIds || []).map((id) => skillById.get(id)).filter(Boolean);
     }
 
+    function pvpActionPowerLayer(state, action) {
+      const skillIndex = Number.isInteger(action?.pvpSkillIndex) ? action.pvpSkillIndex : -1;
+      if (skillIndex < 0) return 0;
+      if (state?.side === "ally") {
+        try {
+          const pet = teamPetForMonster(readTeam(), state.monsterId);
+          const skillRef = pet?.skills?.[skillIndex];
+          if (skillRef?.skillId === action?.id) return normalizeSkillPowerLayer(skillRef.powerLayer);
+        } catch (error) {
+          // Fall back to the PVP panel's own state below.
+        }
+      }
+      return normalizeSkillPowerLayer(state?.skillPowerLayers?.[skillIndex]);
+    }
+
     function selectedPvpSkillTypes(state) {
       return unique(selectedPvpSkills(state).map((skill) => skill.type));
     }
@@ -7833,6 +7972,7 @@
             defenderAction,
             typeof options.actsBeforeDefender === "boolean" ? !options.actsBeforeDefender : undefined
           );
+      const skillPowerLayer = pvpActionPowerLayer(attackerState, battleAction);
       const variableDamage = window.LKWG_PVP_DAMAGE_RULES?.resolvePvpVariableDamage
         ? window.LKWG_PVP_DAMAGE_RULES.resolvePvpVariableDamage(battleAction, {
             attackerStats,
@@ -7845,10 +7985,11 @@
             defenderSelectedSkills: selectedPvpSkills(defenderState),
             skillIndex: battleAction.pvpSkillIndex,
             currentSkillCost: traitAdjustedSkillCost,
-            skillUseCount: attackerState?.skillUseCounts?.[battleAction.id] ?? 0,
+            skillPowerLayer,
+            skillUseCount: Math.max(attackerState?.skillUseCounts?.[battleAction.id] ?? 0, skillPowerLayer),
             statusLayers: defenderStatusLayers,
-            relatedTypeSkillUseCount: attackerState?.relatedTypeSkillUseCounts?.[battleAction.type] ?? 0,
-            entryCount: attackerState?.entryCounts?.[battleAction.id] ?? attackerState?.entryCount ?? 0,
+            relatedTypeSkillUseCount: Math.max(attackerState?.relatedTypeSkillUseCounts?.[battleAction.type] ?? 0, skillPowerLayer),
+            entryCount: Math.max(attackerState?.entryCounts?.[battleAction.id] ?? attackerState?.entryCount ?? 0, skillPowerLayer),
             defenderSwitched: !!defenderState?.switchedThisTurn,
             attackerHasDebuff: !!attackerState?.hasDebuff,
             weatherType: window.LKWG_PVP_WEATHER_RULES.weatherElementType(pvpSimState.weather),
@@ -7856,15 +7997,15 @@
             burstEffectCount: attackerState?.burstEffectCount ?? 0,
             previousUsedStatusSkill: !!attackerState?.previousUsedStatusSkill,
             previousResponseSuccess: !!attackerState?.previousResponseSuccess,
-            turnsWithoutDamage: attackerState?.turnsWithoutDamage ?? 0,
-            defeatCount: attackerState?.defeatCounts?.[battleAction.id] ?? attackerState?.defeatCount ?? 0,
+            turnsWithoutDamage: Math.max(attackerState?.turnsWithoutDamage ?? 0, skillPowerLayer),
+            defeatCount: Math.max(attackerState?.defeatCounts?.[battleAction.id] ?? attackerState?.defeatCount ?? 0, skillPowerLayer),
             defenderFaintedCount: defenderState?.faintedCount ?? 0,
             teamSkillCopies: attackerState?.teamSkillCopies || {},
             respondedSkillPower: pvpActionBasePower(defenderAction),
             respondedFinalSingleDamage,
-            responseSuccessCount: attackerState?.responseSuccessCount ?? 0,
-            positionChangeCount: attackerState?.positionChangeCounts?.[battleAction.id] ?? attackerState?.positionChangeCount ?? 0,
-            otherTypeSkillUseCount: attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0,
+            responseSuccessCount: Math.max(attackerState?.responseSuccessCount ?? 0, skillPowerLayer),
+            positionChangeCount: Math.max(attackerState?.positionChangeCounts?.[battleAction.id] ?? attackerState?.positionChangeCount ?? 0, skillPowerLayer),
+            otherTypeSkillUseCount: Math.max(attackerState?.otherTypeSkillUseCounts?.[battleAction.id] ?? attackerState?.otherTypeSkillUseCount ?? 0, skillPowerLayer),
             adjacentSkillPowers: attackerState?.adjacentSkillPowers?.[battleAction.id] || [],
             defenderTurnsWithoutSkillDamage: defenderState?.turnsWithoutSkillDamage ?? 0,
             defenderMixedBlood: !!defenderState?.mixedBlood || bloodlineMatchesName(defenderState, /混合/),
@@ -8669,6 +8810,7 @@
         state.skillIds = ["", "", "", ""];
       }
       state.skillIds = Array.from({ length: 4 }, (_, index) => state.skillIds[index] || "");
+      state.skillPowerLayers = Array.from({ length: 4 }, (_, index) => normalizeSkillPowerLayer(state.skillPowerLayers?.[index]));
       state.defaultBuildPreset = window.LKWG_PVP_BUILD_RULES.normalizePreset(state.defaultBuildPreset);
       state.action = typeof state.action === "string" ? state.action : "";
       state.actionMonsterId = state.action ? (typeof state.actionMonsterId === "string" ? state.actionMonsterId : "") : "";
@@ -8770,6 +8912,7 @@
       state.talentIds = ["", "", ""];
       state.defaultBuildPreset = DEFAULT_PVP_BUILD_PRESET;
       state.skillIds = ["", "", "", ""];
+      state.skillPowerLayers = [0, 0, 0, 0];
       state.action = "";
       state.actionMonsterId = "";
       state.actionCuteLayers = 0;
@@ -8822,6 +8965,9 @@
       ));
       state.skillIds = Array.from({ length: 4 }, (_, index) => (
         skillById.has(pet.skills?.[index]?.skillId) ? pet.skills[index].skillId : ""
+      ));
+      state.skillPowerLayers = Array.from({ length: 4 }, (_, index) => (
+        skillById.has(pet.skills?.[index]?.skillId) ? normalizeSkillPowerLayer(pet.skills[index].powerLayer) : 0
       ));
     }
 
@@ -9864,6 +10010,7 @@
             prefixHtml: `<span class="pvp-skill-index">${skillIndex + 1}</span>`,
             onSelect: (item) => {
               state.skillIds[skillIndex] = item?.id || "";
+              state.skillPowerLayers[skillIndex] = 0;
               let postUseChanged = false;
               const weatherChanged = setPvpWeatherFromSkill(item);
               if (item) {
@@ -10336,7 +10483,7 @@
     function sanitizeTeamForDex(team) {
       return normalizeTeam(team).map((pet) => {
         const monster = monsterById.get(pet.monsterId);
-        if (!monster) return { ...pet, natureId: "", talentIds: ["", "", ""], rollerSkillId: "", skills: pet.skills.map(() => ({ skillId: "" })) };
+        if (!monster) return { ...pet, natureId: "", talentIds: ["", "", ""], rollerSkillId: "", skills: pet.skills.map(() => ({ skillId: "", powerLayer: 0 })) };
         return {
           ...pet,
           bloodlineId: bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "",
@@ -10345,7 +10492,10 @@
             PVP_TALENTS.some((talent) => talent.id === pet.talentIds?.[index]) ? pet.talentIds[index] : ""
           )),
           rollerSkillId: skillById.has(pet.rollerSkillId) ? pet.rollerSkillId : "",
-          skills: pet.skills.map((skill) => ({ skillId: skillById.has(skill.skillId) ? skill.skillId : "" }))
+          skills: pet.skills.map((skill) => ({
+            skillId: skillById.has(skill.skillId) ? skill.skillId : "",
+            powerLayer: skillById.has(skill.skillId) ? normalizeSkillPowerLayer(skill.powerLayer) : 0
+          }))
         };
       });
     }
