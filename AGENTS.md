@@ -56,6 +56,28 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 12:25 +08:00 - Codex
+
+- Request: Move the remaining Mini Program-related tests, docs, and style guide from the HTML repository to `C:\codex-work\codex-lkwg-battle\lkwgwechat`.
+- Files changed:
+  - `tests/miniprogram-*.test.js`
+  - `docs/superpowers/plans/2026-06-15-wechat-mini-program-migration.md`
+  - `docs/superpowers/plans/2026-06-15-wechat-roller-icon-fuzzy-search.md`
+  - `docs/superpowers/plans/2026-06-15-wechat-searchable-pickers-team-layout.md`
+  - `docs/superpowers/plans/2026-06-16-wechat-selector-icons.md`
+  - `docs/superpowers/specs/2026-06-15-wechat-mini-program-migration-design.md`
+  - `docs/superpowers/specs/2026-06-15-wechat-roller-icon-fuzzy-search-design.md`
+  - `docs/superpowers/specs/2026-06-15-wechat-searchable-pickers-team-layout-design.md`
+  - `docs/superpowers/specs/2026-06-16-wechat-selector-icons-design.md`
+  - `style.md`
+  - `AGENTS.md`
+- Changes:
+  - Moved the remaining Mini Program static tests, Mini Program plan/spec docs, and Mini Program UI `style.md` out of this HTML repository into the sibling `lkwgwechat` repository.
+  - Left only HTML-relevant Mini Program exclusion references in `docs/deploy-web-mainland.md` and `tests/web-mainland-deploy-static.test.js`.
+  - Adjusted the moved tests in the target repository so they run from the new Mini Program repository root and read shared web data/assets from the sibling `lkwg-html` repository where needed.
+- Verification: In `lkwgwechat`, ran every `tests/miniprogram-*.test.js` successfully. In this HTML repository, ran `node tests/web-mainland-deploy-static.test.js`; checked Mini Program references outside `AGENTS.md`; ran `git diff --check`.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 11:07 +08:00 - Codex
 
 - Request: Remove the `lkwgwechat` Mini Program directory from this GitHub repository after it was moved to a separate repository, and report remaining Mini Program-related files in the HTML folder.
