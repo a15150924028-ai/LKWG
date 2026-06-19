@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 13:46 +08:00 - Codex
+
+- Request: Add a web team feature that recommends bloodlines based on the selected monster's attribute weaknesses.
+- Files changed:
+  - `index.html`
+  - `tests/team-bloodline-recommendation-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added team-editor bloodline recommendations that calculate which attacking attributes克制 the selected monster, then rank attribute bloodlines by how many of those weakness attributes they can克制.
+  - Rendered compact selectable recommendation pills under the bloodline selector and wired clicks to save the recommended bloodline for that team slot.
+  - Added static regression coverage for recommendation logic, selected-pill rendering, empty state, boss-bloodline exclusion, and click wiring.
+- Verification: Ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the existing Windows LF-to-CRLF warning for `index.html`.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 12:25 +08:00 - Codex
 
 - Request: Move the remaining Mini Program-related tests, docs, and style guide from the HTML repository to `C:\codex-work\codex-lkwg-battle\lkwgwechat`.

@@ -2710,6 +2710,59 @@
       min-height: 32px;
     }
 
+    .bloodline-recommendation {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .bloodline-recommendation-title {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 800;
+    }
+
+    .bloodline-recommendation-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .bloodline-recommendation-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 26px;
+      border: 1px solid rgba(77, 163, 255, 0.26);
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--ink);
+      padding: 3px 8px 3px 5px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+    }
+
+    .bloodline-recommendation-pill.active {
+      border-color: rgba(19, 138, 91, 0.28);
+      background: rgba(231, 246, 239, 0.82);
+      color: var(--good);
+    }
+
+    .bloodline-recommendation-pill .type-badge {
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      border: 0;
+      box-shadow: none;
+    }
+
     .readonly-line {
       min-height: 36px;
       padding: 6px 8px;
@@ -5710,6 +5763,54 @@
         .map((attacker) => attacker.key));
     }
 
+    function counterBloodlineRecommendations(monster, limit = 3) {
+      const defenderTypes = Array.isArray(monster?.types) ? monster.types.filter((type) => TYPE_MAP[type]) : [];
+      const weaknesses = weakAttackersAgainst(defenderTypes);
+      if (!weaknesses.length) return { weaknesses, recommendations: [] };
+      const order = new Map(TYPES.map((type, index) => [type.key, index]));
+      const recommendations = BLOODLINES
+        .filter((bloodline) => bloodline.type && bloodline.id !== "bloodline-boss")
+        .map((bloodline) => {
+          const covered = weaknesses.filter((weakness) => relationMultiplier(bloodline.type, weakness) > 1);
+          return { bloodline, covered };
+        })
+        .filter((item) => item.covered.length)
+        .sort((a, b) => (
+          b.covered.length - a.covered.length
+          || order.get(a.bloodline.type) - order.get(b.bloodline.type)
+          || a.bloodline.name.localeCompare(b.bloodline.name, "zh-CN")
+        ))
+        .slice(0, limit);
+      return { weaknesses, recommendations };
+    }
+
+    function renderBloodlineRecommendation(monster, selectedBloodlineId = "") {
+      if (!monster) {
+        return '<div class="bloodline-recommendation" data-bloodline-recommendation><span class="tag empty">选择精灵后推荐血脉</span></div>';
+      }
+      const { weaknesses, recommendations } = counterBloodlineRecommendations(monster);
+      if (!weaknesses.length) {
+        return '<div class="bloodline-recommendation" data-bloodline-recommendation><span class="tag good">暂无明显属性弱点</span></div>';
+      }
+      const weaknessText = weaknesses.map(typeName).join("、");
+      if (!recommendations.length) {
+        return `<div class="bloodline-recommendation" data-bloodline-recommendation><span class="tag empty">暂无可反制 ${escapeHtml(weaknessText)} 的血脉</span></div>`;
+      }
+      return `
+        <div class="bloodline-recommendation" data-bloodline-recommendation>
+          <div class="bloodline-recommendation-title">推荐血脉 <span>反制：${escapeHtml(weaknessText)}</span></div>
+          <div class="bloodline-recommendation-pills">
+            ${recommendations.map(({ bloodline, covered }) => `
+              <button class="bloodline-recommendation-pill${bloodline.id === selectedBloodlineId ? " active" : ""}" type="button" data-recommend-bloodline="${escapeHtml(bloodline.id)}" title="可克制 ${escapeHtml(covered.map(typeName).join("、"))}">
+                ${typeBadgeHtml(bloodline.type)}
+                <span>${escapeHtml(bloodlineShortLabel(bloodline))}</span>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
     function isAttackSkill(skill) {
       return skill && ["physical", "special", "attack"].includes(skill.category);
     }
@@ -5874,6 +5975,7 @@
                 <div class="field compact-field compact-field-single">
                   <label>血脉</label>
                   <div data-combo="bloodline" data-field="bloodlineId"></div>
+                  ${renderBloodlineRecommendation(selectedMonster, pet.bloodlineId)}
                 </div>
               </div>
               <div class="field compact-field compact-field-group">
@@ -5959,6 +6061,16 @@
             updateRollerButton(current);
             renderResults();
           }
+        });
+        card.querySelectorAll("[data-recommend-bloodline]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const current = readTeam();
+            activeTeamIndex = petIndex;
+            current[petIndex].bloodlineId = button.dataset.recommendBloodline || "";
+            saveSpecificTeam(current);
+            renderTeam(current);
+            renderResults();
+          });
         });
 
         const natureCombo = card.querySelector('[data-combo="nature"]');
