@@ -5914,9 +5914,36 @@
       return Math.max(0, Math.min(99, Math.round(Number(value) || 0)));
     }
 
+    const SKILL_POWER_LAYER_IDS = new Set([
+      "skill-齿轮扭矩",
+      "skill-吹火",
+      "skill-光能聚集",
+      "skill-过曝",
+      "skill-流星火雨",
+      "skill-落雷",
+      "skill-绵里藏针",
+      "skill-能量刃",
+      "skill-迫近攻击",
+      "skill-撒娇",
+      "skill-山火",
+      "skill-水波术",
+      "skill-阳火增辉",
+      "skill-微型斥候",
+      "skill-放晴",
+      "skill-联动装置",
+      "skill-减压阀",
+      "skill-孢子爆散",
+      "skill-趁火打劫",
+      "skill-乘胜追击",
+      "skill-叠势",
+      "skill-聚盐"
+    ]);
+
     function skillPowerLayerRule(skill) {
       const text = compactBattleText(`${skill?.name || ""} ${skill?.description || ""}`);
-      if (!skill || !text) return null;
+      if (!skill) return null;
+      if (SKILL_POWER_LAYER_IDS.has(skill.id)) return { label: "层" };
+      if (!text) return null;
       const patterns = [
         /本技能威力永久\+\d+/,
         /本技能威力永久翻倍/,

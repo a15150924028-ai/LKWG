@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 16:07 +08:00 - Codex
+
+- Request: Fix the team skill layer control not appearing for visible skills such as `吹火`.
+- Files changed:
+  - `index.html`
+  - `tests/team-skill-power-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added an explicit `SKILL_POWER_LAYER_IDS` allowlist for known permanent-damage and permanent-hit-count skills, including `吹火` and `落雷`, so the inline `- 0 +` control appears even if description text matching is brittle.
+  - Kept the existing description-pattern fallback so newly added similar skills can still be detected.
+  - Expanded regression coverage to load the real `data/local-bundle.json` records for `吹火` and `落雷` and prove both render layer controls.
+- Verification: Ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 15:53 +08:00 - Codex
 
 - Request: Add inline +/- layer controls beside permanent-damage skills in the team skill box, keep them on one row, and save skill changes on the same monster.

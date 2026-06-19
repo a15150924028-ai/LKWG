@@ -2,7 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+const root = path.join(__dirname, "..");
+const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const bundle = JSON.parse(fs.readFileSync(path.join(root, "data", "local-bundle.json"), "utf8"));
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -35,6 +37,12 @@ assert(
 assert(
   html.includes("suffixHtml: renderSkillLayerControl(skill, selectedSkill)"),
   "Team skill combos should pass the power-layer control as an inline suffix."
+);
+assert(
+  html.includes('const SKILL_POWER_LAYER_IDS = new Set([') &&
+    html.includes('"skill-吹火"') &&
+    html.includes('"skill-落雷"'),
+  "Known permanent-damage skills should be explicitly allowlisted for layer controls."
 );
 assert(
   html.includes('current[petIndex].skills[skillIndex] = { skillId: item?.id || "", powerLayer: 0 };'),
@@ -75,6 +83,7 @@ vm.createContext(sandbox);
 vm.runInContext(`
   ${extractFunction("compactBattleText")}
   ${extractFunction("normalizeSkillPowerLayer")}
+  ${html.match(/const SKILL_POWER_LAYER_IDS = new Set\(\[[\s\S]*?\]\);/)?.[0] || ""}
   ${extractFunction("skillPowerLayerRule")}
   ${extractFunction("renderSkillLayerControl")}
   ${extractFunction("pvpActionPowerLayer")}
@@ -94,10 +103,14 @@ const plainSkill = {
   name: "火苗",
   description: "对敌方精灵造成魔法伤害。"
 };
+const realBlowFire = bundle.skills.find((skill) => skill.id === "skill-吹火");
+const realThunder = bundle.skills.find((skill) => skill.id === "skill-落雷");
 
 assert(sandbox.normalizeSkillPowerLayer(-2) === 0, "Negative layer values should clamp to zero.");
 assert(sandbox.normalizeSkillPowerLayer(120) === 99, "Layer values should cap at 99.");
 assert(sandbox.skillPowerLayerRule(fireSkill), "Blow Fire-style permanent power skills should show a layer control.");
+assert(sandbox.skillPowerLayerRule(realBlowFire), "The real local-bundle Blow Fire skill should show a layer control.");
+assert(sandbox.skillPowerLayerRule(realThunder), "The real local-bundle Thunder skill should show a layer control.");
 assert(!sandbox.skillPowerLayerRule(plainSkill), "Plain damage skills should not show a layer control.");
 
 const controlHtml = sandbox.renderSkillLayerControl({ powerLayer: 2 }, fireSkill);
