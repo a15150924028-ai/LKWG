@@ -27,6 +27,20 @@ assert(
   html.includes("renderBloodlineRecommendation(selectedMonster, pet.bloodlineId)"),
   "Team bloodline field should render bloodline recommendations for the selected monster."
 );
+const renderTeamSource = extractFunction("renderTeam");
+const pvpHydrateSource = extractFunction("hydratePvpDamageSimulation");
+const applyTeamPetToPvpSideSource = extractFunction("applyTeamPetToPvpSide");
+assert(
+  renderTeamSource.includes("if (item && isBossBloodlineMonster(item))") &&
+    renderTeamSource.includes('current[petIndex].bloodlineId = "bloodline-boss";'),
+  "Team editor should auto-fill boss bloodline when a boss-capable monster is selected."
+);
+assert(
+  pvpHydrateSource.includes("if (isBossBloodlineMonster(item))") &&
+    pvpHydrateSource.includes('state.bloodlineId = "bloodline-boss";') &&
+    applyTeamPetToPvpSideSource.includes('isBossBloodlineMonster(monster) ? "bloodline-boss"'),
+  "PVP monster selection and team import should auto-fill boss bloodline for boss-capable monsters."
+);
 assert(
   html.includes('card.querySelectorAll("[data-recommend-bloodline]")') &&
     html.includes("button.dataset.recommendBloodline") &&

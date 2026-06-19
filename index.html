@@ -5419,12 +5419,15 @@
       "风暴战犬",
       "千棘海针",
       "幻影荆棘",
-      "蹦蹦果",
+      "蹦蹦果（彩玉球形态）",
+      "蹦蹦果（短毛球形态）",
+      "蹦蹦果（海神球形态）",
+      "蹦蹦果（象牙球形态）",
       "女王蜂",
       "神谕鲨",
       "奇丽果",
       "迷嶂布莱克",
-      "迷障布莱克",
+      "深渊罗伊",
       "恶魔狼王",
       "祭礼巨像",
       "彩虹独角兽",
@@ -5518,6 +5521,25 @@
 
     function isBossBloodlineId(bloodlineId) {
       return bloodlineId === "bloodline-boss";
+    }
+
+    function bossBloodlineMonsterNameKeys(monster) {
+      const raw = monster?.raw || {};
+      return [
+        monster?.name,
+        ...(monster?.aliases || []),
+        raw.bossFormName,
+        raw.boss_form_name,
+        ...(Array.isArray(raw.bossFormNames) ? raw.bossFormNames : []),
+        ...(Array.isArray(raw.boss_form_names) ? raw.boss_form_names : [])
+      ].map((name) => compactMonsterName(bossOptionBaseName(name))).filter(Boolean);
+    }
+
+    function isBossBloodlineMonster(monster) {
+      if (!monster) return false;
+      if (isBossVariant(monster)) return true;
+      const bossNameKeys = new Set([...REAL_BOSS_FORM_NAMES].map((name) => compactMonsterName(name)).filter(Boolean));
+      return bossBloodlineMonsterNameKeys(monster).some((nameKey) => bossNameKeys.has(nameKey));
     }
 
     function forceImpactLocked(state) {
@@ -6188,6 +6210,9 @@
             activeTeamIndex = petIndex;
             current[petIndex].monsterId = item?.id || "";
             current[petIndex].name = item?.name || `精灵${petIndex + 1}`;
+            if (item && isBossBloodlineMonster(item)) {
+              current[petIndex].bloodlineId = "bloodline-boss";
+            }
             if (!item) {
               current[petIndex].natureId = "";
               current[petIndex].talentIds = ["", "", ""];
@@ -8961,7 +8986,7 @@
     }
 
     function applyTeamPetToPvpSide(state, pet, monster) {
-      state.bloodlineId = bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "";
+      state.bloodlineId = isBossBloodlineMonster(monster) ? "bloodline-boss" : (bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "");
       state.natureId = PVP_NATURES.some((nature) => nature.id === pet.natureId) ? pet.natureId : "";
       state.talentIds = Array.from({ length: 3 }, (_, index) => (
         PVP_TALENTS.some((talent) => talent.id === pet.talentIds?.[index]) ? pet.talentIds[index] : ""
@@ -9942,6 +9967,9 @@
                 state.currentHpMonsterId = item.id;
                 state.energy = DEFAULT_PVP_ENERGY;
               }
+            }
+            if (isBossBloodlineMonster(item)) {
+              state.bloodlineId = "bloodline-boss";
             }
             renderResults();
           }

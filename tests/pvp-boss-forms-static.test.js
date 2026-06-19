@@ -42,6 +42,8 @@ vm.runInNewContext(`
   ${extractFunction("isBossVariant")}
   ${extractFunction("isGeneratedBossForm")}
   ${extractFunction("bossOptionBaseName")}
+  ${extractFunction("bossBloodlineMonsterNameKeys")}
+  ${extractFunction("isBossBloodlineMonster")}
   ${extractFunction("visibleMonsterOptions")}
   ${extractFunction("bossFormNamesFromMonsters")}
   ${extractFunction("bossFormDisplayName")}
@@ -52,6 +54,7 @@ vm.runInNewContext(`
   this.withBossForms = withBossForms;
   this.isBossVariant = isBossVariant;
   this.isGeneratedBossForm = isGeneratedBossForm;
+  this.isBossBloodlineMonster = isBossBloodlineMonster;
   this.visibleMonsterOptions = visibleMonsterOptions;
 `, sandbox);
 
@@ -72,6 +75,19 @@ const monsters = [
 const bossNames = sandbox.bossFormNamesFromMonsters(monsters);
 assert(bossNames.includes("\u52a8\u6001\u5f62\u6001\u6e90"), "Boss-capable forms from local package data should be added to the boss form name pool.");
 assert(bossNames.includes("\u540d\u5355\u5f62\u6001\u6e90"), "Local boss form name lists should be added to the boss form name pool.");
+const realBossBlock = html.match(/const REAL_BOSS_FORM_NAMES = new Set\(\[([\s\S]*?)\]\);/)?.[1] || "";
+assert(realBossBlock.includes('"\u6df1\u6e0a\u7f57\u4f0a"'), "Fixed boss-form names should include Deep Abyss Roy.");
+assert(!realBossBlock.includes('"\u8ff7\u969c\u5e03\u83b1\u514b"'), "Fixed boss-form names should not keep duplicate Mist Barrier Blake spelling.");
+[
+  "\u8e66\u8e66\u679c\uff08\u5f69\u7389\u7403\u5f62\u6001\uff09",
+  "\u8e66\u8e66\u679c\uff08\u77ed\u6bdb\u7403\u5f62\u6001\uff09",
+  "\u8e66\u8e66\u679c\uff08\u6d77\u795e\u7403\u5f62\u6001\uff09",
+  "\u8e66\u8e66\u679c\uff08\u8c61\u7259\u7403\u5f62\u6001\uff09"
+].forEach((name) => {
+  assert(realBossBlock.includes(`"${name}"`), `Fixed boss-form names should include ${name}.`);
+});
+assert(sandbox.isBossBloodlineMonster({ id: "storm", name: "\u98ce\u66b4\u6218\u72ac", aliases: [], raw: {} }), "Fixed boss-form source monsters should auto-use boss bloodline.");
+assert(!sandbox.isBossBloodlineMonster({ id: "dimo", name: "\u8fea\u83ab", aliases: [], raw: {} }), "Unlisted ordinary monsters should not auto-use boss bloodline.");
 
 const withBoss = sandbox.withBossForms(monsters);
 assert(withBoss.some((monster) => monster.id === "storm"), "Normal final forms should remain in the PVP monster pool.");
@@ -82,6 +98,7 @@ assert(stormBoss.raw.baseMonsterId === "storm", "Generated boss forms should kee
 assert(stormBoss.skillIds.includes("s4"), "Generated boss forms should preserve source skills.");
 assert(stormBoss.aliases.includes("\u98ce\u66b4\u6218\u72ac"), "Generated boss forms should remain searchable by the base boss name.");
 assert(sandbox.isBossVariant(stormBoss), "Generated boss forms should count as boss variants.");
+assert(sandbox.isBossBloodlineMonster(stormBoss), "Generated boss forms should auto-use boss bloodline.");
 const visibleBossOptions = sandbox.visibleMonsterOptions(withBoss);
 assert(
   visibleBossOptions.some((monster) => monster.id === "storm"),

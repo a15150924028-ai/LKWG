@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-20 00:54 +08:00 - Codex
+
+- Request: Correct the boss-form monster list and auto-fill boss bloodline for boss monsters in team configuration and PVP.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-boss-forms-static.test.js`
+  - `tests/team-bloodline-recommendation-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the duplicate `迷障布莱克` boss-form source spelling while keeping the data-backed `迷嶂布莱克`.
+  - Added `深渊罗伊` and all four `蹦蹦果` form records to the fixed boss-form source list.
+  - Added boss-bloodline monster detection and wired team editor selection, PVP team import, and PVP monster selection to automatically set `bloodline-boss` for boss-capable monsters.
+  - Added regression coverage for the corrected boss list and both team/PVP auto-fill paths.
+- Verification: Ran `node tests/pvp-boss-forms-static.test.js`, `node tests/team-bloodline-recommendation-static.test.js`, `node tests/local-bundle-external-static.test.js`, parsed all 13 inline scripts in `index.html` with `new Function`, ran all `tests/*.test.js` scripts successfully, and ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-20 00:24 +08:00 - Codex
 
 - Request: Explain and fix why 烈火战神 choosing 吹火/落雷 initially did not show +/- layer controls until after 萌化.
