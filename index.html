@@ -10140,7 +10140,25 @@
       });
     }
 
+    function capturePvpAdvancedOpenState() {
+      const openState = {};
+      document.querySelectorAll("[data-pvp-advanced]").forEach((details) => {
+        const side = details.dataset.pvpAdvanced;
+        if (side) openState[side] = Boolean(details.open);
+      });
+      return openState;
+    }
+
+    function restorePvpAdvancedOpenState(openState = {}) {
+      ["ally", "enemy"].forEach((side) => {
+        if (!Object.prototype.hasOwnProperty.call(openState, side)) return;
+        const details = document.querySelector(`[data-pvp-advanced="${side}"]`);
+        if (details) details.open = Boolean(openState[side]);
+      });
+    }
+
     function renderResults() {
+      const advancedOpenState = capturePvpAdvancedOpenState();
       const team = readTeam();
       saveTeam();
       updateRollerButton(team);
@@ -10150,6 +10168,7 @@
         + renderPvpDamageSimulation(team);
       hydrateRollerSkillPickers(team);
       hydratePvpDamageSimulation(team);
+      restorePvpAdvancedOpenState(advancedOpenState);
     }
 
     function updateRollerUndoButton() {

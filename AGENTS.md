@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-20 00:21 +08:00 - Codex
+
+- Request: Keep the PVP `高级修正` panel from collapsing after 烈火战神 uses a 萌化+1 change.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-first-priority-ui-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added helpers to capture and restore the ally/enemy `高级修正` details open state across full PVP result rerenders.
+  - Preserved the default collapsed state on first render while keeping an already-open advanced panel open after 萌化+1 form changes and similar rerender paths.
+  - Added static regression coverage so `renderResults()` must preserve the advanced panel open state.
+- Verification: Ran `node tests/pvp-first-priority-ui-static.test.js`, `node tests/pvp-cute-layer-static.test.js`, parsed all 13 inline scripts in `index.html` with `new Function`, ran all `tests/*.test.js` scripts successfully, and ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 17:21 +08:00 - Codex
 
 - Request: Fix the PVP damage skill layer +/- control overflowing outside the skill box and clarify whether Product Design is needed.

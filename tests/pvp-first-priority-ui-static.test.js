@@ -26,6 +26,7 @@ const buffSource = extractFunction("renderPvpManualBuffPanel");
 const refreshSource = extractFunction("refreshPvpManualBuffPanel");
 const damageSource = extractFunction("renderPvpDamageResult");
 const damageHeroSource = extractFunction("renderPvpDamageHero");
+const renderResultsSource = extractFunction("renderResults");
 
 assert(
   buffSource.includes('<details class="pvp-advanced" data-pvp-advanced="${side}">'),
@@ -53,6 +54,13 @@ assert(
   html.includes("function pvpAdvancedAdjustmentCount") &&
     refreshSource.includes('data-pvp-advanced-count="${side}"'),
   "PVP advanced modifier count must update when values change."
+);
+assert(
+  html.includes("function capturePvpAdvancedOpenState") &&
+    html.includes("function restorePvpAdvancedOpenState") &&
+    renderResultsSource.includes("const advancedOpenState = capturePvpAdvancedOpenState();") &&
+    renderResultsSource.includes("restorePvpAdvancedOpenState(advancedOpenState);"),
+  "PVP advanced modifiers must stay open across panel rerenders such as cute +1 form changes."
 );
 assert(
   /\.pvp-advanced\s*>\s*summary\s*\{[^}]*cursor:\s*pointer;/s.test(html) &&
