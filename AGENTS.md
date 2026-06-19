@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 09:45 +08:00 - Codex
+
+- Request: Replace the daily update automation's ad hoc QQ SMTP sending with a fixed, reliable sender script.
+- Files changed:
+  - `tools/send-qq-mail.py`
+  - `tests/send-qq-mail-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a fixed QQ SMTP mail sender that reads UTF-8 subject/body files, reads credentials from `QQ_MAIL_USER` and `QQ_MAIL_AUTH_CODE`, sends through `smtp.qq.com:465` with UTF-8 MIME, and never prints the authorization code.
+  - Added static and dry-run coverage that verifies UTF-8 subject/body preservation, required SMTP safety hooks, dry-run behavior, and no secret leakage.
+  - Updated the Codex daily automation outside the repo so it writes UTF-8 subject/body files and calls `tools/send-qq-mail.py` instead of generating temporary SMTP code.
+- Verification: Watched `node tests/send-qq-mail-static.test.js` fail before the sender existed, then pass after implementation; sent a live fixed-script test email titled `洛克王国世界每日更新摘要 - 固定发信脚本测试`; ran all `tests/*.test.js` scripts successfully.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 00:52 +08:00 - Codex
 
 - Request: Report current repository image sizes and compress image assets.
