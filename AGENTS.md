@@ -56,6 +56,19 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 11:07 +08:00 - Codex
+
+- Request: Remove the `lkwgwechat` Mini Program directory from this GitHub repository after it was moved to a separate repository, and report remaining Mini Program-related files in the HTML folder.
+- Files changed:
+  - `lkwgwechat/**`
+  - `AGENTS.md`
+- Changes:
+  - Staged the already-present removal of the tracked `lkwgwechat` directory so GitHub no longer keeps the old Mini Program copy in this HTML repository.
+  - Confirmed the removal covers 91 tracked files under `lkwgwechat`.
+  - Audited remaining Mini Program-related tracked files outside `lkwgwechat`: `tests/miniprogram-*.test.js`, Mini Program plan/spec docs under `docs/superpowers/`, and `style.md`.
+- Verification: Ran `node tests/web-mainland-deploy-static.test.js`; checked `git diff --check`; did not run Mini Program tests because their source directory has intentionally been moved out of this repository.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 10:38 +08:00 - Codex
 
 - Request: Update the local HTML data bundle for the new BWiki `凡雀` evolution line and complete the three-form skill pool.
