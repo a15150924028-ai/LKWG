@@ -35,6 +35,10 @@ assert(
   "Skill layer controls should live inside the combo row beside the skill name."
 );
 assert(
+  /\.pvp-skill-slot\s+\.combo-control\.with-suffix\s*\{[\s\S]*?grid-template-columns:\s*16px\s+31px\s+minmax\(0,\s*1fr\)\s+auto\s+24px/.test(html),
+  "PVP skill slots with layer controls should reserve an in-box suffix column."
+);
+assert(
   html.includes('${config.suffixHtml || ""}') &&
     html.includes('class="combo-control${config.suffixHtml ? " with-suffix" : ""}"'),
   "createCombo should render optional suffix HTML in the same control row."

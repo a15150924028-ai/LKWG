@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 17:21 +08:00 - Codex
+
+- Request: Fix the PVP damage skill layer +/- control overflowing outside the skill box and clarify whether Product Design is needed.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-skill-power-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Added a PVP-specific `with-suffix` grid rule so skill boxes with permanent-damage layer controls reserve an in-box column for the `- 0 +` control.
+  - Kept ordinary PVP skill boxes on the existing four-column layout and left the team editor without layer controls.
+  - Added regression coverage that requires PVP skill slots with layer controls to use the five-column in-box layout.
+- Verification: Ran `node tests/pvp-skill-power-layer-static.test.js`, parsed all 13 inline scripts in `index.html` with `new Function`, ran all `tests/*.test.js` scripts successfully, and ran `git diff --check` with only Windows LF-to-CRLF warnings. In-app browser visual verification was not completed because Browser Use blocked refreshing/reading the local `file://` page by URL policy.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 17:13 +08:00 - Codex
 
 - Request: Move the permanent-damage skill +/- layer controls out of the team editor and show them only in the PVP damage skill boxes.
