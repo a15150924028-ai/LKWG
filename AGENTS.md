@@ -56,6 +56,20 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-20 00:24 +08:00 - Codex
+
+- Request: Explain and fix why 烈火战神 choosing 吹火/落雷 initially did not show +/- layer controls until after 萌化.
+- Files changed:
+  - `index.html`
+  - `tests/pvp-skill-power-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Root caused the issue to the PVP skill selector only refreshing damage outputs after ordinary skill selection, leaving the skill combo DOM without the newly needed suffix control.
+  - Added a layer-control visibility comparison in the PVP skill `onSelect` path so selecting or clearing a permanent-damage skill rerenders the panel and immediately shows/removes the `- 0 +` control.
+  - Updated regression coverage to require rerendering when layer-control visibility changes.
+- Verification: Ran `node tests/pvp-skill-power-layer-static.test.js`, `node tests/pvp-selected-skill-damage-static.test.js`, parsed all 13 inline scripts in `index.html` with `new Function`, ran all `tests/*.test.js` scripts successfully, and ran `git diff --check` with only Windows LF-to-CRLF warnings.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-20 00:21 +08:00 - Codex
 
 - Request: Keep the PVP `高级修正` panel from collapsing after 烈火战神 uses a 萌化+1 change.

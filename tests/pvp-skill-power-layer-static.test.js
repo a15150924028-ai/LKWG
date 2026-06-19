@@ -52,9 +52,11 @@ assert(
 assert(
   pvpSkillHydrateSource.includes("suffixHtml: renderSkillLayerControl({ powerLayer: state.skillPowerLayers?.[skillIndex] }, selectedSkill)") &&
     pvpSkillHydrateSource.includes("[data-skill-layer-delta]") &&
+    pvpSkillHydrateSource.includes("const layerControlChanged = Boolean(skillPowerLayerRule(selectedSkill)) !== Boolean(skillPowerLayerRule(item));") &&
+    pvpSkillHydrateSource.includes("postUseChanged || weatherChanged || layerControlChanged") &&
     pvpSkillHydrateSource.includes("state.skillPowerLayers[skillIndex] = next") &&
     pvpSkillHydrateSource.includes("refreshPvpDamageOutputs(root)"),
-  "PVP damage skill boxes should render and update the inline power-layer control."
+  "PVP damage skill boxes should rerender and update the inline power-layer control."
 );
 assert(
   html.includes('const SKILL_POWER_LAYER_IDS = new Set([') &&

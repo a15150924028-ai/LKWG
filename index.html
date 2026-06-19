@@ -10011,6 +10011,7 @@
             readonlyWhenSelected: true,
             prefixHtml: `<span class="pvp-skill-index">${skillIndex + 1}</span>`,
             onSelect: (item) => {
+              const layerControlChanged = Boolean(skillPowerLayerRule(selectedSkill)) !== Boolean(skillPowerLayerRule(item));
               state.skillIds[skillIndex] = item?.id || "";
               state.skillPowerLayers[skillIndex] = 0;
               let postUseChanged = false;
@@ -10029,7 +10030,7 @@
                 state.actionMonsterId = "";
                 state.forceImpact = false;
               }
-              if (postUseChanged || weatherChanged) {
+              if (postUseChanged || weatherChanged || layerControlChanged) {
                 renderResults();
               } else {
                 refreshPvpDamageOutputs(root);
