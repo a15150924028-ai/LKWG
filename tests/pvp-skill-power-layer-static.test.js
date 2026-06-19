@@ -25,6 +25,11 @@ function extractFunction(name) {
   throw new Error(`${name} source is incomplete.`);
 }
 
+const renderTeamSource = extractFunction("renderTeam");
+const hydrateSource = extractFunction("hydratePvpDamageSimulation");
+const pvpHydrateStart = hydrateSource.indexOf("state.skillIds.forEach((skillId, skillIndex) => {");
+const pvpSkillHydrateSource = hydrateSource.slice(pvpHydrateStart, hydrateSource.indexOf("const forceButton = root.querySelector", pvpHydrateStart));
+
 assert(
   /\.combo-control\.with-suffix\s*\{[\s\S]*?grid-template-columns:\s*31px\s+minmax\(0,\s*1fr\)\s+auto\s+24px/.test(html),
   "Skill layer controls should live inside the combo row beside the skill name."
@@ -35,8 +40,17 @@ assert(
   "createCombo should render optional suffix HTML in the same control row."
 );
 assert(
-  html.includes("suffixHtml: renderSkillLayerControl(skill, selectedSkill)"),
-  "Team skill combos should pass the power-layer control as an inline suffix."
+  !renderTeamSource.includes("suffixHtml: renderSkillLayerControl") &&
+    !renderTeamSource.includes("[data-skill-layer-delta]") &&
+    !renderTeamSource.includes("powerLayer: normalizeSkillPowerLayer"),
+  "Team editor skill boxes must not show or persist the power-layer control."
+);
+assert(
+  pvpSkillHydrateSource.includes("suffixHtml: renderSkillLayerControl({ powerLayer: state.skillPowerLayers?.[skillIndex] }, selectedSkill)") &&
+    pvpSkillHydrateSource.includes("[data-skill-layer-delta]") &&
+    pvpSkillHydrateSource.includes("state.skillPowerLayers[skillIndex] = next") &&
+    pvpSkillHydrateSource.includes("refreshPvpDamageOutputs(root)"),
+  "PVP damage skill boxes should render and update the inline power-layer control."
 );
 assert(
   html.includes('const SKILL_POWER_LAYER_IDS = new Set([') &&
@@ -45,18 +59,10 @@ assert(
   "Known permanent-damage skills should be explicitly allowlisted for layer controls."
 );
 assert(
-  html.includes('current[petIndex].skills[skillIndex] = { skillId: item?.id || "", powerLayer: 0 };'),
-  "Changing a skill on the same monster should save the new skill and reset its layer count."
-);
-assert(
-  /powerLayer:\s*normalizeSkillPowerLayer\(row\.querySelector\("\[data-skill-layer-value\]"\)\?\.textContent\)/.test(html),
-  "readTeam should persist the visible skill layer value."
-);
-assert(
-  html.includes("state.skillPowerLayers = Array.from({ length: 4 }") &&
+  html.includes("state.skillPowerLayers = [0, 0, 0, 0];") &&
     html.includes("skillPowerLayer,") &&
     html.includes("pvpActionPowerLayer(attackerState, battleAction)"),
-  "PVP damage should receive the team skill layer count."
+  "PVP damage should receive the panel skill layer count."
 );
 
 const sandbox = {
@@ -66,17 +72,7 @@ const sandbox = {
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  }[char])),
-  readTeam: () => [{
-    monsterId: "monster-a",
-    skills: [
-      { skillId: "skill-吹火", powerLayer: 3 },
-      { skillId: "", powerLayer: 0 },
-      { skillId: "", powerLayer: 0 },
-      { skillId: "", powerLayer: 0 }
-    ]
-  }],
-  teamPetForMonster: (team, monsterId) => team.find((pet) => pet.monsterId === monsterId) || null
+  }[char]))
 };
 
 vm.createContext(sandbox);
@@ -94,17 +90,17 @@ vm.runInContext(`
 `, sandbox);
 
 const fireSkill = {
-  id: "skill-吹火",
-  name: "吹火",
-  description: "造成物伤，每次使用后，本技能威力永久+20。"
+  id: "skill-\u5439\u706b",
+  name: "\u5439\u706b",
+  description: "\u9020\u6210\u7269\u4f24\uff0c\u6bcf\u6b21\u4f7f\u7528\u540e\uff0c\u672c\u6280\u80fd\u5a01\u529b\u6c38\u4e45+20\u3002"
 };
 const plainSkill = {
-  id: "skill-火苗",
-  name: "火苗",
-  description: "对敌方精灵造成魔法伤害。"
+  id: "skill-\u706b\u82d7",
+  name: "\u706b\u82d7",
+  description: "\u5bf9\u654c\u65b9\u7cbe\u7075\u9020\u6210\u9b54\u6cd5\u4f24\u5bb3\u3002"
 };
-const realBlowFire = bundle.skills.find((skill) => skill.id === "skill-吹火");
-const realThunder = bundle.skills.find((skill) => skill.id === "skill-落雷");
+const realBlowFire = bundle.skills.find((skill) => skill.id === "skill-\u5439\u706b");
+const realThunder = bundle.skills.find((skill) => skill.id === "skill-\u843d\u96f7");
 
 assert(sandbox.normalizeSkillPowerLayer(-2) === 0, "Negative layer values should clamp to zero.");
 assert(sandbox.normalizeSkillPowerLayer(120) === 99, "Layer values should cap at 99.");
@@ -123,16 +119,16 @@ assert(
 assert(
   sandbox.pvpActionPowerLayer(
     { side: "ally", monsterId: "monster-a", skillPowerLayers: [1, 0, 0, 0] },
-    { id: "skill-吹火", pvpSkillIndex: 0 }
-  ) === 3,
-  "Ally PVP damage should prefer the current saved team layer over stale PVP state."
+    { id: "skill-\u5439\u706b", pvpSkillIndex: 0 }
+  ) === 1,
+  "Ally PVP damage should use the PVP panel's own layer count, not a hidden team value."
 );
 assert(
   sandbox.pvpActionPowerLayer(
     { side: "enemy", monsterId: "monster-b", skillPowerLayers: [4, 0, 0, 0] },
-    { id: "skill-吹火", pvpSkillIndex: 0 }
+    { id: "skill-\u5439\u706b", pvpSkillIndex: 0 }
   ) === 4,
   "Enemy/manual PVP damage should use the PVP state's own layer count."
 );
 
-console.log("Team skill power layer static checks passed.");
+console.log("PVP skill power layer static checks passed.");

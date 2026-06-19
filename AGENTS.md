@@ -56,6 +56,22 @@ Use this entry format:
 
 ## Development Work Log
 
+### 2026-06-19 17:13 +08:00 - Codex
+
+- Request: Move the permanent-damage skill +/- layer controls out of the team editor and show them only in the PVP damage skill boxes.
+- Files changed:
+  - `index.html`
+  - `tests/team-skill-power-layer-static.test.js`
+  - `tests/pvp-skill-power-layer-static.test.js`
+  - `AGENTS.md`
+- Changes:
+  - Removed the inline `- 0 +` layer control and hidden `powerLayer` persistence from team-editor skill boxes.
+  - Added the same inline layer control to PVP damage skill selectors, where it updates `pvpSimState.skillPowerLayers` and refreshes damage output.
+  - Changed PVP damage layer lookup to use only the PVP panel state instead of reading hidden team values.
+  - Replaced the team-layer regression test with a PVP-layer regression test that proves team boxes do not render the control and PVP boxes do.
+- Verification: Ran all `tests/*.test.js` scripts successfully; parsed all 13 inline scripts in `index.html` with `new Function`; ran `git diff --check` with only the Windows LF-to-CRLF warning for `index.html`.
+- Status: Complete; publishing through the repository procedure.
+
 ### 2026-06-19 16:07 +08:00 - Codex
 
 - Request: Fix the team skill layer control not appearing for visible skills such as `吹火`.

@@ -5996,8 +5996,7 @@
           rollerSkillId: pet.rollerSkillId || "",
           skills: Array.from({ length: 4 }, (_, skillIndex) => {
             const skill = pet.skills?.[skillIndex] || {};
-            const skillId = skill.skillId || skill.id || "";
-            return { skillId, powerLayer: normalizeSkillPowerLayer(skill.powerLayer) };
+            return { skillId: skill.skillId || skill.id || "" };
           })
         };
       });
@@ -6295,35 +6294,18 @@
             items: skillItems,
             value: skill.skillId || "",
             selectedItem: selectedSkill || null,
-            suffixHtml: renderSkillLayerControl(skill, selectedSkill),
             placeholder: selectedMonster ? "搜索技能名称" : "请先选择精灵",
             emptyText: "未选择技能",
             disabled: !selectedMonster,
           onSelect: (item) => {
             const current = readTeam();
-            current[petIndex].skills[skillIndex] = { skillId: item?.id || "", powerLayer: 0 };
+            current[petIndex].skills[skillIndex] = { skillId: item?.id || "" };
             saveSpecificTeam(current);
             renderTeam(current);
             updateRollerButton(current);
             renderResults();
           }
         });
-          const skillRow = card.querySelector(`[data-skill="${skillIndex}"]`);
-          skillRow?.querySelectorAll("[data-skill-layer-delta]").forEach((button) => {
-            button.addEventListener("click", (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const valueEl = skillRow.querySelector("[data-skill-layer-value]");
-              const delta = Number(button.dataset.skillLayerDelta) || 0;
-              const next = normalizeSkillPowerLayer((Number(valueEl?.textContent) || 0) + delta);
-              if (valueEl) valueEl.textContent = String(next);
-              const current = readTeam();
-              activeTeamIndex = petIndex;
-              current[petIndex].skills[skillIndex].powerLayer = next;
-              saveSpecificTeam(current);
-              renderResults();
-            });
-          });
         });
       });
       bindTeamOverviewEvents();
@@ -6947,8 +6929,7 @@
         const talentIds = [...card.querySelectorAll('[data-combo="talent"]')].map((combo) => combo.dataset.value || "");
         const rollerSkillId = card.querySelector('[data-combo="rollerSkill"]')?.dataset.value || "";
         const skills = [...card.querySelectorAll(".skill-row")].map((row) => ({
-          skillId: row.querySelector('[data-combo="skill"]').dataset.value || "",
-          powerLayer: normalizeSkillPowerLayer(row.querySelector("[data-skill-layer-value]")?.textContent)
+          skillId: row.querySelector('[data-combo="skill"]').dataset.value || ""
         }));
         return {
           name: monster?.name || `精灵${petIndex + 1}`,
@@ -7754,15 +7735,6 @@
     function pvpActionPowerLayer(state, action) {
       const skillIndex = Number.isInteger(action?.pvpSkillIndex) ? action.pvpSkillIndex : -1;
       if (skillIndex < 0) return 0;
-      if (state?.side === "ally") {
-        try {
-          const pet = teamPetForMonster(readTeam(), state.monsterId);
-          const skillRef = pet?.skills?.[skillIndex];
-          if (skillRef?.skillId === action?.id) return normalizeSkillPowerLayer(skillRef.powerLayer);
-        } catch (error) {
-          // Fall back to the PVP panel's own state below.
-        }
-      }
       return normalizeSkillPowerLayer(state?.skillPowerLayers?.[skillIndex]);
     }
 
@@ -8993,9 +8965,7 @@
       state.skillIds = Array.from({ length: 4 }, (_, index) => (
         skillById.has(pet.skills?.[index]?.skillId) ? pet.skills[index].skillId : ""
       ));
-      state.skillPowerLayers = Array.from({ length: 4 }, (_, index) => (
-        skillById.has(pet.skills?.[index]?.skillId) ? normalizeSkillPowerLayer(pet.skills[index].powerLayer) : 0
-      ));
+      state.skillPowerLayers = [0, 0, 0, 0];
     }
 
     function renderMonsterPreview(monster) {
@@ -10028,6 +9998,7 @@
             items: dexData.skills,
             value: skillId,
             selectedItem: selectedSkill || null,
+            suffixHtml: renderSkillLayerControl({ powerLayer: state.skillPowerLayers?.[skillIndex] }, selectedSkill),
             placeholder: `选择技能${skillIndex + 1}`,
             emptyText: "未选择技能",
             clearPlaceholderOnFocus: true,
@@ -10062,8 +10033,20 @@
             }
           });
           const skillHost = root.querySelector(`[data-pvp-combo="${side}-skill-${skillIndex}"]`);
+          skillHost?.querySelectorAll("[data-skill-layer-delta]").forEach((button) => {
+            button.addEventListener("click", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const valueEl = skillHost.querySelector("[data-skill-layer-value]");
+              const delta = Number(button.dataset.skillLayerDelta) || 0;
+              const next = normalizeSkillPowerLayer((Number(valueEl?.textContent) || 0) + delta);
+              state.skillPowerLayers[skillIndex] = next;
+              if (valueEl) valueEl.textContent = String(next);
+              refreshPvpDamageOutputs(root);
+            });
+          });
           skillHost?.addEventListener("click", (event) => {
-            if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || !state.skillIds[skillIndex]) return;
+            if (event.target.closest(".combo-clear") || event.target.closest(".combo-menu") || event.target.closest("[data-skill-layer-control]") || !state.skillIds[skillIndex]) return;
             const skill = skillById.get(state.skillIds[skillIndex]);
             const weatherChanged = setPvpWeatherFromSkill(skill);
             const supportChanged = applyPvpSupportSkill(state, skill);
@@ -10510,7 +10493,7 @@
     function sanitizeTeamForDex(team) {
       return normalizeTeam(team).map((pet) => {
         const monster = monsterById.get(pet.monsterId);
-        if (!monster) return { ...pet, natureId: "", talentIds: ["", "", ""], rollerSkillId: "", skills: pet.skills.map(() => ({ skillId: "", powerLayer: 0 })) };
+        if (!monster) return { ...pet, natureId: "", talentIds: ["", "", ""], rollerSkillId: "", skills: pet.skills.map(() => ({ skillId: "" })) };
         return {
           ...pet,
           bloodlineId: bloodlineById.has(pet.bloodlineId) ? pet.bloodlineId : "",
@@ -10519,10 +10502,7 @@
             PVP_TALENTS.some((talent) => talent.id === pet.talentIds?.[index]) ? pet.talentIds[index] : ""
           )),
           rollerSkillId: skillById.has(pet.rollerSkillId) ? pet.rollerSkillId : "",
-          skills: pet.skills.map((skill) => ({
-            skillId: skillById.has(skill.skillId) ? skill.skillId : "",
-            powerLayer: skillById.has(skill.skillId) ? normalizeSkillPowerLayer(skill.powerLayer) : 0
-          }))
+          skills: pet.skills.map((skill) => ({ skillId: skillById.has(skill.skillId) ? skill.skillId : "" }))
         };
       });
     }
